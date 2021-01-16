@@ -2,11 +2,11 @@
   "name": "covey-town-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build:live",
-    "production": "npm run build && node build/index.js",
+    "production": "npm run build && node build/server.js",
     "build": "tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec \\\"ts-node\\\" src/server.ts"
   },
