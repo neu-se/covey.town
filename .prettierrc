@@ -1,0 +1,20 @@
+{
+    "plugins": ["./node_modules/prettier-plugin-organize-imports"],
+    "tabWidth": 4,
+    "useTabs": false,
+    "printWidth": 120,
+    "overrides": [
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": ["*.md", "*.markdown"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}
