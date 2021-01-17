@@ -93,7 +93,7 @@ export function roomSubscriptionHandler(socket: Socket) {
   // Retrieve our metadata about this player from the RoomController
   const s = controller1.getSessionByToken(token);
   if (!s) {
-    // No valid session exists for this token
+    // No valid session exists for this token, hence this client's connection should be terminated
     socket.disconnect(true);
     return;
   }
