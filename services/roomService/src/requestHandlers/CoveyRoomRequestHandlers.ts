@@ -34,7 +34,10 @@ export interface RoomJoinResponse {
 }
 
 /**
- * A handler to process a player's request to join a room
+ * A handler to process a player's request to join a room. The flow is:
+ *  1. Client makes a RoomJoinRequest, this handler is executed
+ *  2. Client uses the sessionToken returned by this handler to make a subscription to the room,
+ *  @see roomSubscriptionHandler for the code that handles that request.
  *
  * @param requestData an object representing the player's request
  */
@@ -80,7 +83,9 @@ function roomSocketAdapter(socket: Socket): CoveyRoomListener {
 export function roomSubscriptionHandler(socket: Socket) {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinRoomHandler
-  const { token } = socket.handshake.auth as { token: string };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { token, coveyRoomID } = (socket.handshake.auth as { token: string, coveyRoomID: string });
+  // TODO: use coveyRoomID
 
   // Right now, we only support a single room, so there is only a single CoveyRoomController
   const controller1 = CoveyRoomController.getInstance();
