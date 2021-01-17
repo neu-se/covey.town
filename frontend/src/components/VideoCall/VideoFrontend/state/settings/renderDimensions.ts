@@ -76,5 +76,5 @@ export function getResolution(value?: RenderDimensionValue) {
     return undefined;
   }
 
-  return RenderDimensions.find(item => item.value === value)?.resolution;
+  return RenderDimensions.find((item) => item.value === value)?.resolution;
 }

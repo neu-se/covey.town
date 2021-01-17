@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import UserContext from '../contexts/UserProfileContext';
 import assert from 'assert';
+import UserContext from '../contexts/UserProfileContext';
 import { UserProfile } from '../CoveyTypes';
 
 /**
@@ -16,7 +16,7 @@ import { UserProfile } from '../CoveyTypes';
  * Otherwise, use the `useMaybeUser` hook.
  */
 export default function useUserProfile(): UserProfile {
-    const ctx = useContext(UserContext);
-    assert(ctx, "User profile should be defined.");
-    return ctx;
+  const ctx = useContext(UserContext);
+  assert(ctx, 'User profile should be defined.');
+  return ctx;
 }

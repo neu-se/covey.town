@@ -1,42 +1,51 @@
-import { getTimeString } from "./Util";
+/* eslint-disable no-console */
 
 export default class DebugLogger {
-    private enabled: boolean = false;
+  private enabled: boolean = false;
 
-    constructor(
-        private prefix: string
-    ) {
-    }
+  constructor(
+    private prefix: string,
+  ) {
+  }
 
-    enable(): void {
-        this.enabled = true;
-    }
+  enable(): void {
+    this.enabled = true;
+  }
 
-    disable(): void {
-        this.enabled = false;
-    }
+  disable(): void {
+    this.enabled = false;
+  }
 
-    get isEnabled(): boolean {
-        return this.enabled;
-    }
+  get isEnabled(): boolean {
+    return this.enabled;
+  }
 
-    prefixMessage(msg: string): string {
-        return `${getTimeString(new Date())} [${this.prefix}]: ${msg}`;
-    }
+  prefixMessage(msg: string): string {
+    return `${getTimeString(new Date())} [${this.prefix}]: ${msg}`;
+  }
 
-    info(msg: string, ...params: any[]) {
-        if (this.enabled) {
-            console.info(this.prefixMessage(msg), ...params);
-        }
+  info(msg: string, ...params: any[]) {
+    if (this.enabled) {
+      console.info(this.prefixMessage(msg), ...params);
     }
+  }
 
-    warn(msg: string, ...params: any[]) {
-        if (this.enabled) {
-            console.warn(this.prefixMessage(msg), ...params);
-        }
+  warn(msg: string, ...params: any[]) {
+    if (this.enabled) {
+      console.warn(this.prefixMessage(msg), ...params);
     }
+  }
 
-    error(msg: string, ...params: any[]) {
-        console.error(this.prefixMessage(msg), ...params);
-    }
+  error(msg: string, ...params: any[]) {
+    console.error(this.prefixMessage(msg), ...params);
+  }
+
+  static getTimeString(time: Date): string {
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    const seconds = time.getSeconds().toString().padStart(2, '0');
+    const milliseconds = time.getMilliseconds().toString().padStart(3, '0');
+
+    return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+  }
 }

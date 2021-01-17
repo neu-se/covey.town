@@ -1,5 +1,5 @@
 import React from 'react';
-import {UserProfile} from "../CoveyTypes";
+import { UserProfile } from '../CoveyTypes';
 
 /**
  * Hint: You will never need to use this directly. Instead, use the

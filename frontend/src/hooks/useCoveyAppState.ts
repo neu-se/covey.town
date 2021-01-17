@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import assert from 'assert';
 import CoveyAppContext from '../contexts/CoveyAppContext';
-import {CoveyAppState} from "../CoveyTypes";
+import { CoveyAppState } from '../CoveyTypes';
 
 /**
  * Use this hook to access the current user profile.
@@ -16,7 +16,7 @@ import {CoveyAppState} from "../CoveyTypes";
  * Otherwise, use the `useMaybeUser` hook.
  */
 export default function useCoveyAppState(): CoveyAppState {
-    const ctx = useContext(CoveyAppContext);
-    assert(ctx, "App context should be defined.");
-    return ctx;
+  const ctx = useContext(CoveyAppContext);
+  assert(ctx, 'App context should be defined.');
+  return ctx;
 }

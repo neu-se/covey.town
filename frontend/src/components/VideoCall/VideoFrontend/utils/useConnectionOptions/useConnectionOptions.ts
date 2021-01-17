@@ -15,12 +15,12 @@ export default function useConnectionOptions() {
     // Twilio Console: https://www.twilio.com/console/video/configure
     bandwidthProfile: {
       video: {
-        mode: 'grid', //settings.bandwidthProfileMode,
+        mode: 'grid', // settings.bandwidthProfileMode,
         dominantSpeakerPriority: settings.dominantSpeakerPriority,
         renderDimensions: {
-          low: {width: 176, height: 144}, //getResolution(settings.renderDimensionLow),
-          standard: {width: 320, height: 240}, //getResolution(settings.renderDimensionStandard),
-          high: {width: 1280, height: 720} //getResolution(settings.renderDimensionHigh),
+          low: { width: 176, height: 144 }, // getResolution(settings.renderDimensionLow),
+          standard: { width: 320, height: 240 }, // getResolution(settings.renderDimensionStandard),
+          high: { width: 1280, height: 720 }, // getResolution(settings.renderDimensionHigh),
         },
         maxTracks: Number(settings.maxTracks),
       },
@@ -42,7 +42,7 @@ export default function useConnectionOptions() {
   if (isMobile && connectionOptions?.bandwidthProfile?.video) {
     connectionOptions!.bandwidthProfile!.video!.maxSubscriptionBitrate = 2500000;
   }
-  console.log(connectionOptions)
+  console.log(connectionOptions);
 
   // Here we remove any 'undefined' values. The twilio-video SDK will only use defaults
   // when no value is passed for an option. It will throw an error when 'undefined' is passed.

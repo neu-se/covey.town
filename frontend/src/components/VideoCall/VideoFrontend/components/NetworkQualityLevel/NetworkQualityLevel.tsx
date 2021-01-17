@@ -25,7 +25,7 @@ export default function NetworkQualityLevel({ participant }: { participant: Part
 
   return (
     <Container>
-      {BARS_ARRAY.map(level => (
+      {BARS_ARRAY.map((level) => (
         <div
           key={level}
           style={{

@@ -3,7 +3,7 @@
  * which is used to authorize a client to connect to a video room.
  */
 export default interface IVideoClient{
-    /**
+  /**
      * Issue a secret token on behalf of the video service that the client will be able to use
      * to connect to the video room specified.
      *
@@ -11,5 +11,5 @@ export default interface IVideoClient{
      * @param clientIdentity The identity of the client; the video service will map a client
      *                      that connects with the returned token back to this client identifier
      */
-    getTokenForRoom (coveyRoomId: string, clientIdentity: string): Promise<string>;
+  getTokenForRoom (coveyRoomId: string, clientIdentity: string): Promise<string>;
 }

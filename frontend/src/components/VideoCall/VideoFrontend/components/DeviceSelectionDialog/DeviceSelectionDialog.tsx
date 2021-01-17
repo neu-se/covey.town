@@ -1,7 +1,5 @@
 import React from 'react';
 
-import AudioInputList from './AudioInputList/AudioInputList';
-import AudioOutputList from './AudioOutputList/AudioOutputList';
 import {
   DialogContent,
   Typography,
@@ -13,6 +11,8 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import AudioInputList from './AudioInputList/AudioInputList';
+import AudioOutputList from './AudioOutputList/AudioOutputList';
 import VideoInputList from './VideoInputList/VideoInputList';
 
 const useStyles = makeStyles((theme: Theme) => ({

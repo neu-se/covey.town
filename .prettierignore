@@ -1,7 +1,0 @@
-# Ignore artifacts:
-build
-coverage
-
-frontend/snowpack/
-node_modules/
-

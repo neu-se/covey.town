@@ -1,6 +1,6 @@
+import { Track, VideoBandwidthProfileOptions } from 'twilio-video';
 import { isMobile } from '../../utils';
 import { RenderDimensionValue } from './renderDimensions';
-import { Track, VideoBandwidthProfileOptions } from 'twilio-video';
 
 export interface Settings {
   trackSwitchOffMode: VideoBandwidthProfileOptions['trackSwitchOffMode'];

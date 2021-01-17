@@ -3,12 +3,13 @@
  * should be using a hook.
  */
 export default class LocalStorage {
-    private static readonly justSavedProfileKey = "profileEditor_justSavedProfile";
+  private static readonly justSavedProfileKey = 'profileEditor_justSavedProfile';
 
-    static get justSavedProfile(): boolean {
-        return localStorage.getItem(LocalStorage.justSavedProfileKey) === "true";
-    }
-    static set justSavedProfile(value: boolean) {
-        localStorage.setItem(LocalStorage.justSavedProfileKey, value ? "true" : "false");
-    }
+  static get justSavedProfile(): boolean {
+    return localStorage.getItem(LocalStorage.justSavedProfileKey) === 'true';
+  }
+
+  static set justSavedProfile(value: boolean) {
+    localStorage.setItem(LocalStorage.justSavedProfileKey, value ? 'true' : 'false');
+  }
 }

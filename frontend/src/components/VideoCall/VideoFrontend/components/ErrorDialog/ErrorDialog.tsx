@@ -5,8 +5,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import enhanceMessage from './enhanceMessage';
 import { TwilioError } from 'twilio-video';
+import enhanceMessage from './enhanceMessage';
 
 interface ErrorDialogProps {
   dismissError: () => void;
@@ -18,13 +18,16 @@ function ErrorDialog({ dismissError, error }: PropsWithChildren<ErrorDialogProps
   const enhancedMessage = enhanceMessage(message, code);
 
   return (
-    <Dialog open={error !== null} onClose={() => dismissError()} fullWidth={true} maxWidth="xs">
+    <Dialog open={error !== null} onClose={() => dismissError()} fullWidth maxWidth="xs">
       <DialogTitle>ERROR</DialogTitle>
       <DialogContent>
         <DialogContentText>{enhancedMessage}</DialogContentText>
         {Boolean(code) && (
           <pre>
-            <code>Error Code: {code}</code>
+            <code>
+              Error Code:
+              {code}
+            </code>
           </pre>
         )}
       </DialogContent>

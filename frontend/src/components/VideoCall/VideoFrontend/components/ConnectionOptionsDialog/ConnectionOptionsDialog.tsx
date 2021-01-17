@@ -70,14 +70,14 @@ export default function ConnectionOptionsDialog({ open, onClose }: { open: boole
     (e: React.ChangeEvent<{ value: unknown; name?: string }>) => {
       dispatchSetting({ name: e.target.name as keyof Settings, value: e.target.value as string });
     },
-    [dispatchSetting]
+    [dispatchSetting],
   );
 
   const handleNumberChange = useCallback(
     (e: React.ChangeEvent<{ value: unknown; name?: string }>) => {
       if (!/[^\d]/.test(e.target.value as string)) handleChange(e);
     },
-    [handleChange]
+    [handleChange],
   );
 
   return (

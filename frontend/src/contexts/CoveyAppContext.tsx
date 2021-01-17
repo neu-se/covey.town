@@ -1,5 +1,5 @@
 import React from 'react';
-import {CoveyAppState} from "../CoveyTypes";
+import { CoveyAppState } from '../CoveyTypes';
 
 /**
  * Hint: You will never need to use this directly. Instead, use the

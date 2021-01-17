@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
-import DeviceSelectionDialog from '../../DeviceSelectionDialog/DeviceSelectionDialog';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MenuContainer from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Typography from '@material-ui/core/Typography';
 import { Theme, useMediaQuery } from '@material-ui/core';
+import DeviceSelectionDialog from '../../DeviceSelectionDialog/DeviceSelectionDialog';
 
 export default function Menu(props: { buttonClassName?: string }) {
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
@@ -17,7 +17,7 @@ export default function Menu(props: { buttonClassName?: string }) {
 
   return (
     <>
-      <Button onClick={() => setMenuOpen(isOpen => !isOpen)} ref={anchorRef} className={props.buttonClassName}>
+      <Button onClick={() => setMenuOpen((isOpen) => !isOpen)} ref={anchorRef} className={props.buttonClassName}>
         {isMobile ? (
           <MoreIcon />
         ) : (
@@ -29,7 +29,7 @@ export default function Menu(props: { buttonClassName?: string }) {
       </Button>
       <MenuContainer
         open={menuOpen}
-        onClose={() => setMenuOpen(isOpen => !isOpen)}
+        onClose={() => setMenuOpen((isOpen) => !isOpen)}
         anchorEl={anchorRef.current}
         anchorOrigin={{
           vertical: 'top',

@@ -4,24 +4,22 @@ import { LocalTrackPublication, Participant, RemoteTrackPublication } from 'twil
 type TrackPublication = LocalTrackPublication | RemoteTrackPublication;
 
 export default function usePublications(participant: Participant) {
-    const [publications, setPublications] = useState<TrackPublication[]>([]);
+  const [publications, setPublications] = useState<TrackPublication[]>([]);
 
-    useEffect(() => {
-        // Reset the publications when the 'participant' variable changes.
-        setPublications(Array.from(participant.tracks.values()) as TrackPublication[]);
+  useEffect(() => {
+    // Reset the publications when the 'participant' variable changes.
+    setPublications(Array.from(participant.tracks.values()) as TrackPublication[]);
 
-        const publicationAdded = (publication: TrackPublication) =>
-            setPublications(prevPublications => [...prevPublications, publication]);
-        const publicationRemoved = (publication: TrackPublication) =>
-            setPublications(prevPublications => prevPublications.filter(p => p !== publication));
+    const publicationAdded = (publication: TrackPublication) => setPublications((prevPublications) => [...prevPublications, publication]);
+    const publicationRemoved = (publication: TrackPublication) => setPublications((prevPublications) => prevPublications.filter((p) => p !== publication));
 
-        participant.on('trackPublished', publicationAdded);
-        participant.on('trackUnpublished', publicationRemoved);
-        return () => {
-            participant.off('trackPublished', publicationAdded);
-            participant.off('trackUnpublished', publicationRemoved);
-        };
-    }, [participant]);
+    participant.on('trackPublished', publicationAdded);
+    participant.on('trackUnpublished', publicationRemoved);
+    return () => {
+      participant.off('trackPublished', publicationAdded);
+      participant.off('trackUnpublished', publicationRemoved);
+    };
+  }, [participant]);
 
-    return publications;
+  return publications;
 }
