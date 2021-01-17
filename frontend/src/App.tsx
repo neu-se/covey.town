@@ -9,9 +9,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import {
-  CoveyAppState, NearbyPlayers, Player, ServerPlayer, UserLocation,
-} from './CoveyTypes';
+import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Video, { JoinRoomResponse } from './classes/Video/Video';
 import Login from './components/Login/Login';
@@ -25,12 +23,13 @@ import { VideoProvider } from './components/VideoCall/VideoFrontend/components/V
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
 import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
+import Player, { ServerPlayer, UserLocation } from './classes/Player';
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, roomName: string, sessionToken: string, myPlayerID: string, socket: Socket, players: ServerPlayer[], emitMovement: (location: UserLocation) => void } }
-  | { action: 'addPlayer'; player: ServerPlayer }
-  | { action: 'playerMoved'; player: ServerPlayer }
-  | { action: 'playerDisconnect'; player: ServerPlayer }
+  | { action: 'doConnect'; data: { userName: string, roomName: string, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'addPlayer'; player: Player }
+  | { action: 'playerMoved'; player: Player }
+  | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
   ;
@@ -93,17 +92,17 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.userName = update.data.userName;
       nextState.emitMovement = update.data.emitMovement;
       nextState.socket = update.data.socket;
-      nextState.players = update.data.players.map((sp) => new Player(sp));
+      nextState.players = update.data.players;
       break;
     case 'addPlayer':
-      nextState.players = nextState.players.concat([new Player(update.player)]);
+      nextState.players = nextState.players.concat([update.player]);
       break;
     case 'playerMoved':
       updatePlayer = nextState.players.find((p) => p.id === update.player.id);
       if (updatePlayer) {
         updatePlayer.location = update.player.location;
       } else {
-        nextState.players = nextState.players.concat([new Player(update.player)]);
+        nextState.players = nextState.players.concat([update.player]);
       }
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
         nextState.currentLocation);
@@ -121,7 +120,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
 
       break;
     case 'playerDisconnect':
-      nextState.players = nextState.players.filter((player) => player.id !== update.player._id);
+      nextState.players = nextState.players.filter((player) => player.id !== update.player.id);
 
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
         nextState.currentLocation);
@@ -153,15 +152,18 @@ async function GameController(initData: JoinRoomResponse,
 
   const socket = io(url, { auth: { token: sessionToken, coveyRoomID: roomName } });
   socket.on('newPlayer', (player: ServerPlayer) => {
-    dispatchAppUpdate({ action: 'addPlayer', player });
+    dispatchAppUpdate({
+      action: 'addPlayer',
+      player: Player.fromServerPlayer(player),
+    });
   });
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
-      dispatchAppUpdate({ action: 'playerMoved', player });
+      dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player) });
     }
   });
   socket.on('playerDisconnect', (player: ServerPlayer) => {
-    dispatchAppUpdate({ action: 'playerDisconnect', player });
+    dispatchAppUpdate({ action: 'playerDisconnect', player: Player.fromServerPlayer(player) });
   });
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
@@ -180,7 +182,7 @@ async function GameController(initData: JoinRoomResponse,
       myPlayerID: gamePlayerID,
       emitMovement,
       socket,
-      players: initData.currentPlayers,
+      players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
     },
   });
   return true;
@@ -243,7 +245,7 @@ function EmbeddedTwilioAppWrapper() {
   );
 }
 
-export default function AppStateWrapper() {
+export default function AppStateWrapper(): JSX.Element {
   return (
     <BrowserRouter>
       <ChakraProvider>

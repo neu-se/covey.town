@@ -1,5 +1,5 @@
 import DebugLogger from '../DebugLogger';
-import { ServerPlayer, UserLocation } from '../../CoveyTypes';
+import { ServerPlayer, UserLocation } from '../Player';
 
 export type JoinRoomResponse = {
   coveyUserID: string,
@@ -36,11 +36,11 @@ export default class Video {
     this._userName = userName;
   }
 
-  get userName() {
+  get userName(): string {
     return this._userName;
   }
 
-  public getTwilioRoomID() {
+  public getTwilioRoomID(): string | null {
     return this.twilioRoomID;
   }
 
@@ -103,7 +103,6 @@ export default class Video {
       this.logger.warn('Twilio not configured.');
       throw new Error('Twilio not configured.');
     }
-    // @ts-ignore
     return this._REACT_APP_TWILIO_CALLBACK_URL;
   }
 
@@ -120,26 +119,31 @@ export default class Video {
       Video.video = null;
     }
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - JB TODO
     if (!window.clowdr) {
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - JB TODO
       window.clowdr = window.clowdr || {};
     }
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - JB TODO
     window.clowdr.video = Video.video;
 
     return result;
   }
 
-  public static async teardown() {
+  public static async teardown(): Promise<void> {
     try {
       await Video.video?.teardown();
     } finally {
       Video.video = null;
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - JB TODO
       if (window.clowdr && window.clowdr.video) {
-        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - JB TODO
         window.clowdr.video = null;
       }
     }

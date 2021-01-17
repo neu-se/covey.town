@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Phaser from 'phaser';
-import { Direction, Player, UserLocation } from '../../CoveyTypes';
+import Player, { Direction, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
@@ -66,35 +66,47 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   updatePlayerLocation(player: Player) {
-    if (this.id !== player.id && this.physics && player.location) {
-      let { sprite } = player;
+    let myPlayer = this.players.find((p) => p.id === player.id);
+    if (!myPlayer) {
+      let { location } = player;
+      if (!location) {
+        location = {
+          rotation: 'back',
+          moving: false,
+          x: 0,
+          y: 0,
+        };
+      }
+      myPlayer = new Player(player.id, player.userName, location);
+      this.players.push(myPlayer);
+    }
+    if (this.id !== myPlayer.id && this.physics && myPlayer.location) {
+      let { sprite } = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
-        // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore - JB todo
           .sprite(0, 0, 'atlas', 'misa-front')
           .setSize(30, 40)
           .setOffset(0, 24);
-        const label = this.add.text(0, 0, player.userName, {
+        const label = this.add.text(0, 0, myPlayer.userName, {
           font: '18px monospace',
           fill: '#000000',
           backgroundColor: '#ffffff',
         });
-        // eslint-disable-next-line no-param-reassign
-        player.label = label;
-        // eslint-disable-next-line no-param-reassign
-        player.sprite = sprite;
-        this.players.push(player);
+        myPlayer.label = label;
+        myPlayer.sprite = sprite;
       }
       if (!sprite.anims) return;
-      sprite.setX(player.location.x);
-      sprite.setY(player.location.y);
-      player.label?.setX(player.location.x);
-      player.label?.setY(player.location.y - 20);
-      if (player.location.moving) {
-        sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
+      sprite.setX(myPlayer.location.x);
+      sprite.setY(myPlayer.location.y);
+      myPlayer.label?.setX(myPlayer.location.x);
+      myPlayer.label?.setY(myPlayer.location.y - 20);
+      if (myPlayer.location.moving) {
+        sprite.anims.play(`misa-${myPlayer.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
-        sprite.setTexture('atlas', `misa-${player.location.rotation}`);
+        sprite.setTexture('atlas', `misa-${myPlayer.location.rotation}`);
       }
     }
   }
@@ -214,7 +226,8 @@ class CoveyGameScene extends Phaser.Scene {
     this.emitMovement({
       rotation: 'front',
       moving: false,
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - JB todo
       x: spawnPoint.x,
       y: spawnPoint.y,
     });
@@ -287,7 +300,7 @@ class CoveyGameScene extends Phaser.Scene {
   }
 }
 
-export default function WorldMap() {
+export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
     emitMovement, players,
@@ -317,11 +330,12 @@ export default function WorldMap() {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement]);
+  }, [video, emitMovement, players]);
 
+  const deepPlayers = JSON.stringify(players);
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);
-  }, [JSON.stringify(players)]);
+  }, [deepPlayers, players, gameScene]);
 
   return <div id="map-container" />;
 }

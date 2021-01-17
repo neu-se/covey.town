@@ -8,7 +8,7 @@ interface LoginProps {
   doLogin: (initData: JoinRoomResponse) => Promise<boolean>
 }
 
-export default function Login({ doLogin }: LoginProps) {
+export default function Login({ doLogin }: LoginProps): JSX.Element {
   const [mediaError, setMediaError] = useState<Error>();
 
   return (

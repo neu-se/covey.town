@@ -78,7 +78,6 @@ export default function ParticipantList(props: { gridView: boolean }) {
   function participantSorter(x: ParticipantWithSlot, y: ParticipantWithSlot): number {
     return x.slot < y.slot ? -1 : x.slot === y.slot ? 0 : 1;
   }
-  console.log('Render participant list');
 
   const participantsEl = (
     <>

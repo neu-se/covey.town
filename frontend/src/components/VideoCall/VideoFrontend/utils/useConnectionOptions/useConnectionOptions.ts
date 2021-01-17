@@ -42,7 +42,6 @@ export default function useConnectionOptions() {
   if (isMobile && connectionOptions?.bandwidthProfile?.video) {
     connectionOptions!.bandwidthProfile!.video!.maxSubscriptionBitrate = 2500000;
   }
-  console.log(connectionOptions);
 
   // Here we remove any 'undefined' values. The twilio-video SDK will only use defaults
   // when no value is passed for an option. It will throw an error when 'undefined' is passed.

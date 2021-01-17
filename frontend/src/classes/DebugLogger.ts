@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 export default class DebugLogger {
-  private enabled: boolean = false;
+  private enabled = false;
 
   constructor(
     private prefix: string,
@@ -21,22 +21,22 @@ export default class DebugLogger {
   }
 
   prefixMessage(msg: string): string {
-    return `${getTimeString(new Date())} [${this.prefix}]: ${msg}`;
+    return `${DebugLogger.getTimeString(new Date())} [${this.prefix}]: ${msg}`;
   }
 
-  info(msg: string, ...params: any[]) {
+  info(msg: string, ...params: any[]): void {
     if (this.enabled) {
       console.info(this.prefixMessage(msg), ...params);
     }
   }
 
-  warn(msg: string, ...params: any[]) {
+  warn(msg: string, ...params: any[]): void {
     if (this.enabled) {
       console.warn(this.prefixMessage(msg), ...params);
     }
   }
 
-  error(msg: string, ...params: any[]) {
+  error(msg: string, ...params: any[]): void {
     console.error(this.prefixMessage(msg), ...params);
   }
 
