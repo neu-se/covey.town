@@ -80,9 +80,12 @@ function roomSocketAdapter(socket: Socket): CoveyRoomListener {
  *
  * @param socket the Socket object that we will use to communicate with the player
  */
-export function roomSubscriptionHandler(socket: Socket) {
+export function roomSubscriptionHandler(socket: Socket): void {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinRoomHandler
+  //
+  // The eslint-disable is here because the coveyRoomID is currently unused (and you'll use it for
+  // part 3!)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { token, coveyRoomID } = (socket.handshake.auth as { token: string, coveyRoomID: string });
   // TODO: use coveyRoomID

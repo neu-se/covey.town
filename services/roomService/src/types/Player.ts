@@ -16,17 +16,20 @@ export default class Player {
 
   constructor(userName: string) {
     this.location = {
-      x: 0, y: 0, moving: false, rotation: 'front',
+      x: 0,
+      y: 0,
+      moving: false,
+      rotation: 'front',
     };
     this._userName = userName;
     this._id = nanoid();
   }
 
-  get userName() {
+  get userName(): string {
     return this._userName;
   }
 
-  get id() {
+  get id(): string {
     return this._id;
   }
 }

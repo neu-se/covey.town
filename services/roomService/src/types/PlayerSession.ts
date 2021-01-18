@@ -2,8 +2,8 @@ import { nanoid } from 'nanoid';
 import Player from './Player';
 
 /*
-A session represents a connection of a player to a room, storing the secret tokens
-that this player uses to access resources in the room
+ A session represents a connection of a player to a room, storing the secret tokens
+ that this player uses to access resources in the room
  */
 export default class PlayerSession {
   /** The player that this session represents * */

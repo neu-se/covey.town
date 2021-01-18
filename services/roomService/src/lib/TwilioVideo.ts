@@ -1,8 +1,9 @@
+import dotenv from 'dotenv';
 import Twilio from 'twilio';
 import assert from 'assert';
 import IVideoClient from './IVideoClient';
 
-require('dotenv').config();
+dotenv.config();
 
 // 4 hours: each client will time out after 4 hours of video and need to refresh
 const MAX_ALLOWED_SESSION_DURATION = 14400;
@@ -46,13 +47,14 @@ export default class TwilioVideo implements IVideoClient {
     return TwilioVideo._instance;
   }
 
-  async getTokenForRoom(coveyRoomID: string, clientIdentity: string) {
+  async getTokenForRoom(coveyRoomID: string, clientIdentity: string): Promise<string> {
     const token = new Twilio.jwt.AccessToken(
       this._twilioAccountSid, this._twilioApiKeySID, this._twilioApiKeySecret, {
         ttl: MAX_ALLOWED_SESSION_DURATION,
       },
     );
-    // @ts-ignore
+    // eslint-disable-next-line
+    // @ts-ignore this is missing from the typedef, but valid as per the docs...
     token.identity = clientIdentity;
     const videoGrant = new Twilio.jwt.AccessToken.VideoGrant({ room: coveyRoomID });
     token.addGrant(videoGrant);
