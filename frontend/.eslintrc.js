@@ -8,6 +8,7 @@ module.exports = {
   ],
   parserOptions: {
     project: "./tsconfig.json",
+    warnOnUnsupportedTypeScriptVersion: false,
   },
   ignorePatterns: ["/*.*"],
   rules: {

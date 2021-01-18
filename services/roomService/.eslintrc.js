@@ -6,6 +6,7 @@ module.exports = {
   ],
   parserOptions: {
     project: "./tsconfig.json",
+    warnOnUnsupportedTypeScriptVersion: false,
   },
   settings: {
     react: {
