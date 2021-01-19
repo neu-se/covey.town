@@ -27,8 +27,7 @@ describe('CoveyRoomController', () => {
       const roomsStore = CoveyRoomsStore.getInstance();
       const roomName = nanoid();
       const roomController = roomsStore.getControllerForRoom(roomName);
-      const playerID = nanoid();
-      await roomController.addPlayer(new Player(playerID));
+      const newPlayerSession = await roomController.addPlayer(new Player(nanoid()));
       expect(mockGetTokenForRoom.mock.calls.length)
         .toBe(1); // should have called getToken once
       // should have passed the room name to getToken
@@ -36,6 +35,6 @@ describe('CoveyRoomController', () => {
         .toBe(roomName);
       // should have passed the player id to getToken
       expect(mockGetTokenForRoom.mock.calls[0][1])
-        .toBe(playerID);
+        .toBe(newPlayerSession.player.id);
     });
 });
