@@ -64,7 +64,7 @@ export default class CoveyRoomController {
    */
   destroySession(session: PlayerSession): void {
     this.players = this.players.filter((p) => p.id !== session.player.id);
-    this.sessions = this.sessions.filter((s) => s.sessionToken === session.sessionToken);
+    this.sessions = this.sessions.filter((s) => s.sessionToken !== session.sessionToken);
     this.listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
   }
 
