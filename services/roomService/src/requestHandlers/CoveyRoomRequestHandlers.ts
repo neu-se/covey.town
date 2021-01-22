@@ -10,9 +10,9 @@ import CoveyRoomListener from '../types/CoveyRoomListener';
  */
 export interface RoomJoinRequest {
   /** userName of the player that would like to join * */
-  userName: string,
+  userName: string;
   /** ID of the room that the player would like to join * */
-  coveyRoomID: string
+  coveyRoomID: string;
 }
 
 /**
@@ -20,17 +20,17 @@ export interface RoomJoinRequest {
  */
 export interface RoomJoinResponse {
   /** Unique ID that represents this player * */
-  coveyUserID: string,
+  coveyUserID: string;
   /** Secret token that this player should use to authenticate
    * in future requests to this service * */
-  coveySessionToken: string,
+  coveySessionToken: string;
   /** Secret token that this player should use to authenticate
    * in future requests to the video service * */
-  providerVideoToken: string,
+  providerVideoToken: string;
   /** List of players currently in this room * */
-  currentPlayers: Player[],
+  currentPlayers: Player[];
   /** An error message describing any error that occurred, or "ok" * */
-  message: string
+  message: string;
 }
 
 /**
@@ -87,7 +87,7 @@ export function roomSubscriptionHandler(socket: Socket): void {
   // The eslint-disable is here because the coveyRoomID is currently unused (and you'll use it for
   // part 3!)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { token, coveyRoomID } = (socket.handshake.auth as { token: string, coveyRoomID: string });
+  const { token, coveyRoomID } = socket.handshake.auth as { token: string; coveyRoomID: string };
   // TODO: use coveyRoomID
 
   // Right now, we only support a single room, so there is only a single CoveyRoomController

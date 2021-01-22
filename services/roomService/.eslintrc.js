@@ -1,20 +1,22 @@
 module.exports = {
+  plugins: ['prettier'],
   extends: [
-    "airbnb-typescript",
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
+    'airbnb-typescript',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
   ],
   parserOptions: {
-    project: "./tsconfig.json",
+    project: './tsconfig.json',
     warnOnUnsupportedTypeScriptVersion: false,
   },
   settings: {
     react: {
-      version: "latest",
+      version: 'latest',
     },
   },
-  ignorePatterns: ["/*.*"],
+  ignorePatterns: ['/*.*'],
   rules: {
-    "no-underscore-dangle": 0,
+    'no-underscore-dangle': 0,
   },
 };
