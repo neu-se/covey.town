@@ -1,9 +1,10 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
-import CoveyRoomController from '../lib/CoveyRoomController';
 import Player from '../types/Player';
-import { UserLocation } from '../CoveyTypes';
+import { CoveyRoomList, UserLocation } from '../CoveyTypes';
 import CoveyRoomListener from '../types/CoveyRoomListener';
+import CoveyRoomsStore from '../lib/CoveyRoomsStore';
+import { removeThisFunctionCallWhenYouImplementThis } from '../Utils';
 
 /**
  * The format of a request to join a CoveyRoom, as dispatched by the server middleware
@@ -29,8 +30,58 @@ export interface RoomJoinResponse {
   providerVideoToken: string;
   /** List of players currently in this room * */
   currentPlayers: Player[];
-  /** An error message describing any error that occurred, or "ok" * */
-  message: string;
+}
+
+/**
+ * Payload sent by client to create a room
+ */
+export interface RoomCreateRequest {
+  friendlyName: string;
+  isPubliclyListed: boolean;
+}
+
+/**
+ * Response from the server for a room create request
+ */
+export interface RoomCreateResponse {
+  coveyRoomID: string;
+  coveyRoomPassword: string;
+}
+
+/**
+ * Response from the server for a room list request
+ */
+export interface RoomListResponse {
+  rooms: CoveyRoomList;
+}
+
+/**
+ * Payload sent by the client to delete a room
+ */
+export interface RoomDeleteRequest {
+  coveyRoomID: string;
+  coveyRoomPassword: string;
+}
+
+/**
+ * Payload sent by the client to update a room.
+ * N.B., JavaScript is terrible, so:
+ * if(!isPubliclyListed) -> evaluates to true if the value is false OR undefined, use ===
+ */
+export interface RoomUpdateRequest {
+  coveyRoomID: string;
+  coveyRoomPassword: string;
+  friendlyName?: string;
+  isPubliclyListed?: boolean;
+}
+
+/**
+ * Envelope that wraps any response from the server
+ */
+export interface ResponseEnvelope<T> {
+  isOK: boolean;
+  message?: string;
+  response?: T;
 }
 
 /**
@@ -41,18 +92,100 @@ export interface RoomJoinResponse {
  *
  * @param requestData an object representing the player's request
  */
-export async function roomJoinHandler(requestData: RoomJoinRequest): Promise<RoomJoinResponse> {
-  const coveyRoomController = CoveyRoomController.getInstance();
+export async function roomJoinHandler(requestData: RoomJoinRequest): Promise<ResponseEnvelope<RoomJoinResponse>> {
+  const roomsStore = CoveyRoomsStore.getInstance();
+
+  const coveyRoomController = roomsStore.getControllerForRoom(requestData.coveyRoomID);
+  if (!coveyRoomController) {
+    return {
+      isOK: false,
+      message: 'Error: No such room',
+    };
+  }
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyRoomController.addPlayer(newPlayer);
   assert(newSession.videoToken);
   return {
-    coveyUserID: newPlayer.id,
-    coveySessionToken: newSession.sessionToken,
-    providerVideoToken: newSession.videoToken,
-    currentPlayers: coveyRoomController.players,
-    message: 'ok',
+    isOK: true,
+    response: {
+      coveyUserID: newPlayer.id,
+      coveySessionToken: newSession.sessionToken,
+      providerVideoToken: newSession.videoToken,
+      currentPlayers: coveyRoomController.players,
+    },
   };
+}
+
+/**
+ * List all of the rooms that are set to "publicly visible"
+ *
+ * The `isOK` field on the envelope must be set to `true` in all cases
+ * (this function can not return an error)
+ *
+ * @see CoveyRoomsStore.getRooms - which will return the list of rooms
+ *
+ */
+export async function roomListHandler(): Promise<ResponseEnvelope<RoomListResponse>> {
+  // TODO, remove this line when you implement this function
+  throw removeThisFunctionCallWhenYouImplementThis();
+}
+
+/**
+ * Create a new room and returns its ID and password.
+ *
+ * Sets the `isOK` field on the envelope to `false` if the `friendlyName` specified is empty
+ * (a 0-length string), and also sets the `message` envelope field with a descriptive error.
+ *
+ * Otherwise, sets the `isOK` field on the envelope to `true` if the request succeeds, and returns
+ * the room information inside of the response envelope.
+ *
+ * @see CoveyRoomsStore.createRoom - which will create and track the new room
+ *
+ * @param requestData the "friendly name" to assign this room, and its publicly visibility
+ *
+ */
+export async function roomCreateHandler(requestData: RoomCreateRequest): Promise<ResponseEnvelope<RoomCreateResponse>> {
+  // TODO, remove this line when you implement this function
+  throw removeThisFunctionCallWhenYouImplementThis(requestData);
+}
+
+/**
+ * Deletes a room.
+ *
+ * Sets the `isOK` field on the envelope to `true` if the room exists, password matches, and room
+ * is deleted. Sets the `isOK` field on the envelope to `false` and the `message` field to "Invalid
+ * Request" if the room does not exist, or password does not match.
+ *
+ *
+ * Does not return any other data inside of the envelope
+ *
+ * @see CoveyRoomsStore.deleteRoom - which will delete the room from its store
+ *
+ * @param requestData the requested room ID to delete and the password specified by the client
+ */
+export async function roomDeleteHandler(requestData: RoomDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  // TODO, remove this line when you implement this function
+  throw removeThisFunctionCallWhenYouImplementThis(requestData);
+}
+
+/**
+ * Updates a room's friendlyName and/or public visibility.
+ *
+ * Rejects the request (by setting `isOK` field on the envelope to `false`) if the request is to
+ * update the `friendlyName` to an empty string.
+ *
+ * Sets the `isOK` field on the envelope to `true` if the room exists, password matches, and room
+ * is updated. Sets the `isOK` field on the envelope to `false` and the `message` field to "Invalid
+ * Request" if the room does not exist, or password does not match.
+ *
+ * @see CoveyRoomsStore.updateRoom - which will update the room's data
+ *
+ * @param requestData the update request. This handler should only update fields of the room only
+ *   if the password supplied in the request matches the password on record.
+ */
+export async function roomUpdateHandler(requestData: RoomUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  // TODO, remove this line when you implement this function
+  throw removeThisFunctionCallWhenYouImplementThis(requestData);
 }
 
 /**
@@ -72,6 +205,10 @@ function roomSocketAdapter(socket: Socket): CoveyRoomListener {
     onPlayerJoined(newPlayer: Player) {
       socket.emit('newPlayer', newPlayer);
     },
+    onRoomDestroyed() {
+      socket.emit('roomClosing');
+      socket.disconnect(true);
+    },
   };
 }
 
@@ -83,19 +220,15 @@ function roomSocketAdapter(socket: Socket): CoveyRoomListener {
 export function roomSubscriptionHandler(socket: Socket): void {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinRoomHandler
-  //
-  // The eslint-disable is here because the coveyRoomID is currently unused (and you'll use it for
-  // part 3!)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { token, coveyRoomID } = socket.handshake.auth as { token: string; coveyRoomID: string };
-  // TODO: use coveyRoomID
 
   // Right now, we only support a single room, so there is only a single CoveyRoomController
-  const controller1 = CoveyRoomController.getInstance();
+  const roomController = CoveyRoomsStore.getInstance()
+    .getControllerForRoom(coveyRoomID);
 
   // Retrieve our metadata about this player from the RoomController
-  const s = controller1.getSessionByToken(token);
-  if (!s) {
+  const s = roomController?.getSessionByToken(token);
+  if (!s || !roomController) {
     // No valid session exists for this token, hence this client's connection should be terminated
     socket.disconnect(true);
     return;
@@ -104,19 +237,19 @@ export function roomSubscriptionHandler(socket: Socket): void {
   // Create an adapter that will translate events from the CoveyRoomController into
   // events that the socket protocol knows about
   const listener = roomSocketAdapter(socket);
-  controller1.addRoomListener(listener);
+  roomController.addRoomListener(listener);
 
   // Register an event listener for the client socket: if the client disconnects,
   // clean up our listener adapter, and then let the CoveyRoomController know that the
   // player's session is disconnected
   socket.on('disconnect', () => {
-    controller1.removeRoomListener(listener);
-    controller1.destroySession(s);
+    roomController.removeRoomListener(listener);
+    roomController.destroySession(s);
   });
 
   // Register an event listener for the client socket: if the client updates their
   // location, inform the CoveyRoomController
   socket.on('playerMovement', (movementData: UserLocation) => {
-    controller1.updatePlayerLocation(s.player, movementData);
+    roomController.updatePlayerLocation(s.player, movementData);
   });
 }

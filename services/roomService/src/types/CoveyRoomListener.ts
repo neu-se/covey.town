@@ -21,4 +21,9 @@ export default interface CoveyRoomListener {
    * @param removedPlayer the player that disconnected
    */
   onPlayerDisconnected(removedPlayer: Player): void;
+
+  /**
+   * Called when a room is destroyed, causing all players to disconnect
+   */
+  onRoomDestroyed(): void;
 }

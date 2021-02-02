@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
 import CoveyRoomListener from '../types/CoveyRoomListener';
 import Player from '../types/Player';
@@ -10,30 +11,59 @@ import IVideoClient from './IVideoClient';
  * can occur (e.g. joining a room, moving, leaving a room)
  */
 export default class CoveyRoomController {
-  /** The list of players currently in the room * */
-  public players: Player[] = [];
-
-  /** The list of valid sessions for this room * */
-  public sessions: PlayerSession[] = [];
-
-  /** The videoClient that this CoveyRoom will use to provision video resources * */
-  public videoClient: IVideoClient = TwilioVideo.getInstance();
-
-  /** The list of CoveyRoomListeners that are subscribed to events in this room * */
-  public listeners: CoveyRoomListener[] = [];
-
-  /** CoveyRoomController singleton * */
-  private static _instance: CoveyRoomController;
-
-  private constructor() {
-    /* No-op constructor to prevent initialization from other classes */
+  set isPubliclyListed(value: boolean) {
+    this._isPubliclyListed = value;
   }
 
-  public static getInstance(): CoveyRoomController {
-    if (CoveyRoomController._instance === undefined) {
-      CoveyRoomController._instance = new CoveyRoomController();
-    }
-    return CoveyRoomController._instance;
+  get isPubliclyListed(): boolean {
+    return this._isPubliclyListed;
+  }
+
+  get roomUpdatePassword(): string {
+    return this._roomUpdatePassword;
+  }
+
+  get players(): Player[] {
+    return this._players;
+  }
+
+  get friendlyName(): string {
+    return this._friendlyName;
+  }
+
+  set friendlyName(value: string) {
+    this._friendlyName = value;
+  }
+
+  get coveyRoomID(): string {
+    return this._coveyRoomID;
+  }
+
+  /** The list of players currently in the room * */
+  private _players: Player[] = [];
+
+  /** The list of valid sessions for this room * */
+  private _sessions: PlayerSession[] = [];
+
+  /** The videoClient that this CoveyRoom will use to provision video resources * */
+  private _videoClient: IVideoClient = TwilioVideo.getInstance();
+
+  /** The list of CoveyRoomListeners that are subscribed to events in this room * */
+  private _listeners: CoveyRoomListener[] = [];
+
+  private readonly _coveyRoomID: string;
+
+  private _friendlyName: string;
+
+  private readonly _roomUpdatePassword: string;
+
+  private _isPubliclyListed: boolean;
+
+  constructor(friendlyName: string, isPubliclyListed: boolean) {
+    this._coveyRoomID = nanoid(12);
+    this._roomUpdatePassword = nanoid(24);
+    this._isPubliclyListed = isPubliclyListed;
+    this._friendlyName = friendlyName;
   }
 
   /**
@@ -45,14 +75,14 @@ export default class CoveyRoomController {
   async addPlayer(newPlayer: Player): Promise<PlayerSession> {
     const theSession = new PlayerSession(newPlayer);
 
-    this.sessions.push(theSession);
-    this.players.push(newPlayer);
+    this._sessions.push(theSession);
+    this._players.push(newPlayer);
 
     // Create a video token for this user to join this room
-    theSession.videoToken = await this.videoClient.getTokenForRoom('demoRoom', newPlayer.id);
+    theSession.videoToken = await this._videoClient.getTokenForRoom(this._coveyRoomID, newPlayer.id);
 
     // Notify other players that this player has joined
-    this.listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
+    this._listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
 
     return theSession;
   }
@@ -63,9 +93,9 @@ export default class CoveyRoomController {
    * @param session PlayerSession to destroy
    */
   destroySession(session: PlayerSession): void {
-    this.players = this.players.filter((p) => p.id !== session.player.id);
-    this.sessions = this.sessions.filter((s) => s.sessionToken !== session.sessionToken);
-    this.listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
+    this._players = this._players.filter((p) => p.id !== session.player.id);
+    this._sessions = this._sessions.filter((s) => s.sessionToken !== session.sessionToken);
+    this._listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
   }
 
   /**
@@ -74,10 +104,8 @@ export default class CoveyRoomController {
    * @param location New location for this player
    */
   updatePlayerLocation(player: Player, location: UserLocation): void {
-    // TODO: Avery should have designed this better! Mutating parameters is not a good design choice
-    // eslint-disable-next-line no-param-reassign
-    player.location = location;
-    this.listeners.forEach((listener) => listener.onPlayerMoved(player));
+    player.updateLocation(location);
+    this._listeners.forEach((listener) => listener.onPlayerMoved(player));
   }
 
   /**
@@ -87,7 +115,7 @@ export default class CoveyRoomController {
    * @param listener New listener
    */
   addRoomListener(listener: CoveyRoomListener): void {
-    this.listeners.push(listener);
+    this._listeners.push(listener);
   }
 
   /**
@@ -97,7 +125,7 @@ export default class CoveyRoomController {
    * with addRoomListener, or otherwise will be a no-op
    */
   removeRoomListener(listener: CoveyRoomListener): void {
-    this.listeners = this.listeners.filter((v) => v !== listener);
+    this._listeners = this._listeners.filter((v) => v !== listener);
   }
 
   /**
@@ -107,6 +135,14 @@ export default class CoveyRoomController {
    * @param token
    */
   getSessionByToken(token: string): PlayerSession | undefined {
-    return this.sessions.find((p) => p.sessionToken === token);
+    return this._sessions.find((p) => p.sessionToken === token);
+  }
+
+  /**
+   * Notify all players connected to this room that the room is being destroyed, terminating
+   * their connection and freeing any relevant resources.
+   */
+  disconnectAllPlayers(): void {
+    this._listeners.forEach((listener) => listener.onRoomDestroyed());
   }
 }

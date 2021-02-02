@@ -32,4 +32,8 @@ export default class Player {
   get id(): string {
     return this._id;
   }
+
+  updateLocation(location: UserLocation): void {
+    this.location = location;
+  }
 }
