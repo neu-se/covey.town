@@ -80,7 +80,7 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location);
       this.players.push(myPlayer);
     }
-    if (this.id !== myPlayer.id && this.physics && myPlayer.location) {
+    if (this.id !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
@@ -98,15 +98,15 @@ class CoveyGameScene extends Phaser.Scene {
         myPlayer.sprite = sprite;
       }
       if (!sprite.anims) return;
-      sprite.setX(myPlayer.location.x);
-      sprite.setY(myPlayer.location.y);
-      myPlayer.label?.setX(myPlayer.location.x);
-      myPlayer.label?.setY(myPlayer.location.y - 20);
-      if (myPlayer.location.moving) {
-        sprite.anims.play(`misa-${myPlayer.location.rotation}-walk`, true);
+      sprite.setX(player.location.x);
+      sprite.setY(player.location.y);
+      myPlayer.label?.setX(player.location.x);
+      myPlayer.label?.setY(player.location.y - 20);
+      if (player.location.moving) {
+        sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
-        sprite.setTexture('atlas', `misa-${myPlayer.location.rotation}`);
+        sprite.setTexture('atlas', `misa-${player.location.rotation}`);
       }
     }
   }
@@ -325,17 +325,16 @@ export default function WorldMap(): JSX.Element {
       const newGameScene = new CoveyGameScene(video, emitMovement);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
-      newGameScene.updatePlayersLocations(players);
     }
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement, players]);
+  }, [video, emitMovement]);
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);
-  }, [deepPlayers, players, gameScene]);
+  }, [players, deepPlayers, gameScene]);
 
   return <div id="map-container" />;
 }
