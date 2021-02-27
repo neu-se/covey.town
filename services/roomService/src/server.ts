@@ -2,7 +2,7 @@ import Express from 'express';
 import * as http from 'http';
 import CORS from 'cors';
 import { AddressInfo } from 'net';
-import addRoomRoutes from './router/room';
+import addRoomRoutes from './router/towns';
 
 const app = Express();
 app.use(CORS());

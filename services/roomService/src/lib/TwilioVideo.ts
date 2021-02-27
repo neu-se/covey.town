@@ -5,8 +5,8 @@ import IVideoClient from './IVideoClient';
 
 dotenv.config();
 
-// 4 hours: each client will time out after 4 hours of video and need to refresh
-const MAX_ALLOWED_SESSION_DURATION = 14400;
+// 1 hour: each client will time out after 1 hour of video and need to refresh
+const MAX_ALLOWED_SESSION_DURATION = 3600;
 
 export default class TwilioVideo implements IVideoClient {
   private _twilioClient: Twilio.Twilio;
