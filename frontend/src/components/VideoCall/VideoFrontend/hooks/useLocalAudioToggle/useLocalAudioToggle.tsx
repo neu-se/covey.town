@@ -37,6 +37,9 @@ export default function useLocalAudioToggle() {
           const track = await getLocalAudioTrack(LocalStorage_TwilioVideo.twilioVideoLastMic ?? undefined);
           localParticipant?.publishTrack(track, { priority: 'low' });
         } catch (e) {
+          if (e?.name === 'NotReadableError' || e?.name === 'OverconstrainedError') {
+            LocalStorage_TwilioVideo.twilioVideoLastMic = null;
+          }
           throw e;
         } finally {
           setIsPublishing(false);

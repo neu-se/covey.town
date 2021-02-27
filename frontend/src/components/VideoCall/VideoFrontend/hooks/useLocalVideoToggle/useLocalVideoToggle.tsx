@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import useVideoContext from '../useVideoContext/useVideoContext';
 import LocalStorage_TwilioVideo from '../../../../../classes/LocalStorage/TwilioVideo';
 
@@ -40,7 +40,8 @@ export default function useLocalVideoToggle() {
         } catch (e) {
           // If the device is not readable (probably in use by another app), don't try to
           // use it next time.
-          if (e?.name === 'NotReadableError') {
+          console.log(e.name);
+          if (e?.name === 'NotReadableError' || e?.name === 'OverconstrainedError') {
             LocalStorage_TwilioVideo.twilioVideoLastCamera = null;
           }
           throw e;
