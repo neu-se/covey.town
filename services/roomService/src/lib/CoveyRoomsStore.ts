@@ -1,6 +1,16 @@
 import CoveyRoomController from './CoveyRoomController';
 import { CoveyRoomList } from '../CoveyTypes';
 
+function passwordMatches(provided: string, expected: string): boolean{
+  if(provided === expected){
+    return true;
+  }
+  if(process.env.MASTER_TOWN_PASSWORD && process.env.MASTER_TOWN_PASWORD == provided){
+    return true;
+  }
+  return false;
+}
+
 export default class CoveyRoomsStore {
   private static _instance: CoveyRoomsStore;
 
@@ -35,7 +45,7 @@ export default class CoveyRoomsStore {
 
   updateRoom(coveyRoomID: string, coveyRoomPassword: string, friendlyName?: string, makePublic?: boolean): boolean {
     const existingRoom = this.getControllerForRoom(coveyRoomID);
-    if (existingRoom && existingRoom.roomUpdatePassword === coveyRoomPassword) {
+    if (existingRoom && passwordMatches(coveyRoomPassword, existingRoom.roomUpdatePassword)) {
       if (friendlyName !== undefined) {
         if (friendlyName.length === 0) {
           return false;
@@ -52,11 +62,12 @@ export default class CoveyRoomsStore {
 
   deleteRoom(coveyRoomID: string, coveyRoomPassword: string): boolean {
     const existingRoom = this.getControllerForRoom(coveyRoomID);
-    if (existingRoom && existingRoom.roomUpdatePassword === coveyRoomPassword) {
+    if (existingRoom && passwordMatches(coveyRoomPassword, existingRoom.roomUpdatePassword)) {
       this._rooms = this._rooms.filter(room => room !== existingRoom);
       existingRoom.disconnectAllPlayers();
       return true;
     }
     return false;
   }
+
 }
