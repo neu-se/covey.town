@@ -1,15 +1,7 @@
 import React, { useCallback } from 'react';
-import {
-  makeStyles, Grid, Theme, Hidden,
-} from '@material-ui/core';
+import { Grid, Hidden, makeStyles, Theme, } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
-import {
-  FormErrorMessage,
-  FormLabel,
-  FormControl,
-  Input,
-  Button,
-} from '@chakra-ui/react';
+import { Button, FormControl, FormErrorMessage, FormLabel, Input, useToast, } from '@chakra-ui/react';
 import assert from 'assert';
 import LocalVideoPreview from './LocalVideoPreview/LocalVideoPreview';
 import SettingsMenu from './SettingsMenu/SettingsMenu';
@@ -19,7 +11,8 @@ import { useAppState } from '../../../state';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
 import { VideoRoom } from '../../../../../../CoveyTypes';
 
-import Video, { JoinRoomResponse } from '../../../../../../classes/Video/Video';
+import Video from '../../../../../../classes/Video/Video';
+import { TownJoinResponse } from '../../../../../../classes/TownsServiceClient';
 
 const useStyles = makeStyles((theme: Theme) => ({
   gutterBottom: {
@@ -68,12 +61,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface DeviceSelectionScreenProps {
-  room: VideoRoom;
   setMediaError?(error: Error): void;
-  doLogin: (initData: JoinRoomResponse) => Promise<boolean>;
 }
 
-export default function DeviceSelectionScreen({ doLogin, room, setMediaError }: DeviceSelectionScreenProps) {
+export default function DeviceSelectionScreen({ setMediaError }: DeviceSelectionScreenProps) {
   const classes = useStyles();
   const { getToken, isFetching } = useAppState();
   const {
@@ -84,22 +75,6 @@ export default function DeviceSelectionScreen({ doLogin, room, setMediaError }: 
     handleSubmit, errors, register, formState,
   } = useForm();
 
-  const handleJoin = useCallback(async (values: { name: string }) => {
-    const initData = await Video.setup(values.name);
-
-    const loggedIn = await doLogin(initData);
-    if (loggedIn) {
-      assert(initData.providerVideoToken);
-      await connect(initData.providerVideoToken);
-    }
-  }, [doLogin, room, localAudioTrack, localVideoTrack]);
-
-  function validateName(value: string) {
-    if (!value || value.length == 0) {
-      return 'Name is required';
-    }
-    return true;
-  }
   return (
     <>
       <Grid container justify="center" aria-label="join video room form">
@@ -139,15 +114,6 @@ export default function DeviceSelectionScreen({ doLogin, room, setMediaError }: 
                 />
               </Hidden>
             </div>
-            <form onSubmit={handleSubmit(handleJoin)}>
-              <FormControl isInvalid={errors.name}>
-                <FormLabel htmlFor="name">Name</FormLabel>
-                <Input autoFocus name="name" placeholder="Your name" ref={register({ validate: validateName })} />
-                <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
-              </FormControl>
-              <Button colorScheme="teal" isLoading={formState.isSubmitting} type="submit">Join Room</Button>
-            </form>
-            <div className={classes.joinButtons} />
           </Grid>
         </Grid>
       </Grid>

@@ -1,1 +1,3 @@
 src/components/VideoCall/VideoFrontend
+src/classes/DebugLogger.ts
+build

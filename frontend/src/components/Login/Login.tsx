@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import PreJoinScreens from '../VideoCall/VideoFrontend/components/PreJoinScreens/PreJoinScreens';
-import { JoinRoomResponse } from '../../classes/Video/Video';
 import MediaErrorSnackbar
   from '../VideoCall/VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
+import { TownJoinResponse } from '../../classes/TownsServiceClient';
 
 interface LoginProps {
-  doLogin: (initData: JoinRoomResponse) => Promise<boolean>
+  doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
 export default function Login({ doLogin }: LoginProps): JSX.Element {
@@ -16,10 +16,6 @@ export default function Login({ doLogin }: LoginProps): JSX.Element {
       <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />
       <PreJoinScreens
         doLogin={doLogin}
-        room={{
-          id: 'demoRoom',
-          twilioID: 'none',
-        }}
         setMediaError={setMediaError}
       />
     </>

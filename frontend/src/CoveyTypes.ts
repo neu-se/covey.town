@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io-client';
 import Player, { UserLocation } from './classes/Player';
+import TownsServiceClient from './classes/TownsServiceClient';
 
 export type CoveyEvent = 'playerMoved' | 'playerAdded' | 'playerRemoved';
-export type CoveyCallback = (data: any) => void;
 
 export type VideoRoom = {
   twilioID: string,
@@ -18,11 +18,14 @@ export type NearbyPlayers = {
 export type CoveyAppState = {
   sessionToken: string,
   userName: string,
-  currentRoom: string,
+  currentTownFriendlyName: string,
+  currentTownID: string,
+  currentTownIsPubliclyListed: boolean,
   myPlayerID: string,
   players: Player[],
   currentLocation: UserLocation,
   nearbyPlayers: NearbyPlayers,
   emitMovement: (location: UserLocation) => void,
   socket: Socket | null,
+  apiClient: TownsServiceClient,
 };

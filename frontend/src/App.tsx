@@ -11,7 +11,6 @@ import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
-import Video, { JoinRoomResponse } from './classes/Video/Video';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
 import NearbyPlayersContext from './contexts/NearbyPlayersContext';
@@ -24,9 +23,11 @@ import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDi
 import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
+import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
+import Video from './classes/Video/Video';
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, roomName: string, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
   | { action: 'addPlayer'; player: Player }
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
@@ -39,7 +40,9 @@ function defaultAppState(): CoveyAppState {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     myPlayerID: '',
-    currentRoom: '',
+    currentTownFriendlyName: '',
+    currentTownID: '',
+    currentTownIsPubliclyListed: false,
     sessionToken: '',
     userName: '',
     socket: null,
@@ -48,12 +51,15 @@ function defaultAppState(): CoveyAppState {
     },
     emitMovement: () => {
     },
+    apiClient: new TownsServiceClient(),
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
   const nextState = {
     sessionToken: state.sessionToken,
-    currentRoom: state.currentRoom,
+    currentTownFriendlyName: state.currentTownFriendlyName,
+    currentTownID: state.currentTownID,
+    currentTownIsPubliclyListed: state.currentTownIsPubliclyListed,
     myPlayerID: state.myPlayerID,
     players: state.players,
     currentLocation: state.currentLocation,
@@ -61,6 +67,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     userName: state.userName,
     socket: state.socket,
     emitMovement: state.emitMovement,
+    apiClient: state.apiClient,
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
@@ -88,7 +95,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     case 'doConnect':
       nextState.sessionToken = update.data.sessionToken;
       nextState.myPlayerID = update.data.myPlayerID;
-      nextState.currentRoom = update.data.roomName;
+      nextState.currentTownFriendlyName = update.data.townFriendlyName;
+      nextState.currentTownID = update.data.townID;
+      nextState.currentTownIsPubliclyListed = update.data.townIsPubliclyListed;
       nextState.userName = update.data.userName;
       nextState.emitMovement = update.data.emitMovement;
       nextState.socket = update.data.socket;
@@ -138,19 +147,19 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
   return nextState;
 }
 
-async function GameController(initData: JoinRoomResponse,
+async function GameController(initData: TownJoinResponse,
   dispatchAppUpdate: (update: CoveyAppUpdate) => void) {
   // Now, set up the game sockets
   const gamePlayerID = initData.coveyUserID;
   const sessionToken = initData.coveySessionToken;
-  const url = process.env.REACT_APP_TWILIO_CALLBACK_URL;
+  const url = process.env.REACT_APP_TOWNS_SERVICE_URL;
   assert(url);
   const video = Video.instance();
   assert(video);
-  const roomName = video.getTwilioRoomID();
+  const roomName = video.roomFriendlyName;
   assert(roomName);
 
-  const socket = io(url, { auth: { token: sessionToken, coveyRoomID: roomName } });
+  const socket = io(url, { auth: { token: sessionToken, coveyRoomID: video.coveyRoomID } });
   socket.on('newPlayer', (player: ServerPlayer) => {
     dispatchAppUpdate({
       action: 'addPlayer',
@@ -178,8 +187,10 @@ async function GameController(initData: JoinRoomResponse,
     data: {
       sessionToken,
       userName: video.userName,
-      roomName,
+      townFriendlyName: roomName,
+      townID: video.coveyRoomID,
       myPlayerID: gamePlayerID,
+      townIsPubliclyListed: video.isPubliclyListed,
       emitMovement,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
@@ -191,7 +202,7 @@ async function GameController(initData: JoinRoomResponse,
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
 
-  const setupGameController = useCallback(async (initData: JoinRoomResponse) => {
+  const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate);
     return true;
   }, [dispatchAppUpdate]);
