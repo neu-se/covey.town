@@ -5,6 +5,7 @@ Covey.Town was built for Northeastern's [Spring 2021 software engineering course
 You can view our reference deployment of the app at [app.covey.town](https://app.covey.town/).
 
 ![Covey.Town Architecture](docs/covey-town-architecture.png)
+
 The figure above depicts the high-level architecture of Covey.Town.
 The frontend client (in the `frontend` directory of this repository) uses the [PhaserJS Game Library](https://phaser.io) to create a 2D game interface, using tilemaps and sprites.
 The frontend implements video chat using the [Twilio Programmable Video](https://www.twilio.com/docs/video) API, and that aspect of the interface relies heavily on [Twilio's React Starter App](https://github.com/twilio/twilio-video-app-react).
@@ -24,12 +25,12 @@ To create an account and configure your local environment:
 2. Create an API key and secret (select "API Keys" on the left under "Settings")
 3. Create a `.env` file in the `services/roomService` directory, setting the values as follows:
 
-| Config Value         | Description                               |
-| -------------------- | ----------------------------------------- |
-| `TWILIO_ACCOUNT_SID` | Visible on your twilio account dashboard. |
-| `TWILIO_API_KEY`     | The SID of the new API key you created.   |
-| `TWILIO_API_SECRET`  | The secret for the API key you created.   |
-| `TWILIO_AUTH_TOKEN`  | Visible on your twilio account dashboard. |
+| Config Value            | Description                               |
+| ----------------------- | ----------------------------------------- |
+| `TWILIO_ACCOUNT_SID`    | Visible on your twilio account dashboard. |
+| `TWILIO_API_KEY`        | The SID of the new API key you created.   |
+| `TWILIO_API_SECRET`     | The secret for the API key you created.   |
+| `TWILIO_API_AUTH_TOKEN` | Visible on your twilio account dashboard. |
 
 ### Starting the backend
 
