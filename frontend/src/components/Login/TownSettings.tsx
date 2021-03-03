@@ -59,7 +59,7 @@ const TownSettings: React.FunctionComponent = () => {
               <Checkbox id="isPubliclyListed" name="isPubliclyListed"/>
             </FormControl>
             <FormControl isRequired>
-              <FormLabel htmlFor="updatePassword">Room Update Password</FormLabel>
+              <FormLabel htmlFor="updatePassword">Town Update Password</FormLabel>
               <Input data-testid="updatePassword" id="updatePassword" placeholder="Password"
                      name="password" type="password"/>
             </FormControl>

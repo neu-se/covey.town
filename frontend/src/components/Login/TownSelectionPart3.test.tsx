@@ -35,40 +35,40 @@ TownsServiceClient.prototype.listTowns = mocklistTowns;
 TownsServiceClient.prototype.createTown = mockCreateTown;
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({
-  rooms: [
+  towns: [
     {
-      friendlyName: `room1${suffix}`,
-      coveyRoomID: `1${suffix}`,
+      friendlyName: `town1${suffix}`,
+      coveyTownID: `1${suffix}`,
       currentOccupancy: 0,
       maximumOccupancy: 1,
     },
     {
-      friendlyName: `room2${suffix}`,
-      coveyRoomID: `2${suffix}`,
+      friendlyName: `town2${suffix}`,
+      coveyTownID: `2${suffix}`,
       currentOccupancy: 2,
       maximumOccupancy: 10,
     },
     {
-      friendlyName: `room3${suffix}`,
-      coveyRoomID: `3${suffix}`,
+      friendlyName: `town3${suffix}`,
+      coveyTownID: `3${suffix}`,
       currentOccupancy: 1,
       maximumOccupancy: 1,
     },
     {
-      friendlyName: `room4${suffix}`,
-      coveyRoomID: `4${suffix}`,
+      friendlyName: `town4${suffix}`,
+      coveyTownID: `4${suffix}`,
       currentOccupancy: 8,
       maximumOccupancy: 8,
     },
     {
-      friendlyName: `room5${suffix}`,
-      coveyRoomID: `5${suffix}`,
+      friendlyName: `town5${suffix}`,
+      coveyTownID: `5${suffix}`,
       currentOccupancy: 9,
       maximumOccupancy: 5,
     },
     {
-      friendlyName: `room6${suffix}`,
-      coveyRoomID: `6${suffix}`,
+      friendlyName: `town6${suffix}`,
+      coveyTownID: `6${suffix}`,
       currentOccupancy: 99,
       maximumOccupancy: 100,
     },
@@ -123,7 +123,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
     const suffix = nanoid();
     mocklistTowns.mockImplementation(() => listTowns(suffix));
     renderData = render(wrappedTownSelection());
-    await waitFor(() => expect(renderData.getByText(`room1${suffix}`))
+    await waitFor(() => expect(renderData.getByText(`town1${suffix}`))
       .toBeInTheDocument());
     newTownIsPublicCheckbox = renderData.getByLabelText('Publicly Listed') as HTMLInputElement;
     newTownNameField = renderData.getByPlaceholderText('New Town Name') as HTMLInputElement;
@@ -150,7 +150,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
       mockCreateTown.mockReset();
       if (params.townID && params.roomPassword) {
         mockCreateTown.mockReturnValue({
-          coveyRoomID: params.townID,
+          coveyTownID: params.townID,
           coveyRoomPassword: params.roomPassword
         });
       } else if (params.errorMessage) {
@@ -251,7 +251,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               duration: null
             })));
         });
-        it('after success, calls Video.setup, doLogin, and connect with the entered username and newly generated coveyRoomID', async () => {
+        it('after success, calls Video.setup, doLogin, and connect with the entered username and newly generated coveyTownID', async () => {
           const townID = nanoid();
           const roomPassword = nanoid();
           const userName = nanoid();

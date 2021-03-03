@@ -1,4 +1,4 @@
-export interface JoinRoomResponse {
+export interface JoinTownResponse {
   coveyUserID: string,
   coveySessionToken: string,
   providerVideoToken: string,

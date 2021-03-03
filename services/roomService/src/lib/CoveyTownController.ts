@@ -1,6 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
-import CoveyRoomListener from '../types/CoveyRoomListener';
+import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
@@ -9,10 +9,10 @@ import IVideoClient from './IVideoClient';
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
 /**
- * The CoveyRoomController implements the logic for each room: managing the various events that
- * can occur (e.g. joining a room, moving, leaving a room)
+ * The CoveyTownController implements the logic for each town: managing the various events that
+ * can occur (e.g. joining a town, moving, leaving a town)
  */
-export default class CoveyRoomController {
+export default class CoveyTownController {
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
@@ -21,8 +21,8 @@ export default class CoveyRoomController {
     return this._isPubliclyListed;
   }
 
-  get roomUpdatePassword(): string {
-    return this._roomUpdatePassword;
+  get townUpdatePassword(): string {
+    return this._townUpdatePassword;
   }
 
   get players(): Player[] {
@@ -41,42 +41,42 @@ export default class CoveyRoomController {
     this._friendlyName = value;
   }
 
-  get coveyRoomID(): string {
-    return this._coveyRoomID;
+  get coveyTownID(): string {
+    return this._coveyTownID;
   }
 
-  /** The list of players currently in the room * */
+  /** The list of players currently in the town * */
   private _players: Player[] = [];
 
-  /** The list of valid sessions for this room * */
+  /** The list of valid sessions for this town * */
   private _sessions: PlayerSession[] = [];
 
-  /** The videoClient that this CoveyRoom will use to provision video resources * */
+  /** The videoClient that this CoveyTown will use to provision video resources * */
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
-  /** The list of CoveyRoomListeners that are subscribed to events in this room * */
-  private _listeners: CoveyRoomListener[] = [];
+  /** The list of CoveyTownListeners that are subscribed to events in this town * */
+  private _listeners: CoveyTownListener[] = [];
 
-  private readonly _coveyRoomID: string;
+  private readonly _coveyTownID: string;
 
   private _friendlyName: string;
 
-  private readonly _roomUpdatePassword: string;
+  private readonly _townUpdatePassword: string;
 
   private _isPubliclyListed: boolean;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
-    this._coveyRoomID = friendlyNanoID();
-    this._roomUpdatePassword = nanoid(24);
+    this._coveyTownID = friendlyNanoID();
+    this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
   }
 
   /**
-   * Adds a player to this Covey Room, provisioning the necessary credentials for the
+   * Adds a player to this Covey Town, provisioning the necessary credentials for the
    * player, and returning them
    *
-   * @param newPlayer The new player to add to the room
+   * @param newPlayer The new player to add to the town
    */
   async addPlayer(newPlayer: Player): Promise<PlayerSession> {
     const theSession = new PlayerSession(newPlayer);
@@ -84,8 +84,8 @@ export default class CoveyRoomController {
     this._sessions.push(theSession);
     this._players.push(newPlayer);
 
-    // Create a video token for this user to join this room
-    theSession.videoToken = await this._videoClient.getTokenForRoom(this._coveyRoomID, newPlayer.id);
+    // Create a video token for this user to join this town
+    theSession.videoToken = await this._videoClient.getTokenForTown(this._coveyTownID, newPlayer.id);
 
     // Notify other players that this player has joined
     this._listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
@@ -94,7 +94,7 @@ export default class CoveyRoomController {
   }
 
   /**
-   * Destroys all data related to a player in this room.
+   * Destroys all data related to a player in this town.
    *
    * @param session PlayerSession to destroy
    */
@@ -105,7 +105,7 @@ export default class CoveyRoomController {
   }
 
   /**
-   * Updates the location of a player within the room
+   * Updates the location of a player within the town
    * @param player Player to update location for
    * @param location New location for this player
    */
@@ -115,22 +115,22 @@ export default class CoveyRoomController {
   }
 
   /**
-   * Subscribe to events from this room. Callers should make sure to
-   * unsubscribe when they no longer want those events by calling removeRoomListener
+   * Subscribe to events from this town. Callers should make sure to
+   * unsubscribe when they no longer want those events by calling removeTownListener
    *
    * @param listener New listener
    */
-  addRoomListener(listener: CoveyRoomListener): void {
+  addTownListener(listener: CoveyTownListener): void {
     this._listeners.push(listener);
   }
 
   /**
-   * Unsubscribe from events in this room.
+   * Unsubscribe from events in this town.
    *
    * @param listener The listener to unsubscribe, must be a listener that was registered
-   * with addRoomListener, or otherwise will be a no-op
+   * with addTownListener, or otherwise will be a no-op
    */
-  removeRoomListener(listener: CoveyRoomListener): void {
+  removeTownListener(listener: CoveyTownListener): void {
     this._listeners = this._listeners.filter((v) => v !== listener);
   }
 
@@ -145,6 +145,6 @@ export default class CoveyRoomController {
   }
 
   disconnectAllPlayers(): void {
-    this._listeners.forEach((listener) => listener.onRoomDestroyed());
+    this._listeners.forEach((listener) => listener.onTownDestroyed());
   }
 }

@@ -52,7 +52,7 @@ export default function VideoGrid(props: Props) {
   const [mediaError, setMediaError] = useState<Error>();
   const presenting = usePresenting();
 
-  let coveyRoom = coveyController?.coveyRoomID;
+  let coveyRoom = coveyController?.coveyTownID;
   if (!coveyRoom) coveyRoom = 'Disconnected';
   useEffect(() => {
     function stop() {

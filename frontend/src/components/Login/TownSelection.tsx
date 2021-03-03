@@ -111,7 +111,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Box maxH="500px" overflowY="scroll">
               <Table>
                 <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
-                <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
+                <Thead><Tr><Th>Town Name</Th><Th>Town ID</Th><Th>Activity</Th></Tr></Thead>
                 <Tbody>
                   <Tr key='demoTownID'><Td role='cell'>DEMO_TOWN_NAME</Td><Td
                     role='cell'>Unknown/Unknown <Button

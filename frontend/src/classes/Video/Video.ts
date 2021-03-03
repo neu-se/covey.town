@@ -18,15 +18,15 @@ export default class Video {
 
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
 
-  private _coveyRoomID: string;
+  private _coveyTownID: string;
 
-  private _roomFriendlyName: string | undefined;
+  private _townFriendlyName: string | undefined;
 
   private _isPubliclyListed: boolean | undefined;
 
-  constructor(userName: string, coveyRoomID: string) {
+  constructor(userName: string, coveyTownID: string) {
     this._userName = userName;
-    this._coveyRoomID = coveyRoomID;
+    this._coveyTownID = coveyTownID;
   }
 
   get isPubliclyListed(): boolean {
@@ -36,30 +36,30 @@ export default class Video {
     return false;
   }
 
-  get roomFriendlyName(): string | undefined {
-    return this._roomFriendlyName;
+  get townFriendlyName(): string | undefined {
+    return this._townFriendlyName;
   }
 
   get userName(): string {
     return this._userName;
   }
 
-  get coveyRoomID(): string {
-    return this._coveyRoomID;
+  get coveyTownID(): string {
+    return this._coveyTownID;
   }
 
   private async setup(): Promise<TownJoinResponse> {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
-        // Request our token to join the room
+        // Request our token to join the town
         this.townsServiceClient.joinTown({
-          coveyRoomID: this._coveyRoomID,
+          coveyTownID: this._coveyTownID,
           userName: this._userName,
         })
           .then((result) => {
             this.sessionToken = result.coveySessionToken;
             this.videoToken = result.providerVideoToken;
-            this._roomFriendlyName = result.friendlyName;
+            this._townFriendlyName = result.friendlyName;
             this._isPubliclyListed = result.isPubliclyListed;
             resolve(result);
           })
@@ -94,11 +94,11 @@ export default class Video {
     return this.teardownPromise ?? Promise.resolve();
   }
 
-  public static async setup(username: string, coveyRoomID: string): Promise<TownJoinResponse> {
+  public static async setup(username: string, coveyTownID: string): Promise<TownJoinResponse> {
     let result = null;
 
     if (!Video.video) {
-      Video.video = new Video(username, coveyRoomID);
+      Video.video = new Video(username, coveyTownID);
     }
 
     result = await Video.video.setup();

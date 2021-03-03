@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
 
 /**
- * Each user who is connected to a room is represented by a Player object
+ * Each user who is connected to a town is represented by a Player object
  */
 export default class Player {
   /** The current location of this user in the world map * */
@@ -11,7 +11,7 @@ export default class Player {
   /** The unique identifier for this player * */
   private readonly _id: string;
 
-  /** The player's username, which is not guaranteed to be unique within the room * */
+  /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
 
   constructor(userName: string) {

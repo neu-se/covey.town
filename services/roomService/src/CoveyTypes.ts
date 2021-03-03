@@ -5,5 +5,5 @@ export type UserLocation = {
   rotation: Direction;
   moving: boolean;
 };
-export type CoveyRoomList = { friendlyName: string; coveyRoomID: string; currentOccupancy: number; maximumOccupancy: number }[];
+export type CoveyTownList = { friendlyName: string; coveyTownID: string; currentOccupancy: number; maximumOccupancy: number }[];
 

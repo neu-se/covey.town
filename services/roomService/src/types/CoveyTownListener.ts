@@ -1,11 +1,11 @@
 import Player from './Player';
 
 /**
- * A listener for player-related events in each room
+ * A listener for player-related events in each town
  */
-export default interface CoveyRoomListener {
+export default interface CoveyTownListener {
   /**
-   * Called when a player joins a room
+   * Called when a player joins a town
    * @param newPlayer the new player
    */
   onPlayerJoined(newPlayer: Player): void;
@@ -17,13 +17,13 @@ export default interface CoveyRoomListener {
   onPlayerMoved(movedPlayer: Player): void;
 
   /**
-   * Called when a player disconnects from the room
+   * Called when a player disconnects from the town
    * @param removedPlayer the player that disconnected
    */
   onPlayerDisconnected(removedPlayer: Player): void;
 
   /**
-   * Called when a room is destroyed, causing all players to disconnect
+   * Called when a town is destroyed, causing all players to disconnect
    */
-  onRoomDestroyed(): void;
+  onTownDestroyed(): void;
 }

@@ -125,22 +125,22 @@ describe('Part 4 - Town Settings', () => {
       }
       await openSettingsPane(params);
 
-      const coveyRoomPassword = nanoid();
+      const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
       await waitFor(() => expect(friendlyNameField.value)
         .toBe(friendlyName));
-      fireEvent.change(passwordField, { target: { value: coveyRoomPassword } });
+      fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
       await waitFor(() => expect(passwordField.value)
-        .toBe(coveyRoomPassword));
+        .toBe(coveyTownPassword));
       fireEvent.click(isPublicCheck);
       await waitFor(() => expect(isPublicCheck.checked)
         .toBe(true));
       fireEvent.click(updateButton);
       await waitFor(() => expect(mockUpdateTown)
         .toBeCalledWith({
-          coveyRoomID: params.townID,
-          coveyRoomPassword,
+          coveyTownID: params.townID,
+          coveyTownPassword,
           friendlyName,
           isPubliclyListed: true
         }));
@@ -158,14 +158,14 @@ describe('Part 4 - Town Settings', () => {
 
       await openSettingsPane(params);
 
-      const coveyRoomPassword = nanoid();
+      const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
       await waitFor(() => expect(friendlyNameField.value)
         .toBe(friendlyName));
-      fireEvent.change(passwordField, { target: { value: coveyRoomPassword } });
+      fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
       await waitFor(() => expect(passwordField.value)
-        .toBe(coveyRoomPassword));
+        .toBe(coveyTownPassword));
       fireEvent.click(updateButton);
 
       await waitFor(() => expect(mockToast)
@@ -190,14 +190,14 @@ describe('Part 4 - Town Settings', () => {
 
       await openSettingsPane(params);
 
-      const coveyRoomPassword = nanoid();
+      const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
       await waitFor(() => expect(friendlyNameField.value)
         .toBe(friendlyName));
-      fireEvent.change(passwordField, { target: { value: coveyRoomPassword } });
+      fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
       await waitFor(() => expect(passwordField.value)
-        .toBe(coveyRoomPassword));
+        .toBe(coveyTownPassword));
       fireEvent.click(updateButton);
 
       await waitFor(() => expect(mockToast)
@@ -220,22 +220,22 @@ describe('Part 4 - Town Settings', () => {
       }
       await openSettingsPane(params);
 
-      const coveyRoomPassword = nanoid();
+      const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
       await waitFor(() => expect(friendlyNameField.value)
         .toBe(friendlyName));
-      fireEvent.change(passwordField, { target: { value: coveyRoomPassword } });
+      fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
       await waitFor(() => expect(passwordField.value)
-        .toBe(coveyRoomPassword));
+        .toBe(coveyTownPassword));
       fireEvent.click(isPublicCheck);
       await waitFor(() => expect(isPublicCheck.checked)
         .toBe(false));
       fireEvent.click(deleteButton);
       await waitFor(() => expect(mockDeleteTown)
         .toBeCalledWith({
-          coveyRoomID: params.townID,
-          coveyRoomPassword,
+          coveyTownID: params.townID,
+          coveyTownPassword,
         }));
       expect(mockUpdateTown).not.toBeCalled();
 
@@ -250,15 +250,15 @@ describe('Part 4 - Town Settings', () => {
 
       await openSettingsPane(params);
 
-      const coveyRoomPassword = nanoid();
-      fireEvent.change(passwordField, { target: { value: coveyRoomPassword } });
+      const coveyTownPassword = nanoid();
+      fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
       await waitFor(() => expect(passwordField.value)
-        .toBe(coveyRoomPassword));
+        .toBe(coveyTownPassword));
       fireEvent.click(deleteButton);
       await waitFor(() => expect(mockDeleteTown)
         .toBeCalledWith({
-          coveyRoomID: params.townID,
-          coveyRoomPassword,
+          coveyTownID: params.townID,
+          coveyTownPassword,
         }));
 
       await waitFor(() => expect(mockToast)
@@ -282,10 +282,10 @@ describe('Part 4 - Town Settings', () => {
 
       await openSettingsPane(params);
 
-      const coveyRoomPassword = nanoid();
-      fireEvent.change(passwordField, { target: { value: coveyRoomPassword } });
+      const coveyTownPassword = nanoid();
+      fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
       await waitFor(() => expect(passwordField.value)
-        .toBe(coveyRoomPassword));
+        .toBe(coveyTownPassword));
       fireEvent.click(deleteButton);
 
       await waitFor(() => expect(mockToast)

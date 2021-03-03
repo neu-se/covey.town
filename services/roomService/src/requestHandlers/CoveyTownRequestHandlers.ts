@@ -1,9 +1,9 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyRoomList, UserLocation } from '../CoveyTypes';
-import CoveyRoomListener from '../types/CoveyRoomListener';
-import CoveyRoomsStore from '../lib/CoveyRoomsStore';
+import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import CoveyTownListener from '../types/CoveyTownListener';
+import CoveyTownsStore from '../lib/CoveyTownsStore';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -11,8 +11,8 @@ import CoveyRoomsStore from '../lib/CoveyRoomsStore';
 export interface TownJoinRequest {
   /** userName of the player that would like to join * */
   userName: string;
-  /** ID of the room that the player would like to join * */
-  coveyRoomID: string;
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
 }
 
 /**
@@ -28,11 +28,11 @@ export interface TownJoinResponse {
   /** Secret token that this player should use to authenticate
    * in future requests to the video service * */
   providerVideoToken: string;
-  /** List of players currently in this room * */
+  /** List of players currently in this town * */
   currentPlayers: Player[];
-  /** Friendly name of this room * */
+  /** Friendly name of this town * */
   friendlyName: string;
-  /** Is this a private room? * */
+  /** Is this a private town? * */
   isPubliclyListed: boolean;
 }
 
@@ -48,23 +48,23 @@ export interface TownCreateRequest {
  * Response from the server for a Town create request
  */
 export interface TownCreateResponse {
-  coveyRoomID: string;
-  coveyRoomPassword: string;
+  coveyTownID: string;
+  coveyTownPassword: string;
 }
 
 /**
  * Response from the server for a Town list request
  */
 export interface TownListResponse {
-  rooms: CoveyRoomList;
+  towns: CoveyTownList;
 }
 
 /**
  * Payload sent by the client to delete a Town
  */
 export interface TownDeleteRequest {
-  coveyRoomID: string;
-  coveyRoomPassword: string;
+  coveyTownID: string;
+  coveyTownPassword: string;
 }
 
 /**
@@ -73,8 +73,8 @@ export interface TownDeleteRequest {
  * if(!isPubliclyListed) -> evaluates to true if the value is false OR undefined, use ===
  */
 export interface TownUpdateRequest {
-  coveyRoomID: string;
-  coveyRoomPassword: string;
+  coveyTownID: string;
+  coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
 }
@@ -89,25 +89,25 @@ export interface ResponseEnvelope<T> {
 }
 
 /**
- * A handler to process a player's request to join a room. The flow is:
- *  1. Client makes a RoomJoinRequest, this handler is executed
- *  2. Client uses the sessionToken returned by this handler to make a subscription to the room,
- *  @see roomSubscriptionHandler for the code that handles that request.
+ * A handler to process a player's request to join a town. The flow is:
+ *  1. Client makes a TownJoinRequest, this handler is executed
+ *  2. Client uses the sessionToken returned by this handler to make a subscription to the town,
+ *  @see townSubscriptionHandler for the code that handles that request.
  *
  * @param requestData an object representing the player's request
  */
-export async function roomJoinHandler(requestData: TownJoinRequest): Promise<ResponseEnvelope<TownJoinResponse>> {
-  const roomsStore = CoveyRoomsStore.getInstance();
+export async function townJoinHandler(requestData: TownJoinRequest): Promise<ResponseEnvelope<TownJoinResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
 
-  const coveyRoomController = roomsStore.getControllerForRoom(requestData.coveyRoomID);
-  if (!coveyRoomController) {
+  const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
+  if (!coveyTownController) {
     return {
       isOK: false,
-      message: 'Error: No such room',
+      message: 'Error: No such town',
     };
   }
   const newPlayer = new Player(requestData.userName);
-  const newSession = await coveyRoomController.addPlayer(newPlayer);
+  const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
   return {
     isOK: true,
@@ -115,42 +115,42 @@ export async function roomJoinHandler(requestData: TownJoinRequest): Promise<Res
       coveyUserID: newPlayer.id,
       coveySessionToken: newSession.sessionToken,
       providerVideoToken: newSession.videoToken,
-      currentPlayers: coveyRoomController.players,
-      friendlyName: coveyRoomController.friendlyName,
-      isPubliclyListed: coveyRoomController.isPubliclyListed,
+      currentPlayers: coveyTownController.players,
+      friendlyName: coveyTownController.friendlyName,
+      isPubliclyListed: coveyTownController.isPubliclyListed,
     },
   };
 }
 
-export async function roomListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
-  const roomsStore = CoveyRoomsStore.getInstance();
+export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
   return {
     isOK: true,
-    response: { rooms: roomsStore.getRooms() },
+    response: { towns: townsStore.getTowns() },
   };
 }
 
-export async function roomCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
-  const roomsStore = CoveyRoomsStore.getInstance();
+export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
       isOK: false,
       message: 'FriendlyName must be specified',
     };
   }
-  const newRoom = roomsStore.createRoom(requestData.friendlyName, requestData.isPubliclyListed);
+  const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed);
   return {
     isOK: true,
     response: {
-      coveyRoomID: newRoom.coveyRoomID,
-      coveyRoomPassword: newRoom.roomUpdatePassword,
+      coveyTownID: newTown.coveyTownID,
+      coveyTownPassword: newTown.townUpdatePassword,
     },
   };
 }
 
-export async function roomDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
-  const roomsStore = CoveyRoomsStore.getInstance();
-  const success = roomsStore.deleteRoom(requestData.coveyRoomID, requestData.coveyRoomPassword);
+export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   return {
     isOK: success,
     response: {},
@@ -158,9 +158,9 @@ export async function roomDeleteHandler(requestData: TownDeleteRequest): Promise
   };
 }
 
-export async function roomUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
-  const roomsStore = CoveyRoomsStore.getInstance();
-  const success = roomsStore.updateRoom(requestData.coveyRoomID, requestData.coveyRoomPassword, requestData.friendlyName, requestData.isPubliclyListed);
+export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const success = townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
   return {
     isOK: success,
     response: {},
@@ -170,12 +170,12 @@ export async function roomUpdateHandler(requestData: TownUpdateRequest): Promise
 }
 
 /**
- * An adapter between CoveyRoomController's event interface (CoveyRoomListener)
+ * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
  *
  * @param socket the Socket object that we will use to communicate with the player
  */
-function roomSocketAdapter(socket: Socket): CoveyRoomListener {
+function townSocketAdapter(socket: Socket): CoveyTownListener {
   return {
     onPlayerMoved(movedPlayer: Player) {
       socket.emit('playerMoved', movedPlayer);
@@ -186,51 +186,50 @@ function roomSocketAdapter(socket: Socket): CoveyRoomListener {
     onPlayerJoined(newPlayer: Player) {
       socket.emit('newPlayer', newPlayer);
     },
-    onRoomDestroyed() {
-      socket.emit('roomClosing');
+    onTownDestroyed() {
+      socket.emit('townClosing');
       socket.disconnect(true);
     },
   };
 }
 
 /**
- * A handler to process a remote player's subscription to updates for a room
+ * A handler to process a remote player's subscription to updates for a town
  *
  * @param socket the Socket object that we will use to communicate with the player
  */
-export function roomSubscriptionHandler(socket: Socket): void {
+export function townSubscriptionHandler(socket: Socket): void {
   // Parse the client's session token from the connection
-  // For each player, the session token should be the same string returned by joinRoomHandler
-  const { token, coveyRoomID } = socket.handshake.auth as { token: string; coveyRoomID: string };
+  // For each player, the session token should be the same string returned by joinTownHandler
+  const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
 
-  // Right now, we only support a single room, so there is only a single CoveyRoomController
-  const roomController = CoveyRoomsStore.getInstance()
-    .getControllerForRoom(coveyRoomID);
+  const townController = CoveyTownsStore.getInstance()
+    .getControllerForTown(coveyTownID);
 
-  // Retrieve our metadata about this player from the RoomController
-  const s = roomController?.getSessionByToken(token);
-  if (!s || !roomController) {
+  // Retrieve our metadata about this player from the TownController
+  const s = townController?.getSessionByToken(token);
+  if (!s || !townController) {
     // No valid session exists for this token, hence this client's connection should be terminated
     socket.disconnect(true);
     return;
   }
 
-  // Create an adapter that will translate events from the CoveyRoomController into
+  // Create an adapter that will translate events from the CoveyTownController into
   // events that the socket protocol knows about
-  const listener = roomSocketAdapter(socket);
-  roomController.addRoomListener(listener);
+  const listener = townSocketAdapter(socket);
+  townController.addTownListener(listener);
 
   // Register an event listener for the client socket: if the client disconnects,
-  // clean up our listener adapter, and then let the CoveyRoomController know that the
+  // clean up our listener adapter, and then let the CoveyTownController know that the
   // player's session is disconnected
   socket.on('disconnect', () => {
-    roomController.removeRoomListener(listener);
-    roomController.destroySession(s);
+    townController.removeTownListener(listener);
+    townController.destroySession(s);
   });
 
   // Register an event listener for the client socket: if the client updates their
-  // location, inform the CoveyRoomController
+  // location, inform the CoveyTownController
   socket.on('playerMovement', (movementData: UserLocation) => {
-    roomController.updatePlayerLocation(s.player, movementData);
+    townController.updatePlayerLocation(s.player, movementData);
   });
 }

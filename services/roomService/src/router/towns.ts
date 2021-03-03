@@ -4,23 +4,23 @@ import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
-  roomCreateHandler, roomDeleteHandler,
-  roomJoinHandler,
-  roomListHandler,
-  roomSubscriptionHandler,
-  roomUpdateHandler,
-} from '../requestHandlers/CoveyRoomRequestHandlers';
+  townCreateHandler, townDeleteHandler,
+  townJoinHandler,
+  townListHandler,
+  townSubscriptionHandler,
+  townUpdateHandler,
+} from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
-export default function addRoomRoutes(http: Server, app: Express): void {
+export default function addTownRoutes(http: Server, app: Express): void {
   /*
-   * Create a new session (aka join a room)
+   * Create a new session (aka join a town)
    */
   app.post('/sessions', BodyParser.json(), async (req, res) => {
     try {
-      const result = await roomJoinHandler({
+      const result = await townJoinHandler({
         userName: req.body.userName,
-        coveyRoomID: req.body.coveyRoomID,
+        coveyTownID: req.body.coveyTownID,
       });
       res.status(StatusCodes.OK)
         .json(result);
@@ -34,13 +34,13 @@ export default function addRoomRoutes(http: Server, app: Express): void {
   });
 
   /**
-   * Delete a room
+   * Delete a town
    */
-  app.delete('/towns/:roomID/:roomPassword', BodyParser.json(), async (req, res) => {
+  app.delete('/towns/:townID/:townPassword', BodyParser.json(), async (req, res) => {
     try {
-      const result = await roomDeleteHandler({
-        coveyRoomID: req.params.roomID,
-        coveyRoomPassword: req.params.roomPassword,
+      const result = await townDeleteHandler({
+        coveyTownID: req.params.townID,
+        coveyTownPassword: req.params.townPassword,
       });
       res.status(200)
         .json(result);
@@ -54,11 +54,11 @@ export default function addRoomRoutes(http: Server, app: Express): void {
   });
 
   /**
-   * List all rooms
+   * List all towns
    */
   app.get('/towns', BodyParser.json(), async (_req, res) => {
     try {
-      const result = await roomListHandler();
+      const result = await townListHandler();
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -71,11 +71,11 @@ export default function addRoomRoutes(http: Server, app: Express): void {
   });
 
   /**
-   * Create a room
+   * Create a town
    */
   app.post('/towns', BodyParser.json(), async (req, res) => {
     try {
-      const result = await roomCreateHandler(req.body);
+      const result = await townCreateHandler(req.body);
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -87,15 +87,15 @@ export default function addRoomRoutes(http: Server, app: Express): void {
     }
   });
   /**
-   * Update a room
+   * Update a town
    */
-  app.patch('/towns/:roomID', BodyParser.json(), async (req, res) => {
+  app.patch('/towns/:townID', BodyParser.json(), async (req, res) => {
     try {
-      const result = await roomUpdateHandler({
-        coveyRoomID: req.params.roomID,
+      const result = await townUpdateHandler({
+        coveyTownID: req.params.townID,
         isPubliclyListed: req.body.isPubliclyListed,
         friendlyName: req.body.friendlyName,
-        coveyRoomPassword: req.body.coveyRoomPassword,
+        coveyTownPassword: req.body.coveyTownPassword,
       });
       res.status(StatusCodes.OK)
         .json(result);
@@ -109,5 +109,5 @@ export default function addRoomRoutes(http: Server, app: Express): void {
   });
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
-  socketServer.on('connection', roomSubscriptionHandler);
+  socketServer.on('connection', townSubscriptionHandler);
 }

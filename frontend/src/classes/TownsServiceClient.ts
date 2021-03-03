@@ -8,8 +8,8 @@ import { ServerPlayer } from './Player';
 export interface TownJoinRequest {
   /** userName of the player that would like to join * */
   userName: string;
-  /** ID of the room that the player would like to join * */
-  coveyRoomID: string;
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
 }
 
 /**
@@ -25,11 +25,11 @@ export interface TownJoinResponse {
   /** Secret token that this player should use to authenticate
    * in future requests to the video service * */
   providerVideoToken: string;
-  /** List of players currently in this room * */
+  /** List of players currently in this town * */
   currentPlayers: ServerPlayer[];
-  /** Friendly name of this room * */
+  /** Friendly name of this town * */
   friendlyName: string;
-  /** Is this a private room? * */
+  /** Is this a private town? * */
   isPubliclyListed: boolean;
 }
 
@@ -45,23 +45,23 @@ export interface TownCreateRequest {
  * Response from the server for a Town create request
  */
 export interface TownCreateResponse {
-  coveyRoomID: string;
-  coveyRoomPassword: string;
+  coveyTownID: string;
+  coveyTownPassword: string;
 }
 
 /**
  * Response from the server for a Town list request
  */
 export interface TownListResponse {
-  rooms: CoveyTownInfo[];
+  towns: CoveyTownInfo[];
 }
 
 /**
  * Payload sent by the client to delete a Town
  */
 export interface TownDeleteRequest {
-  coveyRoomID: string;
-  coveyRoomPassword: string;
+  coveyTownID: string;
+  coveyTownPassword: string;
 }
 
 /**
@@ -70,8 +70,8 @@ export interface TownDeleteRequest {
  * if(!isPubliclyListed) -> evaluates to true if the value is false OR undefined, use ===
  */
 export interface TownUpdateRequest {
-  coveyRoomID: string;
-  coveyRoomPassword: string;
+  coveyTownID: string;
+  coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
 }
@@ -87,7 +87,7 @@ export interface ResponseEnvelope<T> {
 
 export type CoveyTownInfo = {
   friendlyName: string;
-  coveyRoomID: string;
+  coveyTownID: string;
   currentOccupancy: number;
   maximumOccupancy: number
 };
@@ -123,12 +123,12 @@ export default class TownsServiceClient {
   }
 
   async updateTown(requestData: TownUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.coveyRoomID}`, requestData);
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async deleteTown(requestData: TownDeleteRequest): Promise<void> {
-    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.coveyRoomID}/${requestData.coveyRoomPassword}`);
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/${requestData.coveyTownPassword}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 

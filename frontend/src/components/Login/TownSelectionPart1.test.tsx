@@ -34,40 +34,40 @@ TownsServiceClient.prototype.listTowns = mocklistTowns;
 TownsServiceClient.prototype.createTown = mockCreateTown;
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({
-  rooms: [
+  towns: [
     {
-      friendlyName: `room1${suffix}`,
-      coveyRoomID: `1${suffix}`,
+      friendlyName: `town1${suffix}`,
+      coveyTownID: `1${suffix}`,
       currentOccupancy: 0,
       maximumOccupancy: 1,
     },
     {
-      friendlyName: `room2${suffix}`,
-      coveyRoomID: `2${suffix}`,
+      friendlyName: `town2${suffix}`,
+      coveyTownID: `2${suffix}`,
       currentOccupancy: 2,
       maximumOccupancy: 10,
     },
     {
-      friendlyName: `room3${suffix}`,
-      coveyRoomID: `3${suffix}`,
+      friendlyName: `town3${suffix}`,
+      coveyTownID: `3${suffix}`,
       currentOccupancy: 1,
       maximumOccupancy: 1,
     },
     {
-      friendlyName: `room4${suffix}`,
-      coveyRoomID: `4${suffix}`,
+      friendlyName: `town4${suffix}`,
+      coveyTownID: `4${suffix}`,
       currentOccupancy: 8,
       maximumOccupancy: 8,
     },
     {
-      friendlyName: `room5${suffix}`,
-      coveyRoomID: `5${suffix}`,
+      friendlyName: `town5${suffix}`,
+      coveyTownID: `5${suffix}`,
       currentOccupancy: 9,
       maximumOccupancy: 5,
     },
     {
-      friendlyName: `room6${suffix}`,
-      coveyRoomID: `6${suffix}`,
+      friendlyName: `town6${suffix}`,
+      coveyTownID: `6${suffix}`,
       currentOccupancy: 99,
       maximumOccupancy: 100,
     },
@@ -155,7 +155,7 @@ describe('Part 1 - Public room listing', () => {
         .toBeCalledTimes(2);
     })
   });
-  it('updates the page with all rooms stored in currentPublicTowns', async () => {
+  it('updates the page with all towns stored in currentPublicTowns', async () => {
     const suffix1 = nanoid();
     const suffix2 = nanoid();
     const expectedTowns1 = await listTowns(suffix1)
@@ -163,15 +163,15 @@ describe('Part 1 - Public room listing', () => {
     mocklistTowns.mockImplementation(() => listTowns(suffix1));
     const renderData = render(wrappedTownSelection());
     await waitFor(() => {
-      expectedTowns1.rooms.map((town) => expect(renderData.getByText(town.friendlyName))
+      expectedTowns1.towns.map((town) => expect(renderData.getByText(town.friendlyName))
         .toBeInTheDocument());
     })
     mocklistTowns.mockImplementation(() => listTowns(suffix2));
     jest.advanceTimersByTime(2000);
     await waitFor(() => {
-      expectedTowns2.rooms.forEach((town) => expect(renderData.getByText(town.friendlyName))
+      expectedTowns2.towns.forEach((town) => expect(renderData.getByText(town.friendlyName))
         .toBeInTheDocument());
-      expectedTowns1.rooms.forEach((town) => expect(renderData.queryByText(town.friendlyName))
+      expectedTowns1.towns.forEach((town) => expect(renderData.queryByText(town.friendlyName))
         .not
         .toBeInTheDocument());
     })
@@ -183,40 +183,40 @@ describe('Part 1 - Public room listing', () => {
     mocklistTowns.mockImplementation(() => listTowns(suffix));
     const renderData = render(wrappedTownSelection());
     await waitFor(() => {
-      expectedTowns1.rooms.map((town) => expect(renderData.getByText(town.friendlyName))
+      expectedTowns1.towns.map((town) => expect(renderData.getByText(town.friendlyName))
         .toBeInTheDocument());
     })
     expect(renderData.queryByText('demoTownName'))
       .not
       .toBeInTheDocument();
   });
-  it('sorts rooms by occupancy descending', async () => {
+  it('sorts towns by occupancy descending', async () => {
     const suffix1 = nanoid();
     const suffix2 = nanoid();
     const expectedTowns1 = await listTowns(suffix1)
-    expectedTowns1.rooms = expectedTowns1.rooms.sort((a, b) => b.currentOccupancy - a.currentOccupancy);
+    expectedTowns1.towns = expectedTowns1.towns.sort((a, b) => b.currentOccupancy - a.currentOccupancy);
 
     const expectedTowns2 = await listTowns(suffix2)
-    expectedTowns2.rooms = expectedTowns2.rooms.sort((a, b) => b.currentOccupancy - a.currentOccupancy);
+    expectedTowns2.towns = expectedTowns2.towns.sort((a, b) => b.currentOccupancy - a.currentOccupancy);
 
     mocklistTowns.mockImplementation(() => listTowns(suffix1));
     const renderData = render(wrappedTownSelection());
     await waitFor(() => {
-      expectedTowns1.rooms.map((town) => expect(renderData.getByText(town.friendlyName))
+      expectedTowns1.towns.map((town) => expect(renderData.getByText(town.friendlyName))
         .toBeInTheDocument());
     })
-    // All rooms are in doc, now make sure they are sorted by occupancy
+    // All towns are in doc, now make sure they are sorted by occupancy
     let rows = renderData.getAllByRole('row');
     for (let i = 1; i < rows.length; i += 1) { // off-by-one for the header row
       // console.log(rows[i]);
       const existing = within(rows[i])
-        .getByText(expectedTowns1.rooms[i - 1].friendlyName);
+        .getByText(expectedTowns1.towns[i - 1].friendlyName);
       expect(existing)
         .toBeInTheDocument();
-      for (let j = 0; j < expectedTowns1.rooms.length; j += 1) {
+      for (let j = 0; j < expectedTowns1.towns.length; j += 1) {
         if (j !== i - 1) {
           expect(within(rows[i])
-            .queryByText(expectedTowns1.rooms[j].friendlyName))
+            .queryByText(expectedTowns1.towns[j].friendlyName))
             .not
             .toBeInTheDocument();
         }
@@ -226,22 +226,22 @@ describe('Part 1 - Public room listing', () => {
     mocklistTowns.mockImplementation(() => listTowns(suffix2));
     jest.advanceTimersByTime(2000);
     await waitFor(() =>
-      expectedTowns2.rooms.map((town) => expect(renderData.getByText(town.friendlyName))
+      expectedTowns2.towns.map((town) => expect(renderData.getByText(town.friendlyName))
         .toBeInTheDocument())
     )
 
-    // All rooms are in doc, now make sure they are sorted by occupancy
+    // All towns are in doc, now make sure they are sorted by occupancy
     rows = renderData.getAllByRole('row');
     for (let i = 1; i < rows.length; i += 1) { // off-by-one for the header row
       // console.log(rows[i]);
       const existing = within(rows[i])
-        .getByText(expectedTowns2.rooms[i - 1].friendlyName);
+        .getByText(expectedTowns2.towns[i - 1].friendlyName);
       expect(existing)
         .toBeInTheDocument();
-      for (let j = 0; j < expectedTowns2.rooms.length; j += 1) {
+      for (let j = 0; j < expectedTowns2.towns.length; j += 1) {
         if (j !== i - 1) {
           expect(within(rows[i])
-            .queryByText(expectedTowns2.rooms[j].friendlyName))
+            .queryByText(expectedTowns2.towns[j].friendlyName))
             .not
             .toBeInTheDocument();
         }
@@ -251,34 +251,34 @@ describe('Part 1 - Public room listing', () => {
   it('represents each row in the table as specified', async () => {
     const suffix1 = nanoid();
     const expectedTowns = await listTowns(suffix1);
-    expectedTowns.rooms = expectedTowns.rooms.sort((a, b) => b.currentOccupancy - a.currentOccupancy);
+    expectedTowns.towns = expectedTowns.towns.sort((a, b) => b.currentOccupancy - a.currentOccupancy);
     mocklistTowns.mockImplementation(() => listTowns(suffix1));
     const renderData = render(wrappedTownSelection());
     await waitFor(() => {
-      expectedTowns.rooms.forEach((town) => expect(renderData.getByText(town.friendlyName))
+      expectedTowns.towns.forEach((town) => expect(renderData.getByText(town.friendlyName))
         .toBeInTheDocument());
     })
     const rows = renderData.getAllByRole('row');
-    expectedTowns.rooms.forEach((town) => {
+    expectedTowns.towns.forEach((town) => {
       const row = rows.find(each => within(each)
-        .queryByText(town.coveyRoomID));
+        .queryByText(town.coveyTownID));
       if (row) {
         const cells = within(row)
           .queryAllByRole('cell');
-        // Cell order: friendlyName, roomID, occupancy/join + button
+        // Cell order: friendlyName, TownID, occupancy/join + button
         expect(cells.length)
           .toBe(3);
         expect(within(cells[0])
           .queryByText(town.friendlyName))
           .toBeInTheDocument();
         expect(within(cells[1])
-          .queryByText(town.coveyRoomID))
+          .queryByText(town.coveyTownID))
           .toBeInTheDocument();
         expect(within(cells[2])
           .queryByText(`${town.currentOccupancy}/${town.maximumOccupancy}`))
           .toBeInTheDocument();
       } else {
-        fail(`Could not find row for town ${town.coveyRoomID}`);
+        fail(`Could not find row for town ${town.coveyTownID}`);
       }
     })
   });
