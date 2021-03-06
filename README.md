@@ -28,8 +28,8 @@ To create an account and configure your local environment:
 | Config Value            | Description                               |
 | ----------------------- | ----------------------------------------- |
 | `TWILIO_ACCOUNT_SID`    | Visible on your twilio account dashboard. |
-| `TWILIO_API_KEY`        | The SID of the new API key you created.   |
-| `TWILIO_API_SECRET`     | The secret for the API key you created.   |
+| `TWILIO_API_KEY_SID`    | The SID of the new API key you created.   |
+| `TWILIO_API_KEY_SECRET` | The secret for the API key you created.   |
 | `TWILIO_API_AUTH_TOKEN` | Visible on your twilio account dashboard. |
 
 ### Starting the backend
