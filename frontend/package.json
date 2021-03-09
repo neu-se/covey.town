@@ -49,7 +49,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "DEBUG_PRINT_LIMIT=0 jest",
+    "test": "cross-env DEBUG_PRINT_LIMIT=0 jest",
     "eject": "react-scripts eject",
     "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx "
