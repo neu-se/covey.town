@@ -19,7 +19,7 @@
     "production": "npm run build && node build/server.js",
     "build": "tsc -p .",
     "pack": "npm-pack-zip",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec \\\"ts-node\\\" src/server.ts",
+    "build:live": "nodemon --watch 'src/**/*.ts' src/server.ts",
     "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
