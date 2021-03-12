@@ -9,7 +9,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12'
-      - run: npm run-script lint
       - run: npm install
       - run: npm test:ci
       - name: Tests ✅
