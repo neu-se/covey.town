@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Phaser from 'phaser';
-import Player, { Direction, UserLocation } from '../../classes/Player';
+import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
@@ -14,7 +14,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private players: Player[] = [];
 
-  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
   private lastLocation?: UserLocation;
 
@@ -24,7 +24,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation)=>void) {
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
@@ -111,8 +111,24 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
+  getNewMovementDirection() {
+    if(this.cursors.find(keySet => keySet.left?.isDown)) {
+      return 'left';
+    }
+    if(this.cursors.find(keySet => keySet.right?.isDown)) {
+      return 'right';
+    }
+    if(this.cursors.find(keySet => keySet.down?.isDown)) {
+      return 'front';
+    }
+    if(this.cursors.find(keySet => keySet.up?.isDown)) {
+      return 'back';
+    }
+    return undefined;
+  }
+
   update() {
-    if (this.player && this.player && this.cursors) {
+    if (this.player && this.cursors) {
       const speed = 175;
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
@@ -120,62 +136,61 @@ class CoveyGameScene extends Phaser.Scene {
       // Stop any previous movement from the last frame
       body.setVelocity(0);
 
-      // Horizontal movement
-      let primaryDirection: Direction = 'front';
-      if (this.cursors.left?.isDown) {
-        primaryDirection = 'left';
-        body.setVelocityX(-speed);
-      } else if (this.cursors.right?.isDown) {
-        primaryDirection = 'right';
-        body.setVelocityX(speed);
+      const primaryDirection = this.getNewMovementDirection();
+      switch(primaryDirection){
+        case 'left':
+          body.setVelocityX(-speed);
+          this.player.sprite.anims.play('misa-left-walk', true);
+          break;
+        case 'right':
+          body.setVelocityX(speed);
+          this.player.sprite.anims.play('misa-right-walk', true);
+          break;
+        case 'front':
+          body.setVelocityY(speed);
+          this.player.sprite.anims.play('misa-front-walk', true);
+          break;
+        case 'back':
+          body.setVelocityY(-speed);
+          this.player.sprite.anims.play('misa-back-walk', true);
+          break;
+        default:
+          // Not moving
+          this.player.sprite.anims.stop();
+          // If we were moving, pick and idle frame to use
+          if (prevVelocity.x < 0) {
+            this.player.sprite.setTexture('atlas', 'misa-left');
+          } else if (prevVelocity.x > 0) {
+            this.player.sprite.setTexture('atlas', 'misa-right');
+          } else if (prevVelocity.y < 0) {
+            this.player.sprite.setTexture('atlas', 'misa-back');
+          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
+          break;
       }
 
-      // Vertical movement
-      if (this.cursors.up?.isDown) {
-        primaryDirection = 'back';
-        body.setVelocityY(-speed);
-      } else if (this.cursors.down?.isDown) {
-        primaryDirection = 'front';
-        body.setVelocityY(speed);
-      }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
-      this.player.sprite.body.velocity.normalize().scale(speed);
+      this.player.sprite.body.velocity.normalize()
+        .scale(speed);
 
-      let isMoving = true;
-      // Update the animation last and give left/right animations precedence over up/down animations
-      if (this.cursors.left?.isDown) {
-        this.player.sprite.anims.play('misa-left-walk', true);
-      } else if (this.cursors.right?.isDown) {
-        this.player.sprite.anims.play('misa-right-walk', true);
-      } else if (this.cursors.up?.isDown) {
-        this.player.sprite.anims.play('misa-back-walk', true);
-      } else if (this.cursors.down?.isDown) {
-        this.player.sprite.anims.play('misa-front-walk', true);
-      } else {
-        this.player.sprite.anims.stop();
-        isMoving = false;
-
-        // If we were moving, pick and idle frame to use
-        if (prevVelocity.x < 0) this.player.sprite.setTexture('atlas', 'misa-left');
-        else if (prevVelocity.x > 0) this.player.sprite.setTexture('atlas', 'misa-right');
-        else if (prevVelocity.y < 0) this.player.sprite.setTexture('atlas', 'misa-back');
-        else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
-      }
+      const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
       if (!this.lastLocation
-                || this.lastLocation.x !== body.x
-                || this.lastLocation.y !== body.y || this.lastLocation.rotation !== primaryDirection
-                || this.lastLocation.moving !== isMoving) {
+        || this.lastLocation.x !== body.x
+        || this.lastLocation.y !== body.y || this.lastLocation.rotation !== primaryDirection
+        || this.lastLocation.moving !== isMoving) {
         if (!this.lastLocation) {
           this.lastLocation = {
-            x: body.x, y: body.y, rotation: primaryDirection, moving: isMoving,
+            x: body.x,
+            y: body.y,
+            rotation: primaryDirection || 'front',
+            moving: isMoving,
           };
         }
         this.lastLocation.x = body.x;
         this.lastLocation.y = body.y;
-        this.lastLocation.rotation = primaryDirection;
+        this.lastLocation.rotation = primaryDirection || 'front';
         this.lastLocation.moving = isMoving;
         this.emitMovement(this.lastLocation);
       }
@@ -186,7 +201,7 @@ class CoveyGameScene extends Phaser.Scene {
     const map = this.make.tilemap({ key: 'map' });
 
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
-    tileset image in Phaser's cache (i.e. the name you used in preload)
+     tileset image in Phaser's cache (i.e. the name you used in preload)
      */
     const tileset = map.addTilesetImage('tuxmon-sample-32px-extruded', 'tiles');
 
@@ -221,7 +236,10 @@ class CoveyGameScene extends Phaser.Scene {
       // padding: {x: 20, y: 10},
       backgroundColor: '#ffffff',
     });
-    this.player = { sprite, label };
+    this.player = {
+      sprite,
+      label
+    };
 
     this.emitMovement({
       rotation: 'front',
@@ -252,7 +270,10 @@ class CoveyGameScene extends Phaser.Scene {
     anims.create({
       key: 'misa-right-walk',
       frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-right-walk.', start: 0, end: 3, zeroPad: 3,
+        prefix: 'misa-right-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
       }),
       frameRate: 10,
       repeat: -1,
@@ -260,7 +281,10 @@ class CoveyGameScene extends Phaser.Scene {
     anims.create({
       key: 'misa-front-walk',
       frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-front-walk.', start: 0, end: 3, zeroPad: 3,
+        prefix: 'misa-front-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
       }),
       frameRate: 10,
       repeat: -1,
@@ -268,7 +292,10 @@ class CoveyGameScene extends Phaser.Scene {
     anims.create({
       key: 'misa-back-walk',
       frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-back-walk.', start: 0, end: 3, zeroPad: 3,
+        prefix: 'misa-back-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
       }),
       frameRate: 10,
       repeat: -1,
@@ -278,14 +305,19 @@ class CoveyGameScene extends Phaser.Scene {
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors.push(this.input.keyboard.createCursorKeys());
+    this.cursors.push(this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D}));
+    this.cursors.push(this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.H,down:Phaser.Input.Keyboard.KeyCodes.J,left:Phaser.Input.Keyboard.KeyCodes.K,right:Phaser.Input.Keyboard.KeyCodes.L}));
 
     // Help text that has a "fixed" position on the screen
     this.add
       .text(16, 16, `Arrow keys to move\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
         font: '18px monospace',
         fill: '#000000',
-        padding: { x: 20, y: 10 },
+        padding: {
+          x: 20,
+          y: 10
+        },
         backgroundColor: '#ffffff',
       })
       .setScrollFactor(0)
@@ -336,5 +368,5 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  return <div id="map-container" />;
+  return <div id="map-container"/>;
 }
