@@ -29,3 +29,13 @@ export type CoveyAppState = {
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };
+export type EmailPasswordCredential = {
+  email: string,
+  password: string
+}
+
+export type User = {
+  isLoggedIn: boolean,
+  currentUser: any,
+  actions: any,
+}

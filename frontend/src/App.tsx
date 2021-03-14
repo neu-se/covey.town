@@ -2,7 +2,7 @@ import React, {
   Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -25,9 +25,13 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import SignUp from "./components/SignUp/SignUp"
+import InitRealm from './database/InitRealm';
+import AuthGuard from './components/Authentication/Authentication';
+import useUser from './hooks/useUser';
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
   | { action: 'addPlayer'; player: Player }
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
@@ -201,7 +205,7 @@ async function GameController(initData: TownJoinResponse,
 
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
-
+  const realmClient = new InitRealm();
   const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate);
     return true;
@@ -229,15 +233,36 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
-  return (
 
-    <CoveyAppContext.Provider value={appState}>
-      <VideoContext.Provider value={Video.instance()}>
-        <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
-          {page}
-        </NearbyPlayersContext.Provider>
-      </VideoContext.Provider>
-    </CoveyAppContext.Provider>
+  const Routes: React.FC = () => {
+    // need to define user after AuthGuard
+    const user = useUser();
+    return (
+      <Switch>
+        <Route path="/signup">
+          <SignUp />
+        </Route>
+        {!user.isLoggedIn && <Redirect push to="/signup" />}
+        <Route exact path="/">
+          <CoveyAppContext.Provider value={appState}>
+            <VideoContext.Provider value={Video.instance()}>
+              <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
+                {page}
+              </NearbyPlayersContext.Provider>
+            </VideoContext.Provider>
+          </CoveyAppContext.Provider>
+        </Route>
+
+      </Switch>
+    );
+  };
+  return (
+    <BrowserRouter>
+      <AuthGuard client={realmClient}>
+        <Routes />
+      </AuthGuard>
+    </BrowserRouter>
+
 
   );
 }
