@@ -7,6 +7,7 @@ module.exports = {
         mongoose.set('useFindAndModify', false);
         mongoose.set('useCreateIndex', true);
         mongoose.set('useUnifiedTopology', true);
+        mongoose.set('poolSize', 10);
         mongoose.connect(DB_URL);
 
         //Log an error if we fail to connect
