@@ -16,9 +16,11 @@ export enum MessageType {
 };
 
 export type Message = {
+  // user who sent the message
   user: Player;
   messageContent: string;
   timestamp: string;
   type: MessageType;
+  // null for cases of Proximity and Town Message
   directMessageId: string | null;
 }
