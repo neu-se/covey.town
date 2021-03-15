@@ -32,7 +32,7 @@ export default class DatabaseController {
      * @param collection name of the collection to open
      * @returns 
      */
-    private getCollection(collection) {
+    private getCollection(collection: string) {
         return this.client.db('coveytown').collection(collection);
     }
 
@@ -58,7 +58,6 @@ export default class DatabaseController {
                     isOK: false,
                     message: 'Username Taken',
                 }
-
             }
 
             const accountCreateResponse = await user.insertOne({'username':username, 'password':password});
@@ -87,8 +86,8 @@ export default class DatabaseController {
             if (findUser.length === 1) {
                 return findUser[0]._id
             }
-
             return 'user_not_found';
+
         } catch (err) {
             console.log(err);
         }
@@ -120,20 +119,20 @@ export default class DatabaseController {
                 isOK: true,
                 response: 'requestSent',
             }
+
         } catch (err) {
             console.log(err);
         }
-
     }
 
     /**
      *  Function to determine the status of the relationship between the current user and the user being viewed
      *  
-     * @param user username of current user
-     * @param otherUser username of other user
+     * @param user the string_id of current user
+     * @param otherUser the string_id of other user
      * @returns a NeighborStatus
      */
-    async neighborStatus(user, otherUser): Promise<NeighborStatus> {
+    async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus> {
         try {
             const checkIfNeighbors = await this.checkIfNeighbors(user, otherUser);
             if (checkIfNeighbors) {
@@ -152,30 +151,32 @@ export default class DatabaseController {
             }
     
             return 'unknown';
+
         } catch (err) {
             console.log(err);
         }
-
     }
 
 
     /**
      * List all users that have sent a request to the current user
-     * @param user username of the current user
-     * @returns a ResponseEnvelope with an Array listing usernames and NeighborStatus
+     * @param user the string_id of the current user
+     * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
      */
-    async listRequestsReceived(user) : Promise<ResponseEnvelope<Array<String>>> {
+    async listRequestsReceived(user: string): Promise<ResponseEnvelope<Array<String>>> {
         try {
             const requests = this.getCollection('neighbor_request');
 
             const requestReceived = await requests.find({'requestTo': user}).toArray();
 
-            // const users = requestReceived.map(request => [request.requestFrom, 'requestReceived']);
-            const users = requestReceived.forEach(request => console.log(request));
+            const users = requestReceived.map(request => [request.requestReceived, 'requestReceived']);
+            // const users = requestReceived.forEach(request => console.log(request));
+
             return {
                 isOK: true,
                 response: users,
             }
+
         } catch (err) {
             console.log(err);
         }
@@ -183,10 +184,10 @@ export default class DatabaseController {
 
     /**
      * List all users who have been sent a request by the current user
-     * @param user username of the current user
-     * @returns 
+     * @param user the string_id of the current user
+     * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
      */
-    async listRequestsSent(user) : Promise<ResponseEnvelope<Array<String>>> {
+    async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
         try {
             const requests = this.getCollection('neighbor_request');
 
@@ -198,6 +199,7 @@ export default class DatabaseController {
                 isOK: true,
                 response: users,
             }
+
         } catch (err) {
             console.log(err);
         }
@@ -205,10 +207,10 @@ export default class DatabaseController {
     
     /**
      * List all the neighbors of the current user
-     * @param user username of the current user
-     * @returns 
+     * @param user the string_id of the current user
+     * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
      */
-    async listNeighbors(user) : Promise<ResponseEnvelope<Array<String>>> {
+    async listNeighbors(user: string): Promise<ResponseEnvelope<Array<String>>> {
         try {
             const neighbors = this.getCollection('neighbor_mappings');
 
@@ -224,6 +226,7 @@ export default class DatabaseController {
                 isOK: true,
                 response: users1.concat(users2),
             }
+
         } catch (err) {
             console.log(err);
         }
@@ -231,11 +234,11 @@ export default class DatabaseController {
 
     /**
      * Check if the two users passed are currently neighbors
-     * @param user1 username of one user
-     * @param user2 username of the other user
+     * @param user1 the string_id of one user
+     * @param user2 the string_id of the other user
      * @returns true if neighbors, false if not
      */
-    async checkIfNeighbors(user1, user2) : Promise<boolean> {
+    async checkIfNeighbors(user1: string, user2: string): Promise<boolean> {
         try {
             const neighborMappings = this.getCollection('neighbor_mappings');
 
@@ -252,6 +255,7 @@ export default class DatabaseController {
             }
 
             return false;
+
         } catch (err) {
             console.log(err);
         }
@@ -259,11 +263,11 @@ export default class DatabaseController {
 
     /**
      * Accepts the request for the user who received one
-     * @param userAccepting the user who received the request and is accepting it
-     * @param userSent the user who sent the request
+     * @param userAccepting the string_id of the user who received the request and is accepting it
+     * @param userSent the string_id of the user who sent the request
      * @returns a response evnelope with the NeighborStatus of the two users
      */
-    async acceptRequest(userAccepting, userSent) : Promise<ResponseEnvelope<NeighborStatus>> {
+    async acceptRequest(userAccepting: string, userSent: string): Promise<ResponseEnvelope<NeighborStatus>> {
         try {
             const checkIfNeighbors = await this.checkIfNeighbors(userAccepting, userSent);
             if (checkIfNeighbors) {
@@ -301,11 +305,11 @@ export default class DatabaseController {
 
     /**
      * Removes the neighbor request sent from user to requestedUser
-     * @param user username of the current user
-     * @param requestedUser username of the requestedUser
+     * @param user the string_id of the current user
+     * @param requestedUser the string_id of the requestedUser
      * @returns a ResponseEnvelope with a Neighbor Status
      */
-    async removeNeighborRequest(user, requestedUser) : Promise<ResponseEnvelope<NeighborStatus>> {
+    async removeNeighborRequest(user: string, requestedUser: string): Promise<ResponseEnvelope<NeighborStatus>> {
         try {
             const requests = this.getCollection('neighbor_request');
 
@@ -325,6 +329,7 @@ export default class DatabaseController {
                 isOK: true,
                 response: 'unknown',
             }
+
         } catch (err) {
             console.log(err);
         }
@@ -332,11 +337,11 @@ export default class DatabaseController {
 
     /**
      * Removes the neighbor relationship between the user and neighbor
-     * @param user username of the current user
-     * @param neighbor username of the neighbor to remove
+     * @param user the string_id of the current user
+     * @param neighbor the string_id of the neighbor to remove
      * @returns a ResponseEnvelope with a NeighborStatus
      */
-    async removeNeighbor(user, neighbor) : Promise<ResponseEnvelope<NeighborStatus>> {
+    async removeNeighbor(user: string, neighbor: string): Promise<ResponseEnvelope<NeighborStatus>> {
         try {
             const neighbors = this.getCollection('neighbor_mappings');
             const checkIfNeighbors = await this.checkIfNeighbors(user, neighbor);
@@ -375,12 +380,10 @@ export default class DatabaseController {
                 message: 'unknown error',
             }
 
-
         } catch (err) {
             console.log(err);
         }
     }
-
 } 
 
 
