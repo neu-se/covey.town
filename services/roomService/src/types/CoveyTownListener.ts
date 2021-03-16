@@ -30,5 +30,5 @@ export default interface CoveyTownListener {
   /**
    * Called when a player moves to a sub map
    */
-  // TODO: define function
+  // TODO: define function for a player joining
 }
