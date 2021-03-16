@@ -9,6 +9,7 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  accountCreateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -107,6 +108,24 @@ export default function addTownRoutes(http: Server, app: Express): void {
         });
     }
   });
+
+    /**
+   * Create an account
+   */
+     app.post('/signup', BodyParser.json(), async (req, res) => {
+      try {
+        console.log(req.body);
+        const result = await accountCreateHandler(req.body);
+        res.status(StatusCodes.OK)
+          .json(result);
+      } catch (err) {
+        logError(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({
+            message: 'Internal server error, please see log in server for more details',
+          });
+      }
+    });
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

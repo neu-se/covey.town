@@ -92,6 +92,15 @@ export type CoveyTownInfo = {
   maximumOccupancy: number
 };
 
+export interface AccountCreateRequest {
+  username: string,
+  password: string,
+}
+
+export interface AccountCreateResponse {
+  _id: string,
+}
+
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
 
@@ -139,6 +148,11 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async createAccount(requestData: AccountCreateRequest): Promise<AccountCreateResponse> {
+    const responseWrapper = await this._axios.post('/signup', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

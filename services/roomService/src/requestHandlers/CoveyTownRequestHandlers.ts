@@ -4,6 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import DatabaseController from '../database/db';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -77,6 +78,15 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface AccountCreateRequest {
+  username: string,
+  password: string,
+}
+
+export interface AccountCreateResponse {
+  _id: string,
 }
 
 /**
@@ -167,6 +177,15 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
     message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
   };
 
+}
+
+export async function accountCreateHandler(requestData: AccountCreateRequest): Promise<ResponseEnvelope<AccountCreateResponse>> {
+  const db = new DatabaseController();
+  await db.connect();
+  const result = await db.insertUser(requestData.username, requestData.password);
+  db.close();
+  return result;
+  
 }
 
 /**

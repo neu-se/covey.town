@@ -1,14 +1,19 @@
 const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority";
-import { ResponseEnvelope } from '../../roomService/src/requestHandlers/CoveyTownRequestHandlers';
+import { ResponseEnvelope } from '../requestHandlers/CoveyTownRequestHandlers';
 
 export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
 
-export type AccountCreateResponse = {
+export interface AccountCreateResponse {
     _id: string,
-    username: string,
-    password: string,
 };
+
+// export interface ResponseEnvelope<T> {
+//     isOK: boolean;
+//     message?: string;
+//     response?: T;
+//   }
+  
 
 
 export default class DatabaseController {
@@ -62,13 +67,17 @@ export default class DatabaseController {
 
             const accountCreateResponse = await user.insertOne({'username':username, 'password':password});
 
-            console.log(accountCreateResponse.ops);
             return {
                 isOK: true,
-                response: accountCreateResponse.ops,
+                response: {
+                    _id: accountCreateResponse.ops[0]._id,
+                }
             }
         } catch (err) {
-            console.log(err);
+            return {
+                isOK: false,
+                message: err.toString(),
+            }
         }
 
     }
@@ -89,7 +98,7 @@ export default class DatabaseController {
             return 'user_not_found';
 
         } catch (err) {
-            console.log(err);
+            return err.toString();
         }
     }
 
@@ -121,7 +130,10 @@ export default class DatabaseController {
             }
 
         } catch (err) {
-            console.log(err);
+            return {
+                isOK: false,
+                message: err.toString(),
+            }
         }
     }
 
@@ -132,7 +144,7 @@ export default class DatabaseController {
      * @param otherUser the string_id of other user
      * @returns a NeighborStatus
      */
-    async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus> {
+    async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus | undefined> {
         try {
             const checkIfNeighbors = await this.checkIfNeighbors(user, otherUser);
             if (checkIfNeighbors) {
@@ -154,83 +166,93 @@ export default class DatabaseController {
 
         } catch (err) {
             console.log(err);
+            return;
         }
     }
 
 
-    /**
-     * List all users that have sent a request to the current user
-     * @param user the string_id of the current user
-     * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-     */
-    async listRequestsReceived(user: string): Promise<ResponseEnvelope<Array<String>>> {
-        try {
-            const requests = this.getCollection('neighbor_request');
+    // /**
+    //  * List all users that have sent a request to the current user
+    //  * @param user the string_id of the current user
+    //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+    //  */
+    // async listRequestsReceived(user: string): Promise<ResponseEnvelope<Array<String>>> {
+    //     try {
+    //         const requests = this.getCollection('neighbor_request');
 
-            const requestReceived = await requests.find({'requestTo': user}).toArray();
+    //         const requestReceived = await requests.find({'requestTo': user}).toArray();
 
-            const users = requestReceived.map(request => [request.requestReceived, 'requestReceived']);
-            // const users = requestReceived.forEach(request => console.log(request));
+    //         const users = requestReceived.map(request => [request.requestTo, 'requestReceived']);
+    //         // const users = requestReceived.forEach(request => console.log(request));
 
-            return {
-                isOK: true,
-                response: users,
-            }
+    //         return {
+    //             isOK: true,
+    //             response: users,
+    //         }
 
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    //     } catch (err) {
+    //         return {
+    //             isOK: false,
+    //             message: err.toString(),
+    //         }
+    //     }
+    // }
 
-    /**
-     * List all users who have been sent a request by the current user
-     * @param user the string_id of the current user
-     * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-     */
-    async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
-        try {
-            const requests = this.getCollection('neighbor_request');
+    // /**
+    //  * List all users who have been sent a request by the current user
+    //  * @param user the string_id of the current user
+    //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+    //  */
+    // async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
+    //     try {
+    //         const requests = this.getCollection('neighbor_request');
 
-            const requestFrom = await requests.find({'requestFrom': user}).toArray();
+    //         const requestFrom = await requests.find({'requestFrom': user}).toArray();
 
-            const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
+    //         const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
 
-            return {
-                isOK: true,
-                response: users,
-            }
+    //         return {
+    //             isOK: true,
+    //             response: users,
+    //         }
 
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    //     } catch (err) {
+    //         return {
+    //             isOK: false,
+    //             message: err.toString(),
+    //         }
+    //     }
+    // }
     
-    /**
-     * List all the neighbors of the current user
-     * @param user the string_id of the current user
-     * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-     */
-    async listNeighbors(user: string): Promise<ResponseEnvelope<Array<String>>> {
-        try {
-            const neighbors = this.getCollection('neighbor_mappings');
+    // /**
+    //  * List all the neighbors of the current user
+    //  * @param user the string_id of the current user
+    //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+    //  */
+    // async listNeighbors(user: string): Promise<ResponseEnvelope<Array<String>>> {
+    //     try {
+    //         const neighbors = this.getCollection('neighbor_mappings');
 
-            const neighborsList1 = await neighbors.find({'neighbor1': user}).toArray();
+    //         const neighborsList1 = await neighbors.find({'neighbor1': user}).toArray();
 
-            const users1 = neighborsList1.map(neighbors => [neighbors.neighbor2, 'neighbor']);
+    //         const users1 = neighborsList1.map(neighbors => [neighbors.neighbor2, 'neighbor']);
 
-            const neighborsList2 = await neighbors.find({'neighbor2': user}).toArray();
+    //         const neighborsList2 = await neighbors.find({'neighbor2': user}).toArray();
 
-            const users2 = neighborsList2.map(neighbors => [neighbors.neighbor1, 'neighbor']);
+    //         const users2 = neighborsList2.map(neighbors => [neighbors.neighbor1, 'neighbor']);
 
-            return {
-                isOK: true,
-                response: users1.concat(users2),
-            }
+    //         return {
+    //             isOK: true,
+    //             response: users1.concat(users2),
+    //         }
 
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    //     } catch (err) {
+    //         return {
+    //             isOK: false,
+    //             message: err.toString(),
+    //         }
+    //     }
+    // }
 
     /**
      * Check if the two users passed are currently neighbors
@@ -238,7 +260,7 @@ export default class DatabaseController {
      * @param user2 the string_id of the other user
      * @returns true if neighbors, false if not
      */
-    async checkIfNeighbors(user1: string, user2: string): Promise<boolean> {
+    async checkIfNeighbors(user1: string, user2: string): Promise<boolean | undefined> {
         try {
             const neighborMappings = this.getCollection('neighbor_mappings');
 
@@ -258,6 +280,7 @@ export default class DatabaseController {
 
         } catch (err) {
             console.log(err);
+            return;
         }
     }
 
@@ -299,7 +322,10 @@ export default class DatabaseController {
             }
 
         } catch (err) {
-            console.log(err);
+            return {
+                isOK: false,
+                message: err.toString(),
+            }
         }
     }
 
@@ -331,7 +357,10 @@ export default class DatabaseController {
             }
 
         } catch (err) {
-            console.log(err);
+            return {
+                isOK: false,
+                message: err.toString(),
+            }
         }
     }
 
@@ -381,7 +410,10 @@ export default class DatabaseController {
             }
 
         } catch (err) {
-            console.log(err);
+            return {
+                isOK: false,
+                message: err.toString(),
+            }
         }
     }
 } 
