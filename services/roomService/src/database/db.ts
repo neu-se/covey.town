@@ -6,6 +6,7 @@ export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'ne
 
 export interface AccountCreateResponse {
     _id: string,
+    username: string,
 };
 
 // export interface ResponseEnvelope<T> {
@@ -71,6 +72,7 @@ export default class DatabaseController {
                 isOK: true,
                 response: {
                     _id: accountCreateResponse.ops[0]._id,
+                    username: accountCreateResponse.ops[0].username
                 }
             }
         } catch (err) {

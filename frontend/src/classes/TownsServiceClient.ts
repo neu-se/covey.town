@@ -99,6 +99,7 @@ export interface AccountCreateRequest {
 
 export interface AccountCreateResponse {
   _id: string,
+  username: string,
 }
 
 export default class TownsServiceClient {
