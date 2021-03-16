@@ -4,6 +4,8 @@ import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
+// MD comment for test commit - DELETE ME
+
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
@@ -331,6 +333,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 }
+// AC: testing a commit while on the acdmd_gamescene_test branch in WorldMap.tsx line 334
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
