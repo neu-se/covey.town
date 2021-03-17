@@ -22,5 +22,5 @@ export type Message = {
   timestamp: string;
   type: MessageType;
   // null for cases of Proximity and Town Message
-  directMessageId: string | null;
+  directMessageId: string | undefined;
 }
