@@ -1,0 +1,15 @@
+.chat-sidebar {
+  height: 100%;
+  width: 500px;
+  background: white;
+  border: 1px solid #ddd;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+.chat-sidebar .sidebar-header {
+  padding: 15px;
+  background: #ddd;
+  font-size: 1.5rem;
+}
