@@ -87,6 +87,18 @@ export interface AccountCreateRequest {
 
 export interface AccountCreateResponse {
   _id: string,
+  username: string,
+}
+
+export interface SearchUsersRequest {
+  username: string,
+}
+
+export interface SearchUsersResponse {
+  users: {
+    _id: string,
+    username: string,
+  }[]
 }
 
 /**
@@ -180,12 +192,36 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 }
 
 export async function accountCreateHandler(requestData: AccountCreateRequest): Promise<ResponseEnvelope<AccountCreateResponse>> {
-  const db = new DatabaseController();
-  await db.connect();
-  const result = await db.insertUser(requestData.username, requestData.password);
-  db.close();
-  return result;
-  
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+    const result = await db.insertUser(requestData.username, requestData.password);
+    db.close();
+    return result;
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
+export async function searchUsersByUsername(requestData: SearchUsersRequest) : Promise<ResponseEnvelope<SearchUsersResponse>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+    const result = await db.searchUsersByUsername(requestData.username);
+    db.close();
+    return {
+      isOK: true,
+      response: result,
+    }
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
 }
 
 /**

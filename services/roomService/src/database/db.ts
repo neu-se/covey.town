@@ -1,13 +1,10 @@
 const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority";
-import { ResponseEnvelope } from '../requestHandlers/CoveyTownRequestHandlers';
+import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
 export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
 
-export interface AccountCreateResponse {
-    _id: string,
-    username: string,
-};
+
 
 // export interface ResponseEnvelope<T> {
 //     isOK: boolean;
@@ -71,8 +68,8 @@ export default class DatabaseController {
             return {
                 isOK: true,
                 response: {
-                    _id: accountCreateResponse.ops[0]._id,
-                    username: accountCreateResponse.ops[0].username
+                    _id: String(accountCreateResponse.ops[0]._id),
+                    username: String(accountCreateResponse.ops[0].username),
                 }
             }
         } catch (err) {
@@ -82,6 +79,33 @@ export default class DatabaseController {
             }
         }
 
+    }
+
+    async searchUsersByUsername(username: string) : Promise<SearchUsersResponse> {
+        try {
+            const user = await this.findUserId(username);
+
+            if (user !== 'user_not_found') {
+                return {
+                    users: [{
+                        _id: user,
+                        username
+                    }]
+                }
+            }
+
+            // else do partial match search
+            const userCollection = this.getCollection('user');
+            const searchPartialMatch = await userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}, {'password': 0}).toArray();
+
+            console.log(searchPartialMatch);
+
+            return {
+                users: searchPartialMatch
+            }
+        } catch (err) {
+            return err.toString();
+        }
     }
 
     /**
