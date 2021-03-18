@@ -1,5 +1,5 @@
-let mongoose = require('mongoose');
-let userSchema = require('./user.schema.server');
-let userModel = mongoose.model('UserModel', userSchema);
+let mongooseD = require('mongoose');
+let userSchemaImport = require('./user.schema.server.ts');
+let userModel = mongooseD.model('User', userSchemaImport);
 
 module.exports = userModel;
