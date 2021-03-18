@@ -4,7 +4,6 @@ const { ApolloServer ,gql} = require('apollo-server-express');
 const app = express();
 const cors = require('cors');
 const { connection } = require('./data/Utils/index.ts');
-const { tasks, users } = require('./constants/index.ts')
 const User = require('./data/Models/users/user.model.server.ts') 
 app.use(express.json());
 app.use(cors());
@@ -14,8 +13,25 @@ const typeDefs  = require('./typeDefs/index.ts')
  const resolvers = {
   Query: {
     greetings: () => "Hello",
-    users: () => users,
-    user: (parent: any, args: any) => users.find((user: any) => user.id === args.id)
+     user: async (parent: any, args: any) => {
+       try {
+         const user = await User.findOne((id: String) => id === args.id)
+         return user;
+       }
+       catch (error) {
+         throw error;
+       }
+     },
+     users: async () => {
+       try {
+         const users = User.find();
+         return users;
+       }
+       catch (error) {
+         throw error;
+       }
+     }
+
   },
   Mutation: {
     signUp: async (parent: any, args: any) => {

@@ -138,9 +138,6 @@ var _a = require('apollo-server-express'),
 var app = express();
 var cors = require('cors');
 var connection = require('./data/Utils/index.ts').connection;
-var _b = require('./constants/index.ts'),
-  tasks = _b.tasks,
-  users = _b.users;
 var User = require('./data/Models/users/user.model.server.ts');
 app.use(express.json());
 app.use(cors());
@@ -151,19 +148,50 @@ var resolvers = {
     greetings: function () {
       return 'Hello';
     },
-    users: function () {
-      return users;
-    },
     user: function (parent, args) {
-      return users.find(function (user) {
-        return user.id === args.id;
+      return __awaiter(void 0, void 0, void 0, function () {
+        var user, error_1;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              _a.trys.push([0, 2, , 3]);
+              return [
+                4 /*yield*/,
+                User.findOne(function (id) {
+                  return id === args.id;
+                }),
+              ];
+            case 1:
+              user = _a.sent();
+              return [2 /*return*/, user];
+            case 2:
+              error_1 = _a.sent();
+              throw error_1;
+            case 3:
+              return [2 /*return*/];
+          }
+        });
+      });
+    },
+    users: function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var users;
+        return __generator(this, function (_a) {
+          try {
+            users = User.find();
+            return [2 /*return*/, users];
+          } catch (error) {
+            throw error;
+          }
+          return [2 /*return*/];
+        });
       });
     },
   },
   Mutation: {
     signUp: function (parent, args) {
       return __awaiter(void 0, void 0, void 0, function () {
-        var user, newUser, result, error_1;
+        var user, newUser, result, error_2;
         return __generator(this, function (_a) {
           switch (_a.label) {
             case 0:
@@ -184,9 +212,9 @@ var resolvers = {
               result = newUser.save();
               return [2 /*return*/, result];
             case 2:
-              error_1 = _a.sent();
-              console.log(error_1);
-              throw error_1;
+              error_2 = _a.sent();
+              console.log(error_2);
+              throw error_2;
             case 3:
               return [2 /*return*/];
           }
