@@ -10,9 +10,8 @@ app.use(cors());
 const typeDefs  = require('./typeDefs/index.ts')
 /* const resolvers  = require('./resolvers/index.ts')  */
 
- const resolvers = {
+const resolvers = {
   Query: {
-    greetings: () => "Hello",
      user: async (parent: any, args: any) => {
        try {
          const user = await User.findOne((id: String) => id === args.id)
@@ -36,8 +35,6 @@ const typeDefs  = require('./typeDefs/index.ts')
   Mutation: {
     signUp: async (parent: any, args: any) => {
       try {
-        console.log(args.input);
-        console.log(args.input.email);
         const user = await User.findOne({ email: args.input.email });
         if (user) {
           throw new Error("User already in use");
@@ -53,14 +50,18 @@ const typeDefs  = require('./typeDefs/index.ts')
     }
     
   }
-}; 
+};
+
+//GETTING INSTANCE OF APOLLO SERVER
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers
 });
+
+
 apolloServer.applyMiddleware({ app, path: '/graphql' });
-app.use('/', (req:any, res:any, next:any) => {
-  res.send({ message: 'Hello' });
-})
+
+
 connection();
+
 app.listen(4000, () => console.log('Now browse to localhost:4000/graphql'));
