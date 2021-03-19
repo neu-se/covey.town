@@ -24,6 +24,10 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
+  pauseGame: () => void = ()=>{};
+
+  unPauseGame: () => void = ()=>{};
+
   constructor(userName: string, coveyTownID: string) {
     this._userName = userName;
     this._coveyTownID = coveyTownID;

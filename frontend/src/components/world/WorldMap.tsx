@@ -20,6 +20,8 @@ class CoveyGameScene extends Phaser.Scene {
 
   private ready = false;
 
+  private paused = false;
+
   private video: Video;
 
   private emitMovement: (loc: UserLocation) => void;
@@ -128,6 +130,9 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   update() {
+    if(this.paused){
+      return;
+    }
     if (this.player && this.cursors) {
       const speed = 175;
       const prevVelocity = this.player.sprite.body.velocity.clone();
@@ -309,6 +314,22 @@ class CoveyGameScene extends Phaser.Scene {
     this.cursors.push(this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D}));
     this.cursors.push(this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.H,down:Phaser.Input.Keyboard.KeyCodes.J,left:Phaser.Input.Keyboard.KeyCodes.K,right:Phaser.Input.Keyboard.KeyCodes.L}));
 
+    this.input.keyboard.removeCapture([
+      Phaser.Input.Keyboard.KeyCodes.W,
+      Phaser.Input.Keyboard.KeyCodes.A,
+      Phaser.Input.Keyboard.KeyCodes.S,
+      Phaser.Input.Keyboard.KeyCodes.D,
+      Phaser.Input.Keyboard.KeyCodes.H,
+      Phaser.Input.Keyboard.KeyCodes.J,
+      Phaser.Input.Keyboard.KeyCodes.K,
+      Phaser.Input.Keyboard.KeyCodes.L,
+      Phaser.Input.Keyboard.KeyCodes.UP,
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
+      Phaser.Input.Keyboard.KeyCodes.LEFT,
+      Phaser.Input.Keyboard.KeyCodes.RIGHT,
+    ]);
+
+
     // Help text that has a "fixed" position on the screen
     this.add
       .text(16, 16, `Arrow keys to move\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
@@ -329,6 +350,14 @@ class CoveyGameScene extends Phaser.Scene {
       // sprites....
       this.players.forEach((p) => this.updatePlayerLocation(p));
     }
+  }
+
+  pause() {
+    this.paused = true;
+  }
+
+  resume(){
+    this.paused = false;
   }
 }
 
@@ -357,6 +386,12 @@ export default function WorldMap(): JSX.Element {
       const newGameScene = new CoveyGameScene(video, emitMovement);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
+      video.pauseGame = () => {
+        newGameScene.pause();
+      }
+      video.unPauseGame = () => {
+        newGameScene.resume();
+      }
     }
     return () => {
       game.destroy(true);
