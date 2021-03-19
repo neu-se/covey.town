@@ -323,10 +323,6 @@ class CoveyGameScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.J,
       Phaser.Input.Keyboard.KeyCodes.K,
       Phaser.Input.Keyboard.KeyCodes.L,
-      Phaser.Input.Keyboard.KeyCodes.UP,
-      Phaser.Input.Keyboard.KeyCodes.DOWN,
-      Phaser.Input.Keyboard.KeyCodes.LEFT,
-      Phaser.Input.Keyboard.KeyCodes.RIGHT,
     ]);
 
 
