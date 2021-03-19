@@ -26,6 +26,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
+  // JP: Moved map to a field to allow map's properties to be referenced from update()
   private map?: Phaser.Tilemaps.Tilemap;
 
   constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
@@ -37,7 +38,7 @@ class CoveyGameScene extends Phaser.Scene {
   preload() {
     // this.load.image("logo", logoImg);
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
-    this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
+    this.load.tilemapTiledJSON('map', '/assets/tilemaps/submap.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
@@ -218,8 +219,8 @@ class CoveyGameScene extends Phaser.Scene {
         && body.x < br.x
         && body.y > tl.y
         && body.y < br.y) {
-          // TODO / JP:  make functional. Left this in on purpose hoping linter would find it
-          console.log("Hello!");
+          // TODO Change
+          console.log("Change me!");
         }
     }
   }
