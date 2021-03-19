@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, {useState} from 'react';
 
 import {
   Button,
@@ -19,39 +19,64 @@ import {
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 const TownSettings: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed } = useCoveyAppState();
-  const video = useMaybeVideo()
 
-  const openSettings = useCallback(()=>{
-    onOpen();
-    video?.pauseGame();
-  }, [onOpen, video]);
-
-  const closeSettings = useCallback(()=>{
-    onClose();
-    video?.unPauseGame();
-  }, [onClose, video]);
+  const [friendlyName, setFriendlyName] = useState(currentTownFriendlyName);
+  const [isPublic, setIsPublic] = useState(currentTownIsPubliclyListed);
+  const [password, setPassword] = useState('');
 
   const toast = useToast()
   const processUpdates = async () => {
-    toast({
-      title: 'debug, remove this when you implement the functionality',
-      description: `
-      current status: town ID: ${currentTownID}, is public: ${currentTownIsPubliclyListed},
-      friendlyName: ${currentTownFriendlyName}`,
-      status: 'info'
-    })
+    try {
+      await apiClient.updateTown({
+        coveyTownID: currentTownID,
+        coveyTownPassword: password,
+        friendlyName,
+        isPubliclyListed: isPublic,
+      })
+      toast({
+        title: 'Town updated',
+        description: 'To see the updated town, please exit and re-join this town',
+        status: 'success',
+      })
+      onClose();
+    } catch (err) {
+      toast({
+        title: 'Unable to update town',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
   };
 
+  const deleteTown = async () => {
+    try {
+      await apiClient.deleteTown({
+        coveyTownID: currentTownID,
+        coveyTownPassword: password,
+      })
+      toast({
+        title: 'Town deleted',
+        status: 'success',
+      })
+      onClose();
+    } catch (err) {
+      toast({
+        title: 'Unable to delete town',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  }
+
   return <>
-    <MenuItem data-testid='openMenuButton' onClick={openSettings}>
+    <MenuItem data-testid='openMenuButton' onClick={onOpen}>
       <Typography variant="body1">Town Settings</Typography>
     </MenuItem>
-    <Modal isOpen={isOpen} onClose={closeSettings}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay/>
       <ModalContent>
         <ModalHeader>Edit town {currentTownFriendlyName} ({currentTownID})</ModalHeader>
@@ -63,22 +88,28 @@ const TownSettings: React.FunctionComponent = () => {
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel htmlFor='friendlyName'>Friendly Name</FormLabel>
-              <Input id='friendlyName' placeholder="Friendly Name" name="friendlyName" />
+              <Input id='friendlyName' value={friendlyName} name="friendlyName"
+                onChange={e => setFriendlyName(e.target.value)}/>
             </FormControl>
 
             <FormControl mt={4}>
               <FormLabel htmlFor='isPubliclyListed'>Publicly Listed</FormLabel>
-              <Checkbox id="isPubliclyListed" name="isPubliclyListed"/>
+              <Checkbox id="isPubliclyListed" name="isPubliclyListed"
+                isChecked={isPublic}
+                onClick={() => setIsPublic(!isPublic)}/>
             </FormControl>
             <FormControl isRequired>
               <FormLabel htmlFor="updatePassword">Town Update Password</FormLabel>
               <Input data-testid="updatePassword" id="updatePassword" placeholder="Password"
-                     name="password" type="password"/>
+                     name="password" type="password"
+                     value={password}
+                     onChange={e => setPassword(e.target.value)}/>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button data-testid='deletebutton' colorScheme="red" mr={3} value="delete">
+            <Button data-testid='deletebutton' colorScheme="red" mr={3} value="delete"
+              onClick={() => deleteTown()}>
               Delete
             </Button>
             <Button data-testid='updatebutton' colorScheme="blue" type="submit" mr={3}
@@ -86,7 +117,7 @@ const TownSettings: React.FunctionComponent = () => {
                     value="update">
               Update
             </Button>
-            <Button onClick={closeSettings}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>
