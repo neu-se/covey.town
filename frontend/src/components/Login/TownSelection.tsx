@@ -29,16 +29,24 @@ interface TownSelectionProps {
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
-  const [password, setPassword] = useState<string>('')
+  const [inputUserName, setInputUserName] = useState<string>(Video.instance()?.userName || '');
+  const [inputPassword, setInputPassword] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
 
+  const doSignUp = () => {
+    // API client should have sign-up route
+  }
+
+  const doAccountLogin = () => {
+    // API client should have login route
+  }
+
   const handleJoin = async () => {
     try {
-      if (!userName || userName.length === 0) {
+      if (!inputUserName || inputUserName.length === 0) {
         toast({
           title: 'Unable to join town',
           description: 'Please select a username',
@@ -46,7 +54,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, 'demoTownID');
+      const initData = await Video.setup(inputUserName, 'demoTownID');
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -69,23 +77,27 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Login/Sign Up</Heading>
             <FormControl>
-              <FormLabel htmlFor="username">Username</FormLabel>
-              <Input autoFocus name="username" placeholder="Your username"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
-              />
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <div>
-                <Input autoFocus name="password" placeholder="Your password"
-                       value={password}
-                       onChange={event => setPassword(event.target.value)}
-                       type={showPassword ? 'text' : 'password'}
+              <Box mt="5" >
+                <FormLabel htmlFor="username">Username</FormLabel>
+                <Input autoFocus name="username" placeholder="Your username"
+                       value={inputUserName}
+                       onChange={event => setInputUserName(event.target.value)}
                 />
-                <Button onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</Button>
-              </div>
+              </Box>
+              <Box mt="5">
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <Box display='flex' mb="5">
+                  <Input autoFocus name="password" placeholder="Your password"
+                         value={inputPassword}
+                         onChange={event => setInputPassword(event.target.value)}
+                         type={showPassword ? 'text' : 'password'}
+                  />
+                  <Button onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</Button>
+                </Box>
+              </Box>
             </FormControl>
-            <Button data-testid="signup">Sign-up</Button>
-            <Button data-testid="login">Login</Button>
+            <Button data-testid="signup" colorScheme='green' variant='outline' onClick={doSignUp} mr='2'>Sign-up</Button>
+            <Button data-testid="login" colorScheme='green' onClick={doAccountLogin}>Login</Button>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
