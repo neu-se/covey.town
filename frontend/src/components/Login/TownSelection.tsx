@@ -32,16 +32,19 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [inputUserName, setInputUserName] = useState<string>(Video.instance()?.userName || '');
   const [inputPassword, setInputPassword] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
 
   const doSignUp = () => {
     // API client should have sign-up route
+    setIsLoggedIn(true);
   }
 
   const doAccountLogin = () => {
     // API client should have login route
+    setIsLoggedIn(true);
   }
 
   const handleJoin = async () => {
@@ -76,26 +79,32 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Login/Sign Up</Heading>
-            <FormControl>
-              <Box mt="5" >
-                <FormLabel htmlFor="username">Username</FormLabel>
-                <Input autoFocus name="username" placeholder="Your username"
-                       value={inputUserName}
-                       onChange={event => setInputUserName(event.target.value)}
-                />
-              </Box>
-              <Box mt="5">
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <Box display='flex' mb="5">
-                  <Input autoFocus name="password" placeholder="Your password"
-                         value={inputPassword}
-                         onChange={event => setInputPassword(event.target.value)}
-                         type={showPassword ? 'text' : 'password'}
+            { !isLoggedIn ?
+              <FormControl>
+                <Box mt="5">
+                  <FormLabel htmlFor="username">Username</FormLabel>
+                  <Input autoFocus name="username" placeholder="Your username"
+                         value={ inputUserName }
+                         onChange={ event => setInputUserName(event.target.value) }
                   />
-                  <Button onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</Button>
                 </Box>
+                <Box mt="5">
+                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <Box display='flex' mb="5">
+                    <Input autoFocus name="password" placeholder="Your password"
+                           value={ inputPassword }
+                           onChange={ event => setInputPassword(event.target.value) }
+                           type={ showPassword ? 'text' : 'password' }
+                    />
+                    <Button onClick={ () => setShowPassword(!showPassword) }>{ showPassword ? 'Hide' : 'Show' }</Button>
+                  </Box>
+                </Box>
+              </FormControl>
+              :
+              <Box>
+                {`You are logged in as ${inputUserName}`}`
               </Box>
-            </FormControl>
+            }
             <Button data-testid="signup" colorScheme='green' variant='outline' onClick={doSignUp} mr='2'>Sign-up</Button>
             <Button data-testid="login" colorScheme='green' onClick={doAccountLogin}>Login</Button>
           </Box>
