@@ -102,7 +102,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               </FormControl>
               :
               <Box>
-                {`You are logged in as ${inputUserName}`}`
+                {`You are logged in as ${inputUserName}`}
               </Box>
             }
             <Button data-testid="signup" colorScheme='green' variant='outline' onClick={doSignUp} mr='2'>Sign-up</Button>
