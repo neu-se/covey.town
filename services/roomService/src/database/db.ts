@@ -98,6 +98,7 @@ export default class DatabaseController {
                 isOK: true,
                 response: {
                     _id: String(findUser[0]._id),
+                    username: String(findUser[0].username),
                 }
             }
         } catch (err) {

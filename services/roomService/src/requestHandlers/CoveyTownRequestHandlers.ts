@@ -97,6 +97,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   _id: string,
+  username: string,
 }
 
 export interface SearchUsersRequest {
