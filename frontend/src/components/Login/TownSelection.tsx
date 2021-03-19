@@ -25,11 +25,13 @@ import { TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 interface TownSelectionProps {
-  doLogin: (initData: TownJoinResponse) => Promise<boolean>
+  doLogin: (iniData: TownJoinResponse) => Promise<boolean>
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+  const [password, setPassword] = useState<string>('')
+  const [showPassword, setShowPassword] = useState<boolean>(true);
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
@@ -65,14 +67,25 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Select a username</Heading>
+            <Heading as="h2" size="lg">Login/Sign Up</Heading>
             <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
+              <FormLabel htmlFor="username">Username</FormLabel>
+              <Input autoFocus name="username" placeholder="Your username"
                      value={userName}
                      onChange={event => setUserName(event.target.value)}
               />
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <div>
+                <Input autoFocus name="password" placeholder="Your password"
+                       value={password}
+                       onChange={event => setPassword(event.target.value)}
+                       type={showPassword ? 'text' : 'password'}
+                />
+                <Button onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</Button>
+              </div>
             </FormControl>
+            <Button data-testid="signup">Sign-up</Button>
+            <Button data-testid="login">Login</Button>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
