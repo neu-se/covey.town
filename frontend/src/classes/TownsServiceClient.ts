@@ -123,15 +123,17 @@ export interface SearchUsersResponse {
   }[]
 }
 
+export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
+
 export interface AddNeighborRequest {
   currenUserId: string,
   UserIdToRequest: string,
 }
 
 export interface AddNeighborResponse {
-  status: string,
-
+  status: NeighborStatus | string,
 }
+
 
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
