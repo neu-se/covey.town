@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="10" height="11" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="7">
+ <tileset firstgid="1" name="tuxmon-sample-32px" tilewidth="32" tileheight="32" tilecount="720" columns="24">
+  <image source="../tilesets/tuxmon-sample-32px.png" width="768" height="960"/>
+ </tileset>
+ <layer id="1" name="Under Player" width="10" height="11">
+  <data encoding="csv">
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126
+</data>
+ </layer>
+ <layer id="2" name="World" width="10" height="11">
+  <data encoding="csv">
+217,218,218,218,218,218,218,218,218,219,
+241,273,274,275,121,121,121,305,306,243,
+241,297,298,299,121,121,121,329,330,243,
+241,321,322,323,121,121,121,353,354,243,
+241,128,0,0,0,0,56,0,0,243,
+241,122,0,0,0,200,0,0,128,243,
+241,0,0,56,128,0,0,122,0,243,
+241,0,200,0,0,0,0,0,0,243,
+241,0,122,0,0,0,56,200,0,243,
+241,0,0,0,0,0,0,0,0,243,
+265,266,266,268,0,0,269,266,266,267
+</data>
+ </layer>
+ <objectgroup id="3" name="Objects">
+  <object id="1" name="SRTL" x="127" y="319">
+   <point/>
+  </object>
+  <object id="4" name="SRBL" x="191" y="350">
+   <point/>
+  </object>
+  <object id="5" name="Spawn Point" x="159.5" y="304">
+   <point/>
+  </object>
+ </objectgroup>
+</map>
