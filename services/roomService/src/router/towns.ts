@@ -11,6 +11,7 @@ import {
   townUpdateHandler,
   accountCreateHandler,
   searchUsersByUsername,
+  sendAddNeighborRequest
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -145,6 +146,23 @@ export default function addTownRoutes(http: Server, app: Express): void {
         message: 'Internal server error, please see log in server for more details',
       });
   }
+});
+
+/*
+* Send neighbor request
+*/
+app.get('/users/request_neighbor', BodyParser.json(), async (req, res) => {
+try {
+ const result = await sendAddNeighborRequest(req.body);
+ res.status(StatusCodes.OK)
+   .json(result);
+} catch (err) {
+ logError(err);
+ res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+   .json({
+     message: 'Internal server error, please see log in server for more details',
+   });
+}
 });
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });

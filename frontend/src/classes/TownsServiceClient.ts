@@ -102,6 +102,26 @@ export interface AccountCreateResponse {
   username: string,
 }
 
+export interface SearchUsersRequest {
+  username: string,
+}
+
+export interface SearchUsersResponse {
+  users: {
+    _id: string,
+    username: string,
+  }[]
+}
+
+export interface AddNeighborRequest {
+  currenUserId: string,
+  UserIdToRequest: string,
+}
+
+export interface AddNeighborResponse {
+  status: string,
+}
+
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
 
@@ -154,6 +174,16 @@ export default class TownsServiceClient {
 
   async createAccount(requestData: AccountCreateRequest): Promise<AccountCreateResponse> {
     const responseWrapper = await this._axios.post('/signup', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async searchForUsersByUsername(requestData: SearchUsersRequest): Promise<SearchUsersResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<SearchUsersResponse>>(`/users/${requestData.username}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async sendAddNeighborRequest(requestData: AddNeighborRequest): Promise<AddNeighborResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<AddNeighborResponse>>(`/users/request_neighbor`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
