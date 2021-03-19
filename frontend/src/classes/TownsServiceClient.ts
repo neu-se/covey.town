@@ -102,6 +102,15 @@ export interface AccountCreateResponse {
   username: string,
 }
 
+export interface LoginRequest {
+  username: string,
+  password: string,
+}
+
+export interface LoginResponse {
+  _id: string,
+}
+
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
 
@@ -154,6 +163,11 @@ export default class TownsServiceClient {
 
   async createAccount(requestData: AccountCreateRequest): Promise<AccountCreateResponse> {
     const responseWrapper = await this._axios.post('/signup', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async loginToAccount(requestData: LoginRequest): Promise<LoginResponse> {
+    const responseWrapper = await this._axios.post('/login', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

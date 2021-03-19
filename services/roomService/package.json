@@ -1,6 +1,7 @@
 {
   "name": "covey-town-roomService",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend service for processing Covey.Town room requests",
   "main": "server.js",
   "repository": {

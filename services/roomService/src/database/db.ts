@@ -1,18 +1,8 @@
 const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority";
-import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
 export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
-
-
-
-// export interface ResponseEnvelope<T> {
-//     isOK: boolean;
-//     message?: string;
-//     response?: T;
-//   }
-  
-
 
 export default class DatabaseController {
     private client;
@@ -70,6 +60,44 @@ export default class DatabaseController {
                 response: {
                     _id: String(accountCreateResponse.ops[0]._id),
                     username: String(accountCreateResponse.ops[0].username),
+                }
+            }
+        } catch (err) {
+            return {
+                isOK: false,
+                message: err.toString(),
+            }
+        }
+
+    }
+
+    /**
+     * Attempt to log in with this username and password 
+     * @param username the username of the returning user
+     * @param password the password of the returning user
+     * @returns a ResponseEnvelope with a LoginResponse
+     */
+     async login(username: string, password: string) : Promise<ResponseEnvelope<LoginResponse>> {
+        try {
+            // get the user collection
+            // find on both username and login
+            // if nothing found, return no user found with that username or passowrd
+            // else, there should be ONLY 1 match, and we should return the given id back in the response
+
+            const allUsers = this.getCollection('user');
+            const findUser = await allUsers.find({'username': username, 'password': password}).limit(1).toArray();
+
+            if (findUser.length === 0) {
+                return {
+                    isOK: false,
+                    message: 'No user with that username and password',
+                }
+            } 
+            console.log(String(findUser[0]._id));
+            return {
+                isOK: true,
+                response: {
+                    _id: String(findUser[0]._id),
                 }
             }
         } catch (err) {
