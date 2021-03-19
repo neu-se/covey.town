@@ -10,11 +10,7 @@ const client = new TownsServiceClient('http://localhost:8081');
 // });
 
 client.loginToAccount({username: 'hari1', password: 'pass1'}).then(res => {
-    console.log(res._id);
-
-client.searchForUsersByUsername({username: 'merk'}).then(res => {
     console.log(res);
-
 }).catch(err => {
     console.log(err);
 });

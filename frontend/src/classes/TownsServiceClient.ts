@@ -110,6 +110,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   _id: string,
+  username: string,
 }
 export interface SearchUsersRequest {
   username: string,
@@ -187,10 +188,11 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-
   async loginToAccount(requestData: LoginRequest): Promise<LoginResponse> {
     const responseWrapper = await this._axios.post('/login', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
+
   async searchForUsersByUsername(requestData: SearchUsersRequest): Promise<SearchUsersResponse> {
     const responseWrapper = await this._axios.get<ResponseEnvelope<SearchUsersResponse>>(`/users/${requestData.username}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
