@@ -102,6 +102,7 @@ export interface AccountCreateResponse {
   username: string,
 }
 
+
 export interface LoginRequest {
   username: string,
   password: string,
@@ -109,6 +110,26 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   _id: string,
+}
+export interface SearchUsersRequest {
+  username: string,
+}
+
+export interface SearchUsersResponse {
+  users: {
+    _id: string,
+    username: string,
+  }[]
+}
+
+export interface AddNeighborRequest {
+  currenUserId: string,
+  UserIdToRequest: string,
+}
+
+export interface AddNeighborResponse {
+  status: string,
+
 }
 
 export default class TownsServiceClient {
@@ -166,8 +187,17 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+
   async loginToAccount(requestData: LoginRequest): Promise<LoginResponse> {
     const responseWrapper = await this._axios.post('/login', requestData);
+  }
+  async searchForUsersByUsername(requestData: SearchUsersRequest): Promise<SearchUsersResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<SearchUsersResponse>>(`/users/${requestData.username}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async sendAddNeighborRequest(requestData: AddNeighborRequest): Promise<AddNeighborResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<AddNeighborResponse>>(`/users/request_neighbor`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

@@ -110,6 +110,15 @@ export interface SearchUsersResponse {
   }[]
 }
 
+export interface AddNeighborRequest {
+  currenUserId: string,
+  UserIdToRequest: string,
+}
+
+export interface AddNeighborResponse {
+  status: string,
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -243,7 +252,27 @@ export async function searchUsersByUsername(requestData: SearchUsersRequest) : P
   } catch (err) {
     return {
       isOK: false,
-      message: err.toString()
+      message: err.toString(),
+    }
+  }
+}
+
+export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : Promise<ResponseEnvelope<AddNeighborResponse>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+    const result = await db.sendRequest(requestData.currenUserId, requestData.UserIdToRequest);
+    db.close();
+      return {
+        isOK: true,
+        response: {
+          status: 'requestSent',
+        },
+      }
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString(),
     }
   }
 }
