@@ -90,6 +90,15 @@ export interface AccountCreateResponse {
   username: string,
 }
 
+export interface LoginRequest {
+  username: string,
+  password: string,
+}
+
+export interface LoginResponse {
+  _id: string,
+}
+
 export interface SearchUsersRequest {
   username: string,
 }
@@ -205,6 +214,21 @@ export async function accountCreateHandler(requestData: AccountCreateRequest): P
     const db = new DatabaseController();
     await db.connect();
     const result = await db.insertUser(requestData.username, requestData.password);
+    db.close();
+    return result;
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
+export async function loginHandler(requestData: LoginRequest): Promise<ResponseEnvelope<LoginResponse>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+    const result = await db.login(requestData.username, requestData.password);
     db.close();
     return result;
   } catch (err) {
