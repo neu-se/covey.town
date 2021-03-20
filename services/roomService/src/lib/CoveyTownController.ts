@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { CoveyTownRoomID, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -16,6 +16,7 @@ export default class CoveyTownController {
   get capacity(): number {
     return this._capacity;
   }
+
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
@@ -118,6 +119,16 @@ export default class CoveyTownController {
   updatePlayerLocation(player: Player, location: UserLocation): void {
     player.updateLocation(location);
     this._listeners.forEach((listener) => listener.onPlayerMoved(player));
+  }
+
+  /**
+   * Updates the map of a player within the town
+   * @param player Player to update location for
+   * @param map_id New location for this player
+   */
+  updatePlayerMap(player: Player, mapId: CoveyTownRoomID): void {
+    player.updateMapId(mapId);
+    this._listeners.forEach((listener) => listener.onPlayerMapChange(player));
   }
 
   /**
