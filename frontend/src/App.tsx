@@ -4,7 +4,7 @@ import React, {
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, Grid, GridItem } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
@@ -25,6 +25,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import ChatScreen from "./components/Chat/ChatScreen";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -224,8 +225,15 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     }
     return (
       <div>
-        <WorldMap />
-        <VideoOverlay preferredMode="fullwidth" />
+        <Grid
+          templateRows="repeat(1, 1fr)"
+          templateColumns="repeat(2, 1fr)"
+          gap={4}
+        >
+          <GridItem colSpan={1}><WorldMap/></GridItem>
+          <GridItem colSpan={1}><ChatScreen/></GridItem>
+        </Grid>
+        <VideoOverlay preferredMode="fullwidth"/>
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
