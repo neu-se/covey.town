@@ -135,16 +135,13 @@ export default function ChatScreen(): JSX.Element {
 
     });
 
-    // try {
-    //   const channelToJoin = await client.getChannelByUniqueName('general');
-    //   joinChannel(channelToJoin).then(()=>{
-    //     channelToJoin.sendMessage('HAS JOINED THE CHAT')
-    //   })
-    //
-    //   setChannel(channelToJoin)
-    //
-    //
-    // } catch {
+    try {
+      const channelToJoin = await client.getChannelByUniqueName(currentTownID);
+      joinChannel(channelToJoin).then(()=>{
+        channelToJoin.sendMessage('HAS JOINED THE CHAT')
+      })
+      setChannel(channelToJoin)
+    } catch {
     try {
       const channelToJoin = await client.createChannel({
         uniqueName: currentTownID,
@@ -161,7 +158,7 @@ export default function ChatScreen(): JSX.Element {
     } catch {
       throw new Error('unable to create channel, please reload this page');
     }
-    // }
+    }
   }, [channel, currentTownFriendlyName, currentTownID, joinChannel, messages, userName])
 
 
