@@ -35,6 +35,9 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
+  // JP: Moved map to a field to allow map's properties to be referenced from update()
+  private map?: Phaser.Tilemaps.Tilemap;
+
   constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
     super('PlayGame');
     this.video = video;
@@ -207,11 +210,32 @@ class CoveyGameScene extends Phaser.Scene {
         this.lastLocation.moving = isMoving;
         this.emitMovement(this.lastLocation);
       }
+
+
+      // JP: Establishes the top-left of the doorway on the town map
+      const tl = this.map?.findObject('Objects',
+      (obj) => obj.name === 'DoorTopLeft') as unknown as
+      Phaser.GameObjects.Components.Transform;
+
+      // JP: Establishes the bottom-right of the doorway on the town map
+      const br = this.map?.findObject('Objects',
+      (obj) => obj.name === 'DoorBottomRight') as unknown as
+      Phaser.GameObjects.Components.Transform;
+
+      // JP: Checks if user's body is in the doorway
+      if (body.x > tl.x  
+        && body.x < br.x
+        && body.y > tl.y
+        && body.y < br.y) {
+          // TODO Change
+          console.log("Change me!");
+        }
     }
   }
 
   create() {
-    const map = this.make.tilemap({ key: 'map' });
+    this.map = this.make.tilemap({ key: 'map' });
+    const {map} = this;
 
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
      tileset image in Phaser's cache (i.e. the name you used in preload)
@@ -391,6 +415,18 @@ class CoveyGameScene extends Phaser.Scene {
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
+
+
+    this.input.keyboard.removeCapture([
+      Phaser.Input.Keyboard.KeyCodes.W,
+      Phaser.Input.Keyboard.KeyCodes.A,
+      Phaser.Input.Keyboard.KeyCodes.S,
+      Phaser.Input.Keyboard.KeyCodes.D,
+      Phaser.Input.Keyboard.KeyCodes.H,
+      Phaser.Input.Keyboard.KeyCodes.J,
+      Phaser.Input.Keyboard.KeyCodes.K,
+      Phaser.Input.Keyboard.KeyCodes.L,
+    ]);
 
 
     // Help text that has a "fixed" position on the screen
