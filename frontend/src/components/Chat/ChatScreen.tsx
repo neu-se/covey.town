@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Client from 'twilio-chat';
 import {Channel} from 'twilio-chat/lib/channel';
-import {Box, Button, Input, Stack, Table, Tbody, Td, Tr} from "@chakra-ui/react";
+import {Box, Button, Input, Stack, Table, Tbody, Td, Tr, Grid, GridItem} from "@chakra-ui/react";
 
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 
@@ -173,21 +173,18 @@ export default function ChatScreen(): JSX.Element {
       <Stack>
         <div ref={messagesEndRef}>
       <Box maxH="500px" overflowY="scroll">
-
         {messages.map((message) =>
           <div key={message.state.sid}>
             <b>{message.state.author}</b>:{message.state.body}
           </div>)
         }
-
-
-
       </Box>
-      <Input autoFocus name="name" placeholder=""
+      <Input w="90%" autoFocus name="name" placeholder=""
              onChange={(event) => setText(event.target.value)}
              value={text}
+             onKeyDown={sendMessage}
       />
-      <Button onClick={sendMessage} disabled={!channel || !text}>Send</Button>
+      <Button w="10%" onClick={sendMessage} disabled={!channel || !text}>Send</Button>
       <Button onClick={loginToChat} >Login to Chat</Button>
         </div>
       </Stack>
