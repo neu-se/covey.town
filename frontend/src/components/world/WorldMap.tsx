@@ -16,6 +16,13 @@ class CoveyGameScene extends Phaser.Scene {
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
+  /*
+   * A "captured" key doesn't send events to the browser - they are trapped by Phaser
+   * When pausing the game, we uncapture all keys, and when resuming, we re-capture them.
+   * This is the list of keys that are currently captured by Phaser.
+   */
+  private previouslyCapturedKeys: number[] = [];
+
   private lastLocation?: UserLocation;
 
   private ready = false;
@@ -408,10 +415,14 @@ class CoveyGameScene extends Phaser.Scene {
 
   pause() {
     this.paused = true;
+    this.previouslyCapturedKeys = this.input.keyboard.getCaptures();
+    this.input.keyboard.clearCaptures();
   }
 
   resume() {
     this.paused = false;
+    this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+    this.previouslyCapturedKeys = [];
   }
 }
 
