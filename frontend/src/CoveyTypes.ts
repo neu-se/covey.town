@@ -29,3 +29,23 @@ export type CoveyAppState = {
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };
+export type EmailPasswordCredential = {
+  email: string,
+  password: string
+}
+
+export type User = {
+  isLoggedIn: boolean,
+  currentUser: any,
+  actions: UserActions,
+}
+
+export type AuthState = {
+  isLoggedIn: boolean,
+  currentUser: any
+}
+
+export type UserActions = {
+  handleLogout: () => void,
+  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
+}
