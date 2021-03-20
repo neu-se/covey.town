@@ -14,6 +14,8 @@ type Message = {
   }
 };
 
+
+
 export default function ChatScreen(): JSX.Element {
   const [text, setText] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,11 +40,12 @@ export default function ChatScreen(): JSX.Element {
         sid: messageToAdd.state.sid,
       },
     }
-    setMessages(messages ? [...messages, message] : [message])
+    // setMessages(messages ? [...messages, message] : [message])
+    setMessages(oldMessages => [...oldMessages, message]);
     console.log('messages', messages)
     console.log('message', message)
     // setMessages(messages ? [...messages, messageToAdd] : [messageToAdd])
-    messages.push(messageToAdd)
+    // messages.push(messageToAdd)
     console.log(messages)
 
   }
@@ -170,6 +173,7 @@ export default function ChatScreen(): JSX.Element {
       </Box>
       <Input autoFocus name="name" placeholder=""
              onChange={(event) => setText(event.target.value)}
+             value={text}
       />
       <Button onClick={sendMessage} disabled={!channel || !text}>Send</Button>
       <Button onClick={loginToChat} >Login to Chat</Button>
