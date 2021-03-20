@@ -9,6 +9,10 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  accountCreateHandler,
+  searchUsersByUsername,
+  loginHandler,
+  sendAddNeighborRequest
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -107,6 +111,78 @@ export default function addTownRoutes(http: Server, app: Express): void {
         });
     }
   });
+
+  /**
+   * Create an account
+   */
+    app.post('/signup', BodyParser.json(), async (req, res) => {
+    try {
+      console.log(req.body);
+      const result = await accountCreateHandler(req.body);
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Login to an existing account to get id
+   */
+   app.post('/login', BodyParser.json(), async (req, res) => {
+    try {
+      console.log(req.body);
+      const result = await loginHandler(req.body);
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Search for an account with the passed username
+   */
+  app.get('/users/:username', BodyParser.json(), async (req, res) => {
+  try {
+    const result = await searchUsersByUsername({
+      username: req.params.username
+    });
+    res.status(StatusCodes.OK)
+      .json(result);
+  } catch (err) {
+    logError(err);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+  }
+});
+
+/*
+* Send neighbor request
+*/
+app.get('/users/request_neighbor', BodyParser.json(), async (req, res) => {
+try {
+ const result = await sendAddNeighborRequest(req.body);
+ res.status(StatusCodes.OK)
+   .json(result);
+} catch (err) {
+ logError(err);
+ res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+   .json({
+     message: 'Internal server error, please see log in server for more details',
+   });
+}
+});
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

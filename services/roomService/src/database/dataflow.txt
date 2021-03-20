@@ -1,0 +1,61 @@
+--Creating an Account and Logging in
+-Signing up
+User goes to sign up page
+Enter username/password
+click submit
+sends data to api endpoint /signup/:username/:password (towns.ts)
+send data to database (through the insertUser method)
+return some response to endpoint, endpoint returns response to handler, and handler returns response to frontend
+
+
+-Logging in
+User goes to login page
+Enter username/password
+click submit
+sends data to api endpoint /login/:username/:password (towns.ts)
+send data to database to be verified
+if valid user return user id to handler
+handler returns to api 
+api returns to frontend
+
+
+--Add a friend (either by search or in game)
+-Two ways to add a friend
+
+-Search for a friend (by username)
+Frontend has search bar (some form) accepts username : string
+send string to frontend handler (TownsServiceClient.ts)
+calls backend api /user(s)/:username (searches for all users that have this username)
+invokes backend handler, handler queries database to return users with that username
+package list of users (with user id and username) to send to backend handler
+backend handler returns to api
+api returns to frontend handler
+returns to frontend
+
+frontend needs to display them, or display the user returned
+click some send request button
+button returns user id of user to send request to and user id of user sending request
+send that to frontend handler, then to api
+api takes user id, invokes backend handler for sending neighborRequest
+backend does its thing
+send request back to handler back to api
+
+
+-See friend in a Town and send neighborRequest
+
+
+
+-Accounts page (see friends, see requests, delete friends, delete requests, see who is online)
+
+See friends
+-listNeighbors
+-deleteFriend
+(can see friends who are online)
+
+See requests
+-listRequestReceived
+-listRequestSent
+-deleteRequests
+
+
+
