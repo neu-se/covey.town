@@ -24,7 +24,7 @@ jobs:
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
-          TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
+          tTWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
         run: cd services/roomService; npm install && npm test
 
       - name: Build and test frontend components
@@ -38,8 +38,8 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # Deploy to Heroku action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "covey-deployment-example"
-          heroku_email: "jon@jonbell.net"
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
       - uses: muinmomin/webhook-action@v1.0.0
         with:
           url: ${{ secrets.NETLIFY_BUILD_WEBHOOK }}
