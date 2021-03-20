@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 
 import {
   Button,
@@ -19,10 +19,22 @@ import {
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 const TownSettings: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed } = useCoveyAppState();
+  const video = useMaybeVideo()
+
+  const openSettings = useCallback(()=>{
+    onOpen();
+    video?.pauseGame();
+  }, [onOpen, video]);
+
+  const closeSettings = useCallback(()=>{
+    onClose();
+    video?.unPauseGame();
+  }, [onClose, video]);
 
   const [friendlyName, setFriendlyName] = useState(currentTownFriendlyName);
   const [isPublic, setIsPublic] = useState(currentTownIsPubliclyListed);
@@ -73,10 +85,10 @@ const TownSettings: React.FunctionComponent = () => {
   }
 
   return <>
-    <MenuItem data-testid='openMenuButton' onClick={onOpen}>
+    <MenuItem data-testid='openMenuButton' onClick={openSettings}>
       <Typography variant="body1">Town Settings</Typography>
     </MenuItem>
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={closeSettings}>
       <ModalOverlay/>
       <ModalContent>
         <ModalHeader>Edit town {currentTownFriendlyName} ({currentTownID})</ModalHeader>
@@ -117,7 +129,7 @@ const TownSettings: React.FunctionComponent = () => {
                     value="update">
               Update
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={closeSettings}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>
