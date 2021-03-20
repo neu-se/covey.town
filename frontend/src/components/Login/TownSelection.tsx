@@ -17,11 +17,12 @@ import {
   Th,
   Thead,
   Tr,
+  Text,
   useToast
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
-import { TownJoinResponse, } from '../../classes/TownsServiceClient';
+import { LoginResponse, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 interface TownSelectionProps {
@@ -30,21 +31,36 @@ interface TownSelectionProps {
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const [inputUserName, setInputUserName] = useState<string>(Video.instance()?.userName || '');
-  const [inputPassword, setInputPassword] = useState<string>('')
+  const [inputPassword, setInputPassword] = useState<string>('');
+  const [loginResponse, setLoginResponse] = useState<LoginResponse>({_id: '', username: ''});
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
 
-  const doSignUp = () => {
-    // API client should have sign-up route
+  const clearInputAndLogin = (response: LoginResponse) => {
+    setInputPassword('')
+    setInputUserName('')
+    setLoginResponse(response);
     setIsLoggedIn(true);
   }
 
-  const doAccountLogin = () => {
-    // API client should have login route
-    setIsLoggedIn(true);
+  const doSignUp = async () => {
+    // API client should have sign-up route
+    const response = await apiClient.createAccount({
+      username: inputUserName,
+      password: inputPassword,
+    })
+    clearInputAndLogin(response)
+  }
+
+  const doAccountLogin = async () => {
+    const response = await apiClient.loginToAccount({
+      username: inputUserName,
+      password: inputPassword,
+    })
+    clearInputAndLogin(response)
   }
 
   const handleJoin = async () => {
@@ -80,33 +96,37 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Login/Sign Up</Heading>
             { !isLoggedIn ?
-              <FormControl>
-                <Box mt="5">
-                  <FormLabel htmlFor="username">Username</FormLabel>
-                  <Input autoFocus name="username" placeholder="Your username"
-                         value={ inputUserName }
-                         onChange={ event => setInputUserName(event.target.value) }
-                  />
-                </Box>
-                <Box mt="5">
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <Box display='flex' mb="5">
-                    <Input autoFocus name="password" placeholder="Your password"
-                           value={ inputPassword }
-                           onChange={ event => setInputPassword(event.target.value) }
-                           type={ showPassword ? 'text' : 'password' }
-                    />
-                    <Button onClick={ () => setShowPassword(!showPassword) }>{ showPassword ? 'Hide' : 'Show' }</Button>
-                  </Box>
-                </Box>
-              </FormControl>
-              :
               <Box>
-                {`You are logged in as ${inputUserName}`}
+                <FormControl>
+                  <Box mt="5">
+                    <FormLabel htmlFor="username">Username</FormLabel>
+                    <Input autoFocus name="username" placeholder="Your username"
+                           value={ inputUserName }
+                           onChange={ event => setInputUserName(event.target.value) }
+                    />
+                  </Box>
+                  <Box mt="5">
+                    <FormLabel htmlFor="password">Password</FormLabel>
+                    <Box display='flex' mb="5">
+                      <Input autoFocus name="password" placeholder="Your password"
+                             value={ inputPassword }
+                             onChange={ event => setInputPassword(event.target.value) }
+                             type={ showPassword ? 'text' : 'password' }
+                      />
+                      <Button onClick={ () => setShowPassword(!showPassword) }>{ showPassword ? 'Hide' : 'Show' }</Button>
+                    </Box>
+                  </Box>
+                </FormControl>
+                <Button data-testid="signup" colorScheme='green' variant='outline' onClick={doSignUp} mr='2'>Sign-up</Button>
+                <Button data-testid="login" colorScheme='green' onClick={doAccountLogin}>Login</Button>
+              </Box>
+              :
+              <Box mt='5'>
+                You are logged in as
+                <Text fontSize='32px' color='green'>{loginResponse.username}</Text>
+                <Button mt='5' onClick={() => setIsLoggedIn(false)}>Sign into a different account</Button>
               </Box>
             }
-            <Button data-testid="signup" colorScheme='green' variant='outline' onClick={doSignUp} mr='2'>Sign-up</Button>
-            <Button data-testid="login" colorScheme='green' onClick={doAccountLogin}>Login</Button>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
