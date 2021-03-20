@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Client from 'twilio-chat';
 import {Channel} from 'twilio-chat/lib/channel';
@@ -22,7 +22,8 @@ export default function ChatScreen(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const [channel, setChannel] = useState<Channel>();
 
-  const { currentTownID, userName } = useCoveyAppState()
+  const { currentTownID, currentTownFriendlyName, userName } = useCoveyAppState()
+  const messagesEndRef = useRef(null);
 
   // TODO We should probably create a client to communicate to the Chat Backend
   const getToken = async (email: string) => {
@@ -61,11 +62,18 @@ export default function ChatScreen(): JSX.Element {
 
 
   // const scrollToBottom = () => {
-  //   const scrollHeight = this.scrollDiv.current.scrollHeight;
-  //   const height = this.scrollDiv.current.clientHeight;
+  //   const scrollHeight = scrollDiv.current.scrollHeight;
+  //   const height = scrollDiv.current.clientHeight;
   //   const maxScrollTop = scrollHeight - height;
-  //   this.scrollDiv.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+  //   scrollDiv.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
   // };
+
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  // }
+
+  // useEffect(scrollToBottom, [messages]);
+
 
   const sendMessage =() => {
     console.log(messages)
@@ -75,6 +83,7 @@ export default function ChatScreen(): JSX.Element {
       // channel && channel.sendMessage(text);
 
       if (channel) {
+        console.log(text)
         channel.sendMessage(text)
       }
       // channel?.sendMessage(text)
@@ -120,32 +129,40 @@ export default function ChatScreen(): JSX.Element {
           author: message.state.author
         }
       }))
+      console.log(mes);
       setMessages(mes2)
+      // setText('player joined')
+
     });
 
+    // try {
+    //   const channelToJoin = await client.getChannelByUniqueName('general');
+    //   joinChannel(channelToJoin).then(()=>{
+    //     channelToJoin.sendMessage('HAS JOINED THE CHAT')
+    //   })
+    //
+    //   setChannel(channelToJoin)
+    //
+    //
+    // } catch {
     try {
-      const channelToJoin = await client.getChannelByUniqueName('general');
-      await joinChannel(channelToJoin);
+      const channelToJoin = await client.createChannel({
+        uniqueName: currentTownID,
+        friendlyName: currentTownFriendlyName,
+      });
+      joinChannel(channelToJoin).then(()=>{
+        channelToJoin.sendMessage(' HAS ENTERED THE CHAT');
+      });
       setChannel(channelToJoin)
+      setLoading(false)
 
+      console.log('channel', channel);
+      console.log('messages', messages);
     } catch {
-      try {
-
-        // const channelToJoin = await client.createChannel({
-        //   uniqueName: 'general',
-        //   friendlyName: 'general',
-        // });
-        // await joinChannel(channelToJoin);
-        // setChannel(channelToJoin)
-        // setLoading(false)
-        //
-        // console.log('channel', channel);
-        // console.log('messages', messages);
-      } catch {
-        throw new Error('unable to create channel, please reload this page');
-      }
+      throw new Error('unable to create channel, please reload this page');
     }
-  }, [joinChannel, userName])
+    // }
+  }, [channel, currentTownFriendlyName, currentTownID, joinChannel, messages, userName])
 
 
 
@@ -157,18 +174,16 @@ export default function ChatScreen(): JSX.Element {
   return (
     <>
       <Stack>
+        <div ref={messagesEndRef}>
       <Box maxH="500px" overflowY="scroll">
-      <Table>
-        <Tbody>
-      {messages.map((message) =>
-        <Tr key={message.state.sid}>
-          <Td role='cell'>{message.state.author}:</Td>
-          <Td role='cell'>{message.state.body} </Td>
-        </Tr>
 
-      )}
-        </Tbody>
-      </Table>
+        {messages.map((message) =>
+          <div key={message.state.sid}>
+            <b>{message.state.author}</b>:{message.state.body}
+          </div>)
+        }
+
+
 
       </Box>
       <Input autoFocus name="name" placeholder=""
@@ -177,6 +192,7 @@ export default function ChatScreen(): JSX.Element {
       />
       <Button onClick={sendMessage} disabled={!channel || !text}>Send</Button>
       <Button onClick={loginToChat} >Login to Chat</Button>
+        </div>
       </Stack>
     </>
   );
