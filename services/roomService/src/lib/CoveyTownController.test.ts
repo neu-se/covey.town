@@ -77,6 +77,22 @@ describe('CoveyTownController', () => {
       expect(mockListeners[2].onPlayerMoved).toHaveBeenCalledWith(playerToMove);
       expect(mockListeners[1].onPlayerMoved).toBeCalledTimes(0);
     });
+    it.each(ConfigureTest(''))('should notify added listeners of player movement between super and sub map when updatePlayerRoom is called [%s]', async (testConfiguration: string) => {
+      StartTest(testConfiguration);
+      const newController = createTownAddListeners([mockListeners[0]]);
+      const playerToMigrate = new Player('Player1');
+      await newController.addPlayer(playerToMigrate);
+      expect(playerToMigrate.mapId).toEqual('0');
+
+      newController.updatePlayerMap(playerToMigrate, '1');
+      newController.addTownListener(mockListeners[2]);
+      newController.updatePlayerMap(playerToMigrate, '0');
+
+      expect(mockListeners[0].onPlayerMapChange).toHaveBeenCalledWith(playerToMigrate);
+      expect(mockListeners[0].onPlayerMapChange).toBeCalledTimes(2);
+      expect(mockListeners[2].onPlayerMapChange).toHaveBeenCalledWith(playerToMigrate);
+      expect(mockListeners[1].onPlayerMapChange).toBeCalledTimes(0);
+    });
     it.each(ConfigureTest('RLEDC'))('should notify added listeners of player disconnections when destroySession is called [%s]', async (testConfiguration: string) => {
       StartTest(testConfiguration);
       const newController = createTownAddListeners([mockListeners[1], mockListeners[2]]);
