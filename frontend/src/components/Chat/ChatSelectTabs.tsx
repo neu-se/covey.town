@@ -3,11 +3,11 @@ import React from 'react';
 
 export default function ChatSelectContainer(): JSX.Element {
   return (
-    <Tabs isFitted variant='enclosed' defaultIndex={0}>
+    <Tabs isFitted variant='enclosed' defaultIndex={0} size="md">
       <TabList mb='1em'>
-        <Tab>Direct Messages</Tab>
-        <Tab>Town Messages</Tab>
-        <Tab>Proximity Messages</Tab>
+        <Tab>Direct Chat</Tab>
+        <Tab>Town Chat</Tab>
+        <Tab>Proximity Chat</Tab>
       </TabList>
       <TabPanels>
         <TabPanel>
@@ -17,7 +17,7 @@ export default function ChatSelectContainer(): JSX.Element {
           <p>Town Messages:</p>
         </TabPanel>
         <TabPanel>
-          <p>Proximty Messages:</p>
+          <p>Proximity Messages:</p>
         </TabPanel>
       </TabPanels>
     </Tabs>
