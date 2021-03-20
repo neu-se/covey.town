@@ -24,6 +24,7 @@
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.2",
     "d3-timer": "^1.0.10",
+    "dotenv": "^8.2.0",
     "enzyme": "^3.11.0",
     "framer-motion": "^3.2.0",
     "fscreen": "^1.0.2",

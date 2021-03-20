@@ -37,5 +37,15 @@ export type EmailPasswordCredential = {
 export type User = {
   isLoggedIn: boolean,
   currentUser: any,
-  actions: any,
+  actions: UserActions,
+}
+
+export type AuthState = {
+  isLoggedIn: boolean,
+  currentUser: any
+}
+
+export type UserActions = {
+  handleLogout: () => void,
+  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
 }
