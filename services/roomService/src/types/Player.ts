@@ -11,7 +11,7 @@ export default class Player {
   /** The current room id of this user in the world map
    * SuperMap = 0
    * SubMap = 1 * */
-  public room_id: CoveyTownRoomID;
+  public mapId: CoveyTownRoomID;
 
   /** The unique identifier for this player * */
   private readonly _id: string;
@@ -28,7 +28,7 @@ export default class Player {
     };
     this._userName = userName;
     this._id = nanoid();
-    this.room_id = '0';
+    this.mapId = '0';
   }
 
   get userName(): string {
@@ -39,8 +39,8 @@ export default class Player {
     return this._id;
   }
 
-  update_room_id(room_id: CoveyTownRoomID): void {
-    this.room_id = room_id;
+  updateMapId(room_id: CoveyTownRoomID): void {
+    this.mapId = room_id;
   }
 
   updateLocation(location: UserLocation): void {
