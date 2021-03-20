@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { UserLocation, CoveyTownRoomID } from '../CoveyTypes';
+import { UserLocation, CoveyTownMapID } from '../CoveyTypes';
 
 /**
  * Each user who is connected to a town is represented by a Player object
@@ -11,7 +11,7 @@ export default class Player {
   /** The current room id of this user in the world map
    * SuperMap = 0
    * SubMap = 1 * */
-  public mapId: CoveyTownRoomID;
+  public mapId: CoveyTownMapID;
 
   /** The unique identifier for this player * */
   private readonly _id: string;
@@ -39,7 +39,7 @@ export default class Player {
     return this._id;
   }
 
-  updateMapId(room_id: CoveyTownRoomID): void {
+  updateMapId(room_id: CoveyTownMapID): void {
     this.mapId = room_id;
   }
 

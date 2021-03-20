@@ -6,5 +6,5 @@ export type UserLocation = {
   moving: boolean;
 };
 export type CoveyTownList = { friendlyName: string; coveyTownID: string; currentOccupancy: number; maximumOccupancy: number }[];
-export type CoveyTownRoomID = '0' | '1';
+export type CoveyTownMapID = '0' | '1';
 

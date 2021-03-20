@@ -80,6 +80,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       }
       return false;
     };
+
     return { nearbyPlayers: players.filter((p) => isWithinCallRadius(p, currentLocation)) };
   }
 
