@@ -6,6 +6,7 @@
     "scripts": {
         "heroku-postbuild": "cd services/roomService && npm ci && npm run build",
         "run-services-actions": "heroku local -p 3001 web",
+        "install-all": "cd services/roomService && npm install && cd ../../frontend && npm install",
         "lint": "cd services/roomService && npm run-script lint && cd ../../frontend && npm run-script lint",
         "test": "cd services/roomService && npm run-script test && cd ../../frontend && npm run-script test"
     },
