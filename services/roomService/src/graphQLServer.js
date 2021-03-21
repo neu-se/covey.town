@@ -145,9 +145,6 @@ var typeDefs = require('./typeDefs/index.ts');
 /* const resolvers  = require('./resolvers/index.ts')  */
 var resolvers = {
   Query: {
-    greetings: function () {
-      return 'Hello';
-    },
     user: function (parent, args) {
       return __awaiter(void 0, void 0, void 0, function () {
         var user, error_1;
@@ -196,8 +193,6 @@ var resolvers = {
           switch (_a.label) {
             case 0:
               _a.trys.push([0, 2, , 3]);
-              console.log(args.input);
-              console.log(args.input.email);
               return [4 /*yield*/, User.findOne({ email: args.input.email })];
             case 1:
               user = _a.sent();
@@ -223,14 +218,12 @@ var resolvers = {
     },
   },
 };
+//GETTING INSTANCE OF APOLLO SERVER
 var apolloServer = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
 });
 apolloServer.applyMiddleware({ app: app, path: '/graphql' });
-app.use('/', function (req, res, next) {
-  res.send({ message: 'Hello' });
-});
 connection();
 app.listen(4000, function () {
   return console.log('Now browse to localhost:4000/graphql');
