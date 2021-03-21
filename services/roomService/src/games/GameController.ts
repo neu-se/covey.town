@@ -4,6 +4,7 @@ import assert from "assert";
 import {ResponseEnvelope, TownJoinRequest, TownJoinResponse} from "../requestHandlers/CoveyTownRequestHandlers";
 import IGame from "./IGame";
 import PlayerSession from "../types/PlayerSession";
+import {GameCreateRequest, GameFindRequest, GameUpdateRequest} from "./RequestTypes"
 
 export default class GameController {
   constructor(game: IGame) {
@@ -20,13 +21,12 @@ export default class GameController {
      this._game = game;
    }
 
+
   /**
    * Creates a new game session
    *
-   * @param list of players (Player objects)
-   * @param game type (String)
    */
-  createGame(players: Player[], gameType: String): void {}
+  static async createGame(requestData: GameCreateRequest) {}
 
   /**
    * Updates the game state after a player makes a move
@@ -34,15 +34,14 @@ export default class GameController {
    * @param player who just moved (Player object)
    * @param player move (String)
    */
-  updateGame(player: Player, move: String): void {}
+  static async updateGame(requestData: GameUpdateRequest) {}
 
   /**
    * Returns the game state to update the view
    *
    * @param gameID (String)
    */
-  findGame(gameId: String): void {}
-
+  static async findGame(requestData: GameFindRequest)  {}
 }
 
 
