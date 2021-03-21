@@ -1,30 +1,9 @@
 import { nanoid } from 'nanoid';
 import { Message, MessageType } from "../CoveyTypes";
+import { createMessageForTesting, createMessageChainForTesting, createPlayerForTesting } from '../TestUtils';
 import MessageChain from "./MessageChain";
 import Player from "./Player";
 
-function createPlayerForTesting(){
-    return new Player('player 1');
-}
-
-function createMessageForTesting(type: MessageType, player1: Player, player2id?: string) {
-    const timestamp = Date.now().toString();
-    let directMessageID = undefined;
-    if (player2id) {
-        directMessageID = player1.id + ':' + player2id;
-    }
-    return {
-        user: player1,
-        messageContent: 'Omg I\'m a test',
-        timestamp: timestamp,
-        type: type,
-        directMessageId: directMessageID,
-    }
-}
-
-function createMessageChainForTesting(startingMessage: Message): MessageChain {
-    return new MessageChain(startingMessage);
-}
 
 describe('MessageChain', () => {
     it('get messages', () => {
