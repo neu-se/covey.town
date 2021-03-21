@@ -1,9 +1,11 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
-import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
-import CoveyTownListener from '../types/CoveyTownListener';
+import { CoveyTownList, MazeCompletionTimeList, UserLocation } from '../CoveyTypes';
+import pool from '../dbconnector/pool';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import CoveyTownListener from '../types/CoveyTownListener';
+import Player from '../types/Player';
+import { getMazeCompletionTime, insertMazeCompletionTime } from '../utils/queries';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -79,6 +81,17 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
+export interface MazeCompletionTimeListResponse {
+  mazeCompletionTimes: MazeCompletionTimeList;
+}
+
+export interface MazeCompletionTimeCreateRequest {
+  coveyTownID: string;
+  playerID: string;
+  username: string;
+  time: number;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -96,7 +109,9 @@ export interface ResponseEnvelope<T> {
  *
  * @param requestData an object representing the player's request
  */
-export async function townJoinHandler(requestData: TownJoinRequest): Promise<ResponseEnvelope<TownJoinResponse>> {
+export async function townJoinHandler(
+  requestData: TownJoinRequest,
+): Promise<ResponseEnvelope<TownJoinResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
 
   const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
@@ -130,7 +145,9 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   };
 }
 
-export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
+export async function townCreateHandler(
+  requestData: TownCreateRequest,
+): Promise<ResponseEnvelope<TownCreateResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
@@ -148,25 +165,37 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   };
 }
 
-export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export async function townDeleteHandler(
+  requestData: TownDeleteRequest,
+): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   return {
     isOK: success,
     response: {},
-    message: !success ? 'Invalid password. Please double check your town update password.' : undefined,
+    message: !success
+      ? 'Invalid password. Please double check your town update password.'
+      : undefined,
   };
 }
 
-export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export async function townUpdateHandler(
+  requestData: TownUpdateRequest,
+): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
+  const success = townsStore.updateTown(
+    requestData.coveyTownID,
+    requestData.coveyTownPassword,
+    requestData.friendlyName,
+    requestData.isPubliclyListed,
+  );
   return {
     isOK: success,
     response: {},
-    message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
+    message: !success
+      ? 'Invalid password or update values specified. Please double check your town update password.'
+      : undefined,
   };
-
 }
 
 /**
@@ -203,8 +232,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   // For each player, the session token should be the same string returned by joinTownHandler
   const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
 
-  const townController = CoveyTownsStore.getInstance()
-    .getControllerForTown(coveyTownID);
+  const townController = CoveyTownsStore.getInstance().getControllerForTown(coveyTownID);
 
   // Retrieve our metadata about this player from the TownController
   const s = townController?.getSessionByToken(token);
@@ -232,4 +260,66 @@ export function townSubscriptionHandler(socket: Socket): void {
   socket.on('playerMovement', (movementData: UserLocation) => {
     townController.updatePlayerLocation(s.player, movementData);
   });
+}
+
+export async function mazeTimeHandler(): Promise<ResponseEnvelope<MazeCompletionTimeListResponse>> {
+  try {
+    const results = await pool.query(getMazeCompletionTime);
+    return {
+      isOK: true,
+      response: {
+        mazeCompletionTimes: results.rows.map(value => ({
+          playerID: value.player_id,
+          username: value.username,
+          time: value.time,
+        })),
+      },
+    };
+  } catch (error) {
+    return {
+      isOK: false,
+    };
+  }
+}
+
+export async function mazeTimeCreateHandler(
+  requestData: MazeCompletionTimeCreateRequest,
+): Promise<ResponseEnvelope<Record<string, null>>> {
+  const { coveyTownID, playerID, username, time } = requestData;
+
+  if (!coveyTownID || !playerID || !username || !time) {
+    return {
+      isOK: false,
+      message: 'Please include a coveyTownID, playerID, username, and time in seconds',
+    };
+  }
+
+  const townStore = CoveyTownsStore.getInstance();
+  const townController = townStore.getControllerForTown(coveyTownID);
+
+  if (!townController) {
+    return {
+      isOK: false,
+      message: 'Please include a valid coveyTownID',
+    };
+  }
+
+  if (!townController.hasPlayer(playerID)) {
+    return {
+      isOK: false,
+      message: 'Player does not exist in specified town',
+    };
+  }
+
+  try {
+    await pool.query(insertMazeCompletionTime, [playerID, username, time]);
+    return {
+      isOK: true,
+    };
+  } catch (error) {
+    return {
+      isOK: false,
+      message: `Error: ${error.message}`,
+    };
+  }
 }
