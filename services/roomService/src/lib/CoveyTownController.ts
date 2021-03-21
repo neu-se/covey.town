@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { CoveyTownRoomID, UserLocation } from '../CoveyTypes';
+import { CoveyTownMapID, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -126,7 +126,7 @@ export default class CoveyTownController {
    * @param player Player to update location for
    * @param map_id New location for this player
    */
-  updatePlayerMap(player: Player, mapId: CoveyTownRoomID): void {
+  updatePlayerMap(player: Player, mapId: CoveyTownMapID): void {
     player.updateMapId(mapId);
     this._listeners.forEach((listener) => listener.onPlayerMapChange(player));
   }
