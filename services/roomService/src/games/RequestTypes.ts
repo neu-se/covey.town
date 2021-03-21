@@ -6,6 +6,7 @@ export interface GameCreateRequest {
 }
 
 export interface GameUpdateRequest {
+  gameId: String;
   player: Player;
   move: String
 }

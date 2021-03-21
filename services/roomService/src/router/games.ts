@@ -1,4 +1,3 @@
-import {Server} from "http";
 import {Express} from 'express';
 import BodyParser from 'body-parser';
 import GameController from "../games/GameController";
@@ -12,9 +11,11 @@ export default function addTownRoutes(app: Express): void {
    */
   app.post('/games', BodyParser.json(), async (req, res) => {
     try {
-      const result = GameController.createGame(
-        {players: req.body.players,
-        gameType: req.body.gameType}
+      const result = await GameController.createGame(
+        {
+          players: req.body.players,
+          gameType: req.body.gameType
+        }
       );
       res.status(StatusCodes.OK)
         .json(result);
@@ -33,7 +34,8 @@ export default function addTownRoutes(app: Express): void {
   app.patch('/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
       const result = GameController.updateGame(
-        {player: req.body.player,
+        {gameId: req.body.gameId,
+          player: req.body.player,
           move: req.body.move}
       );
       res.status(StatusCodes.OK)
