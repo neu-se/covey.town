@@ -10,16 +10,17 @@ export default class MessageChain {
     private readonly _directMessageId: string | undefined;
     private readonly _participants: string[] | undefined;
     
-    constructor(message : Message) {
+    constructor(message?: Message) {
         this._isActive = true;
-        this._messages.push(message);
-        if (message.type == MessageType.DirectMessage) {
-            this._directMessageId = message.directMessageId;
-            
-            // split directMessageID into two player IDs
-            this._participants = message.directMessageId?.split(':');
-        }
-        else {
+        if (message !== undefined) { // message will only be passed in when starting a direct message chain
+            this._messages.push(message);
+            if (message.type == MessageType.DirectMessage) {
+                this._directMessageId = message.directMessageId;
+                
+                // split directMessageID into two player IDs
+                this._participants = message.directMessageId?.split(':');
+            }
+        } else {
             this._directMessageId = undefined;
             this._participants = undefined;
         }

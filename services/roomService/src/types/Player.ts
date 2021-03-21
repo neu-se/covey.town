@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { Message, MessageType, UserLocation } from '../CoveyTypes';
+import MessageChain from './MessageChain';
 
 /**
  * Each user who is connected to a town is represented by a Player object
@@ -14,6 +15,8 @@ export default class Player {
   /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
 
+  private _townMessageChain: MessageChain;
+
   constructor(userName: string) {
     this.location = {
       x: 0,
@@ -23,6 +26,7 @@ export default class Player {
     };
     this._userName = userName;
     this._id = nanoid();
+    this._townMessageChain = new MessageChain;
   }
 
   get userName(): string {
@@ -31,6 +35,18 @@ export default class Player {
 
   get id(): string {
     return this._id;
+  }
+
+  get townMessageChain(): MessageChain {
+    return this._townMessageChain;
+  }
+
+  receiveMessage(message: Message) {
+    switch (message.type) {
+      case  MessageType.TownMessage:
+        this._townMessageChain.addMessage(message);
+        break;
+    }
   }
 
   updateLocation(location: UserLocation): void {
