@@ -2,7 +2,6 @@ import React, {
   Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
-import dotenv from 'dotenv';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -31,7 +30,6 @@ import LoginPage from "./components/LoginPage/LoginPage";
 import AuthGuard from './components/Authentication/AuthGuard';
 import useUser from './hooks/useUser';
 import AuthenticationContext from './contexts/AuthenticationContext';
-import IAuth from './components/Authentication/IAuth';
 import RealmAuth from './components/Authentication/RealmAuth';
 
 type CoveyAppUpdate =

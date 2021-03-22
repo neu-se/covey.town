@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+<<<<<<< HEAD
     "@apollo/client": "^3.3.12",
+=======
+    "@chakra-ui/icons": "^1.0.7",
+>>>>>>> 88a553c12d56f242c13c267840f23aa9c7d40054
     "@chakra-ui/react": "^1.1.2",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",

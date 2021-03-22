@@ -12,7 +12,6 @@ import {
   Link,
   Button,
   Heading,
-  Text,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
