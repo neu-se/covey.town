@@ -31,7 +31,7 @@
     "nanoid": "^3.1.12",
     "node-sass": "^4.14.1",
     "normalize.css": "^8.0.1",
-    "phaser": "^3.24.1",
+    "phaser": "^3.53.1",
     "react": "^17.0.1",
     "react-context-mutex": "^1.0.8",
     "react-dom": "^17.0.1",
