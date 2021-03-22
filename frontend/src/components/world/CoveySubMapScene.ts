@@ -1,10 +1,23 @@
 import Phaser from "phaser";
 import CoveySuperMapScene from "./CoveySuperMapScene";
-import Player from "../../classes/Player";
+import Player, {UserLocation} from "../../classes/Player";
+import Video from "../../classes/Video/Video";
 
 // TODO : Stub-out CoveySubMapScene
 // TODO: Add trigger-tile event handling to CoveySubMapScene
 export default class CoveySubMapScene extends CoveySuperMapScene {
+  // class types are inferred from their assignments in the constructor
+  video;
+
+  emitMovement;
+
+  // constructor takes values from CoveySuperMapScene can include additional properties above
+  // and parameters if needed.
+  constructor(video: Video, emitMovement: (loc:UserLocation) => void) {
+    super(video, emitMovement);
+    this.emitMovement = emitMovement;
+    this.video = video;
+  }
 
   // updated preload with tilemaps specific to subMap tilesets
   preload() {
@@ -24,7 +37,13 @@ export default class CoveySubMapScene extends CoveySuperMapScene {
   */
   // updatePlayerLocation(player: Player) {
 
-  /* update function for the checks on the trigger points of the doorway in subMap */
+
+  /* may need the update() function which checks the trigger points of the doorway on a subMap.
+  * Within this function from the superMap, it has a lot of things we may not need to copy over.
+  * One thing we may need is the code towards the end of that function, where JP wrote
+  * some validation checks to check if the player is in the door way. We may want
+  * to do this for a subMap doorway, but need to figure out how much to copy over.
+  */
   // update() {
 }
 
@@ -41,18 +60,11 @@ export default class CoveySubMapScene extends CoveySuperMapScene {
   Scenario : SubMap player wants to exit the game from the subMap
 
   Scenario: we are at capacity for the map e.g. 100/100 players.  The 100th player
-  is in the subMap.
-  Expected behavior:
-   - the 100th player is allowed to to still enter and exit subMaps freely
-     - Question: If we are at capacity, can the player enter a NEW submap?
-     - OR are we saying no more subMaps are to be created.
+  is in the subMap.  If at capacity, is the player still allowed to enter new subMaps?
 
   Scenario: we are at capacity for the map e.g. 100/100 players.  The 100th player
-  is in the subMap.  They want to exit the game.
-  Expected behavior:
-   - the 100th player wants to exit the game from the subMap
-   - player exits, but the subMap should notify the SuperMap or an event listener that
-   - we are no longer at capacity e.g. 99/100.
+  is in the subMap.  They want to exit the game from the subMap. Do we want to notify
+  the SuperMap or an event listener that we are no longer at capacity?
 
   Scenario: SuperMap player needs a validation that they can video with
   another subMap player.
