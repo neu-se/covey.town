@@ -112,7 +112,7 @@ export interface SearchUsersResponse {
 }
 
 export interface AddNeighborRequest {
-  currenUserId: string,
+  currentUserId: string,
   UserIdToRequest: string,
 }
 
@@ -262,12 +262,12 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
   try {
     const db = new DatabaseController();
     await db.connect();
-    const result = await db.sendRequest(requestData.currenUserId, requestData.UserIdToRequest);
+    const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
     db.close();
       return {
         isOK: true,
         response: {
-          status: 'requestSent',
+          status: 'requestSent', //is this correct status to return - shouldn't it be return?
         },
       }
   } catch (err) {

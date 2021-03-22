@@ -79,11 +79,7 @@ export default class DatabaseController {
      */
      async login(username: string, password: string) : Promise<ResponseEnvelope<LoginResponse>> {
         try {
-            // get the user collection
-            // find on both username and login
-            // if nothing found, return no user found with that username or passowrd
-            // else, there should be ONLY 1 match, and we should return the given id back in the response
-
+            
             const allUsers = this.getCollection('user');
             const findUser = await allUsers.find({'username': username, 'password': password}).limit(1).toArray();
 
