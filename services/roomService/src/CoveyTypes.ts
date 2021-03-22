@@ -1,5 +1,3 @@
-import Player from "./types/Player";
-
 export type Direction = 'front' | 'back' | 'left' | 'right';
 export type UserLocation = {
   x: number;
@@ -15,9 +13,15 @@ export enum MessageType {
   TownMessage
 };
 
+export type PlayerData = {
+  location: UserLocation;
+  userName: string;
+  id: string;
+}
+
 export type Message = {
   // user who sent the message
-  user: Player;
+  user: PlayerData;
   messageContent: string;
   timestamp: string;
   type: MessageType;

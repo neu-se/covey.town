@@ -13,7 +13,7 @@ export function createMessageForTesting(type: MessageType, player1: Player, play
     directMessageID = player1.id + ':' + player2id;
   }
   return {
-    user: player1,
+    user: {location: player1.location, userName: player1.userName, id: player1.id},
     messageContent: "Omg I'm a test",
     timestamp: timestamp,
     type: type,
