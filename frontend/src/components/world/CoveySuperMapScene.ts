@@ -3,50 +3,50 @@ import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 // import useCoveyAppState from '../../hooks/useCoveyAppState';
 
-export default class CoveyGameScene extends Phaser.Scene {
-    private player?: {
+export default class CoveySuperMapScene extends Phaser.Scene {
+    protected player?: {
       sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
     };
-  
-    private id?: string;
-  
-    private players: Player[] = [];
-  
-    private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
-  
+
+  protected id?: string;
+
+  protected players: Player[] = [];
+
+  protected cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
+
     /*
      * A "captured" key doesn't send events to the browser - they are trapped by Phaser
      * When pausing the game, we uncapture all keys, and when resuming, we re-capture them.
      * This is the list of keys that are currently captured by Phaser.
      */
-    private previouslyCapturedKeys: number[] = [];
-  
-    private lastLocation?: UserLocation;
-  
-    private ready = false;
-  
-    private paused = false;
-  
-    private video: Video;
-  
-    private emitMovement: (loc: UserLocation) => void;
-  
+  protected previouslyCapturedKeys: number[] = [];
+
+  protected lastLocation?: UserLocation;
+
+  protected ready = false;
+
+  protected paused = false;
+
+  protected video: Video;
+
+  protected emitMovement: (loc: UserLocation) => void;
+
     // JP: Moved map to a field to allow map's properties to be referenced from update()
-    private map?: Phaser.Tilemaps.Tilemap;
-  
+  protected map?: Phaser.Tilemaps.Tilemap;
+
     constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
       super('PlayGame');
       this.video = video;
       this.emitMovement = emitMovement;
     }
-  
+
     preload() {
       // this.load.image("logo", logoImg);
       this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
       this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
       this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
     }
-  
+
     updatePlayersLocations(players: Player[]) {
       if (!this.ready) {
         this.players = players;
@@ -74,7 +74,7 @@ export default class CoveyGameScene extends Phaser.Scene {
         );
       }
     }
-  
+
     updatePlayerLocation(player: Player) {
       let myPlayer = this.players.find((p) => p.id === player.id);
       if (!myPlayer) {
@@ -87,7 +87,7 @@ export default class CoveyGameScene extends Phaser.Scene {
             y: 0,
           };
         }
-        // MD added mapID to Player call 
+        // MD added mapID to Player call
         myPlayer = new Player(player.id, player.userName, location, player.mapID);
         this.players.push(myPlayer);
       }
@@ -121,7 +121,7 @@ export default class CoveyGameScene extends Phaser.Scene {
         }
       }
     }
-  
+
     getNewMovementDirection() {
       if (this.cursors.find(keySet => keySet.left?.isDown)) {
         return 'left';
@@ -137,7 +137,7 @@ export default class CoveyGameScene extends Phaser.Scene {
       }
       return undefined;
     }
-  
+
     update() {
       if (this.paused) {
         return;
@@ -146,10 +146,10 @@ export default class CoveyGameScene extends Phaser.Scene {
         const speed = 175;
         const prevVelocity = this.player.sprite.body.velocity.clone();
         const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
-  
+
         // Stop any previous movement from the last frame
         body.setVelocity(0);
-  
+
         const primaryDirection = this.getNewMovementDirection();
         switch (primaryDirection) {
           case 'left':
@@ -181,11 +181,11 @@ export default class CoveyGameScene extends Phaser.Scene {
             } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
             break;
         }
-  
+
         // Normalize and scale the velocity so that player can't move faster along a diagonal
         this.player.sprite.body.velocity.normalize()
           .scale(speed);
-  
+
         const isMoving = primaryDirection !== undefined;
         this.player.label.setX(body.x);
         this.player.label.setY(body.y - 20);
@@ -207,20 +207,20 @@ export default class CoveyGameScene extends Phaser.Scene {
           this.lastLocation.moving = isMoving;
           this.emitMovement(this.lastLocation);
         }
-  
-  
+
+
         // JP: Establishes the top-left of the doorway on the town map
         const tl = this.map?.findObject('Objects',
         (obj) => obj.name === 'DoorTopLeft') as unknown as
         Phaser.GameObjects.Components.Transform;
-  
+
         // JP: Establishes the bottom-right of the doorway on the town map
         const br = this.map?.findObject('Objects',
         (obj) => obj.name === 'DoorBottomRight') as unknown as
         Phaser.GameObjects.Components.Transform;
-  
+
         // JP: Checks if user's body is in the doorway
-        if (body.x > tl.x  
+        if (body.x > tl.x
           && body.x < br.x
           && body.y > tl.y
           && body.y < br.y) {
@@ -229,16 +229,16 @@ export default class CoveyGameScene extends Phaser.Scene {
           }
       }
     }
-  
+
     create() {
       this.map = this.make.tilemap({ key: 'map' });
       const {map} = this;
-  
+
       /* Parameters are the name you gave the tileset in Tiled and then the key of the
        tileset image in Phaser's cache (i.e. the name you used in preload)
        */
       const tileset = map.addTilesetImage('tuxmon-sample-32px-extruded', 'tiles');
-  
+
       // Parameters: layer name (or index) from Tiled, tileset, x, y
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const belowLayer = map.createLayer('Below Player', tileset, 0, 0);
@@ -250,19 +250,19 @@ export default class CoveyGameScene extends Phaser.Scene {
        it a depth. Higher depths will sit on top of lower depth objects.
        */
       aboveLayer.setDepth(10);
-  
+
       // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
       // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
       const spawnPoint = map.findObject('Objects',
         (obj) => obj.name === 'Spawn Point') as unknown as
         Phaser.GameObjects.Components.Transform;
-  
-  
+
+
       // Find all of the transporters, add them to the physics engine
       const transporters = map.createFromObjects('Objects',
         { name: 'transporter' })
       this.physics.world.enable(transporters);
-  
+
       // For each of the transporters (rectangle objects), we need to tweak their location on the scene
       // for reasons that are not obvious to me, but this seems to work. We also set them to be invisible
       // but for debugging, you can comment out that line.
@@ -273,7 +273,7 @@ export default class CoveyGameScene extends Phaser.Scene {
                                     // the map
         }
       );
-  
+
       const labels = map.filterObjects('Objects',(obj)=>obj.name==='label');
       labels.forEach(label => {
         if(label.x && label.y){
@@ -283,9 +283,9 @@ export default class CoveyGameScene extends Phaser.Scene {
           })
         }
       });
-  
-  
-  
+
+
+
       const cursorKeys = this.input.keyboard.createCursorKeys();
       this.cursors.push(cursorKeys);
       this.cursors.push(this.input.keyboard.addKeys({
@@ -300,10 +300,10 @@ export default class CoveyGameScene extends Phaser.Scene {
         'left': Phaser.Input.Keyboard.KeyCodes.K,
         'right': Phaser.Input.Keyboard.KeyCodes.L
       }, false) as Phaser.Types.Input.Keyboard.CursorKeys);
-  
-  
-  
-  
+
+
+
+
       // Create a sprite with physics enabled via the physics system. The image used for the sprite
       // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
       // player's body.
@@ -321,7 +321,7 @@ export default class CoveyGameScene extends Phaser.Scene {
         sprite,
         label
       };
-  
+
       /* Configure physics overlap behavior for when the player steps into
       a transporter area. If you enter a transporter and press 'space', you'll
       transport to the location on the map that is referenced by the 'target' property
@@ -347,7 +347,7 @@ export default class CoveyGameScene extends Phaser.Scene {
           }
         }
       })
-  
+
       this.emitMovement({
         rotation: 'front',
         moving: false,
@@ -356,10 +356,10 @@ export default class CoveyGameScene extends Phaser.Scene {
         x: spawnPoint.x,
         y: spawnPoint.y,
       });
-  
+
       // Watch the player and worldLayer for collisions, for the duration of the scene:
       this.physics.add.collider(sprite, worldLayer);
-  
+
       // Create the player's walking animations from the texture atlas. These are stored in the global
       // animation manager so any sprite can access them.
       const { anims } = this;
@@ -407,13 +407,13 @@ export default class CoveyGameScene extends Phaser.Scene {
         frameRate: 10,
         repeat: -1,
       });
-  
+
       const camera = this.cameras.main;
       camera.startFollow(this.player.sprite);
       camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-  
-  
-  
+
+
+
       this.input.keyboard.removeCapture([
         Phaser.Input.Keyboard.KeyCodes.W,
         Phaser.Input.Keyboard.KeyCodes.A,
@@ -424,8 +424,8 @@ export default class CoveyGameScene extends Phaser.Scene {
         Phaser.Input.Keyboard.KeyCodes.K,
         Phaser.Input.Keyboard.KeyCodes.L,
       ]);
-  
-  
+
+
       // Help text that has a "fixed" position on the screen
       this.add
         .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
@@ -439,7 +439,7 @@ export default class CoveyGameScene extends Phaser.Scene {
         })
         .setScrollFactor(0)
         .setDepth(30);
-  
+
       this.ready = true;
       if (this.players.length) {
         // Some players got added to the queue before we were ready, make sure that they have
@@ -447,13 +447,13 @@ export default class CoveyGameScene extends Phaser.Scene {
         this.players.forEach((p) => this.updatePlayerLocation(p));
       }
     }
-  
+
     pause() {
       this.paused = true;
       this.previouslyCapturedKeys = this.input.keyboard.getCaptures();
       this.input.keyboard.clearCaptures();
     }
-  
+
     resume() {
       this.paused = false;
       this.input.keyboard.addCapture(this.previouslyCapturedKeys);
