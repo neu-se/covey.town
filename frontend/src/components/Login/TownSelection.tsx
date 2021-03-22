@@ -24,6 +24,7 @@ import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
+// test comment
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
