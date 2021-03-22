@@ -15,7 +15,7 @@ function createMapScene(myPlayer: Player | undefined, video: Video, emitMovement
   if (myPlayer.mapID !== '0') {
     return new CoveySubMapScene(video, emitMovement)
   }
-  return new CoveySuperMapScene(video, emitMovement) 
+  return new CoveySuperMapScene(video, emitMovement)
 }
 
 export default function WorldMap(): JSX.Element {
