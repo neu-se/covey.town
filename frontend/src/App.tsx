@@ -28,8 +28,11 @@ import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClie
 import Video from './classes/Video/Video';
 import SignUp from "./components/SignUp/SignUp";
 import LoginPage from "./components/LoginPage/LoginPage";
-import AuthGuard from './components/Authentication/Authentication';
+import AuthGuard from './components/Authentication/AuthGuard';
 import useUser from './hooks/useUser';
+import AuthenticationContext from './contexts/AuthenticationContext';
+import IAuth from './components/Authentication/IAuth';
+import RealmAuth from './components/Authentication/RealmAuth';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -212,7 +215,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     return true;
   }, [dispatchAppUpdate]);
   const videoInstance = Video.instance();
-
   const { setOnDisconnect } = props;
   useEffect(() => {
     setOnDisconnect(() => async () => { // Here's a great gotcha: https://medium.com/swlh/how-to-store-a-function-with-the-usestate-hook-in-react-8a88dd4eede1
@@ -262,9 +264,11 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   };
   return (
     <BrowserRouter>
-      <AuthGuard>
-        <Routes />
-      </AuthGuard>
+      <AuthenticationContext.Provider value={RealmAuth.getInstance()}>
+        <AuthGuard>
+          <Routes />
+        </AuthGuard>
+      </AuthenticationContext.Provider>
     </BrowserRouter>
 
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import assert from 'assert';
 
 import {
   Flex,
@@ -18,7 +18,8 @@ import {
 } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
 import useUser from '../../hooks/useUser';
-import RealmClient from '../../database/RealmClient';
+import useAuthentication from '../../hooks/useAuthentication';
+import IAuth from '../Authentication/IAuth';
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
@@ -26,14 +27,18 @@ export default function SimpleCard(): JSX.Element {
   const history = useHistory();
   const user = useUser();
   const toast = useToast();
+  const auth : IAuth = useAuthentication();
+
   const signInHandler = async () => {
     const credential = { email, password };
+    assert(user.actions);
     try {
-    await RealmClient.loginWithEmailPassword(credential,user.actions.setAuthState);
+    await auth.loginWithEmailPassword(credential,user.actions.setAuthState);
     history.push('/');
     } catch(err) {
       toast({
-        title: 'Login Failed'
+        title: 'Login Failed',
+        description: err.toString()
       })
     }
   }
