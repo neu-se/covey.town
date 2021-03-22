@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import UserContext from '../../contexts/UserContext';
-import { AuthState, User } from "../../CoveyTypes";
-import RealmClient from "../../database/RealmClient";
+import { AuthState } from "../../CoveyTypes";
+import useAuthentication from '../../hooks/useAuthentication';
 
-export default function AuthGuard(props: any): JSX.Element {
-  const { children } = props;
-  const user = RealmClient.getCurrentUser();
+
+interface AuthGuardProps {
+  children: React.ReactNode
+}
+
+/**
+ * Authentication guard service to store a user's authentication state.
+ * @param param0 props
+ */
+export default function AuthGuard({ children }: AuthGuardProps): JSX.Element {
+  const auth = useAuthentication();
+
+  const user = auth.getCurrentUser();
   
   const [authState, setAuthState] = useState<AuthState>({
     isLoggedIn: user? user?.state === 'active' : false,
@@ -13,20 +23,20 @@ export default function AuthGuard(props: any): JSX.Element {
   });
   useEffect(() => { }, [authState.isLoggedIn]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     user?.logOut();
     setAuthState({ isLoggedIn: false, currentUser: null });
-  };
+  }, [user]);
 
   const authInfo = React.useMemo(() => {
     const { isLoggedIn, currentUser } = authState;
-    const value: User = {
+    const value: AuthState = {
       isLoggedIn,
       currentUser,
       actions: { handleLogout, setAuthState },
     };
     return value;
-  }, [authState]);
+  }, [authState, handleLogout]);
 
   return (
     <UserContext.Provider value={authInfo}>

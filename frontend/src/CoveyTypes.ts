@@ -9,8 +9,8 @@ export type VideoRoom = {
   id: string
 };
 export type UserProfile = {
-  displayName: string,
-  id: string
+  id: string,
+  displayName: string
 };
 export type NearbyPlayers = {
   nearbyPlayers: Player[]
@@ -34,18 +34,21 @@ export type EmailPasswordCredential = {
   password: string
 }
 
-export type User = {
-  isLoggedIn: boolean,
-  currentUser: any,
-  actions: UserActions,
-}
-
 export type AuthState = {
   isLoggedIn: boolean,
-  currentUser: any
+  currentUser: Realm.User | null,
+  actions?: UserActions
 }
 
 export type UserActions = {
   handleLogout: () => void,
   setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
+}
+
+export type CoveyUserProfile = {
+  id: string,
+  userName?: string,
+  email:string,
+  pfpURL?: string,
+  bio?: string,
 }

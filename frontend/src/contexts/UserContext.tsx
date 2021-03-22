@@ -1,5 +1,5 @@
 import React from "react";
-import { User } from "../CoveyTypes";
+import { AuthState } from "../CoveyTypes";
 
-const UserContext = React.createContext<User | null>(null);
+const UserContext = React.createContext<AuthState | undefined>(undefined);
 export default UserContext;
