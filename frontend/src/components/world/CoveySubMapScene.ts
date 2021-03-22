@@ -1,29 +1,34 @@
+import Phaser from "phaser";
 import CoveySuperMapScene from "./CoveySuperMapScene";
 import Player from "../../classes/Player";
-import Phaser from "phaser";
 
 // TODO : Stub-out CoveySubMapScene
 // TODO: Add trigger-tile event handling to CoveySubMapScene
 export default class CoveySubMapScene extends CoveySuperMapScene {
 
-  // updated preload with tilemap specific to subMap tileset
+  // updated preload with tilemaps specific to subMap tilesets
   preload() {
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/submap.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
-  /* hard-coding this to filter the players out to just include subMap
+  /* hard-coding this to filter the players out to just include subMap players
   this can be refactored later once it is working. */
   // updatePlayersLocations(players: Player[]) {
   // }
 
-  /* note here about  updatePlayerLocation function */
-  // updatePlayerLocation()
+ /* note to check: inside the updatePlayersLocations function, it makes a call to
+  * updatePlayerLocation function.  So I pasted it here and we can decide later
+  * if we need keep it, copy the whole thing over, or tweak it
+  */
+  // updatePlayerLocation(player: Player) {
 
-  /* update function for the checks on the trigger points of the doorway in submap */
+  /* update function for the checks on the trigger points of the doorway in subMap */
   // update() {
 }
+
+
   /*
   Scenario: SuperMap player steps on to tile trigger player is now in subMap
   function needed to: validate that the player has entered the subMap tile
