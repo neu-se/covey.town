@@ -52,6 +52,8 @@
     "eslint": "^7.18.0",
     "express": "^4.17.1",
     "http-status-codes": "^2.1.4",
+    "mongodb": "^3.6.4",
+    "mongoose": "^5.11.19",
     "nanoid": "^3.1.20",
     "socket.io": "^3.0.4",
     "twilio": "^3.54.2"
