@@ -32,10 +32,12 @@ interface TownSelectionProps {
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const [inputUserName, setInputUserName] = useState<string>(Video.instance()?.userName || '');
   const [inputPassword, setInputPassword] = useState<string>('');
-  const [loginResponse, setLoginResponse] = useState<LoginResponse>({_id: '', username: ''});
+  const [loginResponse, setLoginResponse] = useState<LoginResponse>({
+    _id: '',
+    username: Video.instance()?.userName || ''
+  });
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -53,19 +55,37 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   const doSignUp = async () => {
     // API client should have sign-up route
-    const response = await apiClient.createAccount({
-      username: inputUserName,
-      password: inputPassword,
-    })
-    clearInputAndLogin(response)
+    try {
+      const response = await apiClient.createAccount({
+        username: inputUserName,
+        password: inputPassword,
+      })
+
+      clearInputAndLogin(response)
+    } catch (err) {
+      toast({
+        title: 'Unable to sign up, please try logging in if this is not your first time.',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+
   }
 
   const doAccountLogin = async () => {
-    const response = await apiClient.loginToAccount({
-      username: inputUserName,
-      password: inputPassword,
-    })
-    clearInputAndLogin(response)
+    try {
+      const response = await apiClient.loginToAccount({
+        username: inputUserName,
+        password: inputPassword,
+      })
+      clearInputAndLogin(response)
+    } catch (err) {
+      toast({
+        title: 'Unable to login, please make sure username and password are correct.',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
   }
 
   const updateTownListings = useCallback(() => {
@@ -87,7 +107,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
-      if (!inputUserName || inputUserName.length === 0) {
+      if (!loginResponse.username || loginResponse.username.length === 0) {
         toast({
           title: 'Unable to join town',
           description: 'Please select a username',
@@ -103,7 +123,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, coveyRoomID);
+      const initData = await Video.setup(loginResponse.username, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -117,10 +137,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, userName, connect, toast]);
+  }, [doLogin, loginResponse, connect, toast]);
 
   const handleCreate = async () => {
-    if (!userName || userName.length === 0) {
+    if (!loginResponse.username || loginResponse.username.length === 0) {
       toast({
         title: 'Unable to create town',
         description: 'Please select a username before creating a town',
