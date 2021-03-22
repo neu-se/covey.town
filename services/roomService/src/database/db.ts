@@ -17,20 +17,21 @@ export default class DatabaseController {
     }
 
     close() {
+
         this.client.close();
     }
 
     /**
-     * Returns an object with access to a collection in the coveytown db. 
+     * Returns an object with access to a collection in the coveytown db.
      * @param collection name of the collection to open
-     * @returns 
+     * @returns
      */
     private getCollection(collection: string) {
         return this.client.db('coveytown').collection(collection);
     }
 
     /**
-     * Creates an account using the passed username and password. 
+     * Creates an account using the passed username and password.
      * @param username the username of the new user
      * @param password the password of the new user
      * @returns a ResponseEnvelope with an AccountCreateResponse
@@ -72,7 +73,7 @@ export default class DatabaseController {
     }
 
     /**
-     * Attempt to log in with this username and password 
+     * Attempt to log in with this username and password
      * @param username the username of the returning user
      * @param password the password of the returning user
      * @returns a ResponseEnvelope with a LoginResponse
@@ -92,7 +93,7 @@ export default class DatabaseController {
                     isOK: false,
                     message: 'No user with that username and password',
                 }
-            } 
+            }
             console.log(String(findUser[0]._id));
             return {
                 isOK: true,
@@ -194,7 +195,7 @@ export default class DatabaseController {
 
     /**
      *  Function to determine the status of the relationship between the current user and the user being viewed
-     *  
+     *
      * @param user the string_id of current user
      * @param otherUser the string_id of other user
      * @returns a NeighborStatus
@@ -205,18 +206,18 @@ export default class DatabaseController {
             if (checkIfNeighbors) {
                 return 'neighbor';
             }
-    
+
             const neighborRequest = this.getCollection('neighbor_request');
             const requestSent = await neighborRequest.find({'requestFrom': user, 'requestTo': otherUser}).limit(1).toArray();
             if (requestSent.length === 1) {
                 return 'requestSent';
             }
-    
+
             const requestReceived = await neighborRequest.find({'requestFrom': otherUser, 'requestTo': user}).limit(1).toArray();
             if (requestReceived.length === 1) {
                 return 'requestReceived';
             }
-    
+
             return 'unknown';
 
         } catch (err) {
@@ -278,7 +279,7 @@ export default class DatabaseController {
     //         }
     //     }
     // }
-    
+
     // /**
     //  * List all the neighbors of the current user
     //  * @param user the string_id of the current user
@@ -430,7 +431,7 @@ export default class DatabaseController {
             const neighbors = this.getCollection('neighbor_mappings');
             const checkIfNeighbors = await this.checkIfNeighbors(user, neighbor);
             if (!checkIfNeighbors) {
-                // Same as above, unsure of proper response here 
+                // Same as above, unsure of proper response here
                 return {
                     isOK: false,
                     message: 'Not Neighbors',
@@ -471,7 +472,7 @@ export default class DatabaseController {
             }
         }
     }
-} 
+}
 
 
 
