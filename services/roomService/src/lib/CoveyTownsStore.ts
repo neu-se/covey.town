@@ -33,7 +33,7 @@ export default class CoveyTownsStore {
         coveyTownID: townController.coveyTownID,
         friendlyName: townController.friendlyName,
         currentOccupancy: townController.occupancy,
-        maximumOccupancy: 8,
+        maximumOccupancy: townController.capacity,
       }));
   }
 
