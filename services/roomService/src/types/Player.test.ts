@@ -14,7 +14,7 @@ describe('Player', () => {
       player.receiveMessage(message);
       const townMessages = player.townMessageChain.messages;
       expect(townMessages.length).toBe(1);
-      expect(townMessages[0]).toBe(message);
+      expect(townMessages).toContain(message);
     });
     it('does not add other message types to the town message list', () => {
       const player = createPlayerForTesting();

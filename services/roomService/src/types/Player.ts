@@ -26,7 +26,7 @@ export default class Player {
     };
     this._userName = userName;
     this._id = nanoid();
-    this._townMessageChain = new MessageChain;
+    this._townMessageChain = new MessageChain();
   }
 
   get userName(): string {
