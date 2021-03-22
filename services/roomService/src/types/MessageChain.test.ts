@@ -49,7 +49,7 @@ describe('MessageChain', () => {
       const firstMessage = createMessageForTesting(MessageType.DirectMessage, player1, player2id);
       const testChain = createMessageChainForTesting(firstMessage);
       expect(testChain.directMessageId).toBe(firstMessage.directMessageId);
-      expect(testChain.directMessageId).toBe(player1.id + ':' + player2id);
+      expect(testChain.directMessageId).toBe(`${player1.id}:${player2id}`);
     });
   });
   describe('get participants', () => {

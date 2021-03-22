@@ -41,10 +41,12 @@ export default class Player {
     return this._townMessageChain;
   }
 
-  receiveMessage(message: Message) {
+  receiveMessage(message: Message): void {
     switch (message.type) {
       case  MessageType.TownMessage:
         this._townMessageChain.addMessage(message);
+        break;
+      default:
         break;
     }
   }

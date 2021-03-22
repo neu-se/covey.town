@@ -10,14 +10,14 @@ export type CoveyTownList = { friendlyName: string; coveyTownID: string; current
 export enum MessageType {
   DirectMessage,
   ProximityMessage,
-  TownMessage
-};
+  TownMessage,
+}
 
 export type PlayerData = {
   location: UserLocation;
   userName: string;
   id: string;
-}
+};
 
 export type Message = {
   // user who sent the message
@@ -27,4 +27,4 @@ export type Message = {
   type: MessageType;
   // null for cases of Proximity and Town Message
   directMessageId: string | undefined;
-}
+};
