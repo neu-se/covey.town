@@ -19,6 +19,7 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import { FcGoogle } from 'react-icons/fc';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
@@ -150,7 +151,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
+
+            <Heading p="4" as="h2" size="lg">-or-</Heading>
+
+            <Button 
+              leftIcon={<FcGoogle />} 
+              size="lg"
+              colorScheme="Google" 
+              variant="solid" 
+              color="blue.500" 
+              border="2px" 
+              borderColor="blue.500"
+              _hover={{ bg: "#ebedf0" }} 
+            >
+              Sign in
+            </Button>
           </Box>
+
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
