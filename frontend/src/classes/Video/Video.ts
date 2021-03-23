@@ -24,6 +24,10 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
+  pauseGame: () => void = ()=>{};
+
+  unPauseGame: () => void = ()=>{};
+
   constructor(userName: string, coveyTownID: string) {
     this._userName = userName;
     this._coveyTownID = coveyTownID;
@@ -101,11 +105,16 @@ export default class Video {
       Video.video = new Video(username, coveyTownID);
     }
 
-    result = await Video.video.setup();
-
-    if (!result) {
+    try {
+      result = await Video.video.setup();
+      if (!result) {
+        Video.video = null;
+      }
+    } catch (err) {
       Video.video = null;
+      throw err;
     }
+
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - JB TODO
