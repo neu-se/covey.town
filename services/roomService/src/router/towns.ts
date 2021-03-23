@@ -16,7 +16,7 @@ import {
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
-export default function addTownRoutes(http: Server, app: Express): void {
+export default function addTownRoutes(http: Server, app: Express): io.Server {
   /*
    * Create a new session (aka join a town)
    */
@@ -186,4 +186,5 @@ try {
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);
+  return socketServer;
 }

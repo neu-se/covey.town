@@ -1,6 +1,9 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { ServerPlayer } from './Player';
+import { UserLocation } from '../CoveyTypes';
+
+
+export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -92,49 +95,6 @@ export type CoveyTownInfo = {
   maximumOccupancy: number
 };
 
-export interface AccountCreateRequest {
-  username: string,
-  password: string,
-}
-
-export interface AccountCreateResponse {
-  _id: string,
-  username: string,
-}
-
-
-export interface LoginRequest {
-  username: string,
-  password: string,
-}
-
-export interface LoginResponse {
-  _id: string,
-  username: string,
-}
-export interface SearchUsersRequest {
-  username: string,
-}
-
-export interface SearchUsersResponse {
-  users: {
-    _id: string,
-    username: string,
-  }[]
-}
-
-export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
-
-export interface AddNeighborRequest {
-  currenUserId: string,
-  UserIdToRequest: string,
-}
-
-export interface AddNeighborResponse {
-  status: NeighborStatus | string,
-}
-
-
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
 
@@ -182,26 +142,6 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
-  async createAccount(requestData: AccountCreateRequest): Promise<AccountCreateResponse> {
-    const responseWrapper = await this._axios.post('/signup', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
-  async loginToAccount(requestData: LoginRequest): Promise<LoginResponse> {
-    const responseWrapper = await this._axios.post('/login', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
-  async searchForUsersByUsername(requestData: SearchUsersRequest): Promise<SearchUsersResponse> {
-    const responseWrapper = await this._axios.get<ResponseEnvelope<SearchUsersResponse>>(`/users/${requestData.username}`);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
-  async sendAddNeighborRequest(requestData: AddNeighborRequest): Promise<AddNeighborResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<AddNeighborResponse>>(`/users/request_neighbor`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
