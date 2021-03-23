@@ -48,6 +48,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
+
   useEffect(() => {
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
@@ -137,6 +138,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const onSignIn = async () => {
+    // try {
+    //   const auth2 = window.gapi.auth2.getAuthInstance();
+    //   const googleUser = await auth2.signIn();
+    //   let googleToken = googleUser.getAuthResponse().id_token;
+    // } catch (err) {
+    //   toast({
+    //     title: 'Unable to sign in with Google',
+    //     description: err.toString(),
+    //     status: 'error'
+    //   })
+    // }
+  }
+
+
+
+
   return (
     <>
       <form>
@@ -163,6 +181,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               border="2px" 
               borderColor="blue.500"
               _hover={{ bg: "#ebedf0" }} 
+              onClick={onSignIn}
             >
               Sign in
             </Button>
