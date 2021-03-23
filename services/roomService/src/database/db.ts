@@ -1,6 +1,8 @@
+import dotenv from 'dotenv';
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority";
 import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+
+dotenv.config();
 
 export type NeighborStatus = { status: 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor' };
 
@@ -8,7 +10,7 @@ export default class DatabaseController {
     private client;
 
     constructor() {
-        this.client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        this.client = new MongoClient(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
     async connect() {
