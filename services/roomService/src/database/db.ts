@@ -2,7 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority";
 import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
-export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
+export type NeighborStatus = { status: 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor' };
 
 export default class DatabaseController {
     private client;
@@ -35,38 +35,17 @@ export default class DatabaseController {
      * @param password the password of the new user
      * @returns a ResponseEnvelope with an AccountCreateResponse
      */
-    async insertUser(username: string, password: string) : Promise<ResponseEnvelope<AccountCreateResponse>> {
+    async insertUser(username: string, password: string) : Promise<AccountCreateResponse> {
         try {
-            if (password.length === 0 || password === '') {
-                return {
-                    isOK: false,
-                    message: 'invalid password',
-                }
-            }
-
             const user = this.getCollection('user');
-            const findUsername = await user.find({'username':username}).limit(1).toArray();
-            if (findUsername.length > 0) {
-                return {
-                    isOK: false,
-                    message: 'Username Taken',
-                }
-            }
-
             const accountCreateResponse = await user.insertOne({'username':username, 'password':password});
 
-            return {
-                isOK: true,
-                response: {
+            return  {
                     _id: String(accountCreateResponse.ops[0]._id),
                     username: String(accountCreateResponse.ops[0].username),
                 }
-            }
         } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
+            return err.toString();
         }
 
     }
@@ -77,7 +56,7 @@ export default class DatabaseController {
      * @param password the password of the returning user
      * @returns a ResponseEnvelope with a LoginResponse
      */
-     async login(username: string, password: string) : Promise<ResponseEnvelope<LoginResponse>> {
+     async login(username: string, password: string) : Promise<LoginResponse | String> {
         try {
             // get the user collection
             // find on both username and login
@@ -88,24 +67,15 @@ export default class DatabaseController {
             const findUser = await allUsers.find({'username': username, 'password': password}).limit(1).toArray();
 
             if (findUser.length === 0) {
-                return {
-                    isOK: false,
-                    message: 'No user with that username and password',
-                }
+                return 'Invalid Username and Password';
             } 
-            console.log(String(findUser[0]._id));
-            return {
-                isOK: true,
-                response: {
+
+            return  {
                     _id: String(findUser[0]._id),
                     username: String(findUser[0].username),
                 }
-            }
         } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
+            return err.toString();
         }
 
     }
@@ -163,32 +133,23 @@ export default class DatabaseController {
      * @param requestTo the string _id of the player receiving a request
      * @returns a ResponseEnvelope with a NeighborStatus
      */
-    async sendRequest(requestFrom: string, requestTo: string) : Promise<ResponseEnvelope<NeighborStatus>> {
+    async sendRequest(requestFrom: string, requestTo: string) : Promise<NeighborStatus> {
         try {
             const neighborRequest = this.getCollection('neighbor_request');
 
             // Determine if this request has already been sent
             const neighborStatus = await this.neighborStatus(requestFrom, requestTo);
 
-            if (neighborStatus === 'neighbor' || neighborStatus === 'requestReceived' || neighborStatus === 'requestSent') {
-                return {
-                    isOK: true,
-                    response: neighborStatus,
-                }
+            if (neighborStatus.status === 'neighbor' || neighborStatus.status === 'requestReceived' || neighborStatus.status === 'requestSent') {
+                return neighborStatus;
             }
 
             await neighborRequest.insertOne({'requestFrom': requestFrom, 'requestTo': requestTo});
 
-            return {
-                isOK: true,
-                response: 'requestSent',
-            }
+            return { status: 'requestSent' };
 
         } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
+            return err.toString();
         }
     }
 
@@ -199,29 +160,28 @@ export default class DatabaseController {
      * @param otherUser the string_id of other user
      * @returns a NeighborStatus
      */
-    async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus | undefined> {
+    async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus> {
         try {
             const checkIfNeighbors = await this.checkIfNeighbors(user, otherUser);
             if (checkIfNeighbors) {
-                return 'neighbor';
+                return { status: 'neighbor' };
             }
     
             const neighborRequest = this.getCollection('neighbor_request');
             const requestSent = await neighborRequest.find({'requestFrom': user, 'requestTo': otherUser}).limit(1).toArray();
             if (requestSent.length === 1) {
-                return 'requestSent';
+                return { status: 'requestSent'};
             }
     
             const requestReceived = await neighborRequest.find({'requestFrom': otherUser, 'requestTo': user}).limit(1).toArray();
             if (requestReceived.length === 1) {
-                return 'requestReceived';
+                return { status: 'requestReceived' };
             }
     
-            return 'unknown';
+            return { status: 'unknown' };
 
         } catch (err) {
-            console.log(err);
-            return;
+            return err.toString();
         }
     }
 
@@ -345,25 +305,16 @@ export default class DatabaseController {
      * @param userSent the string_id of the user who sent the request
      * @returns a response evnelope with the NeighborStatus of the two users
      */
-    async acceptRequest(userAccepting: string, userSent: string): Promise<ResponseEnvelope<NeighborStatus>> {
+    async acceptRequest(userAccepting: string, userSent: string): Promise<NeighborStatus> {
         try {
-            const checkIfNeighbors = await this.checkIfNeighbors(userAccepting, userSent);
-            if (checkIfNeighbors) {
-                return {
-                    isOK: false,
-                    message: 'neighbor',
-                }
+            const neighborStatus = await this.neighborStatus(userAccepting, userSent);
+
+            if (neighborStatus.status !== 'requestReceived') {
+                return neighborStatus;
             }
 
             const requests = this.getCollection('neighbor_request');
             const findRequest = await requests.find({'requestFrom': userSent, 'requestTo': userAccepting}).limit(1).toArray();
-
-            if (findRequest.length !== 1) {
-                return {
-                    isOK: false,
-                    message: 'Request not found',
-                }
-            }
 
             await requests.delete({'requestFrom': userSent, 'requestTo': userAccepting});
 
@@ -372,15 +323,11 @@ export default class DatabaseController {
             await neighborMappings.insert({'neighbor1': userSent, 'neighbor2': userAccepting});
 
             return {
-                isOK: true,
-                response: 'neighbor',
-            }
+                status: 'neighbor',
+            };
 
         } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
+            return err.toString();
         }
     }
 
@@ -390,32 +337,22 @@ export default class DatabaseController {
      * @param requestedUser the string_id of the requestedUser
      * @returns a ResponseEnvelope with a Neighbor Status
      */
-    async removeNeighborRequest(user: string, requestedUser: string): Promise<ResponseEnvelope<NeighborStatus>> {
+    async removeNeighborRequest(user: string, requestedUser: string): Promise<NeighborStatus> {
         try {
             const requests = this.getCollection('neighbor_request');
 
-            const findRequest = await requests.find({'requestFrom': user, 'requestTo': requestedUser}).limit(1).toArray();
+            const findRequest = await this.neighborStatus(user, requestedUser);
 
-            if (findRequest === 0) {
-                // Means no record of them being neighbors, not sure what to respond here
-                return {
-                    isOK: false,
-                    message: 'Not Requested',
-                }
+            if (findRequest.status !== 'requestSent') {
+                return findRequest;
             }
 
             await requests.delete({'requestFrom': user, 'requestTo': requestedUser});
 
-            return {
-                isOK: true,
-                response: 'unknown',
-            }
+            return { status: 'unknown' };
 
         } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
+            return err.toString();
         }
     }
 
@@ -425,53 +362,32 @@ export default class DatabaseController {
      * @param neighbor the string_id of the neighbor to remove
      * @returns a ResponseEnvelope with a NeighborStatus
      */
-    async removeNeighbor(user: string, neighbor: string): Promise<ResponseEnvelope<NeighborStatus>> {
+    async removeNeighbor(user: string, neighbor: string): Promise<NeighborStatus> {
         try {
             const neighbors = this.getCollection('neighbor_mappings');
-            const checkIfNeighbors = await this.checkIfNeighbors(user, neighbor);
-            if (!checkIfNeighbors) {
-                // Same as above, unsure of proper response here 
-                return {
-                    isOK: false,
-                    message: 'Not Neighbors',
-                }
+            const neighborStatus = await this.neighborStatus(user, neighbor);
+
+            if (neighborStatus.status !== 'neighbor') {
+
             }
 
             const neighbor1 = await neighbors.find({'neighbor1': user, 'neighbor2': neighbor}).limit(1).toArray();
 
             if (neighbor1.length === 1) {
                 await neighbors.delete({'neighbor1': user, 'neighbor2': neighbor});
-
-                return {
-                    isOK: true,
-                    response: 'unknown',
-                }
+                return { status: 'unknown' };
             }
 
-            const neighbor2 = await neighbors.find({'neighbor1': neighbor, 'neighbor2': user}).limit(1).toArray();
-
-            if (neighbor2.length === 1) {
-                await neighbors.delete({'neighbor1': neighbor, 'neighbor2': user});
-
-                return {
-                    isOK: true,
-                    response: 'unknown',
-                }
-            }
-
-            return {
-                isOK: false,
-                message: 'unknown error',
-            }
+            await neighbors.delete({'neighbor1': neighbor, 'neighbor2': user});
+            return { status: 'unknown' };
+            
 
         } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
+            return err.toString();
         }
     }
 } 
+
 
 
 

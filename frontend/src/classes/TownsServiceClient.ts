@@ -144,7 +144,7 @@ export default class TownsServiceClient {
    * @param serviceURL
    */
   constructor(serviceURL?: string) {
-    const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
+    const baseURL = serviceURL || 'http://localhost:8081';
     assert(baseURL);
     this._axios = axios.create({ baseURL });
   }
