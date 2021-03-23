@@ -119,7 +119,7 @@ export default function ChatScreen(): JSX.Element {
     client.on("channelJoined", async (channelToJoin) => {
       // getting list of all messages since this is an existing channel
       const mes = await channelToJoin.getMessages();
-      console.log('channeljoined has occured')
+      console.log('channeljoined has occured');
 
 
       const mes2 : Message[] = mes.items.map((message: Message) => ({
@@ -179,11 +179,11 @@ export default function ChatScreen(): JSX.Element {
           </div>)
         }
       </Box>
-      <Input w="90%" autoFocus name="name" placeholder=""
-             onChange={(event) => setText(event.target.value)}
-             value={text}
-             onKeyDown={sendMessage}
-      />
+          <Input w="90%" autoFocus name="name" placeholder=""
+                 onChange={(event) => setText(event.target.value)}
+                 value={text}
+                 onKeyPress={event => {if(event.key === "Enter") sendMessage()}}
+          />
       <Button w="10%" onClick={sendMessage} disabled={!channel || !text}>Send</Button>
       <Button onClick={loginToChat} >Login to Chat</Button>
         </div>
