@@ -1,20 +1,20 @@
 import IGame from "./IGame";
-import {GameCreateRequest, GameFindRequest, GameUpdateRequest} from "./RequestTypes"
+import {GameCreateRequest, GameFindRequest, GameUpdateRequest, GameDeleteRequest} from "./RequestTypes"
 import CoveyTownsStore from "../lib/CoveyTownsStore";
 
 export default class GameController {
-  constructor(game: IGame) {
-    this._game = game;
+  constructor(gameModel: IGame) { //TODO: What data type should gameModel be?
+    this._gameModel = gameModel;
   }
 
-   private _game: IGame;
+   private _gameModel;
 
-   get game(){
-     return this._game;
+   get gameModel(){
+     return this._gameModel;
    };
 
-   set game(game){
-     this._game = game;
+   set gameModel(game){
+     this._gameModel = game;
    }
 
 
@@ -39,6 +39,19 @@ export default class GameController {
    * @param gameID (String)
    */
   static async findGame(requestData: GameFindRequest)  {};
+
+  /**
+   * Returns list of all games on the server
+   *
+   */
+  static async findAllGames()  {};
+
+  /**
+   * Deletes a game from the server after it is finished
+   *
+   * @param gameID (String)
+   */
+  static async deleteGame(requestData: GameDeleteRequest)  {};
 
   }
 

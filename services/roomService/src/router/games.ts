@@ -50,7 +50,7 @@ export default function addTownRoutes(app: Express): void {
   });
 
   /*
-   * Retrieve data for a game session to populate the view
+   * Retrieve data for a specified game session to populate the view
    */
   app.get('/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
@@ -67,4 +67,42 @@ export default function addTownRoutes(app: Express): void {
         });
     }
   });
+
+  /*
+   * Retrieve data for all game sessions
+   */
+  app.get('/games', BodyParser.json(), async(_req, res) => {
+    try {
+      const result = GameController.findAllGames();
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /*
+   * Delete a specified game session from the server
+   */
+  app.delete('games/:gameId', BodyParser.json(), async(req, res) => {
+    try {
+      const result = GameController.deleteGame(
+        {gameId: req.body.gameId}
+      );
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  }
+)
+
 }

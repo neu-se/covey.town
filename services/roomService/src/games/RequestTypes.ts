@@ -14,3 +14,7 @@ export interface GameUpdateRequest {
 export interface GameFindRequest {
   gameId: String
 }
+
+export interface GameDeleteRequest {
+  gameId: String
+}
