@@ -8,6 +8,12 @@ You can view our reference deployment of the app at [app.covey.town](https://app
 
 Aakash Shah, Likhit Mada, Saurabh Bothra, Tanveer Singh
 
+## Netlify URL: (Frontend)
+https://kind-bose-e822c3.netlify.app
+
+## Heroku App URL: (Backend)
+https://covey-town-stal.herokuapp.com/
+
 ![Covey.Town Architecture](docs/covey-town-architecture.png)
 
 The figure above depicts the high-level architecture of Covey.Town.
