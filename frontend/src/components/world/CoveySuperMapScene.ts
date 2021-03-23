@@ -257,9 +257,7 @@ export default class CoveySuperMapScene extends Phaser.Scene {
         (obj) => obj.name === 'Spawn Point') as unknown as
         Phaser.GameObjects.Components.Transform;
 
-      // TODO: Below blocked comment should be the transporter code that we may not need,
-      //  - commented out if needed and to confirm with JP
-      /* Find all of the transporters, add them to the physics engine
+     // Find all of the transporters, add them to the physics engine
       const transporters = map.createFromObjects('Objects',
         { name: 'transporter' })
       this.physics.world.enable(transporters);
@@ -301,7 +299,7 @@ export default class CoveySuperMapScene extends Phaser.Scene {
         'left': Phaser.Input.Keyboard.KeyCodes.K,
         'right': Phaser.Input.Keyboard.KeyCodes.L
       }, false) as Phaser.Types.Input.Keyboard.CursorKeys);
-      */
+
 
 
 
@@ -323,14 +321,12 @@ export default class CoveySuperMapScene extends Phaser.Scene {
         label
       };
 
-    // TODO: Below blocked comment should be the transporter code that we may not need,
-    //  - commented out if needed and to confirm with JP
 
-/*      /!* Configure physics overlap behavior for when the player steps into
+      /* Configure physics overlap behavior for when the player steps into
       a transporter area. If you enter a transporter and press 'space', you'll
       transport to the location on the map that is referenced by the 'target' property
       of the transporter.
-       *!/
+       */
       this.physics.add.overlap(sprite, transporters,
         (overlappingObject, transporter)=>{
         if(cursorKeys.space.isDown && this.player){
@@ -350,7 +346,7 @@ export default class CoveySuperMapScene extends Phaser.Scene {
             throw new Error(`Unable to find target object ${target}`);
           }
         }
-      }) */
+      })
 
 
       this.emitMovement({
