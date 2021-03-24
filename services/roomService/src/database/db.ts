@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 const MongoClient = require('mongodb').MongoClient;
-import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+import { AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
 dotenv.config();
 
@@ -349,7 +349,7 @@ export default class DatabaseController {
                 return findRequest;
             }
 
-            await requests.delete({'requestFrom': user, 'requestTo': requestedUser});
+            await requests.deleteOne({'requestFrom': user, 'requestTo': requestedUser});
 
             return { status: 'unknown' };
 
@@ -376,11 +376,11 @@ export default class DatabaseController {
             const neighbor1 = await neighbors.find({'neighbor1': user, 'neighbor2': neighbor}).limit(1).toArray();
 
             if (neighbor1.length === 1) {
-                await neighbors.delete({'neighbor1': user, 'neighbor2': neighbor});
+                await neighbors.deleteOne({'neighbor1': user, 'neighbor2': neighbor});
                 return { status: 'unknown' };
             }
 
-            await neighbors.delete({'neighbor1': neighbor, 'neighbor2': user});
+            await neighbors.deleteOne({'neighbor1': neighbor, 'neighbor2': user});
             return { status: 'unknown' };
             
 
