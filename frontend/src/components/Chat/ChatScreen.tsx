@@ -3,14 +3,14 @@
  import {Box, Button, Input, Stack, Tabs, Tab, TabList } from "@chakra-ui/react";
  import { Message } from 'twilio-chat/lib/message';
  import useCoveyAppState from "../../hooks/useCoveyAppState";
- 
- 
+
+
  export default function ChatScreen({channel}: {channel: Channel}):JSX.Element {
    const [text, setText] = useState<string>('');
    const [messages, setMessages] = useState<Message[]>([]);
    const [loading, setLoading] = useState<boolean>(false);
    const [thisChannel] = useState<Channel>(channel);
- 
+
    const { currentTownID, currentTownFriendlyName, userName, apiClient, socket } = useCoveyAppState();
    const messagesEndRef = useRef(null);
 
@@ -32,22 +32,22 @@
        handleChannel();
        return ()=> {isMounted = false};
    },[thisChannel])
- 
- 
+
+
    const sendMessage =() => {
      // console.log(messages)
      if (text && String(text).trim()) {
        setLoading(true);
- 
+
          console.log(text);
          channel.sendMessage(text);
- 
+
        setText("");
        setLoading(false);
      }
    };
-  
- 
+
+
    return (
     <>
       <Stack>
@@ -72,5 +72,4 @@
 
 
 }
- 
- 
+
