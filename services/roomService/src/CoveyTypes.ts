@@ -13,15 +13,11 @@ export enum MessageType {
   TownMessage,
 }
 
-export type PlayerData = {
-  location: UserLocation;
-  userName: string;
-  id: string;
-};
-
 export type Message = {
   // user who sent the message
-  user: PlayerData;
+  userId: string;
+  userName: string;
+  location: UserLocation;
   messageContent: string;
   timestamp: string;
   type: MessageType;
