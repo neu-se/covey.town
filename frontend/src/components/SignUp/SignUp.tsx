@@ -16,15 +16,15 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { EmailPasswordCredential } from '../../CoveyTypes';
-import useAuthentication from '../../hooks/useAuthentication';
-import IAuth from '../Authentication/IAuth';
+import IAuth from '../../services/authentication/IAuth';
+import RealmAuth from '../../services/authentication/RealmAuth';
 
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const history = useHistory();
-  const auth: IAuth = useAuthentication();
+  const auth: IAuth = RealmAuth.getInstance();
   const createAccountHandler = async () => {
     const credential: EmailPasswordCredential = {
       email,

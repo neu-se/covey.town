@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import { CoveyUserProfile } from '../CoveyTypes';
+import { CoveyUserProfile } from '../../CoveyTypes';
 import IDBClient from './IDBClient';
 
 import RealmApp from './RealmApp';
@@ -38,7 +38,7 @@ export default class RealmDBClient implements IDBClient {
         bio: "${userProfile.bio ? userProfile.bio : ''}"
         email: "${userProfile.email}"
         pfpURL: "${userProfile.pfpURL ? userProfile.pfpURL : ''}"
-        user_id: "${userProfile.id}"
+        user_id: "${userProfile.user_id}"
         user_name: "${userProfile.userName ? userProfile.userName : ''}"
       }) {
           bio
