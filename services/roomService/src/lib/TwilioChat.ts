@@ -59,10 +59,8 @@ export default class TwilioChat implements IChatClient {
     // @ts-ignore this is missing from the typedef, but valid as per the docs...
     token.identity = clientIdentity;
     const chatGrant = new Twilio.jwt.AccessToken.ChatGrant({serviceSid: process.env.TWILIO_CHAT_SERVICE_SID});
-    const syncGrant = new Twilio.jwt.AccessToken.SyncGrant({serviceSid: 'default'});
 
     token.addGrant(chatGrant);
-    token.addGrant(syncGrant);
 
     return token.toJwt();
   }
