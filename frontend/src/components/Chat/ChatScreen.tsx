@@ -26,6 +26,7 @@ export default function ChatScreen({channel}: { channel: Channel }): JSX.Element
       const previousMessages = await thisChannel.getMessages();
       const mes: Message[] = previousMessages.items;
       setMessages(mes);
+      console.log('messages', mes);
       thisChannel.on("messageAdded", handleMessageAdded);
     }
 
