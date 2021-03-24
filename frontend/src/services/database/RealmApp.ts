@@ -86,5 +86,14 @@ export default class RealmApp {
     get CurrentUser(): Realm.User | null {
         return this._app.currentUser;
     }
+
+    async loginWithGoogle(): Promise<Realm.User> {
+        const RedirectUri = "http://localhost:3000"
+        const credentials = Realm.Credentials.google(RedirectUri);
+    
+        const realmUser = await this._app.logIn(credentials);
+        return realmUser;
+    }
+
     
 }
