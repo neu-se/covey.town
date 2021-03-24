@@ -13,6 +13,20 @@ NEED HELP WITH:
 - seeing if we need axios tests using mocks?
 - connecting to cors to make these tests work
 */
+/*
+first move this to testdb.ts and extract so we are testing the raw methods of database
+second, one level out test the backend handler for the response envelopes (covey town request handlers)
+focus on these unit tests for now
+can add public methods to delete different type of collections - look into cascade delete
+don't need to bring up the server
+
+wait for sam to clean up his stuff, merge to backend, and then pull here
+
+making sure im in hari-dev:
+git pull origin backend
+
+to make a file known as a test file: ...name...test.ts
+*/
 
 describe('TownsServiceClient', () => {
     

@@ -9,6 +9,7 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
     warnOnUnsupportedTypeScriptVersion: false,
+    // tsconfigRootDir: 'services/roomService'
   },
   settings: {
     react: {
