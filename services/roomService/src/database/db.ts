@@ -317,9 +317,8 @@ export default class DatabaseController {
             }
 
             const requests = this.getCollection('neighbor_request');
-            const findRequest = await requests.find({'requestFrom': userSent, 'requestTo': userAccepting}).limit(1).toArray();
 
-            await requests.delete({'requestFrom': userSent, 'requestTo': userAccepting});
+            await requests.deleteOne({'requestFrom': userSent, 'requestTo': userAccepting});
 
             const neighborMappings = this.getCollection('neighbor_mappings');
 
