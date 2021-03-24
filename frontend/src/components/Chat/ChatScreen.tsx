@@ -5,6 +5,7 @@ import {Channel} from 'twilio-chat/lib/channel';
 import {Box, Button, Input, Stack, Table, Tbody, Td, Tr, Grid, GridItem} from "@chakra-ui/react";
 
 import useCoveyAppState from "../../hooks/useCoveyAppState";
+import {TownJoinResponse} from "../../classes/TownsServiceClient";
 
 type Message = {
   state: {
@@ -14,9 +15,12 @@ type Message = {
   }
 };
 
+interface TokenProps {
+  chatToken: string
+}
 
-
-export default function ChatScreen(): JSX.Element {
+// export default function ChatScreen(chatToken:string): JSX.Element {
+export default function ChatScreen({ chatToken }: TokenProps): JSX.Element {
   const [text, setText] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -25,6 +29,7 @@ export default function ChatScreen(): JSX.Element {
   const { currentTownID, currentTownFriendlyName, userName } = useCoveyAppState()
   const messagesEndRef = useRef(null);
 
+  // console.log('token ------>', chatToken);
   // TODO We should probably create a client to communicate to the Chat Backend
   const getToken = async (email: string) => {
     const response = await axios.get(`http://localhost:3003/token/${email}`);
@@ -95,16 +100,16 @@ export default function ChatScreen(): JSX.Element {
 
   const loginToChat = useCallback(async () => {
 
-    let token = '';
+    // let token = '';
     setLoading(true)
+    //
+    // try {
+    //   token = await getToken(userName);
+    // } catch {
+    //   throw new Error("unable to get token, please reload this page");
+    // }
 
-    try {
-      token = await getToken(userName);
-    } catch {
-      throw new Error("unable to get token, please reload this page");
-    }
-
-    const client = await Client.create(token);
+    const client = await Client.create(chatToken);
 
     client.on("tokenAboutToExpire", async () => {
       const token1 = await getToken(userName);

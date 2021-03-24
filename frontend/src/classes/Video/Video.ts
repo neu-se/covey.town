@@ -14,6 +14,8 @@ export default class Video {
 
   private videoToken: string | null = null;
 
+  private chatToken: string | null = null;
+
   private _userName: string;
 
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
@@ -44,6 +46,10 @@ export default class Video {
     return this._townFriendlyName;
   }
 
+  get tokenForChat(): string | null {
+    return this.chatToken;
+  }
+
   get userName(): string {
     return this._userName;
   }
@@ -63,6 +69,7 @@ export default class Video {
           .then((result) => {
             this.sessionToken = result.coveySessionToken;
             this.videoToken = result.providerVideoToken;
+            this.chatToken = result.providerChatToken;
             this._townFriendlyName = result.friendlyName;
             this._isPubliclyListed = result.isPubliclyListed;
             resolve(result);

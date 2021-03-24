@@ -78,6 +78,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
         assert(initData.providerVideoToken);
+        assert(initData.providerChatToken);
         await connect(initData.providerVideoToken);
       }
     } catch (err) {

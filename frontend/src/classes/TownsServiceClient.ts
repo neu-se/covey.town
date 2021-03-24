@@ -25,6 +25,8 @@ export interface TownJoinResponse {
   /** Secret token that this player should use to authenticate
    * in future requests to the video service * */
   providerVideoToken: string;
+
+  providerChatToken: string;
   /** List of players currently in this town * */
   currentPlayers: ServerPlayer[];
   /** Friendly name of this town * */
