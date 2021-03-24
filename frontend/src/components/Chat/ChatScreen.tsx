@@ -1,165 +1,74 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import axios from 'axios';
-import Client from 'twilio-chat';
 import {Channel} from 'twilio-chat/lib/channel';
-import {Box, Button, Input, Stack, Table, Tbody, Td, Tr, Grid, GridItem} from "@chakra-ui/react";
-
+import {Box, Button, Input, Stack, Tabs, Tab, TabList} from "@chakra-ui/react";
+import {Message} from 'twilio-chat/lib/message';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
-import {TownJoinResponse} from "../../classes/TownsServiceClient";
 
-type Message = {
-  state: {
-    author: string
-    body: string
-    sid: string
-  }
-};
 
-interface TokenProps {
-  chatToken: string
-}
-
-// export default function ChatScreen(chatToken:string): JSX.Element {
-export default function ChatScreen({ chatToken }: TokenProps): JSX.Element {
+export default function ChatScreen({channel}: { channel: Channel }): JSX.Element {
   const [text, setText] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [channel, setChannel] = useState<Channel>();
+  const [thisChannel] = useState<Channel>(channel);
 
-  const { currentTownID, currentTownFriendlyName, userName } = useCoveyAppState()
+  const {currentTownID, currentTownFriendlyName, userName, apiClient, socket} = useCoveyAppState();
   const messagesEndRef = useRef(null);
 
+  // running 5 times?
+  const handleMessageAdded = useCallback((messageToAdd: Message) => {
+    setMessages(old => [...old, messageToAdd]);
+    console.log(messages);
+  }, [messages])
 
-  const handleMessageAdded = (messageToAdd: Message) => {
-    const message :Message = {
-      state: {
-        author: messageToAdd.state.author,
-        body: messageToAdd.state.body,
-        sid: messageToAdd.state.sid,
-      },
+  useEffect(() => {
+    let isMounted = true;
+    const handleChannel = async () => {
+      const previousMessages = await thisChannel.getMessages();
+      const mes: Message[] = previousMessages.items;
+      setMessages(mes);
+      thisChannel.on("messageAdded", handleMessageAdded);
     }
-    // setMessages(messages ? [...messages, message] : [message])
-    setMessages(oldMessages => [...oldMessages, message]);
-    console.log('messages', messages)
-    console.log('message', message)
-    // setMessages(messages ? [...messages, messageToAdd] : [messageToAdd])
-    // messages.push(messageToAdd)
-    console.log(messages)
 
-  }
-
-  const joinChannel = useCallback(async (channelToJoin) => {
-    if (channelToJoin.channelState.status !== "joined") {
-      await channelToJoin.join();
-    }
-    console.log('messages in joinChannel', messages)
-    channelToJoin.on("messageAdded", handleMessageAdded);
-
-  },[handleMessageAdded, messages]);
+    handleChannel();
+    return () => {
+      isMounted = false
+    };
+  }, [thisChannel])
 
 
-  // const scrollToBottom = () => {
-  //   const scrollHeight = scrollDiv.current.scrollHeight;
-  //   const height = scrollDiv.current.clientHeight;
-  //   const maxScrollTop = scrollHeight - height;
-  //   scrollDiv.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
-  // };
-
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-  // }
-
-  // useEffect(scrollToBottom, [messages]);
-
-
-  const sendMessage =() => {
-    console.log(messages)
+  const sendMessage = () => {
+    // console.log(messages)
     if (text && String(text).trim()) {
-      // this.setState({ loading: true });
-      setLoading(true)
-      // channel && channel.sendMessage(text);
+      setLoading(true);
 
-      if (channel) {
-        console.log(text)
-        channel.sendMessage(text)
-      }
-      // channel?.sendMessage(text)
-      // this.setState({ text: "", loading: false });
+      console.log(text);
+      channel.sendMessage(text);
+
       setText("");
       setLoading(false);
     }
-  }
-
-  const loginToChat = useCallback(async () => {
-
-    setLoading(true)
-
-    const client = await Client.create(chatToken);
-
-    client.on("channelJoined", async (channelToJoin) => {
-      // getting list of all messages since this is an existing channel
-      const mes = await channelToJoin.getMessages();
-      console.log('channeljoined has occured');
-
-
-      const mes2 : Message[] = mes.items.map((message: Message) => ({
-        state: {
-          body: message.state.body,
-          sid: message.state.sid,
-          author: message.state.author
-        }
-      }))
-      console.log(mes);
-      setMessages(mes2)
-      // setText('player joined')
-
-    });
-
-    try {
-      const channelToJoin = await client.getChannelByUniqueName(currentTownID);
-      joinChannel(channelToJoin).then(()=>{
-        channelToJoin.sendMessage('HAS JOINED THE CHAT')
-      })
-      setChannel(channelToJoin)
-    } catch {
-        try {
-          const channelToJoin = await client.createChannel({
-            uniqueName: currentTownID,
-            friendlyName: currentTownFriendlyName,
-          });
-          joinChannel(channelToJoin).then(()=>{
-            channelToJoin.sendMessage(' HAS ENTERED THE CHAT');
-          });
-          setChannel(channelToJoin)
-          setLoading(false)
-
-          console.log('channel', channel);
-          console.log('messages', messages);
-        } catch {
-          throw new Error('unable to create channel, please reload this page');
-        }
-    }
-  }, [channel, chatToken, currentTownFriendlyName, currentTownID, joinChannel, messages])
+  };
 
 
   return (
     <>
       <Stack>
         <div ref={messagesEndRef}>
-      <Box maxH="500px" overflowY="scroll">
-        {messages.map((message) =>
-          <div key={message.state.sid}>
-            <b>{message.state.author}</b>:{message.state.body}
-          </div>)
-        }
-      </Box>
+          <Box maxH="500px" overflowY="scroll">
+            {messages.map((message) =>
+              <div key={message.sid}>
+                <b>{message.author}</b>:{message.body}
+              </div>)
+            }
+          </Box>
           <Input w="90%" autoFocus name="name" placeholder=""
                  onChange={(event) => setText(event.target.value)}
                  value={text}
-                 onKeyPress={event => {if(event.key === "Enter") sendMessage()}}
+                 onKeyPress={event => {
+                   if (event.key === "Enter") sendMessage()
+                 }}
           />
-      <Button w="10%" onClick={sendMessage} disabled={!channel || !text}>Send</Button>
-      <Button onClick={loginToChat} >Login to Chat</Button>
+          <Button w="10%" onClick={sendMessage} disabled={!channel || !text}>Send</Button>
         </div>
       </Stack>
     </>
