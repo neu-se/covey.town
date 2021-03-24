@@ -12,7 +12,7 @@ const typeDefs  = require('./typeDefs/index.ts')
 
 const resolvers = {
   Query: {
-     user: async (parent: any, args: any) => {
+     user: async (_: any, args: any) => {
        try {
          const user = await User.findOne((id: String) => id === args.id)
          return user;
@@ -33,7 +33,7 @@ const resolvers = {
 
   },
   Mutation: {
-    signUp: async (parent: any, args: any) => {
+    signUp: async (_: any, args: any) => {
       try {
         const user = await User.findOne({ email: args.input.email });
         if (user) {
