@@ -29,14 +29,6 @@ export default function ChatScreen({ chatToken }: TokenProps): JSX.Element {
   const { currentTownID, currentTownFriendlyName, userName } = useCoveyAppState()
   const messagesEndRef = useRef(null);
 
-  // console.log('token ------>', chatToken);
-  // TODO We should probably create a client to communicate to the Chat Backend
-  const getToken = async (email: string) => {
-    const response = await axios.get(`http://localhost:3003/token/${email}`);
-    const { data } = response;
-    return data.token;
-  };
-
 
   const handleMessageAdded = (messageToAdd: Message) => {
     const message :Message = {
@@ -100,26 +92,9 @@ export default function ChatScreen({ chatToken }: TokenProps): JSX.Element {
 
   const loginToChat = useCallback(async () => {
 
-    // let token = '';
     setLoading(true)
-    //
-    // try {
-    //   token = await getToken(userName);
-    // } catch {
-    //   throw new Error("unable to get token, please reload this page");
-    // }
 
     const client = await Client.create(chatToken);
-
-    client.on("tokenAboutToExpire", async () => {
-      const token1 = await getToken(userName);
-      await client.updateToken(token1);
-    });
-
-    client.on("tokenExpired", async () => {
-      const token2 = await getToken(userName);
-      await client.updateToken(token2);
-    });
 
     client.on("channelJoined", async (channelToJoin) => {
       // getting list of all messages since this is an existing channel
@@ -147,30 +122,24 @@ export default function ChatScreen({ chatToken }: TokenProps): JSX.Element {
       })
       setChannel(channelToJoin)
     } catch {
-    try {
-      const channelToJoin = await client.createChannel({
-        uniqueName: currentTownID,
-        friendlyName: currentTownFriendlyName,
-      });
-      joinChannel(channelToJoin).then(()=>{
-        channelToJoin.sendMessage(' HAS ENTERED THE CHAT');
-      });
-      setChannel(channelToJoin)
-      setLoading(false)
+        try {
+          const channelToJoin = await client.createChannel({
+            uniqueName: currentTownID,
+            friendlyName: currentTownFriendlyName,
+          });
+          joinChannel(channelToJoin).then(()=>{
+            channelToJoin.sendMessage(' HAS ENTERED THE CHAT');
+          });
+          setChannel(channelToJoin)
+          setLoading(false)
 
-      console.log('channel', channel);
-      console.log('messages', messages);
-    } catch {
-      throw new Error('unable to create channel, please reload this page');
+          console.log('channel', channel);
+          console.log('messages', messages);
+        } catch {
+          throw new Error('unable to create channel, please reload this page');
+        }
     }
-    }
-  }, [channel, currentTownFriendlyName, currentTownID, joinChannel, messages, userName])
-
-
-
-  // useEffect( () => {
-  //   loginToChat()
-  // }, [loginToChat]);
+  }, [channel, chatToken, currentTownFriendlyName, currentTownID, joinChannel, messages])
 
 
   return (
