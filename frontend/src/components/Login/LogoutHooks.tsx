@@ -6,12 +6,11 @@ const clientId =
 
 function LogoutHooks() {
   const onLogoutSuccess = () => {
-    console.log('Logged out Success');
-    alert('Logged out Successfully ✌');
+    console.log('Logged out successfully.');
   };
 
   const onFailure = () => {
-    console.log('Handle failure cases');
+    console.log('Failed to login.');
   };
 
   const { signOut } = useGoogleLogout({
