@@ -21,11 +21,12 @@ password : String!
 
 input loginInput {
   email: String!
-  pasword: String!
+  password: String!
 }
 
 
 type Mutation {
   signUp(input: signUpInput) : User
+  login(input: loginInput) : User
 }
 `;

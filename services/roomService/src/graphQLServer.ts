@@ -47,6 +47,22 @@ const resolvers = {
         console.log(error);
         throw (error);
       }
+    },
+    login: async (parent: any, args: any) => {
+      try {
+        const user = await User.findOne({ email: args.input.email, password: args.input.password });
+        if (user === null) {
+          throw new Error("User does not exist");
+        }
+        return user;
+        // const newUser = new User({ name: args.input.name, email: args.input.email, password: args.input.password });
+        // const result = newUser.save();
+        // return result;
+      }
+      catch (error) {
+        console.log(error);
+        throw (error);
+      }
     }
     
   }
