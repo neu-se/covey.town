@@ -152,7 +152,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
         // Configure mocks
         mockVideoSetup.mockReset();
         const videoToken = nanoid();
-        mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken }))
+        const chatToken = nanoid();
+        mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken, providerChatToken: chatToken }))
         doLoginMock.mockReset();
         doLoginMock.mockReturnValue(Promise.resolve(true));
 
@@ -165,7 +166,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
         await waitFor(() => expect(mockVideoSetup)
           .toBeCalledWith(userName, coveyTownID));
         await waitFor(() => expect(doLoginMock)
-          .toBeCalledWith({ providerVideoToken: videoToken }));
+          .toBeCalledWith({ providerVideoToken: videoToken, providerChatToken: chatToken }));
         await waitFor(() => expect(mockConnect)
           .toBeCalledWith(videoToken));
 
@@ -207,6 +208,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
         // Configure mocks
         mockVideoSetup.mockReset();
         const videoToken = nanoid();
+        const chatToken = nanoid();
         mockVideoSetup.mockRejectedValue(new Error(errorMessage));
         doLoginMock.mockReset();
         doLoginMock.mockReturnValue(Promise.resolve(true));
@@ -266,7 +268,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
         // Configure mocks
         mockToast.mockReset();
         mockVideoSetup.mockReset();
-        mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken }))
+        mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken, providerChatToken: chatToken }))
         doLoginMock.mockReset();
         doLoginMock.mockReturnValue(Promise.resolve(true));
         mockConnect.mockRejectedValue(new Error(errorMessage));
@@ -280,7 +282,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
         await waitFor(() => expect(mockVideoSetup)
           .toBeCalledWith(userName, coveyTownID));
         await waitFor(() => expect(doLoginMock)
-          .toBeCalledWith({ providerVideoToken: videoToken }));
+          .toBeCalledWith({ providerVideoToken: videoToken, providerChatToken: chatToken }));
         await waitFor(() => expect(mockConnect)
           .toBeCalledWith(videoToken));
         await waitFor(() => expect(mockToast)
@@ -301,7 +303,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
           if (town.currentOccupancy < town.maximumOccupancy) {
             mockVideoSetup.mockReset();
             const videoToken = nanoid();
-            mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken }))
+            const chatToken = nanoid();
+            mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken, providerChatToken: chatToken }))
             doLoginMock.mockReset();
             doLoginMock.mockReturnValue(Promise.resolve(true));
             const row = rows.find(each => within(each)
@@ -319,7 +322,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               await waitFor(() => expect(mockVideoSetup)
                 .toBeCalledWith(username, town.coveyTownID));
               await waitFor(() => expect(doLoginMock)
-                .toBeCalledWith({ providerVideoToken: videoToken }));
+                .toBeCalledWith({ providerVideoToken: videoToken, providerChatToken: chatToken }));
               await waitFor(() => expect(mockConnect)
                 .toBeCalledWith(videoToken));
             } else {
@@ -420,7 +423,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
               mockToast.mockReset();
               mockVideoSetup.mockReset();
               const videoToken = nanoid();
-              mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken }))
+              const chatToken = nanoid();
+              mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken, providerChatToken: chatToken }))
               doLoginMock.mockReset();
               doLoginMock.mockRejectedValue(new Error(errorMessage));
 
@@ -433,7 +437,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               await waitFor(() => expect(mockVideoSetup)
                 .toBeCalledWith(username, town.coveyTownID));
               await waitFor(() => expect(doLoginMock)
-                .toBeCalledWith({ providerVideoToken: videoToken }));
+                .toBeCalledWith({ providerVideoToken: videoToken, providerChatToken: chatToken }));
               await waitFor(() => expect(mockToast)
                 .toBeCalledWith({
                   title: 'Unable to connect to Towns Service',
@@ -444,7 +448,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               // test an error from connect
               mockToast.mockReset();
               mockVideoSetup.mockReset();
-              mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken }))
+              mockVideoSetup.mockReturnValue(Promise.resolve({ providerVideoToken: videoToken, providerChatToken: chatToken }))
               doLoginMock.mockReset();
               doLoginMock.mockReturnValue(Promise.resolve(true));
               mockConnect.mockRejectedValue(new Error(errorMessage));
@@ -458,7 +462,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               await waitFor(() => expect(mockVideoSetup)
                 .toBeCalledWith(username, town.coveyTownID));
               await waitFor(() => expect(doLoginMock)
-                .toBeCalledWith({ providerVideoToken: videoToken }));
+                .toBeCalledWith({ providerVideoToken: videoToken, providerChatToken: chatToken }));
               await waitFor(() => expect(mockConnect)
                 .toBeCalledWith(videoToken));
               await waitFor(() => expect(mockToast)
