@@ -19,6 +19,7 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import { FcGoogle } from 'react-icons/fc';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
@@ -47,6 +48,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
+
   useEffect(() => {
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
@@ -136,6 +138,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const onSignIn = async () => {
+    // try {
+    //   const auth2 = window.gapi.auth2.getAuthInstance();
+    //   const googleUser = await auth2.signIn();
+    //   let googleToken = googleUser.getAuthResponse().id_token;
+    // } catch (err) {
+    //   toast({
+    //     title: 'Unable to sign in with Google',
+    //     description: err.toString(),
+    //     status: 'error'
+    //   })
+    // }
+  }
+
+
+
+
   return (
     <>
       <form>
@@ -150,7 +169,24 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
+
+            <Heading p="4" as="h2" size="lg">-or-</Heading>
+
+            <Button 
+              leftIcon={<FcGoogle />} 
+              size="lg"
+              colorScheme="Google" 
+              variant="solid" 
+              color="blue.500" 
+              border="2px" 
+              borderColor="blue.500"
+              _hover={{ bg: "#ebedf0" }} 
+              onClick={onSignIn}
+            >
+              Sign in
+            </Button>
           </Box>
+
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
