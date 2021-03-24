@@ -32,6 +32,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
+  const [newTownIsMergeable, setNewTownIsMergeable] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
@@ -109,7 +110,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     try {
       const newTownInfo = await apiClient.createTown({
         friendlyName: newTownName,
-        isPubliclyListed: newTownIsPublic
+        isPubliclyListed: newTownIsPublic,
+        isMergeable: newTownIsMergeable
       });
       let privateMessage = <></>;
       if (!newTownIsPublic) {

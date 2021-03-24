@@ -41,6 +41,7 @@ function wrappedTownSettings() {
     currentTownID: '',
     currentTownFriendlyName: '',
     currentTownIsPubliclyListed: false,
+    currentTownIsMergeable: false,
     sessionToken: '',
     userName: '',
     socket: null,
@@ -72,6 +73,8 @@ describe('Part 4 - Town Settings', () => {
     mockUseCoveyAppState.currentTownFriendlyName = params.friendlyName;
     // @ts-ignore
     mockUseCoveyAppState.currentTownIsPubliclyListed = params.isPubliclyListed;
+    // we prob need this??
+    // mockUseCoveyAppState.currentTownIsMergeable = params.isMergeable;
     renderData = render(wrappedTownSettings());
     // const openMenuButton = renderData.getByTestId('openMenuButton');
     // fireEvent.click(openMenuButton);

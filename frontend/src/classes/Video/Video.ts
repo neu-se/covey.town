@@ -24,6 +24,8 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
+  private _isMergeable: boolean | undefined;
+
   pauseGame: () => void = ()=>{};
 
   unPauseGame: () => void = ()=>{};
@@ -35,6 +37,13 @@ export default class Video {
 
   get isPubliclyListed(): boolean {
     if (this._isPubliclyListed === true) {
+      return true;
+    }
+    return false;
+  }
+
+  get isMergeable(): boolean {
+    if (this._isMergeable === true) {
       return true;
     }
     return false;

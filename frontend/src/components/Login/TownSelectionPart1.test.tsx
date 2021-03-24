@@ -86,6 +86,7 @@ function wrappedTownSelection() {
     myPlayerID: '',
     currentTownID: '',
     currentTownIsPubliclyListed: false,
+    currentTownIsMergeable: false,
     currentTownFriendlyName: '',
     sessionToken: '',
     userName: '',

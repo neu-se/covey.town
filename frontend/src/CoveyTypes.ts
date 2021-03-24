@@ -21,6 +21,7 @@ export type CoveyAppState = {
   currentTownFriendlyName: string,
   currentTownID: string,
   currentTownIsPubliclyListed: boolean,
+  currentTownIsMergeable: boolean,
   myPlayerID: string,
   players: Player[],
   currentLocation: UserLocation,
