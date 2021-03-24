@@ -19,13 +19,17 @@ export default class TwilioVideo implements IVideoClient {
 
   private _twilioApiKeySecret: string;
 
+  private _twilioChatServiceSID: string;
+
   constructor(twilioAccountSid: string,
     twilioAuthToken: string,
     twilioAPIKeySID: string,
-    twilioAPIKeySecret: string) {
+    twilioAPIKeySecret: string,
+    twilioChatServiceSID: string) {
     this._twilioAccountSid = twilioAccountSid;
     this._twilioApiKeySID = twilioAPIKeySID;
     this._twilioApiKeySecret = twilioAPIKeySecret;
+    this._twilioChatServiceSID = twilioChatServiceSID;
     this._twilioClient = Twilio(twilioAccountSid, twilioAuthToken);
   }
 
@@ -39,9 +43,11 @@ export default class TwilioVideo implements IVideoClient {
         'Environmental variable TWILIO_API_KEY_SID must be set');
       assert(process.env.TWILIO_API_KEY_SECRET,
         'Environmental variable TWILIO_API_KEY_SECRET must be set');
+      assert(process.env.TWILIO_CHAT_SERVICE_SID,
+        'Environmental variable TWILIO_CHAT_SERVICE_SID must be set');
       TwilioVideo._instance = new TwilioVideo(
         process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_API_AUTH_TOKEN,
-        process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET,
+        process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET, process.env.TWILIO_CHAT_SERVICE_SID
       );
     }
     return TwilioVideo._instance;
@@ -50,13 +56,15 @@ export default class TwilioVideo implements IVideoClient {
   async getTokenForTown(coveyTownID: string, clientIdentity: string): Promise<string> {
     const token = new Twilio.jwt.AccessToken(
       this._twilioAccountSid, this._twilioApiKeySID, this._twilioApiKeySecret, {
-        ttl: MAX_ALLOWED_SESSION_DURATION,
-      },
+      ttl: MAX_ALLOWED_SESSION_DURATION,
+    },
     );
     // eslint-disable-next-line
     // @ts-ignore this is missing from the typedef, but valid as per the docs...
     token.identity = clientIdentity;
     const videoGrant = new Twilio.jwt.AccessToken.VideoGrant({ room: coveyTownID });
+    const chatGrant = new Twilio.jwt.AccessToken.ChatGrant({ serviceSid: this._twilioChatServiceSID });
+    token.addGrant(chatGrant);
     token.addGrant(videoGrant);
 
     return token.toJwt();

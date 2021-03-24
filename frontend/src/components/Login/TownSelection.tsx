@@ -19,10 +19,14 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import { Paginator } from 'twilio-chat/lib/interfaces/paginator';
+import Client from 'twilio-chat';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { Channel } from 'twilio-chat/lib/channel';
+
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -37,6 +41,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+  
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -77,6 +82,20 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
+        const client = await Client.create(initData.providerVideoToken);
+        // const generalChannel  = await client.createChannel({
+        //   friendlyName:"sample"
+        // })
+        // console.log(generalChannel.sid)
+        client.getPublicChannelDescriptors().then((paginator: Paginator<Channel>) => {
+          console.log(paginator.items.length)
+            for (let i = 0; i < paginator.items.length; i += 1) {
+              const channel = paginator.items[i];
+              console.log("Channelssssssssssssssss");
+              console.log(channel.friendlyName);
+              channel.delete()
+            }
+          });
         assert(initData.providerVideoToken);
         await connect(initData.providerVideoToken);
       }
