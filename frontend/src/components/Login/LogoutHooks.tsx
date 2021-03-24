@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@chakra-ui/react';
 import { useGoogleLogout } from 'react-google-login';
 
 const clientId =
@@ -20,11 +21,11 @@ function LogoutHooks() {
   });
 
   return (
-    <button onClick={signOut} className="button">
+    <Button onClick={signOut} className="button">
       {/* <img src="icons/google.svg" alt="google login" className="icon"></img> */}
 
       <span className="buttonText">Sign out</span>
-    </button>
+    </Button>
   );
 }
 
