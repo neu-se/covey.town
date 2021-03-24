@@ -223,6 +223,10 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     } if (!videoInstance) {
       return <div>Loading...</div>;
     }
+
+    const chatToken = Video.instance()?.tokenForChat;
+    assert(chatToken)
+
     return (
       <div>
         <Grid
@@ -231,7 +235,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           gap={4}
         >
           <GridItem colSpan={1}><WorldMap/></GridItem>
-          <GridItem colSpan={1}><ChatScreen/></GridItem>
+          <GridItem colSpan={1}><ChatScreen chatToken={chatToken}/></GridItem>
         </Grid>
         <VideoOverlay preferredMode="fullwidth"/>
       </div>

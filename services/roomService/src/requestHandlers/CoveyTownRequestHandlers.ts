@@ -28,6 +28,9 @@ export interface TownJoinResponse {
   /** Secret token that this player should use to authenticate
    * in future requests to the video service * */
   providerVideoToken: string;
+  /** Secret token that this player should use to authenticate
+   * in future requests to the chat service * */
+  providerChatToken: string;
   /** List of players currently in this town * */
   currentPlayers: Player[];
   /** Friendly name of this town * */
@@ -109,12 +112,14 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
+  assert(newSession.chatToken);
   return {
     isOK: true,
     response: {
       coveyUserID: newPlayer.id,
       coveySessionToken: newSession.sessionToken,
       providerVideoToken: newSession.videoToken,
+      providerChatToken: newSession.chatToken,
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
