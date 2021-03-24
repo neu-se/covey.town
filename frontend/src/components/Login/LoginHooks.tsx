@@ -1,10 +1,13 @@
 import React from 'react';
+import Button from '@chakra-ui/react';
+import { FcGoogle } from 'react-icons/fc';
 import { useGoogleLogin } from 'react-google-login';
 
 const clientId =
   '147790869304-31si4r0ejgmklrphlis0eehdgk0qo9qo.apps.googleusercontent.com';
 
 function LoginHooks() {
+    
   const onSuccess = (res: any) => {
     console.log('Login successful: currentUser:', res.profileObj);
     refreshTokenSetup(res);
@@ -41,10 +44,19 @@ function LoginHooks() {
   });
 
   return (
-    <button onClick={signIn} className="button">
-      {/* <img src="icons/google.svg" alt="google login" className="icon"></img> */}
-      <span className="buttonText">Sign in with Google</span>
-    </button>
+    <Button 
+    leftIcon={<FcGoogle />} 
+    size="lg"
+    colorScheme="Google" 
+    variant="solid" 
+    color="blue.500" 
+    border="2px" 
+    borderColor="blue.500"
+    _hover={{ bg: "#ebedf0" }} 
+    onClick={signIn}
+    >
+    Sign in
+    </Button>
   );
 }
 
