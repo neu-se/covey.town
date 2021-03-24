@@ -1,4 +1,3 @@
-//const { gql } = require('../graphQLServer.ts');
 const { gql} = require('apollo-server-express');
 module.exports = gql`
 type Query {
@@ -24,8 +23,40 @@ input loginInput {
   pasword: String!
 }
 
+input TownJoinRequestInput {
+  userName: String!
+  coveyTownID: String!
+  Direction: String
+}
+
+type UserLocation {
+  x: Int!
+  y: Int!
+  rotation: String!
+  moving : Boolean!
+}
+
+type Player {
+  _id: String!
+  _userName: String!
+  location: UserLocation!
+}
+
+type Town {
+  coveyUserID: String!
+  coveySessionToken: String!
+  providerVideoToken: String!
+  currentPlayers: [Player!]
+  friendlyName: String!
+  isPubliclyListed: Boolean!
+}
+
+type TownJoinResponse {
+  isOk: Boolean!
+  response: Town
+}
 
 type Mutation {
   signUp(input: signUpInput) : User
-}
+  townJoinRequest(input: townJoinRequestInput): TownJoinResponse
 `;

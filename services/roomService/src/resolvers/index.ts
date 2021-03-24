@@ -1,4 +1,6 @@
-const User = require('../data/Models/users/user.model.server.ts') 
+const User = require('../data/Models/users/user.model.server.ts')
+import { LaunchAPI } from "../datasources/townJoinAPI";
+
 
 module.exports = {
  Query: {
@@ -36,6 +38,15 @@ module.exports = {
       catch (error) {
         console.log(error);
         throw (error);
+      }
+    },
+
+    townJoinRequest: async (_: any, args: any,{dataSources})=>{
+      try {
+
+      }
+      catch (error) {
+        
       }
     }
     
