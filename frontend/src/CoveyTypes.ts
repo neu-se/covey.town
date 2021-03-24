@@ -36,19 +36,36 @@ export type EmailPasswordCredential = {
 
 export type AuthState = {
   isLoggedIn: boolean,
-  currentUser: Realm.User | null,
-  actions?: UserActions
+  currentUser: CoveyUser | null,
 }
 
-export type UserActions = {
+export type AuthInfo = {
+  isLoggedIn: boolean,
+  currentUser: CoveyUser | null,
+  actions: AuthActions
+}
+
+export type AuthActions = {
   handleLogout: () => void,
   setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
 }
 
 export type CoveyUserProfile = {
-  id: string,
+  user_id: string,
   userName?: string,
   email:string,
   pfpURL?: string,
   bio?: string,
+}
+
+
+export type CoveyUser = {
+  id: string,
+  isLoggedIn: boolean
+  profile: CoveyUserProfile,
+  actions: CoveyUserActions,
+}
+
+export type CoveyUserActions = {
+  logout: () => Promise<void>
 }

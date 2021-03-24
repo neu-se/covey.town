@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-<<<<<<< HEAD
     "@apollo/client": "^3.3.12",
-=======
     "@chakra-ui/icons": "^1.0.7",
->>>>>>> 88a553c12d56f242c13c267840f23aa9c7d40054
     "@chakra-ui/react": "^1.1.2",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
@@ -20,7 +17,6 @@
     "@types/fscreen": "^1.0.1",
     "@types/jest": "^26.0.15",
     "@types/lodash.throttle": "^4.1.6",
-    "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.6",
@@ -85,6 +81,7 @@
   "devDependencies": {
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.0",
+    "@types/node": "^12.20.6",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-config-prettier": "^8.1.0",

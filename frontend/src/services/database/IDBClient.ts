@@ -1,4 +1,4 @@
-import { CoveyUserProfile } from "../CoveyTypes";
+import { CoveyUserProfile } from "../../CoveyTypes";
 
 /**
  * Interface for a database client
