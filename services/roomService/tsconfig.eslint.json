@@ -1,6 +1,6 @@
 {
  "include": ["src/**/*"],
-    "exclude": ["node_modules", "jest.config.ts", "**/*.test.ts", "src/client/TestUtils.ts"],
+    "exclude": ["node_modules", "jest.config.ts"],
     "compilerOptions": {
         /* Visit https://aka.ms/tsconfig.json to read more about this file */
 
