@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 module.exports = {
-    connect: DB_URL => {
+    connect: (DB_URL: string) => {
 
         mongoose.set('useNewUrlParser', true);
         mongoose.set('useFindAndModify', false);
@@ -11,7 +11,7 @@ module.exports = {
         mongoose.connect(DB_URL);
 
         //Log an error if we fail to connect
-        mongoose.connection.on('error', err => {
+        mongoose.connection.on('error', (err: any) => {
             console.error(err);
             console.log(
             'MongoDB connection failed: ' + DB_URL

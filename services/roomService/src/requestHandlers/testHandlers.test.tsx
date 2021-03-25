@@ -1,36 +1,26 @@
-import TownsServiceClient, 
-{AccountCreateRequest, AccountCreateResponse, 
-LoginRequest, LoginResponse,
-SearchUsersRequest, SearchUsersResponse,
-AddNeighborRequest, AddNeighborResponse} from './TownsServiceClient';
+import { AccountCreateRequest, LoginRequest, SearchUsersRequest, 
+    AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
+    searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
+import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
 
+let db: DatabaseController;
 
-const client = new TownsServiceClient('http://localhost:8081');
+beforeAll(async () => {
+  db = new DatabaseController();
+  await db.connect();
+});
 
-/*
-NEED HELP WITH:
-- figuring out how to clean database for tests (setup and teardown)
+afterAll(() => {
+  db.close();
+});
 
-first move this to testdb.ts and extract so we are testing the raw methods of database
-second, one level out test the backend handler for the response envelopes (covey town request handlers)
-focus on these unit tests for now
-can add public methods to delete different type of collections - look into cascade delete
-don't need to bring up the server
-
-wait for sam to clean up his stuff, merge to backend, and then pull here
-
-making sure im in hari-dev:
-git pull origin backend
-
-to make a file known as a test file: ...name...test.ts
-*/
-
-describe('TownsServiceClient', () => {
+describe('CoveyTownRequestHandlers', () => {
     
-    describe('createAccount()', () => {
+    describe('accountCreateHandler()', () => {
         it('creates successfully', async () => {
             const req: AccountCreateRequest = { username: 'create1', password: 'create1pass' };
-            const resp: AccountCreateResponse = await client.createAccount(req);
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            
             expect(resp).resolves.toBeDefined();
             expect(resp.username).toEqual('create1');
             expect(resp._id).toBeDefined();
