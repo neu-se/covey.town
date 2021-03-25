@@ -23,10 +23,14 @@ input loginInput {
   pasword: String!
 }
 
-input TownJoinRequestInput {
+input townJoinRequestInput {
   userName: String!
   coveyTownID: String!
-  Direction: String
+}
+
+input townCreateRequestInput {
+  friendlyName: String!
+  isPubliclyListed: Boolean!
 }
 
 type UserLocation {
@@ -52,12 +56,25 @@ type Town {
 }
 
 type TownJoinResponse {
-  isOk: Boolean!
+  isOK: Boolean!
   response: Town
+  message : String
+}
+
+type TownCreateResponse {
+  coveyTownID: String
+  coveyTownPassword: String
+}
+
+type TownCreateResponseEnevelope {
+  isOK: Boolean!
+  response: TownCreateResponse
   message : String
 }
 
 type Mutation {
   signUp(input: signUpInput) : User
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
+  townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
+}
 `;

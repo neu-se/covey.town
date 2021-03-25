@@ -1,4 +1,4 @@
-import { townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
+import { townCreateHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
 
 const User = require('../data/Models/users/user.model.server.ts')
 
@@ -47,6 +47,15 @@ module.exports = {
         userName: args.input.userName,
         coveyTownID: args.input.coveyTownID,
       });
+    },
+    townCreateRequest: async (_: any, args: any) => {
+      console.log("reached here");
+      const response = await townCreateHandler({
+        friendlyName: args.input.friendlyName,
+        isPubliclyListed: args.input.isPubliclyListed,
+      });
+      console.log(response);
+      return response;
     }
   }
 };
