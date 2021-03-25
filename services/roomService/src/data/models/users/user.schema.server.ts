@@ -2,7 +2,7 @@
 let userSchema = mongoos.Schema({
     username: String,
     email: String,
-    password: String,          
+    password: String,
     }, {collection:'User'});
 
 module.exports = userSchema;
