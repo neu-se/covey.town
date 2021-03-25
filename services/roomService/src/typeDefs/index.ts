@@ -1,6 +1,9 @@
-//const { gql } = require('../graphQLServer.ts');
-const { gql} = require('apollo-server-express');
-module.exports = gql`
+import { gql } from 'apollo-server-express';
+
+/**
+ * Represents the schema : All the queries , mutations are defined here.
+ */
+export const typeDefs = gql`
 type Query {
   users: [User!]
   user(id: ID!): User
@@ -14,9 +17,9 @@ type User {
 
 
 input signUpInput {
-username: String !
-email: String
-password : String!
+  name: String !
+  email: String
+  password : String!
 }
 
 input loginInput {
@@ -24,31 +27,58 @@ input loginInput {
   password: String!
 }
 
-input updateUsernameInput {
-  id: ID!
-  username: String
+input townJoinRequestInput {
+  userName: String!
+  coveyTownID: String!
 }
 
-input updateEmailInput {
-  id: ID!
-  email: String
+input townCreateRequestInput {
+  friendlyName: String!
+  isPubliclyListed: Boolean!
 }
 
-input updatePasswordInput {
-  id: ID!
-  password: String
+type UserLocation {
+  x: Int!
+  y: Int!
+  rotation: String!
+  moving : Boolean!
 }
 
-input deleteUserInput {
-  email: String!
+type Player {
+  _id: String!
+  _userName: String!
+  location: UserLocation!
+}
+
+type Town {
+  coveyUserID: String!
+  coveySessionToken: String!
+  providerVideoToken: String!
+  currentPlayers: [Player!]
+  friendlyName: String!
+  isPubliclyListed: Boolean!
+}
+
+type TownJoinResponse {
+  isOK: Boolean!
+  response: Town
+  message : String
+}
+
+type TownCreateResponse {
+  coveyTownID: String
+  coveyTownPassword: String
+}
+
+type TownCreateResponseEnevelope {
+  isOK: Boolean!
+  response: TownCreateResponse
+  message : String
 }
 
 type Mutation {
   signUp(input: signUpInput) : User
-  login(input: loginInput) : User
-  updateUsername(input: updateUsernameInput): Boolean
-  updateEmail(input: updateEmailInput): Boolean
-  updatePassword(input: updatePasswordInput): Boolean
-  deleteUser(input: deleteUserInput): Boolean
+  townJoinRequest(input: townJoinRequestInput): TownJoinResponse
+  townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
 }
 `;
