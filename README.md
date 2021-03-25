@@ -47,3 +47,5 @@ In the `frontend` directory, run `npm start` (again, you'll need to run `npm ins
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
 
 Heroku: https://coveytown43.herokuapp.com/
+
+Netlify: https://master--inspiring-bell-3080b7.netlify.app/
