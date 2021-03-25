@@ -19,6 +19,8 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import LoginHooks from './LoginHooks'
+import LogoutHooks from './LogoutHooks'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
@@ -47,6 +49,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
+
   useEffect(() => {
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
@@ -150,7 +153,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
+
+            <Heading p="4" as="h2" size="lg">-or-</Heading>
+            <LoginHooks/>
+            <LogoutHooks/>
           </Box>
+
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
