@@ -23,6 +23,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
+import RealmAuth from '../Authentication/RealmAuth';
 
 const DEFAULT_PROFILE_PICTURE = 'https://w7.pngwing.com/pngs/752/876/png-transparent-yellow-emoji-illustration-emoji-sticker-text-messaging-iphone-emoticon-blushing-emoji-face-heart-smiley.png';
 
@@ -47,6 +48,8 @@ type EditingState = {
 }
 
 export default function UserProfile(): JSX.Element {
+  const db = RealmAuth.getInstance();
+  const user = db.getCurrentUser();
   const [state, setState] = useState<ProfileFormInputs>({
     name: '',
     username: '',
@@ -70,8 +73,8 @@ export default function UserProfile(): JSX.Element {
   const populateProfileData = () => {
     // TODO: Fetch user's profile data from database
     setState({
-      name: 'Danny',
-      username: 'dtran',
+      name: `${user?.profile.firstName} ${user?.profile.lastName}` ,
+      username: `${user?.profile.name}`,
       password: 'abc',
       passwordConfirm: 'abc',
       bio: 'i\'m danny',

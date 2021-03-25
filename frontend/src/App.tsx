@@ -33,6 +33,7 @@ import useUser from './hooks/useUser';
 import AuthenticationContext from './contexts/AuthenticationContext';
 import IAuth from './components/Authentication/IAuth';
 import RealmAuth from './components/Authentication/RealmAuth';
+import UserProfile from './components/Profile/UserProfile';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -249,6 +250,9 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           <SignUp />
         </Route>
         {!user.isLoggedIn && <Redirect push to="/login" />}
+        <Route path='/profile'>
+          <UserProfile/>
+        </Route>
         <Route exact path="/">
           <CoveyAppContext.Provider value={appState}>
             <VideoContext.Provider value={Video.instance()}>
