@@ -2,7 +2,6 @@ import React, {
   Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
-import dotenv from 'dotenv';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -29,10 +28,7 @@ import Video from './classes/Video/Video';
 import SignUp from "./components/SignUp/SignUp";
 import LoginPage from "./components/LoginPage/LoginPage";
 import AuthGuard from './components/Authentication/AuthGuard';
-import useUser from './hooks/useUser';
-import AuthenticationContext from './contexts/AuthenticationContext';
-import IAuth from './components/Authentication/IAuth';
-import RealmAuth from './components/Authentication/RealmAuth';
+import useAuthInfo from './hooks/useAuthInfo';
 import UserProfile from './components/Profile/UserProfile';
 
 type CoveyAppUpdate =
@@ -240,7 +236,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
 
   const Routes: React.FC = () => {
     // need to define user after AuthGuard
-    const user = useUser();
+    const user = useAuthInfo();
     return (
       <Switch>
         <Route path="/login">
@@ -268,11 +264,9 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   };
   return (
     <BrowserRouter>
-      <AuthenticationContext.Provider value={RealmAuth.getInstance()}>
         <AuthGuard>
           <Routes />
         </AuthGuard>
-      </AuthenticationContext.Provider>
     </BrowserRouter>
 
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import assert from 'assert';
 
 import {
   Flex,
@@ -12,28 +11,26 @@ import {
   Link,
   Button,
   Heading,
-  Text,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
-import useUser from '../../hooks/useUser';
-import useAuthentication from '../../hooks/useAuthentication';
-import IAuth from '../Authentication/IAuth';
+import useAuthInfo from '../../hooks/useAuthInfo';
+import IAuth from '../../services/authentication/IAuth';
+import RealmAuth from '../../services/authentication/RealmAuth';
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const history = useHistory();
-  const user = useUser();
+  const authInfo = useAuthInfo();
   const toast = useToast();
-  const auth : IAuth = useAuthentication();
+  const auth : IAuth = RealmAuth.getInstance();
 
   const signInHandler = async () => {
     const credential = { email, password };
-    assert(user.actions);
     try {
-    await auth.loginWithEmailPassword(credential,user.actions.setAuthState);
+    await auth.loginWithEmailPassword(credential,authInfo.actions.setAuthState);
     history.push('/');
     } catch(err) {
       toast({

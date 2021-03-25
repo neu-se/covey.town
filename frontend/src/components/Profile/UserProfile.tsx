@@ -23,7 +23,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
-import RealmAuth from '../Authentication/RealmAuth';
+import RealmAuth from '../../services/authentication/RealmAuth'
 
 const DEFAULT_PROFILE_PICTURE = 'https://w7.pngwing.com/pngs/752/876/png-transparent-yellow-emoji-illustration-emoji-sticker-text-messaging-iphone-emoticon-blushing-emoji-face-heart-smiley.png';
 
@@ -73,8 +73,8 @@ export default function UserProfile(): JSX.Element {
   const populateProfileData = () => {
     // TODO: Fetch user's profile data from database
     setState({
-      name: `${user?.profile.firstName} ${user?.profile.lastName}` ,
-      username: `${user?.profile.name}`,
+      name: 'test',
+      username: `${user?.profile.userName}`,
       password: 'abc',
       passwordConfirm: 'abc',
       bio: 'i\'m danny',

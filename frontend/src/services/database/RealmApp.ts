@@ -2,7 +2,7 @@ import * as Realm from "realm-web";
 import assert from 'assert';
 import { setContext } from '@apollo/client/link/context';
 import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
-import { AuthState, EmailPasswordCredential } from '../CoveyTypes';
+import { AuthState, CoveyUserProfile, EmailPasswordCredential, UserProfile } from '../../CoveyTypes';
 
 /**
  * Singleton Realm App class to construct a realm app service and authorize a user client.
@@ -68,18 +68,15 @@ export default class RealmApp {
         return this._app.currentUser.accessToken;
     }
 
-    async loginWithEmailPassword(credential: EmailPasswordCredential, setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<Realm.User> {
+    async loginWithEmailPassword(credential: EmailPasswordCredential): Promise<Realm.User> {
         const credentials = Realm.Credentials.emailPassword(
             credential.email,
             credential.password
         );
 
-        const user = await this._app.logIn(credentials);
-        setAuthState({
-            isLoggedIn: true,
-            currentUser: user
-        })
-        return user;
+        const realmUser = await this._app.logIn(credentials);
+
+        return realmUser;
     }
 
     async registerUserEmailPassword(credential: EmailPasswordCredential): Promise<void> {
@@ -89,4 +86,14 @@ export default class RealmApp {
     get CurrentUser(): Realm.User | null {
         return this._app.currentUser;
     }
+
+    async loginWithGoogle(): Promise<Realm.User> {
+        const RedirectUri = "http://localhost:3000"
+        const credentials = Realm.Credentials.google(RedirectUri);
+    
+        const realmUser = await this._app.logIn(credentials);
+        return realmUser;
+    }
+
+    
 }

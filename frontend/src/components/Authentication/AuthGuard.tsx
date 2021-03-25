@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import UserContext from '../../contexts/UserContext';
-import { AuthState } from "../../CoveyTypes";
-import useAuthentication from '../../hooks/useAuthentication';
+import AuthInfoContext from '../../contexts/AuthInfoContext';
+import { AuthInfo, AuthState } from "../../CoveyTypes";
+import IAuth from "../../services/authentication/IAuth";
+import RealmAuth from "../../services/authentication/RealmAuth";
 
 
 interface AuthGuardProps {
@@ -13,34 +14,34 @@ interface AuthGuardProps {
  * @param param0 props
  */
 export default function AuthGuard({ children }: AuthGuardProps): JSX.Element {
-  const auth = useAuthentication();
+  const auth : IAuth = RealmAuth.getInstance();
 
   const user = auth.getCurrentUser();
   
   const [authState, setAuthState] = useState<AuthState>({
-    isLoggedIn: user? user?.state === 'active' : false,
-    currentUser: user,
+    isLoggedIn: user? user?.isLoggedIn : false,
+    currentUser: user
   });
   useEffect(() => { }, [authState.isLoggedIn]);
 
-  const handleLogout = useCallback(() => {
-    user?.logOut();
+  const handleLogout = useCallback(async () => {
+    await user?.actions.logout()
     setAuthState({ isLoggedIn: false, currentUser: null });
   }, [user]);
 
   const authInfo = React.useMemo(() => {
-    const { isLoggedIn, currentUser } = authState;
-    const value: AuthState = {
+    const { isLoggedIn } = authState;
+    const value: AuthInfo = {
       isLoggedIn,
-      currentUser,
+      currentUser: user,
       actions: { handleLogout, setAuthState },
     };
     return value;
-  }, [authState, handleLogout]);
+  }, [authState, handleLogout, user]);
 
   return (
-    <UserContext.Provider value={authInfo}>
+    <AuthInfoContext.Provider value={authInfo}>
       {children}
-    </UserContext.Provider>
+    </AuthInfoContext.Provider>
   );
 }
