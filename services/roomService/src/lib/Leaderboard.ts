@@ -1,20 +1,26 @@
+import { ScoreList } from "../CoveyTypes";
+
 /* 
     An object representing the leaderboard, which shows the top scores in each town.
 **/
 export default class Leaderboard {
 
-     private _allScores: Map<string, number> = new Map([
-         ['user1', 5],
-         ['user2', 3],
-         ['user3', 6]
-     ]);
+    private _allScores: Map<string, number>;
 
-     get allScores(): Map<string, number> {
+    get allScores(): Map<string, number> {
         return this._allScores;
     }
 
     set allScores(scores) {
         this._allScores = scores;
+    }
+
+    constructor() {
+        this._allScores = new Map([
+            ['user1', 5],
+            ['user2', 3],
+            ['user3', 6]
+       ]);
     }
 
     /**
@@ -35,24 +41,22 @@ export default class Leaderboard {
      * Gets just the top 10 scores in the room
      * 
      */
-    getTopScores(): [string, number][] {
-        let topScores: [string, number][] = [];
-        let allScoreValues: [string, number][] = [];
+    getTopScores(): ScoreList {
+        let topScores: { userName: string, score: number }[]  = [];
+        let allScoreValues: { userName: string, score: number}[] = [];
 
         const allScores = this.allScores;
 
-        for (let user in allScores.keys()) {
-            let userScore = allScores.get(user);
-            if (typeof userScore !== 'undefined') {
-                allScoreValues.push([user, userScore]);
-            }
-        }
+        allScores.forEach((value: number, key: string) => {
+            allScoreValues.push({ userName: key, score: value });
+        })
 
-        const scores = Object.values(topScores).sort((score1, score2) => {
-            return score2[1] - score1[1];
+        // sort values
+        Object.values(topScores).sort((score1, score2) => {
+            return score2.score - score1.score;
         });
 
-        topScores = scores.slice(0,10);
+        topScores = allScoreValues.slice(0, 10);
 
         return topScores;
     }

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { CoveyTownList, ScoreList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 
@@ -77,6 +77,14 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface LeaderboardRequest {
+  coveyTownID: string;
+}
+
+export interface LeaderboardResponse {
+  scores: ScoreList;
 }
 
 /**
@@ -167,6 +175,23 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
     message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
   };
 
+}
+
+export async function leaderboardHandler(requestData: LeaderboardRequest): Promise<ResponseEnvelope<LeaderboardResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const leaderboard = townsStore.getLeaderboard(requestData.coveyTownID);
+  if (!leaderboard) {
+    return {
+      isOK: false,
+      message: 'Invalid Town ID',
+    }
+  }
+  return {
+    isOK: true,
+    response: {
+      scores: leaderboard
+    },
+  }
 }
 
 /**

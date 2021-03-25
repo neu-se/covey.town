@@ -1,5 +1,5 @@
 import CoveyTownController from './CoveyTownController';
-import { CoveyTownList } from '../CoveyTypes';
+import { CoveyTownList, ScoreList } from '../CoveyTypes';
 
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
@@ -68,6 +68,14 @@ export default class CoveyTownsStore {
       return true;
     }
     return false;
+  }
+
+  getLeaderboard(coveyTownID: string): ScoreList | undefined {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      return existingTown.getScores();
+    }
+    return existingTown;
   }
 
 }
