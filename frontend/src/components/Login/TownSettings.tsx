@@ -103,7 +103,7 @@ const TownSettings: React.FunctionComponent = () => {
               <Checkbox id="isPubliclyListed" name="isPubliclyListed" isChecked={isPubliclyListed} onChange={(e)=>setIsPubliclyListed(e.target.checked)} />
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel htmlFor='isMergeable'>Publicly Listed</FormLabel>
+              <FormLabel htmlFor='isMergeable'>Mergeable?</FormLabel>
               <Checkbox id="isMergeable" name="isMergeable" isChecked={currentTownIsMergeable} onChange={(e)=>setCurrentTownIsMergeable(e.target.checked)} />
             </FormControl>
             <FormControl isRequired>

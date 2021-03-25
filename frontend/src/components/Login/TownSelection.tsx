@@ -172,6 +172,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                             setNewTownIsPublic(e.target.checked)
                           }}/>
               </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="isMergeable">Mergeable?</FormLabel>
+                <Checkbox id="isMergeable" name="isMergeable" isChecked={newTownIsMergeable}
+                          onChange={(e) => {
+                            setNewTownIsMergeable(e.target.checked)
+                          }}/>
+              </FormControl>
             </Box>
               <Box>
                 <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
