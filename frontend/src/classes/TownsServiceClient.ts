@@ -112,7 +112,9 @@ export interface LoginResponse {
   _id: string,
   username: string,
 }
+
 export interface SearchUsersRequest {
+  userIdSearching: string,
   username: string,
 }
 
