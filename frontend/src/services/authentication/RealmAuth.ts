@@ -31,7 +31,7 @@ export default class RealmAuth implements IAuth {
         const realmUser = await this._realmApp.loginWithEmailPassword(credential);
 
         const userProfile: CoveyUserProfile = {
-            user_id: realmUser.customData.user_id,
+            user_id: realmUser.id,
             userName: realmUser.customData.userName,
             email: realmUser.customData.email,
             pfpURL: realmUser.customData.pfpURL,
