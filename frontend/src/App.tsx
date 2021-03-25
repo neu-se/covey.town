@@ -7,6 +7,8 @@ import { io, Socket } from 'socket.io-client';
 import { ChakraProvider, Grid, GridItem } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
+import Client from "twilio-chat";
+import {Channel} from "twilio-chat/lib/channel";
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
@@ -28,7 +30,7 @@ import Video from './classes/Video/Video';
 import ChannelWrapper from "./components/Chat/ChannelWrapper";
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, chatClient: Client, players: Player[], emitMovement: (location: UserLocation) => void } }
   | { action: 'addPlayer'; player: Player }
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
@@ -183,6 +185,58 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({ action: 'weMoved', location });
   };
 
+  const chatToken = video.tokenForChat;
+  assert(chatToken)
+
+  const chatClient = await Client.create(chatToken);
+  console.log('chatClient', chatClient)
+  assert(chatClient)
+
+  chatClient.on('channelJoined', async (joinedChannel: Channel) => {
+    const channelMessages = await joinedChannel.getMessages();
+    console.log('channelMessages', channelMessages);
+    console.log(`chat client channelJoined event on ${joinedChannel.friendlyName} has occurred`);
+  });
+
+  const joinChannel = async (channelToJoin: Channel) => {
+    if (channelToJoin.status === "joined") {
+      console.log(`Channel, ${channelToJoin.friendlyName} already joined.`);
+    } else {
+      console.log(`Status for ${channelToJoin.friendlyName} is ${channelToJoin.status}`);
+      const response = await channelToJoin.join();
+      console.log(response);
+    }
+  }
+
+  const createChannel = async (channelID: string, channelFriendlyName: string) => {
+    if (chatClient) {
+      const createdChannel = await chatClient.createChannel({
+        uniqueName: channelID,
+        friendlyName: channelFriendlyName,
+      });
+
+      console.log(`${createdChannel.friendlyName} has been created!`)
+      return createdChannel;
+    }
+    throw Error(`Something went wrong, client error. Please come back later.`);
+  }
+
+  try {
+    if (chatClient) {
+      const mainChannel = await chatClient.getChannelByUniqueName(video.coveyTownID);
+      await joinChannel(mainChannel);
+
+    }
+  } catch {
+    try {
+      const created = await createChannel(video.coveyTownID, roomName);
+      await joinChannel(created);
+
+    } catch {
+      throw new Error(`Unable to create or join channel for ${roomName}`);
+    }
+  }
+
   dispatchAppUpdate({
     action: 'doConnect',
     data: {
@@ -194,6 +248,7 @@ async function GameController(initData: TownJoinResponse,
       townIsPubliclyListed: video.isPubliclyListed,
       emitMovement,
       socket,
+      chatClient,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
     },
   });
