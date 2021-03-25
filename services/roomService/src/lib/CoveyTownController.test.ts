@@ -10,14 +10,23 @@ import PlayerSession from '../types/PlayerSession';
 import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import TwilioChat from './TwilioChat';
 
 jest.mock('./TwilioVideo');
+jest.mock('./TwilioChat');
 
 const mockGetTokenForTown = jest.fn();
 // eslint-disable-next-line
 // @ts-ignore it's a mock
 TwilioVideo.getInstance = () => ({
   getTokenForTown: mockGetTokenForTown,
+});
+
+const mockGetChatTokenForTown = jest.fn();
+// eslint-disable-next-line
+// @ts-ignore it's a mock
+TwilioChat.getInstance = () => ({
+  getToken: mockGetChatTokenForTown,
 });
 
 function generateTestLocation(): UserLocation {
@@ -46,7 +55,9 @@ describe('CoveyTownController', () => {
         const townController = new CoveyTownController(townName, false);
         const newPlayerSession = await townController.addPlayer(new Player(nanoid()));
         expect(mockGetTokenForTown).toBeCalledTimes(1);
+        expect(mockGetChatTokenForTown).toBeCalledTimes(1);
         expect(mockGetTokenForTown).toBeCalledWith(townController.coveyTownID, newPlayerSession.player.id);
+        expect(mockGetChatTokenForTown).toBeCalledWith(newPlayerSession.player.userName);
       });
   });
   describe('town listeners and events', () => {
