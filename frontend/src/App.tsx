@@ -25,6 +25,8 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import Announcement from './components/Announcement/Announcement';
+import Chat from './components/Chat/Chat';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -226,6 +228,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       <div>
         <WorldMap />
         <VideoOverlay preferredMode="fullwidth" />
+        <Announcement />
+        <Chat />
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);

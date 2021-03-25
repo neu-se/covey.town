@@ -77,6 +77,15 @@ export interface TownUpdateRequest {
 }
 
 /**
+ * Payload sent by the client to publish an Announcement.
+ */
+export interface TownAnnouncementRequest {
+  coveyTownID: string;
+  coveyTownPassword: string;
+  content:string;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -142,4 +151,8 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async publishAnnouncement(requestData: TownAnnouncementRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+    const responseWrapper = await this._axios.post('/announcement', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
 }
