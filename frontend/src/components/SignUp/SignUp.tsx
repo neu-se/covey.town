@@ -14,6 +14,7 @@ import {
   Heading,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import { EmailPasswordCredential } from '../../CoveyTypes';
 import IAuth from '../../services/authentication/IAuth';
@@ -23,9 +24,35 @@ import RealmAuth from '../../services/authentication/RealmAuth';
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const history = useHistory();
+  const toast = useToast();
   const auth: IAuth = RealmAuth.getInstance();
+
+  function validateEmailAndPassword() : boolean {
+    if (confirmPassword !== password) {
+      toast({
+        title: 'Passwords do not match',
+        description: 'You must confirm the input password'
+      })
+      return false;
+    }
+
+    if (password.length < 8) {
+      toast({
+        title: 'Invalid password',
+        description: 'Passwords must be at least 8 characters'
+      })
+      return false;
+    }
+    return true;
+  }
+
   const createAccountHandler = async () => {
+    if (!validateEmailAndPassword()) {
+      return;
+    }
+
     const credential: EmailPasswordCredential = {
       email,
       password
@@ -33,6 +60,7 @@ export default function SimpleCard(): JSX.Element {
     await auth.registerUserEmailPassword(credential); 
     history.push('/login');
   }
+
   return (
     <Flex
       minH='100vh'
@@ -59,6 +87,10 @@ export default function SimpleCard(): JSX.Element {
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
               <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)}/>
+            </FormControl>
+            <FormControl id="confirmPassword">
+              <FormLabel>Confirm Password</FormLabel>
+              <Input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}/>
             </FormControl>
             <Stack spacing={10}>
 
