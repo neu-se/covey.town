@@ -120,6 +120,8 @@ export default class CoveyTownController {
     this._listeners.forEach((listener) => listener.onPlayerMoved(player));
   }
 
+  
+
   /**
    * Subscribe to events from this town. Callers should make sure to
    * unsubscribe when they no longer want those events by calling removeTownListener
