@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { Message, MessageType, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -120,7 +120,24 @@ export default class CoveyTownController {
     this._listeners.forEach((listener) => listener.onPlayerMoved(player));
   }
 
-  
+  /**
+   * Sends an incoming message to relevant listeners based on the message's type:
+   * If TownMessage, sends to all listeners
+   * If ProximityMessage, sends only to listeners near the message's location
+   * If DirectMessage, only to listeners involved in the conversation
+   * @param message The incoming message
+   */
+  receiveMessage(message: Message): void {
+    switch (message.type) {
+      case MessageType.TownMessage:
+        this._listeners.forEach((listener) => listener.onMessageReceived(message));
+        break;
+      default:
+        break;
+    }
+  }
+
+
 
   /**
    * Subscribe to events from this town. Callers should make sure to

@@ -1,9 +1,11 @@
+import { Message } from '../CoveyTypes';
 import Player from './Player';
 
 /**
  * A listener for player-related events in each town
  */
 export default interface CoveyTownListener {
+  
   /**
    * Called when a player joins a town
    * @param newPlayer the new player
@@ -26,6 +28,12 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+  /**
+   * Called when a player sends a message
+   * @param message The incoming message
+   */
+  onMessageReceived(message: Message): void;
 
   /**
    * Gets the player associated with this listener

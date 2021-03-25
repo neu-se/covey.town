@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { CoveyTownList, Message, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 
@@ -189,6 +189,9 @@ function townSocketAdapter(socket: Socket, player: Player): CoveyTownListener {
     onTownDestroyed() {
       socket.emit('townClosing');
       socket.disconnect(true);
+    },
+    onMessageReceived(message: Message) {
+      socket.emit('messageReceived', message);
     },
     getAssociatedPlayer() {
       return player
