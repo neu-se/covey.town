@@ -1,4 +1,4 @@
-import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from './db';
+import DatabaseController, {AccountCreateResponse, LoginResponse, NeighborStatus, SearchUsersResponse} from './db';
 import {AddNeighborResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
 let db: DatabaseController;
@@ -55,7 +55,6 @@ describe('db', () => {
     });
   });
   describe('searchUsersByUsername()', () => {
-    // TODO FIX
     it('searched and found', async () => {
       const username = 'create4';
       const password = 'pass4';
@@ -64,17 +63,13 @@ describe('db', () => {
       const searchResp: SearchUsersResponse = await db.searchUsersByUsername(username);
       const ans = { _id: resp._id, username: username };
       const usersReturned = searchResp.users;
-      const id_one = usersReturned[0]._id;
-      console.log(id_one);
-      const user_one = usersReturned[0].username;
-      console.log(user_one);
-      expect(id_one).toEqual(ans._id);
+      const id_one: String = usersReturned[0]._id as String;
+      const user_one: String = usersReturned[0].username as String;
+      expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
       expect(user_one).toEqual(ans.username);
-
       await db.removeUserFromCollection(resp._id);
     });
 
-    // TODO FIX same error
     it('searched and partial found', async () => {
       const username = 'create5user';
       const password = 'pass5';
@@ -82,9 +77,11 @@ describe('db', () => {
       
       const searchResp: SearchUsersResponse = await db.searchUsersByUsername('create5');
       const ans = { _id: resp._id, username: username };
-      console.log(searchResp.users);
-      expect(searchResp.users).toContainEqual(ans);
-
+      const usersReturned = searchResp.users;
+      const id_one: String = usersReturned[0]._id as String;
+      const user_one: String = usersReturned[0].username as String;
+      expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
+      expect(user_one).toEqual(ans.username);
       await db.removeUserFromCollection(resp._id);
     });
 
@@ -145,21 +142,85 @@ describe('db', () => {
       await db.removeUserFromCollection(resp2._id);
     });
   });
+
+  describe('findUserId()', () => {
+    it('returns id if user exists', async () => {
+      const username = 'create12';
+      const password = 'pass12';
+      const resp: AccountCreateResponse = await db.insertUser(username, password);
+
+      const resp2: string = await db.findUserId(username);
+      expect(JSON.stringify(resp2)).toEqual(JSON.stringify(resp._id));
+      await db.removeUserFromCollection(resp._id);
+    });
+
+    it('returns missing string if user does not exist', async () => {
+      const resp: string = await db.findUserId('create13');
+      expect(resp).toEqual('user_not_found');
+    })
+  });
+
+  describe('neighborStatus()', () => {
+    it('neighbor', async () => {
+        // test with acceptRequest
+    });
+
+    it('request sent', async () => {
+      const username = 'create14';
+      const password = 'pass14';
+      const resp: AccountCreateResponse = await db.insertUser(username, password);
+
+      const username2 = 'create15';
+      const password2 = 'pass15';
+      const resp2: AccountCreateResponse = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+
+      const resp3: NeighborStatus = await db.neighborStatus(resp._id, resp2._id);
+      expect(resp3.status).toEqual('requestSent');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+
+    it('request received', async () => {
+      const username = 'create16';
+      const password = 'pass16';
+      const resp: AccountCreateResponse = await db.insertUser(username, password);
+
+      const username2 = 'create17';
+      const password2 = 'pass17';
+      const resp2: AccountCreateResponse = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      
+      const resp3: NeighborStatus = await db.neighborStatus(resp2._id, resp._id);
+      expect(resp3.status).toEqual('requestReceived');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+
+    it('unknown', async () => {
+      const username = 'create18';
+      const password = 'pass18';
+      const resp: AccountCreateResponse = await db.insertUser(username, password);
+
+      const username2 = 'create19';
+      const password2 = 'pass19';
+      const resp2: AccountCreateResponse = await db.insertUser(username2, password2);
+      
+      const resp3: NeighborStatus = await db.neighborStatus(resp._id, resp2._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+  });
 });
 
 /*
-Helper Methods to test:
-- findUserId
-  - returns id if exists and string if it doesn't
-- neighborStatus
-  - neighbor
-  - request sent
-  - request received
-  - unknown
-- checkIfNeighbors
-  - true or false
-
-NOT USED:
+NOT USED or tested yet:
 - acceptReqest
 - removeNeighborRequest
 - removeNeighbor
