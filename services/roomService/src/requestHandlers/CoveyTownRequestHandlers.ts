@@ -79,6 +79,13 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
+export interface MessageData {
+  message: string;
+  receiverID: string;
+  senderID: string;
+  timeStamp: string;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -190,6 +197,10 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    onDistributeMessage(message: MessageData) {
+      console.log('try to send out' + message);
+      socket.emit('playerSendMessage', message);
+    }
   };
 }
 
@@ -231,5 +242,10 @@ export function townSubscriptionHandler(socket: Socket): void {
   // location, inform the CoveyTownController
   socket.on('playerMovement', (movementData: UserLocation) => {
     townController.updatePlayerLocation(s.player, movementData);
+  });
+
+  socket.on('playerSendMessage', (message: MessageData) => {
+    console.log(message);
+    townController.distributePlayerMessage(message);
   });
 }

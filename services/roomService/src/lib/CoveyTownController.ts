@@ -5,6 +5,7 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import { MessageData } from '../requestHandlers/CoveyTownRequestHandlers';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -120,6 +121,10 @@ export default class CoveyTownController {
   updatePlayerLocation(player: Player, location: UserLocation): void {
     player.updateLocation(location);
     this._listeners.forEach((listener) => listener.onPlayerMoved(player));
+  }
+
+  distributePlayerMessage(message: MessageData): void {
+    this._listeners.forEach((listener) => listener.onDistributeMessage(message));
   }
 
   /**

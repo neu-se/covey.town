@@ -35,8 +35,15 @@ type CoveyAppUpdate =
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
+  | { action: 'playerSendPrivateMessage'; message: MessageData }
+  | { action: 'playerSendPublicMessage'; message: MessageData }
   ;
 
+type MessageData = {
+    message: string;
+    receiverID: string;
+    senderID: string;
+};
 function defaultAppState(): CoveyAppState {
   return {
     nearbyPlayers: { nearbyPlayers: [] },
@@ -142,6 +149,12 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     case 'disconnect':
       state.socket?.disconnect();
       return defaultAppState();
+    case 'playerSendPrivateMessage':
+      alert(update.message.message);
+      break;
+    case 'playerSendPublicMessage':
+      alert(update.message.message);
+      break;
     default:
       throw new Error('Unexpected state request');
   }
@@ -178,6 +191,14 @@ async function GameController(initData: TownJoinResponse,
   });
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
+  });
+  socket.on('playerSendMessage', (message: MessageData) => {
+    if(message.receiverID === gamePlayerID){
+      dispatchAppUpdate({ action: 'playerSendPrivateMessage', message });
+    }
+    if(message.receiverID === 'Everyone'){
+      dispatchAppUpdate({ action: 'playerSendPublicMessage', message });
+    }
   });
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
