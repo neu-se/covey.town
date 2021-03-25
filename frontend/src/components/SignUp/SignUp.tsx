@@ -28,40 +28,63 @@ export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const history = useHistory();
-  const auth: IAuth = RealmAuth.getInstance();
   const toast = useToast();
+  const auth: IAuth = RealmAuth.getInstance();
   const authInfo = useAuthInfo();
   const dbClient: IDBClient = RealmDBClient.getInstance();
-  
-  const createAccountHandler = async () => {
-    if(!email || email.length === 0) {
+
+  function validateEmailAndPassword(): boolean {
+    if (!email || email.length === 0) {
       toast({
         title: 'Unable to create account',
         description: 'Please enter an email address',
         status: 'error',
         isClosable: true
       })
-      return;
+      return false;
     }
 
-    if(!password || password.length === 0) {
+    if (!password || password.length === 0) {
       toast({
         title: 'Unable to create account',
         description: 'Please enter a password',
         status: 'error',
         isClosable: true
       })
-      return;
+      return false;
     }
 
-    if(!userName || userName.length === 0) {
+    if (!userName || userName.length === 0) {
       toast({
         title: 'Unable to create account',
         description: 'Please enter a username',
         status: 'error',
         isClosable: true
       })
+    }
+
+    if (confirmPassword !== password) {
+      toast({
+        title: 'Passwords do not match',
+        description: 'You must confirm the input password'
+      })
+      return false;
+    }
+
+    if (password.length < 8) {
+      toast({
+        title: 'Invalid password',
+        description: 'Passwords must be at least 8 characters'
+      })
+      return false;
+    }
+    return true;
+  }
+
+  const createAccountHandler = async () => {
+    if (!validateEmailAndPassword()) {
       return;
     }
 
@@ -79,22 +102,23 @@ export default function SimpleCard(): JSX.Element {
      * 5. If everything is successful,  redirects to home page
      */
     try {
-    await auth.registerUserEmailPassword(credential); 
-    const user = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
-    const newUserProfile: CoveyUserProfile = {
-      user_id: user.id,
-      userName,
-      email,
-    }
-    await dbClient.saveUserProfile(newUserProfile);
-    history.push('/');
-    } catch(e) {
+      await auth.registerUserEmailPassword(credential);
+      const user = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
+      const newUserProfile: CoveyUserProfile = {
+        user_id: user.id,
+        userName,
+        email,
+      }
+      await dbClient.saveUserProfile(newUserProfile);
+      history.push('/');
+    } catch (e) {
       toast({
         title: 'Create Account Error',
         description: e.error.toString()
       })
     }
   }
+
   return (
     <Flex
       minH='100vh'
@@ -114,7 +138,7 @@ export default function SimpleCard(): JSX.Element {
           boxShadow='lg'
           p={8}>
           <Stack spacing={4}>
-          <FormControl id="username">
+            <FormControl id="username">
               <FormLabel>Username</FormLabel>
               <Input value={userName} onChange={(event) => setUserName(event.target.value)} />
             </FormControl>
@@ -124,7 +148,11 @@ export default function SimpleCard(): JSX.Element {
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)}/>
+              <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+            </FormControl>
+            <FormControl id="confirmPassword">
+              <FormLabel>Confirm Password</FormLabel>
+              <Input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} />
             </FormControl>
             <Stack spacing={10}>
 
