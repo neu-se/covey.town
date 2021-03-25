@@ -131,7 +131,6 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
 }
 
 export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
-  console.log("reached here");
   const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {

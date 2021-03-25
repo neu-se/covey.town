@@ -1,5 +1,9 @@
-const { gql} = require('apollo-server-express');
-module.exports = gql`
+import { gql } from 'apollo-server-express';
+
+/**
+ * Represents the schema : All the queries , mutations are defined here.
+ */
+export const typeDefs = gql`
 type Query {
   users: [User!]
   user(id: ID!): User
@@ -13,9 +17,9 @@ type User {
 
 
 input signUpInput {
-name: String !
-email: String
-password : String!
+  name: String !
+  email: String
+  password : String!
 }
 
 input loginInput {
