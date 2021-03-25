@@ -3,6 +3,7 @@ import {Channel} from 'twilio-chat/lib/channel';
 import {Box, Button, Input, Stack, Tabs, Tab, TabList} from "@chakra-ui/react";
 import {Message} from 'twilio-chat/lib/message';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
+import Video from "../../classes/Video/Video";
 
 
 export default function ChatScreen({channel}: { channel: Channel }): JSX.Element {
@@ -68,6 +69,8 @@ export default function ChatScreen({channel}: { channel: Channel }): JSX.Element
                  onKeyPress={event => {
                    if (event.key === "Enter") sendMessage()
                  }}
+                 onFocus={() => Video.instance()?.pauseGame()}
+                 onBlur={() => Video.instance()?.unPauseGame()}
           />
           <Button w="10%" onClick={sendMessage} disabled={!channel || !text}>Send</Button>
         </div>
