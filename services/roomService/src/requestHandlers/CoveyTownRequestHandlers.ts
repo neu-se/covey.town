@@ -4,11 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-<<<<<<< HEAD
-import DatabaseController, { NeighborStatus } from '../database/db';
-=======
 import DatabaseController, { AccountCreateResponse, LoginResponse, SearchUsersResponse } from '../database/db';
->>>>>>> 40df8b85fcb10633d76b3d2fcca218a1b2928379
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -99,17 +95,6 @@ export interface SearchUsersRequest {
   username: string,
 }
 
-<<<<<<< HEAD
-export interface SearchUsersResponse {
-  users: {
-    _id: string,
-    username: string,
-    relationship: NeighborStatus,
-  }[]
-}
-
-=======
->>>>>>> 40df8b85fcb10633d76b3d2fcca218a1b2928379
 export interface AddNeighborRequest {
   currentUserId: string,
   UserIdToRequest: string,
