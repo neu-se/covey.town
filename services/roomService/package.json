@@ -13,7 +13,6 @@
     "url": "https://github.com/neu-se/covey.town/issues"
   },
   "homepage": "https://github.com/neu-se/covey.town#readme",
-  "type": "module",
   "scripts": {
     "test": "jest",
     "start": "npm run build:live",
