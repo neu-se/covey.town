@@ -1,4 +1,4 @@
-import { userModel as User}  from "./../data/Models/users/user.model.server";
+import { userModel as User}  from './../data/models/users/user.model.server';
 import { townCreateHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
 /**
  * All the resolvers are defined here.
@@ -49,7 +49,7 @@ export const resolvers = {
         if (user) {
           throw new Error("User already in use");
         }
-        const newUser = new User({ name: args.input.name, email: args.input.email, password: args.input.password });
+        const newUser = new User({ userName: args.input.userName, email: args.input.email, password: args.input.password });
         const result = newUser.save();
         return result;
       }
@@ -57,7 +57,56 @@ export const resolvers = {
         throw (error);
       }
     },
+    updateUser: async (_: any, args: any) => {
+      try {
+        const user = await User.findOne({ email: args.input.email});
+        if (user !== undefined) {
+          
+          if (args.input.userName !== undefined) {
+            await User.findByIdAndUpdate(args.input.id, { userName: args.input.userName  });
+             return true;
+          }
 
+          if (args.input.email !== undefined) {
+            await User.findByIdAndUpdate(args.input.id, { email: args.input.email  });
+            return true;
+          }
+
+          if (args.input.password !== undefined) {
+            await User.findByIdAndUpdate(args.input.id, { password: args.input.password  });
+            return true;
+          }
+          return false;
+        }
+        else {
+          throw new Error("User does not exist");
+        }
+
+      }
+      catch (error) {
+        console.log(error);
+        throw (error);
+      }
+
+    },
+    deleteUser: async (_: any, args: any) => {
+      try {
+        const user = await User.findOne({ email: args.input.email});
+        if (user !== undefined ) {
+          await User.remove({ email: args.input.email  });
+          return true;
+        }
+        else {
+          throw new Error("User does not exist");
+        }
+
+      }
+      catch (error) {
+        console.log(error);
+        throw (error);
+      }
+
+    },
     // Below are functions already existing and refactored. 
     /**
      * Resolver to handle town join request.
