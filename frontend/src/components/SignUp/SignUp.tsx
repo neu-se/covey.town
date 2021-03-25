@@ -14,24 +14,86 @@ import {
   Heading,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
-import { EmailPasswordCredential } from '../../CoveyTypes';
+import { CoveyUserProfile, EmailPasswordCredential } from '../../CoveyTypes';
 import IAuth from '../../services/authentication/IAuth';
 import RealmAuth from '../../services/authentication/RealmAuth';
+import IDBClient from '../../services/database/IDBClient';
+import RealmDBClient from '../../services/database/RealmDBClient';
+import useAuthInfo from '../../hooks/useAuthInfo';
 
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
   const history = useHistory();
   const auth: IAuth = RealmAuth.getInstance();
+  const toast = useToast();
+  const authInfo = useAuthInfo();
+  const dbClient: IDBClient = RealmDBClient.getInstance();
+  
   const createAccountHandler = async () => {
+    if(!email || email.length === 0) {
+      toast({
+        title: 'Unable to create account',
+        description: 'Please enter an email address',
+        status: 'error',
+        isClosable: true
+      })
+      return;
+    }
+
+    if(!password || password.length === 0) {
+      toast({
+        title: 'Unable to create account',
+        description: 'Please enter a password',
+        status: 'error',
+        isClosable: true
+      })
+      return;
+    }
+
+    if(!userName || userName.length === 0) {
+      toast({
+        title: 'Unable to create account',
+        description: 'Please enter a username',
+        status: 'error',
+        isClosable: true
+      })
+      return;
+    }
+
     const credential: EmailPasswordCredential = {
       email,
       password
     }
+
+    /** 
+     * Initiate registration process.
+     * 1. Register email and password account
+     * 2. Automatically logins the registered user
+     * 3. Initialize a user starter profile
+     * 4. Save the user profile
+     * 5. If everything is successful,  redirects to home page
+     */
+    try {
     await auth.registerUserEmailPassword(credential); 
-    history.push('/login');
+    const user = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
+    const newUserProfile: CoveyUserProfile = {
+      user_id: user.id,
+      userName,
+      email,
+    }
+    await dbClient.saveUserProfile(newUserProfile);
+    history.push('/');
+    } catch(e) {
+      toast({
+        title: 'Create Account Error',
+        description: e.error.toString()
+      })
+    }
   }
   return (
     <Flex
@@ -52,6 +114,10 @@ export default function SimpleCard(): JSX.Element {
           boxShadow='lg'
           p={8}>
           <Stack spacing={4}>
+          <FormControl id="username">
+              <FormLabel>Username</FormLabel>
+              <Input value={userName} onChange={(event) => setUserName(event.target.value)} />
+            </FormControl>
             <FormControl id="email">
               <FormLabel>Email address</FormLabel>
               <Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />

@@ -52,7 +52,7 @@ export type AuthActions = {
 
 export type CoveyUserProfile = {
   user_id: string,
-  userName?: string,
+  userName: string,
   email:string,
   pfpURL?: string,
   bio?: string,

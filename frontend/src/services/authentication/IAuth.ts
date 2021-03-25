@@ -32,7 +32,7 @@ export default interface IAuth {
 
     /**
      * Send a password reset email
-     * @param email 
+     * @param email target user email 
      */
     sendPasswordResetEmail(email: string): Promise<void>;
 }
