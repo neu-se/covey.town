@@ -4,7 +4,11 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+<<<<<<< HEAD
 import DatabaseController, { NeighborStatus } from '../database/db';
+=======
+import DatabaseController, { AccountCreateResponse, LoginResponse, SearchUsersResponse } from '../database/db';
+>>>>>>> 40df8b85fcb10633d76b3d2fcca218a1b2928379
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -85,19 +89,9 @@ export interface AccountCreateRequest {
   password: string,
 }
 
-export interface AccountCreateResponse {
-  _id: string,
-  username: string,
-}
-
 export interface LoginRequest {
   username: string,
   password: string,
-}
-
-export interface LoginResponse {
-  _id: string,
-  username: string,
 }
 
 export interface SearchUsersRequest {
@@ -105,6 +99,7 @@ export interface SearchUsersRequest {
   username: string,
 }
 
+<<<<<<< HEAD
 export interface SearchUsersResponse {
   users: {
     _id: string,
@@ -113,8 +108,10 @@ export interface SearchUsersResponse {
   }[]
 }
 
+=======
+>>>>>>> 40df8b85fcb10633d76b3d2fcca218a1b2928379
 export interface AddNeighborRequest {
-  currenUserId: string,
+  currentUserId: string,
   UserIdToRequest: string,
 }
 
@@ -218,7 +215,7 @@ export async function accountCreateHandler(requestData: AccountCreateRequest): P
       return {
         isOK: false,
         message: 'Invalid Password',
-      }
+      };
     }
 
     const db = new DatabaseController();
@@ -228,29 +225,29 @@ export async function accountCreateHandler(requestData: AccountCreateRequest): P
       return {
         isOK: false,
         message: 'Username Taken',
-      }
+      };
     }
     const result = await db.insertUser(requestData.username, requestData.password);
     db.close();
     return {
       isOK: true,
       response: result,
-    }
+    };
   } catch (err) {
     return {
       isOK: false,
-      message: err.toString()
-    }
+      message: err.toString(),
+    };
   }
 }
 
-export async function loginHandler(requestData: LoginRequest): Promise<ResponseEnvelope<LoginResponse | String>> {
+export async function loginHandler(requestData: LoginRequest): Promise<ResponseEnvelope<LoginResponse | string>> {
   try {
     if (requestData.password.length === 0 || requestData.password === '') {
       return {
         isOK: false,
         message: 'Invalid Password',
-      }
+      };
     }
 
     const db = new DatabaseController();
@@ -260,7 +257,7 @@ export async function loginHandler(requestData: LoginRequest): Promise<ResponseE
       return {
         isOK: false,
         message: 'Invalid Username',
-      }
+      };
     }
 
     const result = await db.login(requestData.username, requestData.password);
@@ -270,18 +267,18 @@ export async function loginHandler(requestData: LoginRequest): Promise<ResponseE
       return {
         isOK: false,
         message: result,
-      }
+      };
     }
 
     return {
       isOK: true,
       response: result,
-    }
+    };
   } catch (err) {
     return {
       isOK: false,
-      message: err.toString()
-    }
+      message: err.toString(),
+    };
   }
 }
 
@@ -294,12 +291,12 @@ export async function searchUsersByUsername(requestData: SearchUsersRequest) : P
     return {
       isOK: true,
       response: result,
-    }
+    };
   } catch (err) {
     return {
       isOK: false,
       message: err.toString(),
-    }
+    };
   }
 }
 
@@ -307,39 +304,39 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
   try {
     const db = new DatabaseController();
     await db.connect();
-    const findUser1 = await db.findUserId(requestData.currenUserId);
+    const findUser1 = await db.findUserId(requestData.currentUserId);
     if (findUser1 === 'user_not_found') {
       return {
         isOK: false,
         message: 'Sending User Not Found',
-      }
+      };
     }
     const findUser2 = await db.findUserId(requestData.UserIdToRequest);
     if (findUser2 === 'user_not_found') {
       return {
         isOK: false,
         message: 'Receiving User Not Found',
-      }
+      };
     }
 
-    const result = await db.sendRequest(requestData.currenUserId, requestData.UserIdToRequest);
+    const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
     db.close();
     if (result.status !== 'neighbor') {
       return {
         isOK: false,
-        message: "Request doesn't exist"
-      }
+        message: "Request doesn't exist", // this doesn't feel right
+      };
     }
 
     return {
       isOK: true,
       response: result,
-    }
+    };
   } catch (err) {
     return {
       isOK: false,
       message: err.toString(),
-    }
+    };
   }
 }
 

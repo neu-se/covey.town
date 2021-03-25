@@ -128,7 +128,7 @@ export interface SearchUsersResponse {
 export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
 
 export interface AddNeighborRequest {
-  currenUserId: string,
+  currentUserId: string,
   UserIdToRequest: string,
 }
 
