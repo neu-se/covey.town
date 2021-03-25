@@ -8,13 +8,13 @@ type Query {
 
 type User {
   id: ID!
-  name: String
+  username: String
   email: String
 }
 
 
 input signUpInput {
-name: String !
+username: String !
 email: String
 password : String!
 }
@@ -24,9 +24,31 @@ input loginInput {
   password: String!
 }
 
+input updateUsernameInput {
+  id: ID!
+  username: String
+}
+
+input updateEmailInput {
+  id: ID!
+  email: String
+}
+
+input updatePasswordInput {
+  id: ID!
+  password: String
+}
+
+input deleteUserInput {
+  email: String!
+}
 
 type Mutation {
   signUp(input: signUpInput) : User
   login(input: loginInput) : User
+  updateUsername(input: updateUsernameInput): Boolean
+  updateEmail(input: updateEmailInput): Boolean
+  updatePassword(input: updatePasswordInput): Boolean
+  deleteUser(input: deleteUserInput): Boolean
 }
 `;
