@@ -1,16 +1,26 @@
-var express = require('express');
-var { graphqlHTTP } = require('express-graphql');
+import Express from 'express';
+import { ApolloServer, gql } from 'apollo-server-express';
+import { connection } from './data/Utils/index';
+import { typeDefs } from './typeDefs/index';
+import { resolvers } from './resolvers/index';
 
-const schema = require('./schema.ts');
-var resolvers = { hello: () => 'Hello world!' };
+const app = Express();
+const cors = require('cors');
+app.use(Express.json());
+app.use(cors());
 
-var app = express();
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema,
-    rootValue: resolvers,
-    graphiql: true,
-  }),
-);
+/**
+ * Getting the instance of Apollo Server.
+ */
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers
+});
+
+
+apolloServer.applyMiddleware({ app, path: '/graphql' });
+ 
+// Represents the database connection
+connection();
+
 app.listen(4000, () => console.log('Now browse to localhost:4000/graphql'));
