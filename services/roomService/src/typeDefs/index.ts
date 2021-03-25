@@ -54,6 +54,7 @@ type Town {
 type TownJoinResponse {
   isOk: Boolean!
   response: Town
+  message : String
 }
 
 type Mutation {

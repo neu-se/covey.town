@@ -1,5 +1,6 @@
+import { townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
+
 const User = require('../data/Models/users/user.model.server.ts')
-import { LaunchAPI } from "../datasources/townJoinAPI";
 
 
 module.exports = {
@@ -41,14 +42,11 @@ module.exports = {
       }
     },
 
-    townJoinRequest: async (_: any, args: any,{dataSources})=>{
-      try {
-
-      }
-      catch (error) {
-        
-      }
+    townJoinRequest: async (_: any, args: any) => {
+      return await townJoinHandler({
+        userName: args.input.userName,
+        coveyTownID: args.input.coveyTownID,
+      });
     }
-    
   }
 };
