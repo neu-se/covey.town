@@ -24,10 +24,10 @@ import useMaybeVideo from '../../hooks/useMaybeVideo';
 const TownSettings: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
-  const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed,} = useCoveyAppState();
+  const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed, currentTownIsMergeable} = useCoveyAppState();
   const [friendlyName, setFriendlyName] = useState<string>(currentTownFriendlyName);
   const [isPubliclyListed, setIsPubliclyListed] = useState<boolean>(currentTownIsPubliclyListed);
-  const [currentTownIsMergeable, setCurrentTownIsMergeable] = useState<boolean>(currentTownIsPubliclyListed);
+  const [isMergeable, setIsMergeable] = useState<boolean>(currentTownIsMergeable);
   const [roomUpdatePassword, setRoomUpdatePassword] = useState<string>('');
 
   const openSettings = useCallback(()=>{
@@ -104,7 +104,7 @@ const TownSettings: React.FunctionComponent = () => {
             </FormControl>
             <FormControl mt={4}>
               <FormLabel htmlFor='isMergeable'>Mergeable?</FormLabel>
-              <Checkbox id="isMergeable" name="isMergeable" isChecked={currentTownIsMergeable} onChange={(e)=>setCurrentTownIsMergeable(e.target.checked)} />
+              <Checkbox id="isMergeable" name="isMergeable" isChecked={isMergeable} onChange={(e)=>setIsMergeable(e.target.checked)} />
             </FormControl>
             <FormControl isRequired>
               <FormLabel htmlFor="updatePassword">Town Update Password</FormLabel>

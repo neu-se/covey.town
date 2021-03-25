@@ -205,7 +205,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: true
+              isPubliclyListed: true,
+              isMergeable: true
             }));
         });
 
@@ -223,7 +224,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: false
+              isPubliclyListed: false,
+              isMergeable: true
             }));
 
         });
@@ -242,7 +244,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: false
+              isPubliclyListed: false,
+              isMergeable: true
             }));
           await waitFor(() => expect(mockToast)
             .toBeCalledWith(expect.objectContaining({
@@ -294,7 +297,8 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: true
+              isPubliclyListed: true,
+              isMergeable: true
             }));
           await waitFor(() => expect(mockToast)
             .toBeCalledWith({
