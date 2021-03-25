@@ -4,11 +4,15 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Client from 'twilio-chat';
 import {Channel} from 'twilio-chat/lib/channel';
-import {Button, Tabs, Tab, TabList, TabPanels, TabPanel} from "@chakra-ui/react";
+import {Button, Tabs, Tab, TabList, TabPanels, TabPanel, Menu, MenuButton, MenuList, MenuOptionGroup, MenuItemOption, MenuDivider} from "@chakra-ui/react";
+
 
 import {nanoid} from 'nanoid';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import ChatScreen from "./ChatScreen";
+import Player from "../../classes/Player";
+import useNearbyPlayers from "../../hooks/useNearbyPlayers";
+
 
 
 export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.Element {
@@ -16,7 +20,7 @@ export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.
   const [loading, setLoading] = useState<boolean>(false);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [mainChannelJoined, setMainChannelJoined] = useState<boolean>(false);
-  const {currentTownID, currentTownFriendlyName, userName} = useCoveyAppState();
+  const {currentTownID, currentTownFriendlyName, userName, players, myPlayerID} = useCoveyAppState();
 
   const addChannel = (newChannel: Channel) => {
     const exists = channels.find(each => each.uniqueName === newChannel.uniqueName);
@@ -32,6 +36,9 @@ export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.
 
   const joinChannel = async (channelToJoin: Channel) => {
     if (channelToJoin.status === "joined") {
+      if(channelToJoin.uniqueName === currentTownID){
+        addChannel(channelToJoin);
+      }
       console.log(`Channel, ${channelToJoin.friendlyName} already joined.`);
     } else {
       console.log(`Status for ${channelToJoin.friendlyName} is ${channelToJoin.status}`);
@@ -56,12 +63,21 @@ export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.
 
   const mainChannelLogIn = async () => {
     if (client) {
-      setChannels((await client.getSubscribedChannels()).items);
+      // setChannels((await client.getSubscribedChannels()).items);
 
       client.on('channelJoined', async (joinedChannel: Channel) => {
         // const channelMessages = await joinedChannel.getMessages();
-        console.log(`chat client channelJoined event on ${joinedChannel.friendlyName} has occured`);
+        console.log(`chat client channelJoined event on ${joinedChannel.friendlyName} has occurred`);
       });
+
+      client.on('channelInvited', async (channel) => {
+        console.log(`Invited to channel ${channel.friendlyName}`);
+        // Join the channel that you were invited to
+        await channel.join();
+        channel.sendMessage(`${userName} joined the chat for ${channel.friendlyName}`);
+        setChannels(oldChannels =>[...oldChannels, channel])
+      });
+
     }
     try {
       if (client) {
@@ -108,6 +124,7 @@ export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.
     return () => {
       isMounted = false
     };
+
   }, [chatToken, currentTownFriendlyName]);
 
 
@@ -130,6 +147,37 @@ export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.
   });
 
 
+  // Private messaging work
+
+  const createPrivateChannelFromMenu = async (currentPlayer: string, playerToPM: Player) => {
+    try {
+      const created = await createChannel(nanoid(), `Private Message with ${playerToPM.userName}`);
+      await joinChannel(created);
+
+      try {
+        await created.invite(playerToPM.userName)
+      } catch(e){
+        throw new Error(`${e}`);
+      }
+
+    } catch {
+      throw new Error(`Unable to create or join channel for ${currentTownFriendlyName}`);
+    }
+  };
+
+
+
+  // filter the player list to only show people not the current player
+  const filteredPlayerList = useNearbyPlayers().nearbyPlayers;
+
+  // players.filter(player => player.id !== myPlayerID);
+
+  const renderPrivateMessageList = filteredPlayerList.map(player => (
+    <MenuItemOption key={player.id} value={player.id}
+                    onClick={() =>{createPrivateChannelFromMenu(myPlayerID, player)}}>{player.userName}</MenuItemOption>
+  ));
+
+
   return (
     <>
       <Tabs>
@@ -143,6 +191,17 @@ export default function ChannelWrapper({chatToken}: { chatToken: string }): JSX.
       <Button onClick={mainChannelLogIn} isDisabled={mainChannelJoined}>Log in to Main
         Channel</Button>
       <Button onClick={createPrivateChannel}>Start New Chat</Button>
+
+      <Menu>
+        <MenuButton as={Button}>
+          Private Message
+        </MenuButton>
+        <MenuList minWidth="240px" maxHeight="400px" overflow="auto">
+          <MenuOptionGroup title="Select User To Private Message">
+            {renderPrivateMessageList}
+          </MenuOptionGroup>
+        </MenuList>
+      </Menu>
     </>
 
   )
