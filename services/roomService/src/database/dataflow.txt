@@ -42,8 +42,7 @@ send request back to handler back to api
 
 
 -See friend in a Town and send neighborRequest
-
-
+when returning list of neighbors, look through covey room controllers to see which users are currently playing
 
 -Accounts page (see friends, see requests, delete friends, delete requests, see who is online)
 

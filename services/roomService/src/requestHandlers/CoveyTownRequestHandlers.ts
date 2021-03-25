@@ -4,8 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import DatabaseController from '../database/db';
-import { request } from 'express';
+import DatabaseController, { NeighborStatus } from '../database/db';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -102,6 +101,7 @@ export interface LoginResponse {
 }
 
 export interface SearchUsersRequest {
+  userIdSearching: string,
   username: string,
 }
 
@@ -109,6 +109,7 @@ export interface SearchUsersResponse {
   users: {
     _id: string,
     username: string,
+    relationship: NeighborStatus,
   }[]
 }
 
@@ -288,7 +289,7 @@ export async function searchUsersByUsername(requestData: SearchUsersRequest) : P
   try {
     const db = new DatabaseController();
     await db.connect();
-    const result = await db.searchUsersByUsername(requestData.username);
+    const result = await db.searchUsersByUsername(requestData.userIdSearching, requestData.username);
     db.close();
     return {
       isOK: true,

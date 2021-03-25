@@ -1,16 +1,19 @@
+
 import dotenv from 'dotenv';
-const MongoClient = require('mongodb').MongoClient;
+import { assert } from 'console';
 import { AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+import { MongoClient } from 'mongodb';
 
 dotenv.config();
 
 export type NeighborStatus = { status: 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor' };
 
 export default class DatabaseController {
-    private client;
+    private client: MongoClient;
 
     constructor() {
-        this.client = new MongoClient(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+        assert(process.env.MONGO_URL, 'Must have Mongo URL to connect to database');
+        this.client = new MongoClient(process.env.MONGO_URL || 'http://localhost:8081', { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
     async connect() {
@@ -19,7 +22,6 @@ export default class DatabaseController {
     }
 
     close() {
-
         this.client.close();
     }
 
@@ -83,27 +85,40 @@ export default class DatabaseController {
 
     }
 
-    async searchUsersByUsername(username: string) : Promise<SearchUsersResponse> {
-        try {
-            const user = await this.findUserId(username);
+    async searchUsersByUsername(userIdSearching: string, username: string) : Promise<SearchUsersResponse> {
 
-            if (user !== 'user_not_found') {
+        //need to also take in username of player searching to get neighborStatus
+        try {
+            const userId = await this.findUserId(username);
+
+            if (userId !== 'user_not_found') {
+                const status = await this.neighborStatus(userIdSearching, userId);
                 return {
                     users: [{
-                        _id: user,
-                        username
+                        _id: userId,
+                        username,
+                        relationship: status,
                     }]
                 }
             }
 
             // else do partial match search
             const userCollection = this.getCollection('user');
-            const searchPartialMatch = await userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}, {'password': 0}).toArray();
+            const searchPartialMatch = await userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();
 
-            console.log(searchPartialMatch);
+            const matchesWithStatus = await Promise.all(searchPartialMatch.map(async match => {
+                const status = await this.neighborStatus(userIdSearching, match._id);
+                return {_id: match._id, username: match.username, relationship: status}
+            }));
+
+            console.log(matchesWithStatus)
+
+            // get neighbor status for each user returned
+            //return {id, username, neighborStatus}
+            // do same thing for listing requests sent and requests received
 
             return {
-                users: searchPartialMatch
+                users: matchesWithStatus
             }
         } catch (err) {
             return err.toString();
@@ -172,6 +187,7 @@ export default class DatabaseController {
 
             const neighborRequest = this.getCollection('neighbor_request');
             const requestSent = await neighborRequest.find({'requestFrom': user, 'requestTo': otherUser}).limit(1).toArray();
+            console.log(requestSent);
             if (requestSent.length === 1) {
                 return { status: 'requestSent'};
             }
