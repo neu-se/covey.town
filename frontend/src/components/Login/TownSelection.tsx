@@ -1,16 +1,27 @@
+
+
 import React, { useCallback, useEffect, useState } from 'react';
 import assert from "assert";
+import { LockIcon } from '@chakra-ui/icons';
+import { BiUser } from "react-icons/bi";
 import {
+  Avatar,
+  AvatarBadge,
+  AvatarGroup, 
   Box,
   Button,
+  Center,
   Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
   Input,
+  Icon,
+  HStack,
   Stack,
   Table,
+  Text,
   TableCaption,
   Tbody,
   Td,
@@ -37,6 +48,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+  const [userId, setUserID] = useState<string>();
+  const [userPassword, setUserPassword] = useState<string>();
+  const [confirmPassword, setConfirmPassword] = useState<string>();
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -89,6 +103,88 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   }, [doLogin, userName, connect, toast]);
 
+  const passwordIsValid = async () => { 
+    if (!userPassword || userPassword.length < 8) {
+      return false;
+    }
+    let capital = false;
+    let number = false;
+    let specialCharacter = false;
+    const chars = [...userPassword];
+    chars.forEach((c) => {
+      const num = parseInt(c,2);
+      if (num >= 48 && num <= 57) {
+        number = true;
+      }
+      else if ((num >= 33 && num <= 47) || (num >= 58 && num <= 64) || (num >= 91 && num <= 96) || (num >= 123 || num <= 126)) {
+        specialCharacter = true;
+      }
+      else if (num >= 65 && num <= 90) {
+        capital = true;
+      }
+    })
+    if (!capital || !number || !specialCharacter) {
+      return true;
+    }
+    return false;
+  }
+
+  const handleRegister = async () => {
+    try {
+      if (!userId || !userPassword || !confirmPassword) {
+        toast({
+          title: 'InfoNotFilled',
+          description: 'The username, password, and password confirmation need to be filled',
+          status: 'error',
+          isClosable: true,
+          duration: 3000,
+        })
+        return;
+      }
+      const valid = await passwordIsValid();
+      if (!valid) {
+        toast({
+          title: 'Password Error',
+          description: 'Password Invalid. there needs to be at least one capital letter,'
+           + 'one number, and a special character(!@#$% etc...)' 
+           + ' with minimum password length of 8',
+           status: 'error',
+           isClosable: true,
+           duration: 3000,
+        })
+      }
+      else if (userPassword !== confirmPassword) {
+        toast({
+          title: 'PasswordConfirm Error',
+          description: "Password Confirmation does not match the Password typed in, try again.",
+          status: 'error',
+          isClosable: true,
+          duration: 3000,
+        })
+      }
+      else {
+        toast({
+          title: 'Registration Success',
+          description: 'Successfullty created an Account',
+          status: 'success',
+          isClosable: true,
+          duration: 3000,
+        })
+      }
+      // perform operations to add this in our database
+      // also make sure that userName is unique, and not found on the database for registration to pass
+    }
+    catch (err) {
+      toast({
+        title: 'Error: ',
+        description: err,
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      })
+    }
+  }
+
   const handleCreate = async () => {
     if (!userName || userName.length === 0) {
       toast({
@@ -135,10 +231,54 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
     }
   };
+ 
+  // registration page
+  return (
+    <> 
+      <form>
+        <Stack>
+           <Center boxShadow="outline" borderColor="black" p="6" rounded="md" bg="white" h="60px" color="Black">
+            <Text as="kbd" fontSize="30px">Create an Account</Text>
+          </Center>
+          <HStack>
+            <Icon as={BiUser} w={6} h={6} />
+            <FormControl>
+              <Input autoFocus name="name" placeholder="Create a Username"
+                     value={userId}
+                     onChange={event => setUserID(event.target.value)}/>
+            </FormControl>
+          </HStack>  
 
+           <HStack>
+            <Icon as={LockIcon} w={6} h={6} />
+            <FormControl>
+              
+              <Input autoFocus name="password" placeholder="Create a Password"
+                     value={userPassword}
+                     onChange={event => setUserPassword(event.target.value)}/>
+            </FormControl>
+          </HStack>  
+
+          <HStack>
+            <Icon as={LockIcon} w={6} h={6} />
+            <FormControl>
+              <Input autoFocus name="confirmPassword" placeholder="Confirm Password"
+                     value={confirmPassword} 
+                     onChange={event => setConfirmPassword(event.target.value)}/>
+            </FormControl>
+          </HStack>
+          <Button data-testid="RegisterButton" onClick={handleRegister}>Register</Button>
+        </Stack>
+            
+      </form>
+  </>
+  );
+
+  /*
   return (
     <>
       <form>
+
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Select a username</Heading>
@@ -210,8 +350,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               </Table>
             </Box>
           </Box>
+          
         </Stack>
       </form>
     </>
-  );
+  ); 
+  */
 }
+
