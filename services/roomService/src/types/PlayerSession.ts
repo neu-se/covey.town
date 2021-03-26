@@ -15,10 +15,19 @@ export default class PlayerSession {
   /** The secret token that allows this client to access our video resources for this town * */
   private _videoToken?: string;
 
+  private _broadcastChannelSID?: string;
+
   constructor(player: Player) {
     this._player = player;
     // Session tokens are randomly generated strings
     this._sessionToken = nanoid();
+  }
+
+  public get broadcastChannelSID(): string | undefined {
+    return this._broadcastChannelSID;
+  }
+  public set broadcastChannelSID(value: string | undefined) {
+    this._broadcastChannelSID = value;
   }
 
   set videoToken(value: string | undefined) {

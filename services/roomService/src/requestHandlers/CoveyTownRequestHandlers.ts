@@ -34,6 +34,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** BroadcastChannelSID * */
+  broadcastChannelSID:string;
 }
 
 /**
@@ -109,6 +111,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
+  assert(newSession.broadcastChannelSID);
   return {
     isOK: true,
     response: {
@@ -118,6 +121,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
+      broadcastChannelSID : newSession.broadcastChannelSID,
     },
   };
 }

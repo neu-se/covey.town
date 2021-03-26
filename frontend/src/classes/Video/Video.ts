@@ -24,6 +24,9 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
+  private _broadcastChannelSID: string | null = null;
+
+
   pauseGame: () => void = ()=>{};
 
   unPauseGame: () => void = ()=>{};
@@ -65,6 +68,7 @@ export default class Video {
             this.videoToken = result.providerVideoToken;
             this._townFriendlyName = result.friendlyName;
             this._isPubliclyListed = result.isPubliclyListed;
+            this._broadcastChannelSID = result.broadcastChannelSID;
             resolve(result);
           })
           .catch((err) => {

@@ -31,6 +31,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** BroadcastChannelSID * */
+  broadcastChannelSID:string
 }
 
 /**
