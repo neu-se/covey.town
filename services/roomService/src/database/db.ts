@@ -1,6 +1,6 @@
 import assert from 'assert';
 import dotenv from 'dotenv';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { mongo } from 'mongoose';
 
 dotenv.config();
@@ -123,26 +123,27 @@ export default class DatabaseController {
     }
 }
 
-    async searchUsersByUsername(userIdSearching: string, username: string) : Promise<SearchUsersResponse> {
+    async searchUsersByUsername(currentUserId: string, username: string) : Promise<SearchUsersResponse> {
 
       //need to also take in username of player searching to get neighborStatus
       try {
-          const userId = await this.findUserId(username);
+          const userId = await this.findUserIdByUsername(username) as string;
+          const status = await this.neighborStatus(currentUserId, userId);
+          console.log(status);
+          // if (userId !== 'user_not_found') {
 
-          if (userId !== 'user_not_found') {
-              const status = await this.neighborStatus(userIdSearching, userId as string);
-              return {
-                  users: [{
-                      _id: userId,
-                      username,
-                      relationship: status,
-                  }]
-              }
-          }
+          //     return {
+          //         users: [{
+          //             _id: userId,
+          //             username,
+          //             relationship: status,
+          //         }]
+          //     }
+          // }
 
           return {
             users: [{
-                _id: userId,
+                _id: username,
                 username,
                 relationship: {status: 'unknown'},
             }]
@@ -176,12 +177,13 @@ export default class DatabaseController {
      * @param username: the string username of the user to search for
      * @returns a string containing the user's ID
      */
-  async findUserId(username: string) : Promise<string> {
+  async findUserIdByUsername(username: string) : Promise<string> {
     try {
 
       const findUser = await this.userCollection.find({ 'username': username }).limit(1).toArray();
       if (findUser.length === 1) {
-        return findUser[0]._id as string;
+        console.log(findUser);
+        return findUser[0]._id.toString();
       }
       return 'user_not_found';
 
@@ -189,6 +191,26 @@ export default class DatabaseController {
       return err.toString();
     }
   }
+
+  /**
+   * Find a user's ID given their username
+   * @param username: the string username of the user to search for
+   * @returns a string containing the user's ID
+   */
+  async findUserById(id: string) : Promise<string> {
+    try {
+
+      const findUser = await this.userCollection.find({ '_id': new ObjectId(id) }).limit(1).toArray();
+      if (findUser.length === 1) {
+        return findUser[0].username as string;
+      }
+      return 'user_not_found';
+
+    } catch (err) {
+      return err.toString();
+    }
+  }
+  
 
   /**
      * Sending a neighbor request. Attempts to send a neighbor_request from requestFrom to requestTo
@@ -232,16 +254,16 @@ export default class DatabaseController {
         return { status: 'neighbor' };
       }
 
-      const user1 = JSON.stringify(user);
-      const otherUser1 = JSON.stringify(otherUser);
+      // const user1 = JSON.stringify(user);
+      // const otherUser1 = JSON.stringify(otherUser);
       // const neighborRequest = this.getCollection('neighbor_request');
-      const requestSent = await this.neighborRequests.find({'requestFrom': user1, 'requestTo': otherUser1}).toArray();
+      const requestSent = await this.neighborRequests.find({requestFrom: user, requestTo: otherUser}).toArray();
       console.log(requestSent);
       if (requestSent.length === 1) {
         return { status: 'requestSent'};
       }
 
-      const requestReceived = await this.neighborRequests.find({'requestFrom': otherUser, 'requestTo': user}).limit(1).toArray();
+      const requestReceived = await this.neighborRequests.find({requestFrom: otherUser, requestTo: user}).limit(1).toArray();
       if (requestReceived.length === 1) {
         return { status: 'requestReceived' };
       }

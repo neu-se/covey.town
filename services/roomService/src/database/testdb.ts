@@ -3,9 +3,10 @@ import DatabaseController from './db';
 const db = new DatabaseController();
 
 db.connect().then(() => {
-    //6059212492ab5c0004813b97
-    db.searchUsersByUsername('604eb8c0ebdb047600a1174b', 'merkovis').then(res => {
+    //605d2a4cf2970d29f1e51867
+    //605d2a80f2970d29f1e51868
+    db.searchUsersByUsername('605d1a6abcdedd2d9770283d', 'lostUser').then(res => {
         console.log(res);
         db.close();
-    });
+    })
 });

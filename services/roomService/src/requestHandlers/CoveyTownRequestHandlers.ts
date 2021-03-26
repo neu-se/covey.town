@@ -91,7 +91,7 @@ export interface LoginRequest {
 }
 
 export interface SearchUsersRequest {
-  userIdSearching: string,
+  currentUserId: string,
   username: string,
 }
 
@@ -205,7 +205,7 @@ export async function accountCreateHandler(requestData: AccountCreateRequest): P
 
     const db = new DatabaseController();
     await db.connect();
-    const checkUsernameExists = await db.findUserId(requestData.username);
+    const checkUsernameExists = await db.findUserIdByUsername(requestData.username);
     if (checkUsernameExists !== 'user_not_found') {
       return {
         isOK: false,
@@ -237,7 +237,7 @@ export async function loginHandler(requestData: LoginRequest): Promise<ResponseE
 
     const db = new DatabaseController();
     await db.connect();
-    const findUser = await db.findUserId(requestData.username);
+    const findUser = await db.findUserIdByUsername(requestData.username);
     if (findUser === 'user_not_found') {
       return {
         isOK: false,
@@ -271,7 +271,9 @@ export async function searchUsersByUsername(requestData: SearchUsersRequest) : P
   try {
     const db = new DatabaseController();
     await db.connect();
-    const result = await db.searchUsersByUsername(requestData.userIdSearching, requestData.username);
+    const result = await db.searchUsersByUsername(requestData.currentUserId, requestData.username);
+
+    
     db.close();
     return {
       isOK: true,
@@ -289,15 +291,17 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
   try {
     const db = new DatabaseController();
     await db.connect();
-    const findUser1 = await db.findUserId(requestData.currentUserId);
+    const findUser1 = await db.findUserById(requestData.currentUserId);
     if (findUser1 === 'user_not_found') {
+      db.close();
       return {
         isOK: false,
         message: 'Sending User Not Found',
       };
     }
-    const findUser2 = await db.findUserId(requestData.UserIdToRequest);
+    const findUser2 = await db.findUserById(requestData.UserIdToRequest);
     if (findUser2 === 'user_not_found') {
+      db.close();
       return {
         isOK: false,
         message: 'Receiving User Not Found',
@@ -306,7 +310,7 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
 
     const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
     db.close();
-    if (result.status !== 'neighbor') {
+    if (result.status !== 'requestSent') {
       return {
         isOK: false,
         message: "Request doesn't exist", // this doesn't feel right
