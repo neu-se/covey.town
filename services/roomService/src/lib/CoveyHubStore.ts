@@ -1,4 +1,3 @@
-import CoveyTownController from './CoveyHubController';
 import { CoveyTownList } from '../CoveyTypes';
 import CoveyHubController from './CoveyHubController';
 
@@ -38,7 +37,7 @@ export default class CoveyHubStore {
       }));
   }
 
-  createHub(friendlyName: string, isPubliclyListed: boolean): CoveyTownController {
+  createHub(friendlyName: string, isPubliclyListed: boolean): CoveyHubController {
     const newHub = new CoveyHubController(friendlyName, isPubliclyListed);
     this._hubs.push(newHub);
     return newHub;
