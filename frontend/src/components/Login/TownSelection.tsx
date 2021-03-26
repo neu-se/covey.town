@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import assert from "assert";
 import {
   Box,
@@ -23,16 +25,41 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import IAuth from '../../services/authentication/IAuth';
+import RealmAuth from '../../services/authentication/RealmAuth';
+import useAuthInfo from '../../hooks/useAuthInfo';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
+  const history = useHistory();
+  const authInfo = useAuthInfo();
+  const auth: IAuth = RealmAuth.getInstance();
+  const loggedInUser = auth.getCurrentUser();
   const toast = useToast();
+
+  console.log(loggedInUser)
+  if (loggedInUser === null) {
+    toast({
+      title: "Unable to find user profile",
+      description: "Unable to find user profile",
+      status: "error"
+    })
+  }
+  const userName = loggedInUser?.profile.userName;
+
+  function handleEditProfile() : void {
+    history.push('/profile');
+  }
+
+  async function handleLogout() : Promise<void> {
+    await auth.logout(authInfo.actions.setAuthState);
+    history.push('/login');
+  }
 
   const handleJoin = async () => {
     try {
@@ -65,14 +92,19 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Select a username</Heading>
+            <Heading as="h2" size="lg">You are logged in as: {userName}</Heading>
+            <Flex p="4">
+              <Box flex="1">
             <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
-              />
+              <div>
+                <Button data-testid="editProfileButton"
+                onClick={() => handleEditProfile()}>Edit or View Profile</Button>
+                <Button m={1} data-testid="logoutButton"
+                onClick={() => handleLogout()}>Logout</Button>
+              </div>
             </FormControl>
+            </Box>
+            </Flex>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
