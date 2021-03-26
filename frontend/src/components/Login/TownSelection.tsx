@@ -80,6 +80,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       }
       const initData = await Video.setup(userName, coveyRoomID);
 
+      
+      console.log(`channelsid ${initData.broadcastChannelSID}`)
+      console.log(`videoToken ${initData.providerVideoToken}`)
+
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
         assert(initData.providerVideoToken);
