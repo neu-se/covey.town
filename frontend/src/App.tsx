@@ -240,7 +240,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       <div>
         <WorldMap />
         <VideoOverlay preferredMode="fullwidth" />
-        <ChatWindow token={appState.videoToken} broadCastChannelSID= {appState.broadcastChannelSID}/>
+        <ChatWindow/>
       </div>
     );
   }, [setupGameController, appState.sessionToken,appState.broadcastChannelSID, videoInstance]);
