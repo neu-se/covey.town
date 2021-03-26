@@ -25,6 +25,8 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import Announcement from './components/Announcement/Announcement';
+import Chat from './components/Chat/Chat';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -33,7 +35,21 @@ type CoveyAppUpdate =
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
+  | { action: 'playerSendPrivateMessage'; message: MessageData }
+  | { action: 'playerSendPublicMessage'; message: MessageData }
   ;
+
+type MessageData = {
+  senderName: string;
+  senderID: string;
+  receiverName: string;
+  receiverID: string;
+  roomName: string;
+  roomID: string;
+  content: string;
+  time: string;
+};
+
 
 function defaultAppState(): CoveyAppState {
   return {
@@ -140,6 +156,12 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     case 'disconnect':
       state.socket?.disconnect();
       return defaultAppState();
+    case 'playerSendPrivateMessage':
+      alert(update.message.senderName + update.message.receiverName + update.message.content);
+      break;
+    case 'playerSendPublicMessage':
+      alert(update.message.senderName + update.message.content);
+      break;
     default:
       throw new Error('Unexpected state request');
   }
@@ -176,6 +198,19 @@ async function GameController(initData: TownJoinResponse,
   });
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
+  });
+  socket.on('sendingAnnouncement',(content:string) =>{
+    alert(content);
+  });
+  socket.on('playerSendMessage', (message: MessageData) => {
+    if(message.roomID === video.coveyTownID){
+      if(message.receiverID === gamePlayerID){
+        dispatchAppUpdate({ action: 'playerSendPrivateMessage', message });
+      }
+      if(message.receiverID === 'Everyone'){
+        dispatchAppUpdate({ action: 'playerSendPublicMessage', message });
+      }
+    }
   });
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
@@ -226,6 +261,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       <div>
         <WorldMap />
         <VideoOverlay preferredMode="fullwidth" />
+        <Announcement />
+        <Chat />
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);

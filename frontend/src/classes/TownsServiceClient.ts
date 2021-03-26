@@ -76,6 +76,45 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
+
+export interface TownAnnouncementRequest {
+  coveyTownID: string;
+  coveyTownPassword: string;
+  content:string;
+}
+
+export interface TownSendMessageRequest {
+  senderName: string;
+  senderID: string;
+  receiverName: string;
+  receiverID: string;
+  roomName: string;
+  roomID: string;
+  content: string;
+  time: string;
+}
+
+export interface TownChatHistoryRequest {
+  coveyTownID: string;
+  receiverID: string;
+  senderID: string;
+}
+
+export type ChatData = {
+  senderName: string;
+  senderID: string;
+  receiverName: string;
+  receiverID: string;
+  roomName: string;
+  roomID: string;
+  content: string;
+  time: string;
+};
+
+export interface TownChatHistoryResponse {
+  chats: ChatData[];
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -139,6 +178,23 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async publishAnnouncement(requestData: TownAnnouncementRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+    const responseWrapper = await this._axios.post('/announcement', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async sendMessage(requestData: TownSendMessageRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+    console.log(requestData);
+    const responseWrapper = await this._axios.post('/messages', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async getChatHistory(requestData: TownChatHistoryRequest): Promise<TownChatHistoryResponse>{
+    const townID = requestData.coveyTownID;
+    const responseWrapper = await this._axios.get(`/towns/${townID}/messages`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

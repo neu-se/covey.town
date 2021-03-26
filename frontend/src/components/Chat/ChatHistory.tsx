@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
-import { StreamMessageList } from 'twilio/lib/rest/sync/v1/service/syncStream/streamMessage';
+import React,{ FC, useEffect, useState } from 'react';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 // interface IProps {
@@ -58,7 +57,7 @@ export default function ChatHistory(props: { coveyTownID: string, receiverID: st
             <div>{receiverID}</div>
             <div>{senderID}</div>
         </div>
-        
+
     );
 }
 // const ChatHistory = ({townId, receiverId, senderId} : IProps) => {

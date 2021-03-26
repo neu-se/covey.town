@@ -1,5 +1,6 @@
 import { Button, Input, useToast } from '@chakra-ui/react';
 import React, { useState } from 'react';
+
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Dropdown, { Option } from 'react-dropdown';
@@ -15,14 +16,13 @@ export default function Chat(): JSX.Element {
     const [receiverID, setReceiverID] = useState<string>('');
 
     const sendHandler = async () => {
-        try { 
+        try {
           const timeStamp = new Date().toString();
-          // await apiClient.sendMessage({senderName: userName, senderID: myPlayerID, receiverName, receiverID, roomName: currentTownFriendlyName, roomID: currentTownID, content: message, time: timeStamp});
-          // toast({
-          //   title: 'Message sent',
-          //   status: 'success'
-          // })  
-
+          await apiClient.sendMessage({senderName: userName, senderID: myPlayerID, receiverName, receiverID, roomName: currentTownFriendlyName, roomID: currentTownID, content: message, time: timeStamp});
+          toast({
+            title: 'Message sent',
+            status: 'success'
+          })
           const data = {senderName: userName, senderID: myPlayerID, receiverName, receiverID, roomName: currentTownFriendlyName, roomID: currentTownID, content: message, time: timeStamp}
           console.log(data);
           socket?.emit('playerSendMessage', data);
@@ -44,7 +44,7 @@ export default function Chat(): JSX.Element {
     const onOptionSelected = (event: Option) => {
       const id = event.value;
       setReceiverID(id);
-      const idToName = players.find(user => user.id === id)?.userName; 
+      const idToName = players.find(user => user.id === id)?.userName;
       if(idToName){
         setReceiverName(idToName);
       }
@@ -52,7 +52,7 @@ export default function Chat(): JSX.Element {
 
     return (
       <div>
-        
+
         <Popup trigger={<Button value="triggerChat">Chat</Button>} position="right center">
           <ChatHistory coveyTownID = {currentTownID} senderID = {myPlayerID} receiverID = {receiverID}/>
           <div>
@@ -65,7 +65,7 @@ export default function Chat(): JSX.Element {
                   value={message}
                   onChange={(event => setMessage(event.target.value))}
                 />
-            
+
             <Dropdown options={updatedOptions} onChange={event => onOptionSelected(event)} value={receiverName} placeholder="Select a Receiver" />
 
             <Button data-testid='sendbutton'
