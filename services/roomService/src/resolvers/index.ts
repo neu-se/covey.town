@@ -1,4 +1,4 @@
-import { userModel as User}  from './../data/Models/users/user.model.server';
+import { userModel as User}  from './../data/models/users/user.model.server';
 import { townCreateHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
 /**
  * All the resolvers are defined here.
