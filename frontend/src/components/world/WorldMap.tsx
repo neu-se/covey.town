@@ -403,7 +403,7 @@ class CoveyGameScene extends Phaser.Scene {
         backgroundColor: '#ffffff',
       })
       .setScrollFactor(0)
-      .setDepth(30);
+      .setDepth(33);
     // gets set to true when 'play game' is clicked
     let playingGame = false;
     const playGameButton = this.add.text(300, 300, 'Play Game', { 
@@ -417,7 +417,7 @@ class CoveyGameScene extends Phaser.Scene {
         },
       })
       .setScrollFactor(0)
-      .setDepth(31);
+      .setDepth(34);
     playGameButton.setInteractive();
     playGameButton.on('mousedown', () => {
       playingGame = true;
@@ -438,7 +438,7 @@ class CoveyGameScene extends Phaser.Scene {
       [1, 0, 1, 0, 1, 0, 1, 0],
     ];
     // drawing it
-    const g2 = this.add.grid(600, 640, 512, 256, 64, 64, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle().setDepth(32);
+    const g2 = this.add.grid(500, 840, 512, 512, 64, 64, 0xff0000).setAltFillStyle(0x000000).setOutlineStyle().setDepth(32);
 
     // Help text that has a "fixed" position on the screen
     this.add
