@@ -1,16 +1,15 @@
+import React, { useEffect, useState } from 'react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
+
 
 interface ChatProps {
     token:string
   }
 
-export default function ChatWindow({token}:ChatProps): JSX.Element {
+export default function Chat({token}:ChatProps): JSX.Element {
 
     const { room } = useVideoContext();
 
-    return (
-        <form>
-
-        </form>
-    );
+    return <h1>Hello ${token}</h1>
+       
 }
