@@ -67,6 +67,17 @@ export interface TownDeleteRequest {
   coveyTownPassword: string;
 }
 
+export interface MessageData {
+  senderName: string;
+  senderID: string;
+  receiverName: string;
+  receiverID: string;
+  roomName: string;
+  roomID: string;
+  content: string;
+  time: string;
+}
+
 /**
  * Payload sent by the client to update a Town.
  * N.B., JavaScript is terrible, so:
@@ -78,6 +89,14 @@ export interface TownUpdateRequest {
   friendlyName?: string;
   isPubliclyListed?: boolean;
 }
+
+
+export interface TownAnnouncementRequest {
+  coveyTownID: string;
+  coveyTownPassword: string;
+  content:string;
+}
+
 
 /**
  * Envelope that wraps any response from the server
@@ -166,7 +185,16 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
     response: {},
     message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
   };
+}
 
+export async function townAnnouncementHandler(requestData: TownAnnouncementRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const success = townsStore.createAnnouncement(requestData.coveyTownID, requestData.coveyTownPassword, requestData.content);
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
+  };
 }
 
 /**
@@ -189,6 +217,16 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onTownDestroyed() {
       socket.emit('townClosing');
       socket.disconnect(true);
+    },
+    onMessageAnnounce(content: string) {
+      console.log(content);
+      console.log('sending');
+      socket.emit('sendingAnnouncement', content);
+    },
+    onDistributeMessage(message: MessageData) {
+      console.log('try to send out');
+      console.log(message);
+      socket.emit('playerSendMessage', message);
     },
   };
 }
@@ -231,5 +269,10 @@ export function townSubscriptionHandler(socket: Socket): void {
   // location, inform the CoveyTownController
   socket.on('playerMovement', (movementData: UserLocation) => {
     townController.updatePlayerLocation(s.player, movementData);
+  });
+
+  socket.on('playerSendMessage', (message: MessageData) => {
+    console.log(message);
+    townController.distributePlayerMessage(message);
   });
 }

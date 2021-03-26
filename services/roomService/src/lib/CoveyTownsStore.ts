@@ -70,4 +70,13 @@ export default class CoveyTownsStore {
     return false;
   }
 
+  createAnnouncement(coveyTownID: string, coveyTownPassword: string, content: string):boolean {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown && passwordMatches(coveyTownPassword, existingTown.townUpdatePassword)) {
+      existingTown.announceToPlayers(content);
+      return true;
+    }
+    return false;
+  }
+
 }

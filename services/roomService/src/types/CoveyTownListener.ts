@@ -1,4 +1,5 @@
 import Player from './Player';
+import {MessageData} from '../requestHandlers/CoveyTownRequestHandlers';
 
 /**
  * A listener for player-related events in each town
@@ -26,4 +27,11 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+
+
+  onMessageAnnounce(content: string): void;
+
+
+  onDistributeMessage(message: MessageData): void;
 }
