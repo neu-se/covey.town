@@ -21,7 +21,7 @@ export default class CoveySubMapScene extends CoveySuperMapScene {
 
   // updated preload with tilemaps specific to subMap tilesets
   preload() {
-    this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
+    this.load.image('tiles', '/assets/tilesets/pokemon_big.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/submap.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
