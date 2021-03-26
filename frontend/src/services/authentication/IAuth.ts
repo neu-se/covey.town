@@ -35,4 +35,10 @@ export default interface IAuth {
      * @param email target user email 
      */
     sendPasswordResetEmail(email: string): Promise<void>;
+
+     /**
+     * Logout the current user.
+     * @param setAuthState callback method to update the authentication state of authentication
+     */
+    logout(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<void>;
 }
