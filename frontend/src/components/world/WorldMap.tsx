@@ -389,7 +389,19 @@ class CoveyGameScene extends Phaser.Scene {
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-
+    // popup with fixed pos on screen
+    // TODO: put this code into its own class
+    this.add.text(200, 200, 'lets see what this does', {
+      font: '18px monospace',
+        color: '#000000',
+        padding: {
+          x: 200,
+          y: 100
+        },
+        backgroundColor: '#ffffff',
+      })
+      .setScrollFactor(0)
+      .setDepth(30);
 
     // Help text that has a "fixed" position on the screen
     this.add
