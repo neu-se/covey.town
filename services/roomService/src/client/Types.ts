@@ -4,7 +4,6 @@ export interface ResponseEnvelope<T> {
   response?: T;
 }
 
-
 export interface GameCreateRequest {
   player1: string;
   initialGameState?: HangmanWord | TTLChoices;
@@ -23,10 +22,10 @@ export interface GameUpdateRequest {
 }
 
 export type TicMove = { x: number, y: number, player: string};
-export type TTLPlayer2Move = { guess: string };
+export type TTLPlayer2Move = { guess: number };
 export type TTLPlayer1Move = { guessCorrect: boolean, correctAnswer?: string };
-export type HangmanPlayer1Move = { letter: string };
-export type HangmanPlayer2Move = { correct: boolean, finalWord?: string, limbLost: Limb };
+export type HangmanPlayer2Move = { letter: string };
+export type HangmanPlayer1Move = { correct: boolean, finalWord?: string, limbLost: Limb };
 
 export enum Limb {
   Head,
@@ -35,7 +34,6 @@ export enum Limb {
   RightArm,
   LeftLeg,
   RightLeg,
-
 }
 
 
