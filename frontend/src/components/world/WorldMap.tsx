@@ -404,6 +404,8 @@ class CoveyGameScene extends Phaser.Scene {
       })
       .setScrollFactor(0)
       .setDepth(30);
+    // gets set to true when 'play game' is clicked
+    let playingGame = false;
     const playGameButton = this.add.text(300, 300, 'Play Game', { 
       font: '18px monospace',
         color: '#000000',
@@ -417,6 +419,26 @@ class CoveyGameScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setDepth(31);
     playGameButton.setInteractive();
+    playGameButton.on('mousedown', () => {
+      playingGame = true;
+      playGameButton.setColor('#ff0000');
+    });
+
+    // checkerboard that shows when 'play game' is clicked
+    // 0 = white or red, 1 = black
+    // TODO: put this code into its own class
+    const checkerboard = [
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0],
+    ];
+    // drawing it
+    const g2 = this.add.grid(600, 640, 512, 256, 64, 64, 0x00b9f2).setAltFillStyle(0x016fce).setOutlineStyle().setDepth(32);
 
     // Help text that has a "fixed" position on the screen
     this.add
