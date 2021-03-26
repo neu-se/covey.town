@@ -1,23 +1,18 @@
-import Phaser from "phaser";
+// import Phaser from "phaser";
 import CoveySuperMapScene from "./CoveySuperMapScene";
-import Player, {UserLocation} from "../../classes/Player";
-import Video from "../../classes/Video/Video";
+// import Player, {UserLocation} from "../../classes/Player";
+// import Video from "../../classes/Video/Video";
 
 // TODO : Stub-out CoveySubMapScene
 // TODO: Add trigger-tile event handling to CoveySubMapScene
 export default class CoveySubMapScene extends CoveySuperMapScene {
   // class types are inferred from their assignments in the constructor
-  video;
-
-  emitMovement;
 
   // constructor takes values from CoveySuperMapScene can include additional properties above
   // and parameters if needed.
-  constructor(video: Video, emitMovement: (loc:UserLocation) => void) {
-    super(video, emitMovement);
-    this.emitMovement = emitMovement;
-    this.video = video;
-  }
+  // constructor(video: Video, emitMovement: (loc:UserLocation) => void) {
+  //   super(video, emitMovement);
+  // }
 
   // updated preload with tilemaps specific to subMap tilesets
   preload() {

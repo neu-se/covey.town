@@ -4,40 +4,44 @@ import Video from '../../classes/Video/Video';
 // import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 export default class CoveySuperMapScene extends Phaser.Scene {
-    protected player?: {
-      sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
-    };
+  // added to use for filtering of other players by map
+  private playerID: string;
 
-  protected id?: string;
+  private player?: {
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
+  };
 
-  protected players: Player[] = [];
+  private id?: string;
 
-  protected cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
+  private players: Player[] = [];
+
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
     /*
      * A "captured" key doesn't send events to the browser - they are trapped by Phaser
      * When pausing the game, we uncapture all keys, and when resuming, we re-capture them.
      * This is the list of keys that are currently captured by Phaser.
      */
-  protected previouslyCapturedKeys: number[] = [];
+  private previouslyCapturedKeys: number[] = [];
 
-  protected lastLocation?: UserLocation;
+  private lastLocation?: UserLocation;
 
-  protected ready = false;
+  private ready = false;
 
-  protected paused = false;
+  private paused = false;
 
-  protected video: Video;
+  private video: Video;
 
-  protected emitMovement: (loc: UserLocation) => void;
+  private emitMovement: (loc: UserLocation) => void;
 
-    // JP: Moved map to a field to allow map's properties to be referenced from update()
-  protected map?: Phaser.Tilemaps.Tilemap;
+  // JP: Moved map to a field to allow map's properties to be referenced from update()
+  private map?: Phaser.Tilemaps.Tilemap;
 
-    constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
+    constructor(video: Video, emitMovement: (loc: UserLocation) => void, playerID: string) {
       super('PlayGame');
       this.video = video;
       this.emitMovement = emitMovement;
+      this.playerID = playerID;
     }
 
     preload() {
@@ -46,6 +50,13 @@ export default class CoveySuperMapScene extends Phaser.Scene {
       this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
       this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
     }
+
+
+    getCurrentMapID() {
+      const myPlayer = this.players.find((player) => player.id === this.playerID)
+      return myPlayer?.mapID
+    }
+
 
     updatePlayersLocations(players: Player[]) {
       if (!this.ready) {
@@ -69,6 +80,24 @@ export default class CoveySuperMapScene extends Phaser.Scene {
       if (disconnectedPlayers.length) {
         this.players = this.players.filter(
           (player) => !disconnectedPlayers.find(
+            (p) => p.id === player.id,
+          ),
+        );
+      }
+      // add filter step here for players not in current map
+      const currentMap = this.getCurrentMapID();
+      const playersToRemove = this.players.filter(
+        (player) => player.mapID !== currentMap
+      );
+      playersToRemove.forEach((playerToRemove) => {
+        if (playerToRemove.sprite) {
+          playerToRemove.sprite.destroy();
+          playerToRemove.label?.destroy();
+        }
+      });
+      if (playersToRemove.length) {
+        this.players = this.players.filter(
+          (player) => !playersToRemove.find(
             (p) => p.id === player.id,
           ),
         );

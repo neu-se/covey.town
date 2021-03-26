@@ -7,15 +7,15 @@ import CoveySuperMapScene from './CoveySuperMapScene';
 import CoveySubMapScene from './CoveySubMapScene';
 
 
-function createMapScene(myPlayer: Player | undefined, video: Video, emitMovement: (location: UserLocation) => void) {
+function createMapScene(myPlayer: Player | undefined, video: Video, emitMovement: (location: UserLocation) => void, playerID: string) {
 
   if (myPlayer === undefined) {
-    return new CoveySuperMapScene(video, emitMovement)
+    return new CoveySuperMapScene(video, emitMovement, playerID)
   }
   if (myPlayer.mapID !== '0') {
-    return new CoveySubMapScene(video, emitMovement)
+    return new CoveySubMapScene(video, emitMovement, playerID)
   }
-  return new CoveySuperMapScene(video, emitMovement)
+  return new CoveySuperMapScene(video, emitMovement, playerID)
 }
 
 export default function WorldMap(): JSX.Element {
@@ -44,7 +44,7 @@ const myPlayer = players.find((player) => player.id === myPlayerID)
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = createMapScene(myPlayer, video, emitMovement);
+      const newGameScene = createMapScene(myPlayer, video, emitMovement, myPlayerID);
       // const newGameScene = new CoveySuperMapScene(video, emitMovement);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
