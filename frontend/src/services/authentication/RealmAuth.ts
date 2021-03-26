@@ -31,7 +31,7 @@ export default class RealmAuth implements IAuth {
         const realmUser = await this._realmApp.loginWithEmailPassword(credential);
 
         const userProfile: CoveyUserProfile = {
-            user_id: realmUser.customData.user_id,
+            user_id: realmUser.id,
             userName: realmUser.customData.userName,
             email: realmUser.customData.email,
             pfpURL: realmUser.customData.pfpURL,
@@ -83,7 +83,7 @@ export default class RealmAuth implements IAuth {
 
     async loginWithGoogle(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<void> {
         const realmUser = await this._realmApp.loginWithGoogle();
-        
+
         const coveyUser: CoveyUser = {
             id: realmUser.id,
             isLoggedIn: realmUser.isLoggedIn,
@@ -104,5 +104,9 @@ export default class RealmAuth implements IAuth {
             currentUser: coveyUser
         });
 
+    }
+
+    async sendPasswordResetEmail(email: string): Promise<void> {
+        this._realmApp.sendPasswordResetEmail(email);
     }
 }

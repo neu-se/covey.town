@@ -75,7 +75,7 @@ export default class RealmApp {
         );
 
         const realmUser = await this._app.logIn(credentials);
-
+        
         return realmUser;
     }
 
@@ -95,5 +95,8 @@ export default class RealmApp {
         return realmUser;
     }
 
+    async sendPasswordResetEmail(email: string): Promise<void> {
+        this._app.emailPasswordAuth.sendResetPasswordEmail(email);
+    }
     
 }

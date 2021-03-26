@@ -30,4 +30,9 @@ export default interface IAuth {
      */
     loginWithGoogle(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<void>;
 
+    /**
+     * Send a password reset email
+     * @param email target user email 
+     */
+    sendPasswordResetEmail(email: string): Promise<void>;
 }
