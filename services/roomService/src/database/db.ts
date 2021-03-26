@@ -129,43 +129,34 @@ export default class DatabaseController {
       try {
           const userId = await this.findUserIdByUsername(username) as string;
           const status = await this.neighborStatus(currentUserId, userId);
-          console.log(status);
-          // if (userId !== 'user_not_found') {
-
-          //     return {
-          //         users: [{
-          //             _id: userId,
-          //             username,
-          //             relationship: status,
-          //         }]
-          //     }
-          // }
-
-          return {
-            users: [{
-                _id: username,
-                username,
-                relationship: {status: 'unknown'},
-            }]
+          if (userId !== 'user_not_found') {
+              return {
+                  users: [{
+                      _id: userId,
+                      username,
+                      relationship: status,
+                  }]
+              }
           }
+
           // else do partial match search
 
-          // const searchPartialMatch = await this.userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();
+          const searchPartialMatch = await this.userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();
 
-          // const matchesWithStatus = await Promise.all(searchPartialMatch.map(async (match: any) => {
-          //     const status = await this.neighborStatus(userIdSearching, match._id);
-          //     return {_id: match._id, username: match.username, relationship: status}
-          // }));
+          const matchesWithStatus = await Promise.all(searchPartialMatch.map(async (match: any) => {
+              const status: NeighborStatus = await this.neighborStatus(currentUserId, match._id.toString());
+              return {_id: match._id, username: match.username, relationship: status};
+          }));
 
-          // console.log(matchesWithStatus)
+          console.log(matchesWithStatus)
 
           // // get neighbor status for each user returned
           // //return {id, username, neighborStatus}
           // // do same thing for listing requests sent and requests received
 
-          // return {
-          //     users: matchesWithStatus
-          // }
+          return {
+              users: matchesWithStatus,
+          }
       } catch (err) {
           return err.toString();
       }
