@@ -1,5 +1,5 @@
 import Player from './Player';
-import {MessageData} from '../requestHandlers/CoveyTownRequestHandlers';
+import {MessageData} from './MessageData';
 
 /**
  * A listener for player-related events in each town

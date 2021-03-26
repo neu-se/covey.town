@@ -5,7 +5,7 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
-import { MessageData } from '../requestHandlers/CoveyTownRequestHandlers';
+import {MessageData} from '../types/MessageData';
 
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
