@@ -9,7 +9,7 @@ import {
   ResponseEnvelope,
 } from './Types';
 
-export default class TicTacToeServiceClient {
+export default class TTLGameServiceClient {
   private _axios: AxiosInstance;
 
   constructor(serviceURL: string) {
@@ -30,28 +30,28 @@ export default class TicTacToeServiceClient {
   }
 
   async createTicGame(requestData: GameCreateRequest): Promise<GameCreateResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<GameCreateResponse>>('/tic-tac-toe', requestData);
-    return TicTacToeServiceClient.unwrapOrThrowError(responseWrapper);
+    const responseWrapper = await this._axios.post<ResponseEnvelope<GameCreateResponse>>('/ttl', requestData);
+    return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async updateTicGame(requestData: GameUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/tic-tac-toe-games/${requestData.gameID}`, requestData);
-    return TicTacToeServiceClient.unwrapOrThrowError(responseWrapper, true);
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameID}`, requestData);
+    return TTLGameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async deleteTicGame(requestData: GameDeleteRequest): Promise<void> {
-    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/tic-tac-toe-games/${requestData.gameID}`);
-    return TicTacToeServiceClient.unwrapOrThrowError(responseWrapper, true);
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameID}`);
+    return TTLGameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async listTicGames(): Promise<GameListResponse> {
-    const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/tic-tac-toe-games');
-    return TicTacToeServiceClient.unwrapOrThrowError(responseWrapper);
+    const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/ttl-games');
+    return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async joinTicGame(requestData: GameJoinRequest): Promise<GameJoinResponse> {
-    const responseWrapper = await this._axios.patch(`/tic-tac-toe-games/${requestData.gameID}`, requestData);
-    return TicTacToeServiceClient.unwrapOrThrowError(responseWrapper);
+    const responseWrapper = await this._axios.patch(`/ttl-games/${requestData.gameID}`, requestData);
+    return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
 }
