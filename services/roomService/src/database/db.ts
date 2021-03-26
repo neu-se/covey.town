@@ -129,7 +129,8 @@ export default class DatabaseController {
 
       // else do partial match search
       const userCollection = this.getCollection('user');
-      const searchPartialMatch = await userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();      return {
+      const searchPartialMatch = await userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();      
+      return {
         users: searchPartialMatch,
       };
     } catch (err) {
