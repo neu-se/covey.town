@@ -1,3 +1,4 @@
+import { YoutubeVideoInfo } from '../CoveyTypes';
 import Player from './Player';
 
 /**
@@ -26,4 +27,13 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+  // Andrew - called when another client paused and this client should pause their video
+  onPlayerPaused(): void;
+
+  // Andrew - called when another client played and this client should play their video
+  onPlayerPlayed(): void;
+
+  // Andrew - called when this player should sync their youtube player up with whatever the most recent video is
+  onVideoSyncing(videoInfo: YoutubeVideoInfo): void;
 }

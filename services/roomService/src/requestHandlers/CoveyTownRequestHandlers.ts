@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { CoveyTownList, UserLocation, YoutubeVideoInfo } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 
@@ -190,6 +190,18 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    // Andrew - emits message to client to pause video
+    onPlayerPaused() {
+      socket.emit('playerPaused');
+    },
+    // Andrew - emits message to client to play video
+    onPlayerPlayed() {
+      socket.emit('playerPlayed')
+    },
+    // Andrew - emits message to client to sync up youtube player with given video info
+    onVideoSyncing(videoInfo: YoutubeVideoInfo) {
+      socket.emit('videoSynchronization', videoInfo)
+    },
   };
 }
 
@@ -231,5 +243,49 @@ export function townSubscriptionHandler(socket: Socket): void {
   // location, inform the CoveyTownController
   socket.on('playerMovement', (movementData: UserLocation) => {
     townController.updatePlayerLocation(s.player, movementData);
+  });
+
+  // Andrew - Register an event listener for the client socket: if client paused video then
+  // have controller pause everyone's video
+  socket.on('clientPaused', () => {
+    townController.pauseVideos();
+  });
+
+  // Andrew - Register an event listener for the client socket: if client played video then
+  // have controller play everyone's video
+  socket.on('clientPlayed', () => {
+    townController.playVideos();
+  });
+
+  // Andrew - Register an event listener for the client socket: if client enters TV area then
+  // have controller add player/listener to map of others around tv and also send synced video 
+  // info to this client
+  socket.on('clientEnteredTVArea', () => {
+    townController.addToTVArea(s.player, listener);
+  });
+
+  // Andrew - Register an event listener for the client socket: when client shares video info
+  // every fixed amount of time, have controller take note of it so that it can sync other players
+  // that join
+  socket.on('clientSharedVideoInfo', (videoInfo: YoutubeVideoInfo) => {
+    townController.shareVideoInfo(s.player, videoInfo);
+  });
+
+  // Andrew - Register an event listener for the client socket: remove player from appropriate maps
+  // in controller when player leaves TV area
+  socket.on('clientLeftTVArea', () => {
+    townController.removeFromTVArea(s.player);
+  });
+
+  // Andrew - Register an event listener for the client socket: if client's video ends then have 
+  // controller choose the next video and tell all clients to load it
+  socket.on('clientVideoEnded', () => {
+    townController.chooseNextVideo();
+  });
+
+  // Andrew - Register an event listener for the client socket: if a client casts a vote for a 
+  // video URL then have controller add a vote for that URL
+  socket.on('clientVoted', (videoURL: string) => {
+    townController.voteForVideo(videoURL); // should we restrict voting >1 in controller or on frontend button
   });
 }
