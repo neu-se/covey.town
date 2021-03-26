@@ -20,8 +20,8 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
 
   app.post('/messages', BodyParser.json(), async (req, res) => {
     try {
-      console.log(req.body);
-      console.log('This is from router');
+      // console.log(req.body);
+      // console.log('This is from router');
       const result = await MessageController.createMessage({
         senderName: req.body.senderName,
         senderID: req.body.senderID,

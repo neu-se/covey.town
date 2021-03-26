@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 type TInput = {
   db: string;
 };
-export default ({db}: TInput) => {
+export default ({db}: TInput):void => {
 
   const connect = () => {
     mongoose
@@ -11,11 +11,8 @@ export default ({db}: TInput) => {
         db,
         { useNewUrlParser: true },
       )
-      .then(() => console.info(`Successfully connected to ${db}`))
-      .catch(error => {
-        console.error('Error connecting to database: ', error);
-        return process.exit(1);
-      });
+      .then()
+      .catch(() => process.exit(1));
   };
   connect();
 

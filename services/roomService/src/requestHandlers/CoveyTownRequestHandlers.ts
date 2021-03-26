@@ -210,13 +210,13 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.disconnect(true);
     },
     onMessageAnnounce(content: string) {
-      console.log(content);
-      console.log('sending');
+      // console.log(content);
+      // console.log('sending');
       socket.emit('sendingAnnouncement', content);
     },
     onDistributeMessage(message: MessageData) {
-      console.log('try to send out');
-      console.log(message);
+      // console.log('try to send out');
+      // console.log(message);
       socket.emit('playerSendMessage', message);
     },
   };
@@ -263,7 +263,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   });
 
   socket.on('playerSendMessage', (message: MessageData) => {
-    console.log(message);
+    // console.log(message);
     townController.distributePlayerMessage(message);
   });
 }
