@@ -391,17 +391,32 @@ class CoveyGameScene extends Phaser.Scene {
 
     // popup with fixed pos on screen
     // TODO: put this code into its own class
-    this.add.text(200, 200, 'lets see what this does', {
-      font: '18px monospace',
+    this.add.text(300, 300, 'Checkers', {
+      font: '30px monospace',
         color: '#000000',
         padding: {
-          x: 200,
-          y: 100
+          left: 130,
+          right: 130,
+          top: 30,
+          bottom: 200
         },
         backgroundColor: '#ffffff',
       })
       .setScrollFactor(0)
       .setDepth(30);
+    const playGameButton = this.add.text(300, 300, 'Play Game', { 
+      font: '18px monospace',
+        color: '#000000',
+        padding: {
+          left: 130,
+          right: 130,
+          top: 70,
+          bottom: 160
+        },
+      })
+      .setScrollFactor(0)
+      .setDepth(31);
+    playGameButton.setInteractive();
 
     // Help text that has a "fixed" position on the screen
     this.add
