@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import assert from "assert";
 import {
   Box,
@@ -19,12 +19,42 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import {ApolloClient, InMemoryCache, NormalizedCacheObject, HttpLink, gql } from '@apollo/client';
+
 import LoginHooks from './LoginHooks'
 import LogoutHooks from './LogoutHooks'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+
+// Determine where to put the DB client
+const createApolloClient = () => new ApolloClient({
+  link: new HttpLink({
+      uri: 'https://covey-town-db.hasura.app/v1/graphql',
+      // remember to update and hide admin secret
+      headers: {'x-hasura-admin-secret': 'nfAeMsAQniJefLE4p8C1DzOLaPwOZjHXueV2Q6G0a2M2zLYItLlDMf4Xv1H5Llxb'
+      }
+  }),
+  cache:  new InMemoryCache()
+})
+
+const apolloClient: ApolloClient<NormalizedCacheObject> = createApolloClient();
+
+apolloClient
+.query({
+query: gql`
+  query fetchUsers {
+  covey_town_Users {
+    EmailAddress
+    FirstName
+    LastName
+  }
+}
+`
+})
+.then(result => console.log(result));
+
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -38,6 +68,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
+  // const { dbClient } = createApolloClient();
+  
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
