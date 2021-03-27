@@ -30,14 +30,14 @@ export default function AuthGuard({ children }: AuthGuardProps): JSX.Element {
   }, [user]);
 
   const authInfo = React.useMemo(() => {
-    const { isLoggedIn } = authState;
+    const { isLoggedIn, currentUser} = authState;
     const value: AuthInfo = {
       isLoggedIn,
-      currentUser: user,
+      currentUser,
       actions: { handleLogout, setAuthState },
     };
     return value;
-  }, [authState, handleLogout, user]);
+  }, [authState, handleLogout]);
 
   return (
     <AuthInfoContext.Provider value={authInfo}>
