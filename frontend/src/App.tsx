@@ -50,7 +50,6 @@ type MessageData = {
   time: string;
 };
 
-
 function defaultAppState(): CoveyAppState {
   return {
     nearbyPlayers: { nearbyPlayers: [] },

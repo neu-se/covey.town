@@ -7,7 +7,6 @@ import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
 import {MessageData} from '../types/MessageData';
 
-
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
 /**
@@ -127,7 +126,6 @@ export default class CoveyTownController {
   distributePlayerMessage(message: MessageData): void {
     this._listeners.forEach((listener) => listener.onDistributeMessage(message));
   }
-
 
   /**
    * Subscribe to events from this town. Callers should make sure to

@@ -89,6 +89,14 @@ export interface TownAnnouncementRequest {
 }
 
 
+export interface MessageData {
+  message: string;
+  receiverID: string;
+  senderID: string;
+  timeStamp: string;
+}
+
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -219,6 +227,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       // console.log(message);
       socket.emit('playerSendMessage', message);
     },
+
   };
 }
 

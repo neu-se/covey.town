@@ -1,12 +1,12 @@
 import { Button, Input, useToast } from '@chakra-ui/react';
 import React, { useState } from 'react';
-
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Dropdown, { Option } from 'react-dropdown';
 import 'react-dropdown/style.css';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import ChatHistory from './ChatHistory';
+
 
 export default function Chat(): JSX.Element {
     const toast = useToast();
@@ -65,7 +65,6 @@ export default function Chat(): JSX.Element {
                   value={message}
                   onChange={(event => setMessage(event.target.value))}
                 />
-
             <Dropdown options={updatedOptions} onChange={event => onOptionSelected(event)} value={receiverName} placeholder="Select a Receiver" />
 
             <Button data-testid='sendbutton'
@@ -77,4 +76,6 @@ export default function Chat(): JSX.Element {
         </Popup>
       </div>
     );
-  }
+
+ }
+

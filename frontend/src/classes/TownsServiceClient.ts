@@ -116,6 +116,15 @@ export interface TownChatHistoryResponse {
 }
 
 /**
+ * Payload sent by the client to publish an Announcement.
+ */
+export interface TownAnnouncementRequest {
+  coveyTownID: string;
+  coveyTownPassword: string;
+  content:string;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
