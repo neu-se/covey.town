@@ -90,7 +90,7 @@ export interface LeaderboardResponse {
 export interface startGameRequest{
   coveyTownID: string;
   player1: string;
-  player2: strings;
+  player2: string;
 }
 
 export interface infoRequest{
@@ -224,7 +224,7 @@ export async function leaderboardHandler(requestData: LeaderboardRequest): Promi
 }
 
 /**  related to tictactoe**/
-export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope<T>> {
+export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope> {
     const townsStore = CoveyTownsStore.getInstance();
     const game = townsStore.startGame(requestData.coveyTownID, requestData.player1,requestData.player2);
     if (!game) {
@@ -239,7 +239,7 @@ export async function startGameHandler(requestData: startGameRequest): Promise<R
     }
   }
 
-export async function isgameActiveHandler(requestData: infoRequest): Promise<ResponseEnvelope<T>> {
+export async function isgameActiveHandler(requestData: infoRequest): Promise<ResponseEnvelope> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.isgameActive(requestData.coveyTownID);
       if (!game) {
@@ -323,9 +323,9 @@ export async function makeMoveHandler(requestData: makeMoveRequest): Promise<Res
     }
   }
 
-export async function endGameHandler(requestData: infoRequest): Promise<ResponseEnvelope<T>> {
+export async function endGameHandler(requestData: infoRequest): Promise<ResponseEnvelope> {
       const townsStore = CoveyTownsStore.getInstance();
-      const game = townsStore.makeMove(requestData.coveyTownID);
+      const game = townsStore.endGame(requestData.coveyTownID);
       if (!game) {
         return {
           isOK: false,

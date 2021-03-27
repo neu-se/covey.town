@@ -132,10 +132,10 @@ export default class CoveyTownsStore {
   }
 
 
-  makeMove(coveyTownID:string,x:number, y:number, player: string): number[][] | boolean{
+  makeMove(coveyTownID:string, x:number, y:number, player: string): number[][] | boolean{
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown) {
-      currentPlayer = existingTown.currentPlayer();
+      const currentPlayer = existingTown.currentPlayer();
       if (currentPlayer == player) {
         return existingTown.makeMove(x,y);
     }
