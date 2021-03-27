@@ -42,7 +42,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const loggedInUser = auth.getCurrentUser();
   const toast = useToast();
 
-  console.log(loggedInUser)
   if (loggedInUser === null) {
     toast({
       title: "Unable to find user profile",
@@ -57,7 +56,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }
 
   async function handleLogout() : Promise<void> {
-    await auth.logout(authInfo.actions.setAuthState);
+    // await auth.logout(authInfo.actions.setAuthState);
+    await authInfo.actions.handleLogout();
     history.push('/login');
   }
 
