@@ -97,11 +97,11 @@ export interface infoRequest{
   coveyTownID: string;
 }
 
-export interface currentPlayerResponse {
+export interface playerResponse {
   player: string;
 }
 
-export interface getBoardResponseResponse {
+export interface getBoardResponse {
   board: number[][];
 }
 
@@ -112,6 +112,9 @@ export interface makeMoveRequest {
   y: number;
 }
 
+export interface infoResponse{
+
+}
 
 
 /**
@@ -224,7 +227,7 @@ export async function leaderboardHandler(requestData: LeaderboardRequest): Promi
 }
 
 /**  related to tictactoe**/
-export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope> {
+export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope<infoResponse>> {
     const townsStore = CoveyTownsStore.getInstance();
     const game = townsStore.startGame(requestData.coveyTownID, requestData.player1,requestData.player2);
     if (!game) {
@@ -235,11 +238,12 @@ export async function startGameHandler(requestData: startGameRequest): Promise<R
     }
     return {
       isOK: true,
+      response: {},
       message: 'game has been started',
     }
   }
 
-export async function isgameActiveHandler(requestData: infoRequest): Promise<ResponseEnvelope> {
+export async function isgameActiveHandler(requestData: infoRequest): Promise<ResponseEnvelope<infoResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.isgameActive(requestData.coveyTownID);
       if (!game) {
@@ -250,6 +254,7 @@ export async function isgameActiveHandler(requestData: infoRequest): Promise<Res
       }
       return {
         isOK: true,
+        response: {},
         message: 'Game is active',
     }
   }
@@ -323,7 +328,7 @@ export async function makeMoveHandler(requestData: makeMoveRequest): Promise<Res
     }
   }
 
-export async function endGameHandler(requestData: infoRequest): Promise<ResponseEnvelope> {
+export async function endGameHandler(requestData: infoRequest): Promise<ResponseEnvelope<infoResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.endGame(requestData.coveyTownID);
       if (!game) {
@@ -334,6 +339,7 @@ export async function endGameHandler(requestData: infoRequest): Promise<Response
       }
       return {
         isOK: true,
+        response: {},
         message:'Game has ended',
     }
   }

@@ -1,10 +1,11 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { ScoreList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import Leaderboard from './Leaderboard';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -69,6 +70,11 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
+
+  private _leaderboard: Leaderboard = new Leaderboard();
+
+  private _tictactoe: ITicTacToe = new TicTacToe();
+
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
@@ -153,4 +159,55 @@ export default class CoveyTownController {
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
   }
+
+  getScores(): ScoreList {
+    return this._leaderboard.getTopScores();
+  }
+
+//** TicTacToe calls **/
+  startGame(player1: string, player2: string): void {
+    if ( this._players.some(e => e.foo === player1) && this._players.some(e => e.foo === player2) ){
+      _tictactoe.startGame(player1,player2);
+    }
+    else{
+      throw new Error("Players are not part of the room");
+    }
+
+  }
+
+
+  isgameActive(): boolean {
+    this._tictactoe.isgameActive();
+  }
+
+
+  currentPlayer(): string{
+    this._tictactoe.currentPlayer();
+  }
+
+
+  getWinner(): string {
+    this._tictactoe.getWinner();
+  }
+
+
+  getBoard(): number[][] {
+    this._tictactoe.gameBoard();
+  }
+
+
+  makeMove(x:number, y:number): number[][] {
+    try{
+    this._tictactoe.makeMove(x,y);
+    return this._tictactoe.getBoard();
+  }
+  catch(err) {
+    return err;
+  }
+  }
+
+  endGame(): void{
+    this._tictactoe.endGame();
+  }
+
 }
