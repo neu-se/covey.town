@@ -108,8 +108,8 @@ export interface getBoardResponse {
 export interface makeMoveRequest {
   coveyTownID: string;
   player: string;
-  x: number;
-  y: number;
+  x: string;
+  y: string;
 }
 
 export interface infoResponse{
@@ -313,8 +313,8 @@ export async function getBoardHandler(requestData: infoRequest): Promise<Respons
 
 export async function makeMoveHandler(requestData: makeMoveRequest): Promise<ResponseEnvelope<getBoardResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
-      const game = townsStore.makeMove(requestData.coveyTownID, requestData.x, requestData.y, requestData.player);
-      if (!game) {
+      const game = townsStore.makeMove(requestData.coveyTownID, Number(requestData.x), Number(requestData.y), requestData.player);
+      if (type(game) == Boolean) {
         return {
           isOK: false,
           message: 'Could not make move',

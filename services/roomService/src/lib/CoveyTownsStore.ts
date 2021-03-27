@@ -97,7 +97,7 @@ export default class CoveyTownsStore {
   isgameActive(coveyTownID:string): boolean |undefined {
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown) {
-      return existingTown.isgameActive(player1, player2);
+      return existingTown.isgameActive();
     }
     return false;
   }

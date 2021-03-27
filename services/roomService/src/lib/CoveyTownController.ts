@@ -6,6 +6,9 @@ import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
 import Leaderboard from './Leaderboard';
+import TicTacToe from './TicTacToe';
+import ITicTacToe from './ITicTacToe';
+
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -166,7 +169,7 @@ export default class CoveyTownController {
 
 //** TicTacToe calls **/
   startGame(player1: string, player2: string): void {
-    if ( this._players.some(e => e.foo === player1) && this._players.some(e => e.foo === player2) ){
+    if ( this._players.some(e => e === player1) && this._players.some(e => e === player2) ){
       _tictactoe.startGame(player1,player2);
     }
     else{
@@ -177,22 +180,22 @@ export default class CoveyTownController {
 
 
   isgameActive(): boolean {
-    this._tictactoe.isgameActive();
+    return this._tictactoe.isgameActive();
   }
 
 
   currentPlayer(): string{
-    this._tictactoe.currentPlayer();
+    return this._tictactoe.currentPlayer();
   }
 
 
   getWinner(): string {
-    this._tictactoe.getWinner();
+    return this._tictactoe.getWinner();
   }
 
 
   getBoard(): number[][] {
-    this._tictactoe.gameBoard();
+    return this._tictactoe.getBoard();
   }
 
 
