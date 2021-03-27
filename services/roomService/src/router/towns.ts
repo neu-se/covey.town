@@ -10,6 +10,13 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  startGameHandler,
+  isgameActiveHandler,
+  currentPlayerHandler,
+  getWinnerHandler,
+  getBoardHandler,
+  makeMoveHandler,
+  endGameHandler
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -87,7 +94,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         });
     }
   });
-  
+
   /**
    * Update a town
    */
@@ -128,6 +135,150 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         });
     }
   });
+
+  /**
+    Start the tictactoe game for a town
+  **/
+  app.post('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await startGameHandler({
+        coveyTownID: req.params.townID,
+        player1:req.params.player1,
+        player2:req.params.player2,
+
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+    is tictactoe game active for a town
+  **/
+  app.get('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await isgameActiveHandler({
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+    Who's turn is it for this town's tictactoe game
+  **/
+  app.get('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await currentPlayerHandler({
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+    Who was the winner of the last game
+  **/
+  app.get('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await getWinnerHandler({
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+    Get current board for town's tictactoe
+  **/
+  app.get('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await getBoardHandler({
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+
+  /**
+    Make a move on a town's tictactoe
+  **/
+  app.post('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await makeMoveHandler({
+        coveyTownID: req.params.townID,
+        player: req.params.player,
+        x: req.params.x,
+        y: req.params.y,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+
+  /**
+    End a town's tictactoe
+  **/
+  app.post('/tictactoe/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await endGameHandler({
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+
+
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

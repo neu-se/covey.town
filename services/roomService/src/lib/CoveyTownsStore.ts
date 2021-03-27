@@ -78,4 +78,78 @@ export default class CoveyTownsStore {
     return existingTown;
   }
 
+  /**  related to tictactoe**/
+
+  startGame(coveyTownID:string, player1: string, player2: string): boolean {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      try {
+      existingTown.startGame(player1, player2);
+      return true;
+    }
+    catch(err){
+      return false;
+    }
+    return false;
+    }
+  }
+
+  isgameActive(coveyTownID:string): boolean |undefined {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      return existingTown.isgameActive(player1, player2);
+    }
+    return false;
+  }
+
+
+  currentPlayer(coveyTownID:string): string{
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      return existingTown.currentPlayer();
+    }
+    else {
+      return "";
+    }
+  }
+
+
+  getWinner(coveyTownID:string): string {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      return existingTown.getWinner();
+    }
+    return "";
+  }
+
+
+  getBoard(coveyTownID:string): number[][] | boolean{
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      return existingTown.gameBoard();
+    }
+    return false;
+  }
+
+
+  makeMove(coveyTownID:string,x:number, y:number, player: string): number[][] | boolean{
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      currentPlayer = existingTown.currentPlayer();
+      if (currentPlayer == player) {
+        return existingTown.makeMove(x,y);
+    }
+  }
+    return false;
+  }
+
+  endGame(coveyTownID:string): boolean {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+    existingTown.endGame();
+    return true;
+    }
+    return false;
+  }
+
 }

@@ -1,65 +1,81 @@
+_winningPlayer
+/*
+    An implamentation of ITicTacToe representing the leaderboard, which shows the top scores in each town.
+**/
+export default class TicTacToe implements ITicTacToe{
 
+  private _player1Id: string = ""; //x
+  private _player2Id: string = ""; //o
 
-export default class TicTacToe {
-
-  private player1Id: string = ""; //x
-  private player2Id: string = ""; //o
-
-  private gameBoard = [[0,0,0],
+  private _gameBoard = [[0,0,0],
               [0,0,0],
               [0,0,0]];
 
-  private curPlayer:number  = 1; // who's turn is it
-  private gameActive:boolean = false;
-  private winningPlayer:string  = "";
+  private _curPlayer:number  = 1; // who's turn is it
+
+  private _gameActive:boolean = false;
+
+  private _winningPlayer:string  = "";
+
+  get isgameActive(): boolean {
+    return this._gameActive;
+  }
+
+  get currentPlayer(): string{
+    if (!this._gameActive){
+      return "";
+    }
+    if(this._curPlayer == 1) {
+      return this._player1Id;
+    }
+    else{
+      return this._player2Id;
+    }
+  }
+
+  private resetGameBoard(): void {
+    this._gameBoard = [[0,0,0],
+                [0,0,0],
+                [0,0,0]];
+  }
+
+  private setWinningPlayer(): void {
+    this._winningPlayer = this.currentPlayer;
+    }
 
 startGame(player1: string, player2: string): void {
   if (player1 === '' || player2 === "" || player1 === player2) {
     throw Error("invalid players");
   }
-  this.player1Id = player1;
-  this.player2Id = player2;
-  this.gameActive = true;
+  if (this._gameActive) {
+    throw Error(gameAlreadyActive);
+  }
+  this._player1Id = player1;
+  this._player2Id = player2;
+  this._gameActive = true;
   this.resetGameBoard();
 }
 
-get isgameActive(): boolean {
-  return this.gameActive;
-}
-
-get currentPlayer(): string{
-  if(this.curPlayer == 1) {
-    return this.player1Id;
-  }
-  else{
-    return this.player2Id;
-
-  }
-}
-
-private resetGameBoard(): void {
-  this.gameBoard = [[0,0,0],
-              [0,0,0],
-              [0,0,0]];
-}
 
 getWinner(): string {
-  if (this.winningPlayer == "") {
+  if (this._winningPlayer == "") {
     throw  Error('no winner');
   }
-  return this.winningPlayer;
+  return this._winningPlayer;
 }
 
 // ask about this and not using copy
 getBoard(): number[][] {
-  return this.gameBoard;
+  return this._gameBoard;
 }
 
 
+/** Is the board full, or is the room to continue playing?
+**/
 private isFull(): boolean {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
-      if (this.gameBoard[i][j] == 0) {
+      if (this._gameBoard[i][j] == 0) {
         return false;
       }
     }
@@ -67,65 +83,69 @@ private isFull(): boolean {
   return true;
 }
 
-private setWinningPlayer(): void {
-  this.winningPlayer = this.currentPlayer;
-  }
-
+/** Checks if the current player's last move won the game
+**/
 private isWin(): Boolean {
 // up and down
 for (let i = 0; i < 3; i++) {
-  if (this.gameBoard[i][0] == this.curPlayer && this.gameBoard[i][1] == this.curPlayer && this.gameBoard[i][2] == this.curPlayer) {
+  if (this._gameBoard[i][0] == this._curPlayer && this._gameBoard[i][1] == this._curPlayer && this._gameBoard[i][2] == this._curPlayer) {
     this.setWinningPlayer();
     return true;
   }
-  if (this.gameBoard[0][i] == this.curPlayer && this.gameBoard[1][i] == this.curPlayer && this.gameBoard[2][i] == this.curPlayer) {
+  if (this._gameBoard[0][i] == this._curPlayer && this._gameBoard[1][i] == this._curPlayer && this._gameBoard[2][i] == this._curPlayer) {
     this.setWinningPlayer();
     return true;
   }
 }
 // diagonally
-  if (this.gameBoard[0][0] == this.curPlayer && this.gameBoard[1][1] == this.curPlayer && this.gameBoard[2][2] == this.curPlayer) {
+  if (this._gameBoard[0][0] == this._curPlayer && this._gameBoard[1][1] == this._curPlayer && this._gameBoard[2][2] == this._curPlayer) {
     this.setWinningPlayer();
     return true;
   }
-  if (this.gameBoard[2][0] == this.curPlayer && this.gameBoard[1][1] == this.curPlayer && this.gameBoard[0][2] == this.curPlayer) {
+  if (this._gameBoard[2][0] == this._curPlayer && this._gameBoard[1][1] == this._curPlayer && this._gameBoard[0][2] == this._curPlayer) {
     this.setWinningPlayer();
     return true;
   }
-
   return false;
 }
 
+
 makeMove(x:number, y:number): void {
   // check if move is valid/ game is current
-  if (!this.gameActive) {
+  if (!this._gameActive) {
     throw new Error('game not active');
   }
   if (x>2 || x< 0 || y>2 || y< 0) {
     throw new Error('invalid x/y');
   }
-  if (this.gameBoard[x][y] != 0) {
+  if (this._gameBoard[x][y] != 0) {
     throw new Error('choose a free space');
   }
 
   // make move since it is valid
-  this.gameBoard[x][y] = this.curPlayer;
+  this._gameBoard[x][y] = this._curPlayer;
 
   // check if move won game/ if we can keep playing
   if (this.isWin()) {
-    this.gameActive = false;
+    this._gameActive = false;
 
     // contact some listener
   }
   if (this.isFull()) {
-    this.gameActive = false;
+    this._gameActive = false;
 
     // contact some listener
   }
 
   //change to next player
-  this.curPlayer = this.curPlayer%2;
-  this.curPlayer++;
+  this._curPlayer = this._curPlayer%2;
+  this._curPlayer++;
+}
+
+//makes game inactive
+endGame(): void{
+  this._gameActive = false;
+
 }
 
 

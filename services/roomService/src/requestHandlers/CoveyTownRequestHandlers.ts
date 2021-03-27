@@ -87,6 +87,33 @@ export interface LeaderboardResponse {
   scores: ScoreList;
 }
 
+export interface startGameRequest{
+  coveyTownID: string;
+  player1: string;
+  player2: strings;
+}
+
+export interface infoRequest{
+  coveyTownID: string;
+}
+
+export interface currentPlayerResponse {
+  player: string;
+}
+
+export interface getBoardResponseResponse {
+  board: number[][]];
+}
+
+export interface makeMoveRequest {
+  coveyTownID: string;
+  player: string;
+  x: number;
+  y: number;
+}
+
+
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -95,6 +122,8 @@ export interface ResponseEnvelope<T> {
   message?: string;
   response?: T;
 }
+
+
 
 /**
  * A handler to process a player's request to join a town. The flow is:
@@ -194,6 +223,125 @@ export async function leaderboardHandler(requestData: LeaderboardRequest): Promi
   }
 }
 
+/**  related to tictactoe**/
+export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope<T>> {
+    const townsStore = CoveyTownsStore.getInstance();
+    const game = townsStore.startGame(requestData.coveyTownID, requestData.player1,requestData.player2);
+    if (!game) {
+      return {
+        isOK: false,
+        message: 'Unable to start game',
+      }
+    }
+    return {
+      isOK: true,
+      message: 'game has been started',
+    }
+  }
+
+export async function isgameActiveHandler(requestData: infoRequest): Promise<ResponseEnvelope<T>> {
+      const townsStore = CoveyTownsStore.getInstance();
+      const game = townsStore.isgameActive(requestData.coveyTownID);
+      if (!game) {
+        return {
+          isOK: false,
+          message: 'Game is not active',
+        }
+      }
+      return {
+        isOK: true,
+        message: 'Game is active',
+    }
+  }
+
+export async function currentPlayerHandler(requestData: infoRequest): Promise<ResponseEnvelope<playerResponse>> {
+      const townsStore = CoveyTownsStore.getInstance();
+      const game = townsStore.currentPlayer(requestData.coveyTownID);
+      if ("") {
+        return {
+          isOK: false,
+          message: 'No current player',
+        }
+      }
+      return {
+        isOK: true,
+        response: {
+          player: game;
+        },
+    }
+  }
+
+  export async function getWinnerHandler(requestData: infoRequest): Promise<ResponseEnvelope<playerResponse>> {
+        const townsStore = CoveyTownsStore.getInstance();
+        const game = townsStore.getWinner(requestData.coveyTownID);
+        if ("") {
+          return {
+            isOK: false,
+            message: 'No current winner',
+          }
+        }
+        return {
+          isOK: true,
+          response: {
+            player: game;
+          },
+      }
+    }
+
+
+export async function getBoardHandler(requestData: infoRequest): Promise<ResponseEnvelope<getBoardResponse>> {
+      const townsStore = CoveyTownsStore.getInstance();
+      const game = townsStore.getBoard(requestData.coveyTownID);
+      if (undefined) {
+        return {
+          isOK: false,
+          message: 'Could not find game',
+        }
+      }
+      return {
+        isOK: true,
+        response: {
+          board: game;
+        },
+    }
+  }
+
+export async function makeMoveHandler(requestData: makeMoveRequest): Promise<ResponseEnvelope<getBoardResponse>> {
+      const townsStore = CoveyTownsStore.getInstance();
+      const game = townsStore.makeMove(requestData.coveyTownID, requestData.x, requestData.y, requestData.player);
+      if (!game) {
+        return {
+          isOK: false,
+          message: 'Could not make move',
+        }
+      }
+      if
+      return {
+        isOK: true,
+        response: {
+          board: game;
+        },
+    }
+  }
+
+export async function endGameHandler(requestData: infoRequest): Promise<ResponseEnvelope<T>> {
+      const townsStore = CoveyTownsStore.getInstance();
+      const game = townsStore.makeMove(requestData.coveyTownID);
+      if (!game) {
+        return {
+          isOK: false,
+          message: 'Could not find game',
+        }
+      }
+      return {
+        isOK: true,
+        message:'Game has ended',
+    }
+  }
+
+
+
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -216,7 +364,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.disconnect(true);
     },
   };
-}
+}å
 
 /**
  * A handler to process a remote player's subscription to updates for a town
