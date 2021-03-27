@@ -56,8 +56,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }
 
   async function handleLogout() : Promise<void> {
-    // await auth.logout(authInfo.actions.setAuthState);
-    await authInfo.actions.handleLogout();
+    await auth.logout(authInfo.actions.setAuthState);
     history.push('/login');
   }
 
