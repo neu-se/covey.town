@@ -43,7 +43,9 @@ export default class RealmAuth implements IAuth {
             isLoggedIn: realmUser.isLoggedIn,
             profile: userProfile,
             actions: {
-                logout: realmUser.logOut
+                logout: async () => {
+                    await realmUser.logOut();
+                }
             }
         }
 
@@ -75,7 +77,9 @@ export default class RealmAuth implements IAuth {
                 bio: realmUser.customData.bio,
             },
             actions: {
-                logout: realmUser.logOut
+                logout: async () => {
+                    await realmUser.logOut();
+                }
             }
 
         }
@@ -96,7 +100,9 @@ export default class RealmAuth implements IAuth {
                 bio: realmUser.customData.bio,
             },
             actions: {
-                logout: realmUser.logOut
+                logout: async () => {
+                    await realmUser.logOut();
+                }
             }
         }
 
