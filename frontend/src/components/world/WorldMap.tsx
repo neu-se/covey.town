@@ -440,6 +440,11 @@ class CoveyGameScene extends Phaser.Scene {
     // drawing it
     const g2 = this.add.grid(500, 840, 512, 512, 64, 64, 0xff0000).setAltFillStyle(0x000000).setOutlineStyle().setDepth(32);
 
+    // drawing game piece
+    // TODO: game piece class
+    const redPiece = this.add.ellipse(724, 617, 56, 56, 0xff0000).setDepth(33);
+    const blackPiece = this.add.ellipse(660, 617, 56, 56, 0x0000000).setDepth(33);
+
     // Help text that has a "fixed" position on the screen
     this.add
       .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
