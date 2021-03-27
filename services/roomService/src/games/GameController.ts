@@ -4,9 +4,7 @@ import {
   GameCreateResponse,
   GameDeleteRequest,
   GameJoinRequest, GameJoinResponse,
-  GameUpdateRequest,
-  HangmanWord,
-  TTLChoices
+  GameUpdateRequest
 } from '../client/Types';
 import TicTacToeGame from "./TicTacToeGame";
 import HangmanGame from "./HangmanGame";
@@ -14,20 +12,30 @@ import TTLGame from "./TTLGame";
 
 
 export default class GameController {
-  constructor(gameModel: TicTacToeGame | HangmanGame | TTLGame) {
-    this._gameModel = gameModel;
-  }
-
   private _gameModel;
+  private _gameView;
 
-  get gameModel(){
+  get gameModel() {
     return this._gameModel;
   }
 
-  set gameModel(game){
+  set gameModel(game) {
     this._gameModel = game;
   }
 
+  get gameView() {
+    return this._gameView;
+  }
+
+  set gameView(value) {
+    this._gameView = value;
+  }
+
+  // TODO: Specify gameView types
+  constructor(gameModel: TicTacToeGame | HangmanGame | TTLGame, gameView) {
+    this._gameModel = gameModel;
+    this._gameView = gameView
+}
 
   /**
    * Creates a new game session initialized by one player
@@ -53,6 +61,8 @@ export default class GameController {
       }
     }
   }
+
+
 
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
     const player2 = requestData.player2
