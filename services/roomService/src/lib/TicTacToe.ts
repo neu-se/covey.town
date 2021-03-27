@@ -1,4 +1,5 @@
-_winningPlayer
+import ITicTacToe from './ITicTacToe';
+
 /*
     An implamentation of ITicTacToe representing the leaderboard, which shows the top scores in each town.
 **/
@@ -17,11 +18,11 @@ export default class TicTacToe implements ITicTacToe{
 
   private _winningPlayer:string  = "";
 
-  get isgameActive(): boolean {
+  isgameActive(): boolean {
     return this._gameActive;
   }
 
-  get currentPlayer(): string{
+  currentPlayer(): string{
     if (!this._gameActive){
       return "";
     }
@@ -40,7 +41,7 @@ export default class TicTacToe implements ITicTacToe{
   }
 
   private setWinningPlayer(): void {
-    this._winningPlayer = this.currentPlayer;
+    this._winningPlayer = this.currentPlayer();
     }
 
 startGame(player1: string, player2: string): void {
@@ -48,7 +49,7 @@ startGame(player1: string, player2: string): void {
     throw Error("invalid players");
   }
   if (this._gameActive) {
-    throw Error(gameAlreadyActive);
+    throw Error("gameAlreadyActive");
   }
   this._player1Id = player1;
   this._player2Id = player2;

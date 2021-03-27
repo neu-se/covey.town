@@ -102,7 +102,7 @@ export interface currentPlayerResponse {
 }
 
 export interface getBoardResponseResponse {
-  board: number[][]];
+  board: number[][];
 }
 
 export interface makeMoveRequest {
@@ -266,7 +266,7 @@ export async function currentPlayerHandler(requestData: infoRequest): Promise<Re
       return {
         isOK: true,
         response: {
-          player: game;
+          player: game,
         },
     }
   }
@@ -283,7 +283,7 @@ export async function currentPlayerHandler(requestData: infoRequest): Promise<Re
         return {
           isOK: true,
           response: {
-            player: game;
+            player: game,
           },
       }
     }
@@ -301,7 +301,7 @@ export async function getBoardHandler(requestData: infoRequest): Promise<Respons
       return {
         isOK: true,
         response: {
-          board: game;
+          board: game,
         },
     }
   }
@@ -315,11 +315,10 @@ export async function makeMoveHandler(requestData: makeMoveRequest): Promise<Res
           message: 'Could not make move',
         }
       }
-      if
       return {
         isOK: true,
         response: {
-          board: game;
+          board: game,
         },
     }
   }
@@ -364,7 +363,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.disconnect(true);
     },
   };
-}å
+}
 
 /**
  * A handler to process a remote player's subscription to updates for a town

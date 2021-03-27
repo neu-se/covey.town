@@ -15,12 +15,12 @@ export default interface ITicTacToe {
   returns tictactoe whether game is currently active. False if game has not started,
   or if game is over( has been won/board is full)
   **/
-  get isgameActive(): boolean;
+  isgameActive(): boolean;
 
   /**
   returns playerId of player's whose current turn it is in tictactoe
   **/
-  get currentPlayer(): string;
+  currentPlayer(): string;
 
   /**
   if there is a winner of the previous tictactoe game it will return the winner's
