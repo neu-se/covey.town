@@ -110,4 +110,8 @@ export default class RealmAuth implements IAuth {
     async sendPasswordResetEmail(email: string): Promise<void> {
         this._realmApp.sendPasswordResetEmail(email);
     }
+
+    async logout(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>) : Promise<void> {
+        // TODO implement
+    }
 }
