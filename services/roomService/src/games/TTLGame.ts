@@ -22,7 +22,7 @@ export default class TTLGame implements IGame {
             this.gameState = this.initializeGame();
             this.player2ID = '';
             this.alreadyGuessed = [];
-            
+
         }
         initializeGame(): string {
             return `Your two truths and a lie options are:\nOption 1: ${this.option1}\nOption 2: ${this.option2}
@@ -38,10 +38,10 @@ export default class TTLGame implements IGame {
             if (this.alreadyGuessed.find(e => e === this.correctOption)) {
                 this.finishGame(this.player2ID);
                 return true;
-            } 
+            }
             else if (this.alreadyGuessed.length == 3) {
                 this.finishGame(this.player1ID);
-                return true;    
+                return true;
             } else { return false;}
         }
 
@@ -56,5 +56,5 @@ export default class TTLGame implements IGame {
                 throw new Error("Game is already full");
             }
         }
-    
+
 }

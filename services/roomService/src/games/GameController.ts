@@ -1,6 +1,12 @@
 import IGame from './IGame';
-import CoveyTownsStore from '../lib/CoveyTownsStore';
-import {GameCreateRequest, GameDeleteRequest, GameUpdateRequest} from '../client/Types';
+import {
+  ResponseEnvelope,
+  GameCreateRequest,
+  GameCreateResponse,
+  GameDeleteRequest,
+  GameJoinRequest, GameJoinResponse,
+  GameUpdateRequest
+} from '../client/Types';
 
 
 export default class GameController {
@@ -20,19 +26,36 @@ export default class GameController {
 
 
   /**
-   * Creates a new game session
+   * Creates a new game session initialized by one player
    *
    */
-  static async createGame(requestData: GameCreateRequest) {
-    return requestData;
+  async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse> {
+    const player1 = requestData.player1
+    const initialState = requestData.initialGameState
+    const newGame =
+    return {
+      isOK: true,
+      response: {
+        gameID: newGame.id
+      }
+    }
+  }
+
+  async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse> {
+    const player2 = requestData.player2
+    await
+    return {
+      isOK: true,
+      response: {
+        gameID: requestData.gameID
+      }
+    }
   }
 
   /**
    * Updates the game state after a player makes a move
    *
-   * @param gameId (String)
-   * @param player who just moved (Player object)
-   * @param player move (String)
+   * @param requestData
    */
   static async updateGame(requestData: GameUpdateRequest) {
     return requestData;
@@ -49,7 +72,7 @@ export default class GameController {
   /**
    * Deletes a game from the server after it is finished
    *
-   * @param gameID (String)
+   * @param requestData
    */
   static async deleteGame(requestData: GameDeleteRequest)  {
     return requestData;

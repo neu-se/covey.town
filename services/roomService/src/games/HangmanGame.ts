@@ -44,7 +44,7 @@ export default class HangmanGame implements IGame {
     }
 
     limbToString(limb : Limb): string {
-        if (limb == Limb.Head) { return 'Head';} 
+        if (limb == Limb.Head) { return 'Head';}
         else if (limb == Limb.Back) {return 'Back';}
         else if (limb == Limb.LeftArm) {return 'LeftArm';}
         else if (limb == Limb.RightArm) {return 'RightArm';}
