@@ -5,14 +5,19 @@ export default class Player {
 
   private readonly _userName: string;
 
+  // mapID field added by MD, modified to public by EB
+  public mapID?: string;
+
   public sprite?: Phaser.GameObjects.Sprite;
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation) {
+  constructor(id: string, userName: string, location: UserLocation, mapID: string) {
     this._id = id;
     this._userName = userName;
     this.location = location;
+    // mapID added to constructor by MD, modified to public by EB
+    this.mapID = mapID;
   }
 
   get userName(): string {
@@ -23,11 +28,13 @@ export default class Player {
     return this._id;
   }
 
+  // updated to include new mapID parameter by MD  
   static fromServerPlayer(playerFromServer: ServerPlayer): Player {
-    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location);
+    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location, playerFromServer._mapID);
   }
 }
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+// server player updated to include mapID by MD
+export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _mapID: string };
 
 export type Direction = 'front'|'back'|'left'|'right';
 
@@ -37,3 +44,8 @@ export type UserLocation = {
   rotation: Direction,
   moving: boolean
 };
+
+// Used to represent super and sub map
+// 0 = super map
+// 1 = sub map
+export type CoveyTownMapID = '0' | '1';

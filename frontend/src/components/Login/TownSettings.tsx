@@ -39,6 +39,10 @@ const TownSettings: React.FunctionComponent = () => {
     video?.unPauseGame();
   }, [onClose, video]);
 
+  const [friendlyName, setFriendlyName] = useState(currentTownFriendlyName);
+  const [isPublic, setIsPublic] = useState(currentTownIsPubliclyListed);
+  const [password, setPassword] = useState('');
+
   const toast = useToast()
   const processUpdates = async (action: string) =>{
     if(action === 'delete'){
@@ -80,6 +84,26 @@ const TownSettings: React.FunctionComponent = () => {
       }
     }
   };
+
+  const deleteTown = async () => {
+    try {
+      await apiClient.deleteTown({
+        coveyTownID: currentTownID,
+        coveyTownPassword: password,
+      })
+      toast({
+        title: 'Town deleted',
+        status: 'success',
+      })
+      onClose();
+    } catch (err) {
+      toast({
+        title: 'Unable to delete town',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  }
 
   return <>
     <MenuItem data-testid='openMenuButton' onClick={openSettings}>
