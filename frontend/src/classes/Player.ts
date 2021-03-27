@@ -45,4 +45,7 @@ export type UserLocation = {
   moving: boolean
 };
 
+// Used to represent super and sub map
+// 0 = super map
+// 1 = sub map
 export type CoveyTownMapID = '0' | '1';

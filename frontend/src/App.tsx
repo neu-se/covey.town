@@ -88,10 +88,11 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       return false;
     };
 
+    // If player is in the super map, calculate nearby players by radius
     if (currentMapID === '0') {
       return { nearbyPlayers: players.filter((p) => isWithinCallRadius(p, currentLocation)) };
     } 
-    
+    // If the player is in a sub map, all players in the same sub map are considered nearby
     return { nearbyPlayers: players.filter((p) => p.mapID === currentMapID) };
      }
 
@@ -141,6 +142,8 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       }
 
       break;
+    // Actions which handle when a player changed between super and sub maps
+    // Update the map id of the player that changed maps, recalculate nearby players
     case 'playerMapChanged':
         updatePlayer = nextState.players.find((p) => p.id === update.player.id);
         if (updatePlayer) {
@@ -154,6 +157,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
           nextState.nearbyPlayers = state.nearbyPlayers;
         }
         break;
+      // Update our map id when we change maps, recalculate nearby players
       case 'weMapChanged':
           nextState.currentMapID = update.mapID;
           nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
@@ -212,6 +216,7 @@ async function GameController(initData: TownJoinResponse,
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
   });
+  // When the socket receives a playerMapChanged event, dispatch the corresponding action
   socket.on('playerMapChanged', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
       dispatchAppUpdate({ action: 'playerMapChanged', player: Player.fromServerPlayer(player) });
@@ -221,6 +226,9 @@ async function GameController(initData: TownJoinResponse,
     socket.emit('playerMovement', location);
     dispatchAppUpdate({ action: 'weMoved', location });
   };
+  // When our player changes maps, emit and event to be consumed and handled by server socket
+  // Server socket will emit the event to other players who are listening
+  // Dispatch action which updates our state
   const emitMapChange = (mapID: CoveyTownMapID) => {
     socket.emit('playerMapChange', mapID);
     dispatchAppUpdate({ action: 'weMapChanged', mapID });
