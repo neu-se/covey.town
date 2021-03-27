@@ -69,7 +69,7 @@ export default class RealmAuth implements IAuth {
             isLoggedIn: realmUser.isLoggedIn,
             profile: {
                 user_id: realmUser.customData.user_id,
-                userName: realmUser.customData.userName,
+                userName: realmUser.customData.user_name,
                 email: realmUser.customData.email,
                 pfpURL: realmUser.customData.pfpURL,
                 bio: realmUser.customData.bio,
@@ -90,7 +90,7 @@ export default class RealmAuth implements IAuth {
             isLoggedIn: realmUser.isLoggedIn,
             profile: {
                 user_id: realmUser.customData.user_id,
-                userName: realmUser.customData.userName,
+                userName: realmUser.customData.user_name,
                 email: realmUser.customData.email,
                 pfpURL: realmUser.customData.pfpURL,
                 bio: realmUser.customData.bio,

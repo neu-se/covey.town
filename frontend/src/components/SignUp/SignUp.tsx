@@ -115,6 +115,10 @@ export default function SimpleCard(): JSX.Element {
       await dbClient.saveUserProfile(newUserProfile);
       assert(authInfo.currentUser);
       authInfo.currentUser.profile = newUserProfile;
+      authInfo.actions.setAuthState({
+        isLoggedIn: user.isLoggedIn,
+        currentUser: authInfo.currentUser
+      })
       history.push('/');
     } catch (e) {
       toast({
