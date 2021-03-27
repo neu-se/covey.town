@@ -22,16 +22,18 @@ import { VideoProvider } from './components/VideoCall/VideoFrontend/components/V
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
 import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
-import Player, { ServerPlayer, UserLocation } from './classes/Player';
+import Player, { CoveyTownMapID, ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void, emitMapChange: (mapID: CoveyTownMapID) => void } }
   | { action: 'addPlayer'; player: Player }
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
+  | { action: 'weMapChanged'; mapID: CoveyTownMapID }
+  | { action: 'playerMapChanged'; player: Player }
   | { action: 'disconnect' }
   ;
 
@@ -49,7 +51,10 @@ function defaultAppState(): CoveyAppState {
     currentLocation: {
       x: 0, y: 0, rotation: 'front', moving: false,
     },
+    currentMapID: '0',
     emitMovement: () => {
+    },
+    emitMapChange: () => {
     },
     apiClient: new TownsServiceClient(),
   };
@@ -63,14 +68,16 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     myPlayerID: state.myPlayerID,
     players: state.players,
     currentLocation: state.currentLocation,
+    currentMapID: state.currentMapID,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
     socket: state.socket,
     emitMovement: state.emitMovement,
+    emitMapChange: state.emitMapChange,
     apiClient: state.apiClient,
   };
 
-  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
+  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation, currentMapID: CoveyTownMapID) {
     const isWithinCallRadius = (p: Player, location: UserLocation) => {
       if (p.location && location) {
         const dx = p.location.x - location.x;
@@ -81,8 +88,13 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       return false;
     };
 
-    return { nearbyPlayers: players.filter((p) => isWithinCallRadius(p, currentLocation)) };
-  }
+    // If player is in the super map, calculate nearby players by radius
+    if (currentMapID === '0') {
+      return { nearbyPlayers: players.filter((p) => isWithinCallRadius(p, currentLocation)) };
+    } 
+    // If the player is in a sub map, all players in the same sub map are considered nearby
+    return { nearbyPlayers: players.filter((p) => p.mapID === currentMapID) };
+     }
 
   function samePlayers(a1: NearbyPlayers, a2: NearbyPlayers) {
     if (a1.nearbyPlayers.length !== a2.nearbyPlayers.length) return false;
@@ -101,6 +113,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.currentTownIsPubliclyListed = update.data.townIsPubliclyListed;
       nextState.userName = update.data.userName;
       nextState.emitMovement = update.data.emitMovement;
+      nextState.emitMapChange = update.data.emitMapChange;
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
       break;
@@ -115,7 +128,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.players = nextState.players.concat([update.player]);
       }
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-        nextState.currentLocation);
+        nextState.currentLocation, nextState.currentMapID);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
@@ -123,17 +136,42 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     case 'weMoved':
       nextState.currentLocation = update.location;
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-        nextState.currentLocation);
+        nextState.currentLocation, nextState.currentMapID);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
 
       break;
+    // Actions which handle when a player changed between super and sub maps
+    // Update the map id of the player that changed maps, recalculate nearby players
+    case 'playerMapChanged':
+        updatePlayer = nextState.players.find((p) => p.id === update.player.id);
+        if (updatePlayer) {
+          updatePlayer.mapID = update.player.mapID;
+        } else {
+          nextState.players = nextState.players.concat([update.player]);
+        }
+        nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
+          nextState.currentLocation, nextState.currentMapID);
+        if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
+          nextState.nearbyPlayers = state.nearbyPlayers;
+        }
+        break;
+      // Update our map id when we change maps, recalculate nearby players
+      case 'weMapChanged':
+          nextState.currentMapID = update.mapID;
+          nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
+            nextState.currentLocation, nextState.currentMapID);
+          if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
+            nextState.nearbyPlayers = state.nearbyPlayers;
+          }
+    
+          break;
     case 'playerDisconnect':
       nextState.players = nextState.players.filter((player) => player.id !== update.player.id);
 
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-        nextState.currentLocation);
+        nextState.currentLocation, nextState.currentMapID);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
@@ -178,9 +216,22 @@ async function GameController(initData: TownJoinResponse,
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
   });
+  // When the socket receives a playerMapChanged event, dispatch the corresponding action
+  socket.on('playerMapChanged', (player: ServerPlayer) => {
+    if (player._id !== gamePlayerID) {
+      dispatchAppUpdate({ action: 'playerMapChanged', player: Player.fromServerPlayer(player) });
+    }
+  });
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
     dispatchAppUpdate({ action: 'weMoved', location });
+  };
+  // When our player changes maps, emit and event to be consumed and handled by server socket
+  // Server socket will emit the event to other players who are listening
+  // Dispatch action which updates our state
+  const emitMapChange = (mapID: CoveyTownMapID) => {
+    socket.emit('playerMapChange', mapID);
+    dispatchAppUpdate({ action: 'weMapChanged', mapID });
   };
 
   dispatchAppUpdate({
@@ -193,6 +244,7 @@ async function GameController(initData: TownJoinResponse,
       myPlayerID: gamePlayerID,
       townIsPubliclyListed: video.isPubliclyListed,
       emitMovement,
+      emitMapChange,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
     },
