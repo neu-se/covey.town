@@ -77,7 +77,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     apiClient: state.apiClient,
   };
 
-  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
+  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation, currentMapID: CoveyTownMapID) {
     const isWithinCallRadius = (p: Player, location: UserLocation) => {
       if (p.location && location) {
         const dx = p.location.x - location.x;
@@ -88,8 +88,12 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       return false;
     };
 
-    return { nearbyPlayers: players.filter((p) => isWithinCallRadius(p, currentLocation)) };
-  }
+    if (currentMapID === '0') {
+      return { nearbyPlayers: players.filter((p) => isWithinCallRadius(p, currentLocation)) };
+    } 
+    
+    return { nearbyPlayers: players.filter((p) => p.mapID === currentMapID) };
+     }
 
   function samePlayers(a1: NearbyPlayers, a2: NearbyPlayers) {
     if (a1.nearbyPlayers.length !== a2.nearbyPlayers.length) return false;
@@ -123,7 +127,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.players = nextState.players.concat([update.player]);
       }
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-        nextState.currentLocation);
+        nextState.currentLocation, nextState.currentMapID);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
@@ -131,7 +135,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     case 'weMoved':
       nextState.currentLocation = update.location;
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-        nextState.currentLocation);
+        nextState.currentLocation, nextState.currentMapID);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
@@ -145,7 +149,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
           nextState.players = nextState.players.concat([update.player]);
         }
         nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-          nextState.currentLocation);
+          nextState.currentLocation, nextState.currentMapID);
         if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
           nextState.nearbyPlayers = state.nearbyPlayers;
         }
@@ -153,7 +157,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       case 'weMapChanged':
           nextState.currentMapID = update.mapID;
           nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-            nextState.currentLocation);
+            nextState.currentLocation, nextState.currentMapID);
           if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
             nextState.nearbyPlayers = state.nearbyPlayers;
           }
@@ -163,7 +167,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.players = nextState.players.filter((player) => player.id !== update.player.id);
 
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
-        nextState.currentLocation);
+        nextState.currentLocation, nextState.currentMapID);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
