@@ -1,16 +1,20 @@
-import IGame from './IGame';
 import {
   ResponseEnvelope,
   GameCreateRequest,
   GameCreateResponse,
   GameDeleteRequest,
   GameJoinRequest, GameJoinResponse,
-  GameUpdateRequest
+  GameUpdateRequest,
+  HangmanWord,
+  TTLChoices
 } from '../client/Types';
+import TicTacToeGame from "./TicTacToeGame";
+import HangmanGame from "./HangmanGame";
+import TTLGame from "./TTLGame";
 
 
 export default class GameController {
-  constructor(gameModel: IGame) { // TODO: What data type should gameModel be?
+  constructor(gameModel: TicTacToeGame | HangmanGame | TTLGame) {
     this._gameModel = gameModel;
   }
 
@@ -29,10 +33,19 @@ export default class GameController {
    * Creates a new game session initialized by one player
    *
    */
-  async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse> {
+  async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse>> {
     const player1 = requestData.player1
     const initialState = requestData.initialGameState
-    const newGame =
+    const newGame = (requestData.gameType === "Hangman" ?  new HangmanGame :
+      requestData.gameType === "TTL" ? new TTLGame :
+        requestData.gameType === "TicTacToe" ? new TicTacToeGame : undefined)
+    if (newGame === undefined) {
+      return {
+        isOK: false,
+        message: 'Error: No game type specified',
+      };
+    }
+    this.gameModel = newGame
     return {
       isOK: true,
       response: {
@@ -41,9 +54,8 @@ export default class GameController {
     }
   }
 
-  async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse> {
+  async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
     const player2 = requestData.player2
-    await
     return {
       isOK: true,
       response: {

@@ -6,6 +6,7 @@ export interface ResponseEnvelope<T> {
 
 export interface GameCreateRequest {
   player1: string;
+  gameType: string;
   initialGameState?: HangmanWord | TTLChoices;
 }
 
