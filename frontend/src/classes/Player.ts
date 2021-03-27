@@ -5,8 +5,8 @@ export default class Player {
 
   private readonly _userName: string;
 
-  // mapID field added by MD
-  private readonly _mapID: string;
+  // mapID field added by MD, modified to public by EB
+  public mapID?: string;
 
   public sprite?: Phaser.GameObjects.Sprite;
 
@@ -16,8 +16,8 @@ export default class Player {
     this._id = id;
     this._userName = userName;
     this.location = location;
-    // mapID added to constructor by MD
-    this._mapID = mapID;
+    // mapID added to constructor by MD, modified to public by EB
+    this.mapID = mapID;
   }
 
   get userName(): string {
@@ -26,11 +26,6 @@ export default class Player {
 
   get id(): string {
     return this._id;
-  }
-
-  // mapID getter added by MD
-  get mapID(): string {
-    return this._mapID;
   }
 
   // updated to include new mapID parameter by MD  
@@ -49,3 +44,5 @@ export type UserLocation = {
   rotation: Direction,
   moving: boolean
 };
+
+export type CoveyTownMapID = '0' | '1';
