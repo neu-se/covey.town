@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import assert from "assert";
 import {
   Box,
@@ -68,8 +68,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
-  // const { dbClient } = createApolloClient();
-  
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
