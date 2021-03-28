@@ -18,15 +18,22 @@ import {
   Thead,
   Tr,
   Text,
-  useToast
+  useToast,
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
-import { LoginResponse,CoveyTownInfo, TownJoinResponse} from '../../classes/TownsServiceClient';
+import { LoginResponse, CoveyTownInfo, TownJoinResponse, SearchUsersResponse } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 interface TownSelectionProps {
   doLogin: (iniData: TownJoinResponse) => Promise<boolean>
+}
+
+export enum NeighborStatus {
+  SendRequest = 'Send Friend Request',
+  Sent = 'Friend Request Sent',
+  AcceptRequest = 'Accept Friend Request',
+  Friends = 'Friends',
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
@@ -38,6 +45,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   });
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [searchOutput, setSearchOutput] = useState<SearchUsersResponse>({users: []});
+  const [neighborStatus, setNeighborStatus] = useState<NeighborStatus>(NeighborStatus.SendRequest);
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -186,6 +196,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const handleSearchInput = (event: React.SyntheticEvent) => {
+    setSearchInput((event.target as HTMLInputElement).value);
+  }
+
+  const handleSearchClick = async () => {
+    const searchResults = await apiClient.searchForUsersByUsername({
+      username: searchInput
+    })
+    setSearchOutput(searchResults);
+  }
+
+  const handleSearchEnter = async (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      await handleSearchClick()
+    }
+  }
+
   return (
     <>
       <form>
@@ -225,6 +252,26 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               </Box>
             }
           </Box>
+          { isLoggedIn &&
+            <Box borderWidth="1px" borderRadius="lg">
+              <Heading p='4' as='h2' size='lg'>Search for Neighbors</Heading>
+              <Box p='2' display='flex'>
+                <Input onKeyPress={handleSearchEnter} value={searchInput} onChange={handleSearchInput} placeholder='Search for a neighbor by username'/>
+                <Button ml='2' onClick={handleSearchClick}>
+                  Click to Search
+                </Button>
+              </Box>
+              <Box p='4'>
+                <Heading as='h3' size='sm'>Search Results</Heading>
+                {searchOutput.users.map((user) =>
+                  <Box display='flex' justifyContent='space-between' p='1' key={user._id} borderWidth='1px' alignItems='center'>
+                    <Text>{user.username}</Text>
+                    <Button>{ neighborStatus }</Button>
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          }
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
