@@ -7,6 +7,7 @@ import {
   townCreateHandler, townDeleteHandler,
   townJoinHandler,
   townListHandler,
+  townMergeableListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
@@ -59,6 +60,26 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   app.get('/towns', BodyParser.json(), async (_req, res) => {
     try {
       const result = await townListHandler();
+      console.log("got into towns")
+
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+   /**
+   * List all mergeable towns
+   */
+  app.get('/mergeabletowns', BodyParser.json(), async (_req, res) => {
+    try {
+      const result = await townMergeableListHandler();
+      console.log("got here")
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {

@@ -135,6 +135,14 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   };
 }
 
+export async function townMergeableListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  return {
+    isOK: true,
+    response: { towns: townsStore.getMergeableTowns() },
+  };
+}
+
 export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {

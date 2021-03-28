@@ -141,6 +141,11 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async listMergeableTowns(): Promise<TownListResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<TownListResponse>>('/mergeabletowns');
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);

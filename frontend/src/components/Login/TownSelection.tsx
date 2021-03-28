@@ -24,7 +24,7 @@ import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
-// test comment
+
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
@@ -41,7 +41,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -191,12 +190,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
             <Box borderWidth="1px" borderRadius="lg">
-              <Flex p="4"><FormControl>
-                <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
-                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                       value={townIDToJoin}
-                       onChange={event => setTownIDToJoin(event.target.value)}/>
-              </FormControl>
+              <Flex p="4">
+                <FormControl>
+                  <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
+                  <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
+                        value={townIDToJoin}
+                        onChange={event => setTownIDToJoin(event.target.value)}/>
+                </FormControl>
                 <Button data-testid='joinTownByIDButton'
                         onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
               </Flex>

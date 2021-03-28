@@ -27,6 +27,17 @@ export default class CoveyTownsStore {
     return this._towns.find(town => town.coveyTownID === coveyTownID);
   }
 
+  getMergeableTowns(): CoveyTownList {
+    return this._towns.filter(townController => 
+      townController.isPubliclyListed && townController.isMergeable)
+      .map(townController => ({
+        coveyTownID: townController.coveyTownID,
+        friendlyName: townController.friendlyName,
+        currentOccupancy: townController.occupancy,
+        maximumOccupancy: townController.capacity,
+      }));
+  }
+
   getTowns(): CoveyTownList {
     return this._towns.filter(townController => townController.isPubliclyListed)
       .map(townController => ({
