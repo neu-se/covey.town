@@ -29,9 +29,6 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
         To get started, setup your camera and microphone, choose a username, and then create a new town
         to hang out in, or join an existing one.
       </Text>
-      <Link href="/profile">
-        <Button variant="outline">Click here to set up your profile!</Button>
-      </Link>
       <DeviceSelectionScreen setMediaError={props.setMediaError} />
       <TownSelection doLogin={props.doLogin} />
     </IntroContainer>
