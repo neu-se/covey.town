@@ -91,7 +91,7 @@ type Mutation {
   signUp(input: signUpInput) : User
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
-  updateUser(input: updateUserInput): Boolean
+  updateUser(input: updateUserInput): User
   deleteUser(input: deleteUserInput): Boolean
 }
 `;

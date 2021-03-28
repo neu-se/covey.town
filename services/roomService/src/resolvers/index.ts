@@ -1,5 +1,6 @@
 import { userModel as User}  from './../data/models/users/user.model.server';
 import { townCreateHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
+import { userInfo } from 'os';
 /**
  * All the resolvers are defined here.
  */
@@ -59,24 +60,21 @@ export const resolvers = {
     },
     updateUser: async (_: any, args: any) => {
       try {
-        const user = await User.findOne({ email: args.input.email});
+        var user = await User.findOne({ id: args.input.id});
         if (user !== undefined) {
           
           if (args.input.userName !== undefined) {
-            await User.findByIdAndUpdate(args.input.id, { userName: args.input.userName  });
-             return true;
+            user = await User.findByIdAndUpdate(args.input.id, { userName: args.input.userName  });
           }
 
           if (args.input.email !== undefined) {
-            await User.findByIdAndUpdate(args.input.id, { email: args.input.email  });
-            return true;
+            user = await User.findByIdAndUpdate(args.input.id, { email: args.input.email  });
           }
 
           if (args.input.password !== undefined) {
-            await User.findByIdAndUpdate(args.input.id, { password: args.input.password  });
-            return true;
+            user = await User.findByIdAndUpdate(args.input.id, { password: args.input.password  });
           }
-          return false;
+          return await user;
         }
         else {
           throw new Error("User does not exist");
