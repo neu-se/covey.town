@@ -89,14 +89,6 @@ export interface TownAnnouncementRequest {
 }
 
 
-export interface MessageData {
-  message: string;
-  receiverID: string;
-  senderID: string;
-  timeStamp: string;
-}
-
-
 /**
  * Envelope that wraps any response from the server
  */
