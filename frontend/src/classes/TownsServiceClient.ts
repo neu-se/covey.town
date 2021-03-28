@@ -76,13 +76,6 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
-
-export interface TownAnnouncementRequest {
-  coveyTownID: string;
-  coveyTownPassword: string;
-  content:string;
-}
-
 export interface TownSendMessageRequest {
   senderName: string;
   senderID: string;
