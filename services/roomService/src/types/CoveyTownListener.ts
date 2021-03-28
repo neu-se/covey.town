@@ -35,5 +35,4 @@ export default interface CoveyTownListener {
   onMessageAnnounce(content: string): void;
 
 
-  onDistributeMessage(message: MessageData): void;
 }
