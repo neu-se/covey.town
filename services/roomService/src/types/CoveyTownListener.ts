@@ -1,4 +1,3 @@
-import { MessageData } from '../requestHandlers/CoveyTownRequestHandlers';
 import Player from './Player';
 import {MessageData} from './MessageData';
 
