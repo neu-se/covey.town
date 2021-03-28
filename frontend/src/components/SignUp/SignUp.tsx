@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
+import assert from 'assert';
 
 import {
   Flex,
@@ -108,8 +109,16 @@ export default function SimpleCard(): JSX.Element {
         user_id: user.id,
         userName,
         email,
+        bio: user.profile.bio,
+        pfpURL: user.profile.pfpURL
       }
       await dbClient.saveUserProfile(newUserProfile);
+      assert(authInfo.currentUser);
+      authInfo.currentUser.profile = newUserProfile;
+      authInfo.actions.setAuthState({
+        isLoggedIn: user.isLoggedIn,
+        currentUser: authInfo.currentUser
+      })
       history.push('/');
     } catch (e) {
       toast({

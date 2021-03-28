@@ -46,7 +46,7 @@ export type AuthInfo = {
 }
 
 export type AuthActions = {
-  handleLogout: () => void,
+  handleLogout: () => Promise<void>,
   setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
 }
 

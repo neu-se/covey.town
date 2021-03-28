@@ -32,17 +32,20 @@ export default class RealmAuth implements IAuth {
 
         const userProfile: CoveyUserProfile = {
             user_id: realmUser.id,
-            userName: realmUser.customData.userName,
+            userName: realmUser.customData.user_name,
             email: realmUser.customData.email,
             pfpURL: realmUser.customData.pfpURL,
             bio: realmUser.customData.bio,
         }
+        
         const coveyUser: CoveyUser = {
             id: realmUser.id,
             isLoggedIn: realmUser.isLoggedIn,
             profile: userProfile,
             actions: {
-                logout: realmUser.logOut
+                logout: async () => {
+                    await realmUser.logOut();
+                }
             }
         }
 
@@ -68,13 +71,15 @@ export default class RealmAuth implements IAuth {
             isLoggedIn: realmUser.isLoggedIn,
             profile: {
                 user_id: realmUser.customData.user_id,
-                userName: realmUser.customData.userName,
+                userName: realmUser.customData.user_name,
                 email: realmUser.customData.email,
                 pfpURL: realmUser.customData.pfpURL,
                 bio: realmUser.customData.bio,
             },
             actions: {
-                logout: realmUser.logOut
+                logout: async () => {
+                    await realmUser.logOut();
+                }
             }
 
         }
@@ -89,13 +94,15 @@ export default class RealmAuth implements IAuth {
             isLoggedIn: realmUser.isLoggedIn,
             profile: {
                 user_id: realmUser.customData.user_id,
-                userName: realmUser.customData.userName,
+                userName: realmUser.customData.user_name,
                 email: realmUser.customData.email,
                 pfpURL: realmUser.customData.pfpURL,
                 bio: realmUser.customData.bio,
             },
             actions: {
-                logout: realmUser.logOut
+                logout: async () => {
+                    await realmUser.logOut();
+                }
             }
         }
 
@@ -108,5 +115,9 @@ export default class RealmAuth implements IAuth {
 
     async sendPasswordResetEmail(email: string): Promise<void> {
         this._realmApp.sendPasswordResetEmail(email);
+    }
+
+    async logout(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>) : Promise<void> {
+        // TODO implement
     }
 }
