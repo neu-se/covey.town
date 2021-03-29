@@ -27,11 +27,10 @@ export default function Announcement(): JSX.Element {
         }
       }
 
-
     return (
       <div>
         
-        <Popup trigger={<Button value="trigger"> Publish an Announcement</Button>} position="right center">
+        <Popup contentStyle={{width: "50%"}} trigger={<Button style = {{color: "green", backgroundColor: "#a3d3ca", border: "1px solid #34aca4"}} value="trigger"> Publish an Announcement</Button>} position="right center">
           <div>
             <Input
                   id='Announcement'
