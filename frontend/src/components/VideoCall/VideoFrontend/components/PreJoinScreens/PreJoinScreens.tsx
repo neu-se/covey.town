@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, Text, useToast } from '@chakra-ui/react';
+import { Heading, Text, Button, Link, useToast } from '@chakra-ui/react';
 import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';

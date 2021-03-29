@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-
+import React, { useEffect, useState } from 'react';
 import assert from "assert";
+import { useHistory } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -9,6 +8,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Link,
   Heading,
   Input,
   Stack,
@@ -88,6 +88,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
     }
   };
+
+  const handleProfile = () => history.push('/profile')
 
   return (
     <>
