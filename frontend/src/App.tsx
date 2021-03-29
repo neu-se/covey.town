@@ -27,6 +27,7 @@ import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClie
 import Video from './classes/Video/Video';
 import Announcement from './components/Announcement/Announcement';
 import Chat from './components/Chat/Chat';
+import { MessageData } from './components/Chat/MessageData';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -38,17 +39,6 @@ type CoveyAppUpdate =
   | { action: 'playerSendPrivateMessage'; message: MessageData }
   | { action: 'playerSendPublicMessage'; message: MessageData }
   ;
-
-type MessageData = {
-  senderName: string;
-  senderID: string;
-  receiverName: string;
-  receiverID: string;
-  roomName: string;
-  roomID: string;
-  content: string;
-  time: string;
-};
 
 function defaultAppState(): CoveyAppState {
   return {
@@ -156,10 +146,10 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       state.socket?.disconnect();
       return defaultAppState();
     case 'playerSendPrivateMessage':
-      alert(update.message.senderName + update.message.receiverName + update.message.content);
+      alert(`${update.message.senderName} sent you a private message`);
       break;
     case 'playerSendPublicMessage':
-      alert(update.message.senderName + update.message.content);
+      alert(`${update.message.senderName} sent you a public message`);
       break;
     default:
       throw new Error('Unexpected state request');

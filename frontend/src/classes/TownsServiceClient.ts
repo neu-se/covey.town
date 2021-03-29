@@ -89,8 +89,6 @@ export interface TownSendMessageRequest {
 
 export interface TownChatHistoryRequest {
   coveyTownID: string;
-  receiverID: string;
-  senderID: string;
 }
 
 export type ChatData = {
