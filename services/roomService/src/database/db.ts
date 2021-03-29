@@ -32,7 +32,7 @@ export default class DatabaseController {
     private neighborMappings: any;
 
     constructor() {
-        assert(process.env.MONGO_URL, 'Must have Mongo URL to connect to database');
+        // assert(process.env.MONGO_URL, 'Must have Mongo URL to connect to database');
         this.client = new MongoClient(process.env.MONGO_URL || 'mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
@@ -143,19 +143,20 @@ export default class DatabaseController {
 
           const searchPartialMatch = await this.userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();
 
-          const matchesWithStatus = await Promise.all(searchPartialMatch.map(async (match: any) => {
-              const status: NeighborStatus = await this.neighborStatus(currentUserId, match._id.toString());
-              return {_id: match._id, username: match.username, relationship: status};
+          const matchesWithStatus = await Promise.all<{_id: string, username: string, relationship: NeighborStatus}>(searchPartialMatch.map(async (match: any) => {
+            assert(match._id);
+            assert(match.username);
+            const status: NeighborStatus = await this.neighborStatus(currentUserId, match._id.toString());
+            assert(status.status);
+            return {_id: match._id, username: match.username, relationship: status};
           }));
-
-          console.log(matchesWithStatus)
 
           // // get neighbor status for each user returned
           // //return {id, username, neighborStatus}
           // // do same thing for listing requests sent and requests received
 
           return {
-              users: matchesWithStatus,
+            users: matchesWithStatus,
           }
       } catch (err) {
           return err.toString();
@@ -173,7 +174,7 @@ export default class DatabaseController {
 
       const findUser = await this.userCollection.find({ 'username': username }).limit(1).toArray();
       if (findUser.length === 1) {
-        console.log(findUser);
+
         return findUser[0]._id.toString();
       }
       return 'user_not_found';
@@ -238,8 +239,6 @@ export default class DatabaseController {
      */
   async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus> {
     try {
-      console.log(user);
-      console.log(otherUser);
       const checkIfNeighbors = await this.checkIfNeighbors(user, otherUser);
       if (checkIfNeighbors) {
         return { status: 'neighbor' };
@@ -249,7 +248,6 @@ export default class DatabaseController {
       // const otherUser1 = JSON.stringify(otherUser);
       // const neighborRequest = this.getCollection('neighbor_request');
       const requestSent = await this.neighborRequests.find({requestFrom: user, requestTo: otherUser}).toArray();
-      console.log(requestSent);
       if (requestSent.length === 1) {
         return { status: 'requestSent'};
       }
