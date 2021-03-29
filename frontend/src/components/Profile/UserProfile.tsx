@@ -42,18 +42,8 @@ type EditingState = {
 }
 
 export default function UserProfile(): JSX.Element {
-  const auth = RealmAuth.getInstance();
   const db = RealmDBClient.getInstance();
-  const userAuth = auth.getCurrentUser();
   const toast = useToast();
-
-  if (userAuth === null) {
-    toast({
-      title: "Unable to find user profile",
-      description: "Unable to find user profile",
-      status: "error"
-    })
-  }
 
   const history = useHistory();
   const authInfo = useAuthInfo();
@@ -77,14 +67,14 @@ export default function UserProfile(): JSX.Element {
   })
 
   const populateProfileData = async () => {
-    if(userAuth) {
+    if(authInfo.currentUser) {
       setState({
-        username: `${userAuth.profile.userName || `You don't have a username yet!`}`,
+        username: `${authInfo.currentUser.profile.userName || `You don't have a username yet!`}`,
         password: '',
         passwordConfirm: '',
-        bio: `${userAuth.profile.bio || 'Your bio is empty!'}`,
-        email: `${userAuth.profile.email || `How can you not have an email by now???`}`,
-        pfpURL: `${userAuth.profile.pfpURL || DEFAULT_PROFILE_PICTURE}`
+        bio: `${authInfo.currentUser.profile.bio || 'Your bio is empty!'}`,
+        email: `${authInfo.currentUser.profile.email || `How can you not have an email by now???`}`,
+        pfpURL: `${authInfo.currentUser.profile.pfpURL || DEFAULT_PROFILE_PICTURE}`
       })
     }
   }
@@ -101,13 +91,13 @@ export default function UserProfile(): JSX.Element {
   const handleSubmit = async () => {
     console.log("submitting")
     console.log(state)
-    if(state && userAuth) {
+    if(state && authInfo.currentUser) {
       const changes : CoveyUserProfile = {
-        user_id: userAuth.id,
-        userName: userAuth.profile.userName,
-        email: userAuth.profile.email,
-        pfpURL: userAuth.profile.pfpURL,
-        bio: userAuth.profile.bio,
+        user_id: authInfo.currentUser.id,
+        userName: authInfo.currentUser.profile.userName,
+        email: authInfo.currentUser.profile.email,
+        pfpURL: authInfo.currentUser.profile.pfpURL,
+        bio: authInfo.currentUser.profile.bio,
       }
       if(editState.editUsername) {
         changes.userName = state.username
@@ -121,7 +111,6 @@ export default function UserProfile(): JSX.Element {
       if(editState.editPfpURL) {
         changes.pfpURL = state.pfpURL
       }
-      changes.user_id = userAuth.id;
       console.log(changes)
       try {
         await db.saveUserProfile(changes);
@@ -129,7 +118,7 @@ export default function UserProfile(): JSX.Element {
         if(authInfo.currentUser) {
           authInfo.currentUser.profile = changes;
           authInfo.actions.setAuthState({
-            isLoggedIn: userAuth.isLoggedIn,
+            isLoggedIn: authInfo.currentUser.isLoggedIn,
             currentUser: authInfo.currentUser
           })
         }
@@ -177,7 +166,7 @@ export default function UserProfile(): JSX.Element {
       <IntroContainer>
         <Button mb={4} onClick={handleGoBack}>Back to main page</Button>
         {
-          userAuth !== null &&
+          authInfo.currentUser !== null &&
           <form onSubmit={(ev) => {
             ev.preventDefault();
             handleSubmit();
