@@ -12,8 +12,8 @@ export default function Chat(): JSX.Element {
     const toast = useToast();
     const { apiClient, currentTownID, players, socket, myPlayerID, currentTownFriendlyName, userName} = useCoveyAppState();
     const [message, setMessage] = useState<string>('');
-    const [receiverName, setReceiverName] = useState<string>('');
-    const [receiverID, setReceiverID] = useState<string>('');
+    const [receiverName, setReceiverName] = useState<string>('Everyone');
+    const [receiverID, setReceiverID] = useState<string>('Everyone');
 
     const sendHandler = async () => {
         try {
