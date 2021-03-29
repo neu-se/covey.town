@@ -19,13 +19,13 @@ import IntroContainer from '../VideoCall/VideoFrontend/components/IntroContainer
 import RealmDBClient from '../../services/database/RealmDBClient'
 import { CoveyUserProfile } from '../../CoveyTypes';
 import useAuthInfo from '../../hooks/useAuthInfo';
+import RealmAuth from '../../services/authentication/RealmAuth';
+import IAuth from '../../services/authentication/IAuth';
 
 const DEFAULT_PROFILE_PICTURE = 'https://w7.pngwing.com/pngs/752/876/png-transparent-yellow-emoji-illustration-emoji-sticker-text-messaging-iphone-emoticon-blushing-emoji-face-heart-smiley.png';
 
 type ProfileFormInputs = {
   username: string;
-  password: string;
-  passwordConfirm: string;
   bio: string;
   email: string;
   pfpURL: string;
@@ -33,7 +33,6 @@ type ProfileFormInputs = {
 
 type EditingState = {
   editUsername: boolean;
-  editPassword: boolean;
   editBio: boolean;
   editEmail: boolean;
   editPfpURL: boolean;
@@ -45,11 +44,10 @@ export default function UserProfile(): JSX.Element {
   const toast = useToast();
   const history = useHistory();
   const authInfo = useAuthInfo();
+  const auth: IAuth = RealmAuth.getInstance();
 
   const [state, setState] = useState<ProfileFormInputs>({
     username: '',
-    password: '',
-    passwordConfirm: '',
     bio: '',
     email: '',
     pfpURL: DEFAULT_PROFILE_PICTURE,
@@ -57,7 +55,6 @@ export default function UserProfile(): JSX.Element {
 
   const [editState, setEditState] = useState<EditingState>({
     editUsername: false,
-    editPassword: false,
     editBio: false,
     editEmail: false,
     editPfpURL: false,
@@ -68,8 +65,6 @@ export default function UserProfile(): JSX.Element {
     if(authInfo.currentUser) {
       setState({
         username: `${authInfo.currentUser.profile.userName || `You don't have a username yet!`}`,
-        password: '',
-        passwordConfirm: '',
         bio: `${authInfo.currentUser.profile.bio || 'Your bio is empty!'}`,
         email: `${authInfo.currentUser.profile.email || `How can you not have an email by now???`}`,
         pfpURL: `${authInfo.currentUser.profile.pfpURL || DEFAULT_PROFILE_PICTURE}`
@@ -122,7 +117,6 @@ export default function UserProfile(): JSX.Element {
         });
         setEditState(() => ({
           editUsername: false,
-          editPassword: false,
           editBio: false,
           editEmail: false,
           editPfpURL: false,
@@ -147,6 +141,23 @@ export default function UserProfile(): JSX.Element {
   }
 
   const handleGoBack = () => history.push('/')
+
+  const handlePasswordReset = async () => {
+    try {
+      await auth.sendPasswordResetEmail(state.email);
+      toast({
+        title: 'Password Reset Email Sent!',
+        description: `An email to reset your password has been sent to ${state.email}.`,
+        status: 'success'
+      })
+    } catch (e) {
+      toast({
+        title: 'Cannot Send Password Reset Email!',
+        description: `Tried sending an email to ${state.email} but failed. Error: ${e}`,
+        status: 'error'
+      })
+    }
+  }
 
   useEffect(() => {
     populateProfileData();
@@ -179,25 +190,11 @@ export default function UserProfile(): JSX.Element {
                 </FormControl>
                 <FormControl>
                   <FormLabel>Password</FormLabel>
-                  {
-                    editState.editPassword ?
-                      <span>
-                        <Input
-                          onChange={event => handleInputChange(event)}
-                          name="password" placeholder="Your password"
-                          type='password' />
-                        <Text>Confirm Password</Text>
-                        <Input
-                          onChange={event => handleInputChange(event)}
-                          name="passwordConfirm" placeholder="Type your password again"
-                          type='password' />
-                      </span> :
-                      <span>
-                        <Button onClick={() => handleEditToggle('editPassword')}>
-                          Click here to change password <EditIcon />
-                        </Button>
-                      </span>
-                  }
+                    <span>
+                      <Button onClick={handlePasswordReset}>
+                        Click here to change password <EditIcon />
+                      </Button>
+                    </span>
                 </FormControl>
                 <FormControl>
                   <FormLabel>Bio</FormLabel>
