@@ -2,10 +2,18 @@ import React, {
   Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
-import { BrowserRouter } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    
+} from "react-router-dom";
+import {
+   ThemeProvider,
+  CSSReset,
+  theme
+} from '@chakra-ui/react';
 import { io, Socket } from 'socket.io-client';
-import { ChakraProvider } from '@chakra-ui/react';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
@@ -20,11 +28,15 @@ import UnsupportedBrowserWarning
   from './components/VideoCall/VideoFrontend/components/UnsupportedBrowserWarning/UnsupportedBrowserWarning';
 import { VideoProvider } from './components/VideoCall/VideoFrontend/components/VideoProvider';
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
-import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import LoginComponent from "./components/ProfileManagement/LoginComponent";
+import RegisterComponent from "./components/ProfileManagement/RegisterComponent";
+import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
+import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
+
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -258,14 +270,33 @@ function EmbeddedTwilioAppWrapper() {
 
 export default function AppStateWrapper(): JSX.Element {
   return (
-    <BrowserRouter>
-      <ChakraProvider>
-        <MuiThemeProvider theme={theme('rgb(185, 37, 0)')}>
-          <AppStateProvider preferredMode="fullwidth" highlightedProfiles={[]}>
-            <EmbeddedTwilioAppWrapper />
-          </AppStateProvider>
-        </MuiThemeProvider>
-      </ChakraProvider>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+     
+        <CSSReset />
+         <Router>
+      
+      <div className="App">
+          <div className="mb-4">
+            <HeaderComponent/>
+          </div>
+          <Switch>
+              <Route path="/" exact={true}>
+                  <RegisterComponent/>
+              </Route>
+              <Route path="/register">
+                  <RegisterComponent/>
+              </Route>
+              <Route path="/login">
+                  <LoginComponent/>
+                  </Route>
+              <Route path="/profile">
+                  <ProfileComponent/>
+              </Route>
+
+          </Switch>
+      </div>
+      </Router>
+     
+      </ThemeProvider>
   );
 }
