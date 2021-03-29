@@ -197,8 +197,8 @@ export default class DatabaseController {
 
   /**
    * Find a user's ID given their username
-   * @param username: the string username of the user to search for
-   * @returns a string containing the user's ID
+   * @param id: the string id of the user to search for
+   * @returns a string containing the username
    */
   async findUserById(id: string) : Promise<string> {
     try {
@@ -292,58 +292,52 @@ export default class DatabaseController {
   }
 
 
-  // /**
-  //  * List all users that have sent a request to the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listRequestsReceived(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const requests = this.getCollection('neighbor_request');
+  /**
+   * List all users that have sent a request to the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsReceived(currentUserId: string): Promise<Array<String>> {
+      try {
+          const requestReceived = await this.neighborRequests.find({'requestTo': currentUserId}).toArray();
 
-  //         const requestReceived = await requests.find({'requestTo': user}).toArray();
+          const listUsers = requestReceived.map(async (requester: {_id: string, requestTo: string, requestFrom: string}) => {
+            const username = await this.findUserById(requester.requestFrom);
+            return { _id: requester.requestFrom, username };
+          });
 
-  //         const users = requestReceived.map(request => [request.requestTo, 'requestReceived']);
-  //         // const users = requestReceived.forEach(request => console.log(request));
+          return listUsers;
 
-  //         return {
-  //             isOK: true,
-  //             response: users,
-  //         }
+      } catch (err) {
+          return err.toString();
+      }
+  }
 
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+  /**
+   * List all users who have been sent a request by the current user
+   * @param user the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
+      try {
+          const requests = this.getCollection('neighbor_request');
 
-  // /**
-  //  * List all users who have been sent a request by the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const requests = this.getCollection('neighbor_request');
+          const requestFrom = await requests.find({'requestFrom': user}).toArray();
 
-  //         const requestFrom = await requests.find({'requestFrom': user}).toArray();
+          const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
 
-  //         const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
+          return {
+              isOK: true,
+              response: users,
+          }
 
-  //         return {
-  //             isOK: true,
-  //             response: users,
-  //         }
-
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+      } catch (err) {
+          return {
+              isOK: false,
+              message: err.toString(),
+          }
+      }
+  }
 
   // /**
   //  * List all the neighbors of the current user
