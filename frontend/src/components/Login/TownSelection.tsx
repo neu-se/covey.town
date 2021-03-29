@@ -55,12 +55,20 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }
 
   async function handleLogout() : Promise<void> {
-    await authInfo.actions.handleLogout();
-    authInfo.actions.setAuthState({
-      isLoggedIn: false,
-      currentUser: null
-    })
-    history.push('/login');
+    try {
+      await authInfo.actions.handleLogout();
+      authInfo.actions.setAuthState({
+        isLoggedIn: false,
+        currentUser: null
+      })
+      history.push('/login');
+    } catch (err) {
+      toast({
+        title: "Unable to logout",
+        description: err.error.toString(),
+        status: "error"
+      })
+    }
   }
 
   const handleJoin = async () => {
@@ -107,7 +115,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 onClick={() => handleLogout()}>Logout</Button>
               </div>
             </FormControl>
-            <img src={loggedInUser?.profile.pfpURL}/>
+            <img src={loggedInUser?.profile.pfpURL} alt=""/>
             </Box>
             </Flex>
           </Box>
