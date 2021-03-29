@@ -90,8 +90,8 @@ export default class CoveyTownsStore {
     catch(err){
       return false;
     }
-    return false;
     }
+    return false;
   }
 
   isgameActive(coveyTownID:string): boolean |undefined {
@@ -126,7 +126,7 @@ export default class CoveyTownsStore {
   getBoard(coveyTownID:string): number[][] | boolean{
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown) {
-      return existingTown.gameBoard();
+      return existingTown.getBoard();
     }
     return false;
   }
