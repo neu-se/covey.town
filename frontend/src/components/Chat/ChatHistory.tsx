@@ -1,67 +1,61 @@
-import React,{ FC, useEffect, useState } from 'react';
+import React,{ FC, useCallback, useEffect, useState } from 'react';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { MessageData } from './MessageData';
+import './ChatHistory.css';
 
-// interface IProps {
-//     townId: string
-//     receiverId: string
-//     senderId: string
-//   }
-
-export default function ChatHistory(props: { coveyTownID: string, receiverID: string, senderID: string }) {
-    const {coveyTownID, receiverID, senderID} = props;
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export default function ChatHistory(props: { coveyTownID: string, componentReceiverID: string, componentSenderID: string }) {
+    const {coveyTownID, componentReceiverID, componentSenderID} = props;
     const { apiClient} = useCoveyAppState();
-    const [chatHistory, setChatHistory] = useState([
-        {
-            senderName: '',
-            senderID: '',
-            receiverName: '',
-            receiverID: '',
-            roomName: '',
-            roomID: '',
-            content: '',
-            time: '',
+    const [chatHistory, setChatHistory] = useState<MessageData[]>();
+
+    const updateChatHistory = useCallback(() => {
+        // console.log(apiClient);
+        apiClient.getChatHistory({coveyTownID})
+          .then((chats) => {
+            setChatHistory(chats.chats);
+          })
+      }, [setChatHistory, apiClient, coveyTownID]);
+
+    useEffect(() => {
+    updateChatHistory();
+    const timer = setInterval(updateChatHistory, 1000);
+    return () => {
+        clearInterval(timer)
+    };
+    }, [updateChatHistory]);
+
+    const renderMessage = (message: MessageData) => {
+        const {senderID, senderName, receiverID, content, time} = message;
+        const messageFromMeToReceiver = (senderID === componentSenderID && receiverID === componentReceiverID);
+        const messageFromReceiverToMe = (receiverID === componentSenderID && senderID === componentReceiverID);
+        let className;
+        if (messageFromMeToReceiver) {
+            className = "Messages-message currentMember";
+        }else if (messageFromReceiverToMe) {
+            className = "Messages-message";
+        }else {
+            className = "hidden";
         }
-    ]);
 
-    // useEffect(() => {
-    //     async function getChatHistory() {
-    //         const result = await apiClient.getChatHistory({
-    //             coveyTownID, receiverID, senderID
-    //         });
-    //         const {messages} = result;
-    //         messages.sort((a,b) => a.time-b.time);
-    //         setChatHistory(messages);
-    //     };
-    //     getChatHistory().then();
-    // }, [apiClient])
+        return (
+            <li className={className}>
+            <div className="Message-content">
+                <div className="username">{senderName}</div>
+                <div className="text">{content}</div>
+                <div className="time">{time}</div>
+            </div>
+            </li>
+        )
+    }
 
-    // useEffect(() => {
-    //     async function getChatHistory() {
-    //         const result = await apiClient.getChatHistory({
-    //             coveyTownID, receiverID, senderID
-    //         });
-    //         const {messages} = result;
-    //         messages.sort((a,b) => a.time-b.time);
-    //         setChatHistory(messages);
-    //     };
-    //     const interval = setInterval(() => {
-    //         getChatHistory().then()
-    //     }, 1000)
-    //     return ()=> clearInterval(interval);
-    // }, [apiClient])
+    const chatHisComponent = componentReceiverID === '' ? null : <ul className="Messages-list">{chatHistory?.map(m => renderMessage(m))}</ul>
 
     return(
         <div>
-            <div>History</div>
-            <div>{coveyTownID}</div>
-            <div>{receiverID}</div>
-            <div>{senderID}</div>
+            {chatHisComponent}
         </div>
 
     );
 }
-// const ChatHistory = ({townId, receiverId, senderId} : IProps) => {
 
-// }
-
-// export default ChatHistory;

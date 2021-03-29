@@ -54,7 +54,7 @@ export default function Chat(): JSX.Element {
       <div>
 
         <Popup trigger={<Button value="triggerChat">Chat</Button>} position="right center">
-          <ChatHistory coveyTownID = {currentTownID} senderID = {myPlayerID} receiverID = {receiverID}/>
+          <ChatHistory coveyTownID = {currentTownID} componentSenderID = {myPlayerID} componentReceiverID = {receiverID}/>
           <div>
             <Input
                   id='Message'

@@ -1,0 +1,39 @@
+.Messages-message {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .Messages-message.currentMember {
+    /*justify-content: flex-end;*/
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  
+  .Message-content {
+    display: inline-block;
+  }
+
+  .currentMember > .Message-content {
+    align-items: flex-end;
+  }
+  
+  .Message-content > .username {
+    display: block;
+    color: gray;
+    font-size: 14px;
+    padding-bottom: 4px;
+  }
+  
+  .Message-content > .text {
+    padding: 10px;
+    max-width: 400px;
+    margin: 0;
+    border-radius: 12px;
+    background-color: cornflowerblue;
+    color: white;
+    display: inline-block;
+  }
+  
+  .currentMember > .Message-content .text {
+    background-color: orangered;
+  }

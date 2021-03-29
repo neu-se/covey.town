@@ -32,7 +32,7 @@ async function createMessage({
   };
 }
 
-async function getMessagesForRoom(roomIDToFind: string): Promise<ResponseEnvelope<Array<IMessage>>> {
+async function getMessagesForRoom(roomIDToFind: string): Promise<ResponseEnvelope<TownChatHistoryResponse>> {
   const res = await Message.find({roomID: roomIDToFind})
     .then((data: IMessage[]) => data)
     .catch((error: Error) => {
@@ -40,10 +40,13 @@ async function getMessagesForRoom(roomIDToFind: string): Promise<ResponseEnvelop
     });
   return {
     isOK: true,
-    response: res,
+    response: {chats: res},
   };
 }
 
+export interface TownChatHistoryResponse {
+  chats: IMessage[];
+}
 
 export default {
   createMessage,
