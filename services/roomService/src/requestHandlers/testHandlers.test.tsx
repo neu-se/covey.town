@@ -2,7 +2,6 @@ import { AccountCreateRequest, LoginRequest, SearchUsersRequest,
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
     searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
 import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
-
 let db: DatabaseController;
 
 beforeAll(async () => {
@@ -140,63 +139,90 @@ describe('CoveyTownRequestHandlers', () => {
 
     describe('searchForUsersByUsername()', () => {
         it('searched and found', async () => {
-            const req: AccountCreateRequest = { username: 'create7', password: 'create7pass' };
-            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
-            expect (resp.isOK).toBeTruthy();
+            const userSearchingRequest: AccountCreateRequest = { username: 'create22', password: 'create7pass' };
+            const userSearchingResp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(userSearchingRequest);
+            if (userSearchingResp.response) {
+                const req: AccountCreateRequest = { username: 'create7', password: 'create7pass' };
+                const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+                expect (resp.isOK).toBeTruthy();
 
-            const searchReq: SearchUsersRequest = { username: 'create7' };
-            const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
-            expect(searchResp.isOK).toBeTruthy();
-            if (searchResp.response && resp.response) {
-                const ans = { _id: resp.response._id, username: 'create7' }
-                const usersReturned = searchResp.response.users;
-                const id_one: String = usersReturned[0]._id as String;
-                const user_one: String = usersReturned[0].username as String;
-                expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
-                expect(user_one).toEqual(ans.username);
-            } else {
-                throw Error('this failed when it should be passing');
-            }
+                const searchReq: SearchUsersRequest = { currentUserId: userSearchingResp.response._id.toString(), username: 'create7' };
+                const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+                expect(searchResp.isOK).toBeTruthy();
+                if (searchResp.response && resp.response) {
+                    const ans = { _id: resp.response._id, username: 'create7', relationship: { status: 'unknown' } }
+                    const usersReturned = searchResp.response.users;
+                    const id_one: String = usersReturned[0]._id as String;
+                    const user_one: String = usersReturned[0].username as String;
+                    const relationshipStatus: string = usersReturned[0].relationship.status;
+                    expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
+                    expect(user_one).toEqual(ans.username);
+                    expect(relationshipStatus).toEqual(ans.relationship.status);
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
 
-            if (resp.response) {
-                await db.removeUserFromCollection(resp.response._id);
+                if (resp.response) {
+                    await db.removeUserFromCollection(resp.response._id);
+                    await db.removeUserFromCollection(userSearchingResp.response._id);
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
             } else {
                 throw Error('this failed when it should be passing');
             }
         });
 
         it('searched and partial found', async () => {
-            const req: AccountCreateRequest = { username: 'create8user', password: 'create8pass' };
-            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
-            expect(resp.isOK).toBeTruthy();
+            const userSearchingRequest: AccountCreateRequest = { username: 'create23', password: 'create7pass' };
+            const userSearchingResp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(userSearchingRequest);
+            if (userSearchingResp.response) {
+                const req: AccountCreateRequest = { username: 'create8user', password: 'create8pass' };
+                const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+                expect(resp.isOK).toBeTruthy();
 
-            const searchReq: SearchUsersRequest = { username: 'create8' };
-            const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
-            expect(searchResp.isOK).toBeTruthy();
-            if (searchResp.response && resp.response) {
-                const ans = { _id: resp.response._id, username: 'create8user' }
-                const usersReturned = searchResp.response.users;
-                const id_one: String = usersReturned[0]._id as String;
-                const user_one: String = usersReturned[0].username as String;
-                expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
-                expect(user_one).toEqual(ans.username);
-            } else {
-                throw Error('this failed when it should be passing');
-            }
+                const searchReq: SearchUsersRequest = { currentUserId: userSearchingResp.response._id.toString(), username: 'create8' };
+                const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+                expect(searchResp.isOK).toBeTruthy();
+                if (searchResp.response && resp.response) {
+                    const ans = { _id: resp.response._id, username: 'create8user', relationship: { status: 'unknown'} }
+                    const usersReturned = searchResp.response.users;
+                    const id_one: String = usersReturned[0]._id as String;
+                    const user_one: String = usersReturned[0].username as String;
+                    const relationshipStatus: string = usersReturned[0].relationship.status;
+                    expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
+                    expect(user_one).toEqual(ans.username);
+                    expect(relationshipStatus).toEqual(ans.relationship.status);
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
 
-            if (resp.response) {
-                await db.removeUserFromCollection(resp.response._id);
-            } else {
+                if (resp.response) {
+                    await db.removeUserFromCollection(resp.response._id);
+                    await db.removeUserFromCollection(userSearchingResp.response._id);
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+            } else  {
                 throw Error('this failed when it should be passing');
             }
         });
 
         it('searched and none found', async () => {
-            const searchReq: SearchUsersRequest = { username: 'create9' };
-            const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
-            expect(searchResp.isOK).toBeTruthy();
-            if (searchResp.response) {
-                expect(searchResp.response.users).toEqual([]);
+            const userSearchingRequest: AccountCreateRequest = { username: 'create23', password: 'create7pass' };
+            const userSearchingResp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(userSearchingRequest);
+            if (userSearchingResp.response) {
+                const searchReq: SearchUsersRequest = { currentUserId: userSearchingResp.response._id.toString(), username: 'create9' };
+                const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+                expect(searchResp.isOK).toBeTruthy();
+                if (searchResp.response) {
+                    expect(searchResp.response.users).toEqual([]);
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+
+                await db.removeUserFromCollection(userSearchingResp.response._id);
+
             } else {
                 throw Error('this failed when it should be passing');
             }
