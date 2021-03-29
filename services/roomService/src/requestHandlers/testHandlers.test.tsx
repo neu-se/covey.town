@@ -2,7 +2,6 @@ import { AccountCreateRequest, LoginRequest, SearchUsersRequest,
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
     searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
 import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
-import { assert } from 'console';
 
 let db: DatabaseController;
 
@@ -12,7 +11,7 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  db.close();
+    db.close();
 });
 
 describe('CoveyTownRequestHandlers', () => {
@@ -66,126 +65,281 @@ describe('CoveyTownRequestHandlers', () => {
         });
     });
 
-    // describe('loginToAccount()', () => {
-    //     it('login successfully', async () => {
-    //         const req: AccountCreateRequest = { username: 'create4', password: 'create4pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+    describe('loginToAccount()', () => {
+        it('login successfully', async () => {
+            const username = 'create4';
+            const password = 'create4pass';
+            const req: AccountCreateRequest = { username: username, password: password };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
 
-    //         const loginReq: LoginRequest = { username: 'create4', password: 'create4pass' };
-    //         const loginResp: LoginResponse = await client.loginToAccount(loginReq);
-    //         expect(loginResp).resolves.toBeDefined();
-    //         expect(loginResp.username).toEqual('create4');
-    //         expect(loginResp._id).toBeDefined();
-    //     });
+            const loginReq: LoginRequest = { username: username, password: password };
+            const loginResp: ResponseEnvelope<LoginResponse|string> = await loginHandler(loginReq);
+            expect(loginResp.isOK).toBeTruthy();
+            
+            if (loginResp.response) {
+                expect(loginResp.response).toHaveProperty('_id');
+                expect(loginResp.response).toHaveProperty('username');
+            }
 
-    //     it('fails to login successfully', async () => {
-    //         const loginReq1: LoginRequest = { username: 'create5', password: 'create5pass' }; // should fail on 'No user with that username and password'
-    //         const loginResp1: Promise<LoginResponse> = client.loginToAccount(loginReq1);
-    //         expect(loginResp1).rejects.toThrow('Error processing request: No user with that username and password');
+            if (resp.response) {
+                await db.removeUserFromCollection(resp.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
 
-    //         const loginReq2: LoginRequest = { username: '', password: '' };
-    //         const loginResp2: Promise<LoginResponse> = client.loginToAccount(loginReq2);
-    //         expect(loginResp2).rejects.toThrow('Error processing request: No user with that username and password');
+        it('fails to login successfully', async () => {
+            const loginReq1: LoginRequest = { username: 'create5', password: 'create5pass' };
+            const loginResp1: ResponseEnvelope<LoginResponse|string> = await loginHandler(loginReq1);
+            expect(loginResp1.isOK).toBeFalsy();
+            if (loginResp1.message) {
+                expect(loginResp1.message).toEqual('Invalid Username');
+            } else {
+                throw Error('this failed when it should be passing');
+            }
 
-    //         const req: AccountCreateRequest = { username: 'create6', password: 'create6pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+            const loginReq2: LoginRequest = { username: '', password: '' };
+            const loginResp2: ResponseEnvelope<LoginResponse|string> = await loginHandler(loginReq2);
+            expect(loginResp2.isOK).toBeFalsy();
+            if (loginResp2.message) {
+                expect(loginResp2.message).toEqual('Invalid Password');
+            } else {
+                throw Error('this failed when it should be passing');
+            }
 
-    //         const loginReq3: LoginRequest = { username: 'create6', password: 'wrongpassword' };
-    //         const loginResp3: LoginResponse = await client.loginToAccount(loginReq3);
-    //         expect(loginResp3).rejects.toThrow('Error processing request: No user with that username and password');
+            const req: AccountCreateRequest = { username: 'create6', password: 'create6pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
 
-    //         const loginReq4: LoginRequest = { username: 'wrongusername', password: 'create6pass' };
-    //         const loginResp4: LoginResponse = await client.loginToAccount(loginReq4);
-    //         expect(loginResp4).rejects.toThrow('Error processing request: No user with that username and password');
-    //     });
-    // });
+            const loginReq3: LoginRequest = { username: 'create6', password: 'wrongpassword' };
+            const loginResp3: ResponseEnvelope<LoginResponse|string> = await loginHandler(loginReq3);
+            expect(loginResp3.isOK).toBeFalsy();
+            if (loginResp3.message) {
+                expect(loginResp3.message).toEqual('Invalid Username and Password');
+            } else {
+                throw Error('this failed when it should be passing');
+            }
 
-    // describe('searchForUsersByUsername()', () => {
-    //     it('searched and found', async () => {
-    //         const req: AccountCreateRequest = { username: 'create7', password: 'create7pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+            const loginReq4: LoginRequest = { username: 'wrongusername', password: 'create6pass' };
+            const loginResp4: ResponseEnvelope<LoginResponse|string> = await loginHandler(loginReq4);
+            expect(loginResp4.isOK).toBeFalsy();
+            if (loginResp4.message) {
+                expect(loginResp4.message).toEqual('Invalid Username');
+            } else {
+                throw Error('this failed when it should be passing');
+            }
 
-    //         const searchReq: SearchUsersRequest = { username: 'create7' };
-    //         const searchResp: SearchUsersResponse = await client.searchForUsersByUsername(searchReq);
-    //         expect(searchResp).resolves.toBeDefined();
-    //         expect(searchResp.users).toContainEqual(expect.objectContaining({ _id: resp._id, username: 'create7' }));
-    //     });
+            if (resp.response) {
+                await db.removeUserFromCollection(resp.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+    });
 
-    //     it('searched and partial found', async () => {
-    //         const req: AccountCreateRequest = { username: 'create8user', password: 'create8pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+    describe('searchForUsersByUsername()', () => {
+        it('searched and found', async () => {
+            const req: AccountCreateRequest = { username: 'create7', password: 'create7pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect (resp.isOK).toBeTruthy();
 
-    //         const searchReq: SearchUsersRequest = { username: 'create8' };
-    //         const searchResp: SearchUsersResponse = await client.searchForUsersByUsername(searchReq);
-    //         expect(searchResp).resolves.toBeDefined();
-    //         expect(searchResp.users).toContain(expect.objectContaining({ _id: resp._id, username: 'create8user' }));
-    //     });
+            const searchReq: SearchUsersRequest = { username: 'create7' };
+            const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+            expect(searchResp.isOK).toBeTruthy();
+            if (searchResp.response && resp.response) {
+                const ans = { _id: resp.response._id, username: 'create7' }
+                const usersReturned = searchResp.response.users;
+                const id_one: String = usersReturned[0]._id as String;
+                const user_one: String = usersReturned[0].username as String;
+                expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
+                expect(user_one).toEqual(ans.username);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
 
-    //     it('searched and none found', async () => {
-    //         const searchReq: SearchUsersRequest = { username: 'create9' };
-    //         const searchResp: SearchUsersResponse = await client.searchForUsersByUsername(searchReq);
-    //         expect(searchResp).resolves.toBeDefined();
-    //         expect(searchResp.users).toEqual([]);
-    //     });
-    // });
+            if (resp.response) {
+                await db.removeUserFromCollection(resp.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
 
-    // describe('sendAddNeighborRequest()', () => {
+        it('searched and partial found', async () => {
+            const req: AccountCreateRequest = { username: 'create8user', password: 'create8pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
 
-    //     it('new request sent', async () => {
-    //         const req: AccountCreateRequest = { username: 'create10user', password: 'create10pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+            const searchReq: SearchUsersRequest = { username: 'create8' };
+            const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+            expect(searchResp.isOK).toBeTruthy();
+            if (searchResp.response && resp.response) {
+                const ans = { _id: resp.response._id, username: 'create8user' }
+                const usersReturned = searchResp.response.users;
+                const id_one: String = usersReturned[0]._id as String;
+                const user_one: String = usersReturned[0].username as String;
+                expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
+                expect(user_one).toEqual(ans.username);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
 
-    //         const req2: AccountCreateRequest = { username: 'create11user', password: 'create11pass' };
-    //         const resp2: AccountCreateResponse = await client.createAccount(req2);
-    //         expect(resp2).resolves.toBeDefined();
+            if (resp.response) {
+                await db.removeUserFromCollection(resp.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
 
-    //         const neighborReq: AddNeighborRequest = { currentUserId: resp._id, UserIdToRequest: resp2._id };
-    //         const neighborResp: AddNeighborResponse = await client.sendAddNeighborRequest(neighborReq);
-    //         expect(neighborResp.status).toEqual('requestSent');
-    //     });
+        it('searched and none found', async () => {
+            const searchReq: SearchUsersRequest = { username: 'create9' };
+            const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+            expect(searchResp.isOK).toBeTruthy();
+            if (searchResp.response) {
+                expect(searchResp.response.users).toEqual([]);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+    });
 
-    //     it('already sent request', async () => {
-    //         const req: AccountCreateRequest = { username: 'create12user', password: 'create12pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+    describe('sendAddNeighborRequest()', () => {
 
-    //         const req2: AccountCreateRequest = { username: 'create13user', password: 'create13pass' };
-    //         const resp2: AccountCreateResponse = await client.createAccount(req2);
-    //         expect(resp2).resolves.toBeDefined();
+        it('new request sent', async () => {
+            const req: AccountCreateRequest = { username: 'create10user', password: 'create10pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
 
-    //         const neighborReq: AddNeighborRequest = { currentUserId: resp._id, UserIdToRequest: resp2._id };
-    //         const neighborResp: AddNeighborResponse = await client.sendAddNeighborRequest(neighborReq);
-    //         expect(neighborResp.status).toEqual('requestSent');
+            const req2: AccountCreateRequest = { username: 'create11user', password: 'create11pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
 
-    //         const neighborResp2: AddNeighborResponse = await client.sendAddNeighborRequest(neighborReq);
-    //         expect(neighborResp2.status).toEqual('requestSent');
-    //     });
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                if (neighborResp.response) {
+                    expect(neighborResp.response.status).toEqual('requestSent');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeRequestFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
 
-    //     it('already received request', async () => {
-    //         const req: AccountCreateRequest = { username: 'create14user', password: 'create14pass' };
-    //         const resp: AccountCreateResponse = await client.createAccount(req);
-    //         expect(resp).resolves.toBeDefined();
+        it('sending user was not found', async () => {
 
-    //         const req2: AccountCreateRequest = { username: 'create15user', password: 'create15pass' };
-    //         const resp2: AccountCreateResponse = await client.createAccount(req2);
-    //         expect(resp2).resolves.toBeDefined();
+            const req: AccountCreateRequest = { username: 'create12user', password: 'create12pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
 
-    //         const neighborReq: AddNeighborRequest = { currentUserId: resp._id, UserIdToRequest: resp2._id };
-    //         const neighborResp: AddNeighborResponse = await client.sendAddNeighborRequest(neighborReq);
-    //         expect(neighborResp.status).toEqual('requestSent');
+            const req2: AccountCreateRequest = { username: 'create13user', password: 'create13pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
 
-    //         const neighborReq2: AddNeighborRequest = { currentUserId: resp2._id, UserIdToRequest: resp._id };
-    //         const neighborResp2: AddNeighborResponse = await client.sendAddNeighborRequest(neighborReq2);
-    //         expect(neighborResp2.status).toEqual('requestReceived');
-    //     });
+            if (resp.response && resp2.response) {
+                await db.removeUserFromCollection(resp.response._id);
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeFalsy();
+                if (neighborResp.message) {
+                    expect(neighborResp.message).toEqual('Sending User Not Found');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
 
-    //     it('already neighbors', async () => {
-    //         // TODO -- need more functionality
-    //     });
-    // });
+        it('receiving user was not found', async () => {
+            const req: AccountCreateRequest = { username: 'create14user', password: 'create14pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create15user', password: 'create15pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                await db.removeUserFromCollection(resp2.response._id);
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeFalsy();
+                if (neighborResp.message) {
+                    expect(neighborResp.message).toEqual('Receiving User Not Found');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('already sent request', async () => {
+            const req: AccountCreateRequest = { username: 'create16user', password: 'create16pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create17user', password: 'create17pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                const neighborResp2: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                expect(neighborResp2.isOK).toBeTruthy();
+                if (neighborResp2.response) {
+                    expect(neighborResp2.response.status).toEqual('requestSent');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeRequestFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('already received request', async () => {
+            const req: AccountCreateRequest = { username: 'create18user', password: 'create18pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create19user', password: 'create19pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                const neighborResp2: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest({ currentUserId: resp2.response._id, UserIdToRequest: resp.response._id });
+                expect(neighborResp.isOK).toBeTruthy();
+                expect(neighborResp2.isOK).toBeTruthy();
+                if (neighborResp2.response) {
+                    expect(neighborResp2.response.status).toEqual('requestReceived');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeRequestFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('already neighbors', async () => {
+            // TODO
+        });
+    });
   });
