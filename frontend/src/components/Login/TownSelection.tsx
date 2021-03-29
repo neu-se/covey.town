@@ -88,7 +88,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
     }
   };
-console.log(loggedInUser?.profile)
+
   return (
     <>
       <form>
@@ -105,7 +105,7 @@ console.log(loggedInUser?.profile)
                 onClick={() => handleLogout()}>Logout</Button>
               </div>
             </FormControl>
-                  <img src={loggedInUser?.profile.pfpURL} alt="PFP"/>
+            <img src={loggedInUser?.profile.pfpURL}/>
             </Box>
             </Flex>
           </Box>
