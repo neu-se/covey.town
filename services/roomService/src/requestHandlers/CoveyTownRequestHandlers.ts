@@ -329,6 +329,17 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
   }
 }
 
+// TODO
+// acceptRequest handler 
+// removeRequest handler 
+// removeNeighbor handler 
+
+// listNeighbors handler 
+// + check who is online with coveytownstore
+// listRequestsSent handler 
+// listRequestsReceived handler 
+
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
