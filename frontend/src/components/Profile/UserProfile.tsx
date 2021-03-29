@@ -15,7 +15,6 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
-import RealmAuth from '../../services/authentication/RealmAuth'
 import IntroContainer from '../VideoCall/VideoFrontend/components/IntroContainer/IntroContainer';
 import RealmDBClient from '../../services/database/RealmDBClient'
 import { CoveyUserProfile } from '../../CoveyTypes';
@@ -44,7 +43,6 @@ type EditingState = {
 export default function UserProfile(): JSX.Element {
   const db = RealmDBClient.getInstance();
   const toast = useToast();
-
   const history = useHistory();
   const authInfo = useAuthInfo();
 
@@ -86,11 +84,7 @@ export default function UserProfile(): JSX.Element {
     }));
   };
 
-  const checkValidPassword = () => state.password === state.passwordConfirm;
-
   const handleSubmit = async () => {
-    console.log("submitting")
-    console.log(state)
     if(state && authInfo.currentUser) {
       const changes : CoveyUserProfile = {
         user_id: authInfo.currentUser.id,
@@ -111,7 +105,6 @@ export default function UserProfile(): JSX.Element {
       if(editState.editPfpURL) {
         changes.pfpURL = state.pfpURL
       }
-      console.log(changes)
       try {
         await db.saveUserProfile(changes);
         assert(authInfo.currentUser);
@@ -122,7 +115,6 @@ export default function UserProfile(): JSX.Element {
             currentUser: authInfo.currentUser
           })
         }
-        console.log('submitted')
         toast({
           title: 'Form Submitted!',
           description: `Your profile has been saved! Username: ${changes.userName}, Email: ${changes.email}, Bio: ${changes.bio}`,
@@ -137,7 +129,6 @@ export default function UserProfile(): JSX.Element {
           editing: false,
         }))
       } catch (e) {
-        console.log('submitting failed!')
         toast({
           title: 'Failed to save changes!',
           description: `Error: ${e}`,
