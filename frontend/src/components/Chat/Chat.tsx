@@ -31,15 +31,16 @@ export default function Chat(): JSX.Element {
         }
       }
 
-    const options = players.map(player => ({
-      value: player.id,
-      label: player.userName,
-    }));
+    const options = players.map((player) => ({
+        value: player.id,
+        label: player.userName,
+      }) 
+    );
     const everyOne = {
       value: 'Everyone',
       label: 'Everyone',
     }
-    const updatedOptions = options.concat(everyOne);
+    const updatedOptions = options.filter(option => option.value !== myPlayerID).concat(everyOne);
 
     const onOptionSelected = (event: Option) => {
       const id = event.value;
@@ -47,14 +48,16 @@ export default function Chat(): JSX.Element {
       const idToName = players.find(user => user.id === id)?.userName;
       if(idToName){
         setReceiverName(idToName);
+      }else {
+        setReceiverName('Everyone');
       }
     }
 
     return (
       <div>
 
-        <Popup trigger={<Button value="triggerChat">Chat</Button>} position="right center">
-          <ChatHistory coveyTownID = {currentTownID} componentSenderID = {myPlayerID} componentReceiverID = {receiverID}/>
+        <Popup contentStyle={{width: "50%"}} trigger={<Button style = {{color: "#b98043", backgroundColor: "#f8ddb2", border: "1px solid"}} value="triggerChat">Chat</Button>} position="left center">
+          <ChatHistory coveyTownID = {currentTownID} componentSenderID = {myPlayerID} componentReceiverID = {receiverID || 'Everyone'}/>
           <div>
             <Input
                   id='Message'
@@ -65,7 +68,7 @@ export default function Chat(): JSX.Element {
                   value={message}
                   onChange={(event => setMessage(event.target.value))}
                 />
-            <Dropdown options={updatedOptions} onChange={event => onOptionSelected(event)} value={receiverName} placeholder="Select a Receiver" />
+            <Dropdown options={updatedOptions} onChange={event => onOptionSelected(event)} value={receiverName || 'Everyone'} placeholder="Select a Receiver" />
 
             <Button data-testid='sendbutton'
                     colorScheme="orange"

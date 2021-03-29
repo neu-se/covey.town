@@ -1,3 +1,16 @@
+.Messages-list {
+  padding: 20px 0;
+  max-width: 900px;
+  height: 500px;
+  width: 100%;
+  margin: 0 auto;
+  list-style: none;
+  padding-left: 0;
+  flex-grow: 1;
+  overflow: scroll;
+  background-color: rgb(247, 246, 241);
+}
+
 .Messages-message {
     display: flex;
     margin-top: 10px;
@@ -32,6 +45,15 @@
     background-color: cornflowerblue;
     color: white;
     display: inline-block;
+  }
+
+  .Message-content > .time {
+    padding: 10px;
+    max-width: 400px;
+    margin: 0;
+    color: gray;
+    display: inline-block;
+    font-size: small;
   }
   
   .currentMember > .Message-content .text {

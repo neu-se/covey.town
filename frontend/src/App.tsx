@@ -250,8 +250,11 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       <div>
         <WorldMap />
         <VideoOverlay preferredMode="fullwidth" />
-        <Announcement />
-        <Chat />
+        <div className = 'sameRow'>
+          <Announcement />
+          <Chat />
+        </div>
+        
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);

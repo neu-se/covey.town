@@ -27,15 +27,26 @@ export default function ChatHistory(props: { coveyTownID: string, componentRecei
 
     const renderMessage = (message: MessageData) => {
         const {senderID, senderName, receiverID, content, time} = message;
-        const messageFromMeToReceiver = (senderID === componentSenderID && receiverID === componentReceiverID);
-        const messageFromReceiverToMe = (receiverID === componentSenderID && senderID === componentReceiverID);
+        let messageFromMeToReceiver;
+        let messageFromReceiverToMe;
+        let messagePublic;
+        if(componentReceiverID === 'Everyone'){
+            messagePublic = (receiverID === 'Everyone');
+            messageFromMeToReceiver = (messagePublic && senderID === componentSenderID);
+            messageFromReceiverToMe = (messagePublic && senderID !== componentSenderID);
+        } else {
+            messagePublic = (receiverID === 'Everyone');
+            messageFromMeToReceiver = (!messagePublic && senderID === componentSenderID && receiverID === componentReceiverID);
+            messageFromReceiverToMe = (!messagePublic && receiverID === componentSenderID && senderID === componentReceiverID);
+        }
+        
         let className;
         if (messageFromMeToReceiver) {
             className = "Messages-message currentMember";
         }else if (messageFromReceiverToMe) {
             className = "Messages-message";
         }else {
-            className = "hidden";
+            return null;
         }
 
         return (
@@ -43,7 +54,7 @@ export default function ChatHistory(props: { coveyTownID: string, componentRecei
             <div className="Message-content">
                 <div className="username">{senderName}</div>
                 <div className="text">{content}</div>
-                <div className="time">{time}</div>
+                <div className="time">{time.split('GMT')[0]}</div>
             </div>
             </li>
         )
