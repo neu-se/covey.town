@@ -236,6 +236,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   const Routes: React.FC = () => {
     // need to define user after AuthGuard
     const user = useAuthInfo();
+    console.log(user)
     return (
       <Switch>
         <Route path="/login">

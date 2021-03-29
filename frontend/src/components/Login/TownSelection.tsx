@@ -38,8 +38,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { apiClient } = useCoveyAppState();
   const history = useHistory();
   const authInfo = useAuthInfo();
-  const auth: IAuth = RealmAuth.getInstance();
-  const loggedInUser = auth.getCurrentUser();
+  const loggedInUser = authInfo.currentUser
   const toast = useToast();
 
   if (loggedInUser === null) {
@@ -56,7 +55,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }
 
   async function handleLogout() : Promise<void> {
-    await auth.logout(authInfo.actions.setAuthState);
+    await authInfo.actions.handleLogout();
+    authInfo.actions.setAuthState({
+      isLoggedIn: false,
+      currentUser: null
+    })
     history.push('/login');
   }
 
@@ -85,7 +88,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
     }
   };
-
+console.log(loggedInUser?.profile)
   return (
     <>
       <form>
@@ -102,6 +105,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 onClick={() => handleLogout()}>Logout</Button>
               </div>
             </FormControl>
+                  <img src={loggedInUser?.profile.pfpURL} alt="PFP"/>
             </Box>
             </Flex>
           </Box>
