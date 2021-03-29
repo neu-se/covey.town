@@ -1,6 +1,5 @@
 import DatabaseController from './db';
-
-// import { AddNeighborResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+import { AccountCreateResponse } from './db';
 
 const db = new DatabaseController();
 

@@ -25,6 +25,18 @@ export interface LoginResponse {
   username: string,
 }
 
+export interface NeighborMappingSchema {
+  _id: string,
+  neighbor1: string, // will be user id
+  neighbor2: string, // will be user id
+}
+
+export interface NeighborRequestSchema {
+  _id: string, 
+  requestTo: string,
+  requestFrom: string,
+}
+
 export default class DatabaseController {
     private client: MongoClient;
     private userCollection: any;
@@ -197,8 +209,8 @@ export default class DatabaseController {
 
   /**
    * Find a user's ID given their username
-   * @param username: the string username of the user to search for
-   * @returns a string containing the user's ID
+   * @param id: the string username of the user to search for
+   * @returns a string containing the username
    */
   async findUserById(id: string) : Promise<string> {
     try {
@@ -292,88 +304,75 @@ export default class DatabaseController {
   }
 
 
-  // /**
-  //  * List all users that have sent a request to the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listRequestsReceived(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const requests = this.getCollection('neighbor_request');
+  /**
+   * List all users that have sent a request to the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsReceived(currentUserId: string): Promise<Array<String>> {
+    try {
+        const requestReceived = await this.neighborRequests.find({'requestTo': currentUserId}).toArray();
 
-  //         const requestReceived = await requests.find({'requestTo': user}).toArray();
+        const listUsers = requestReceived.map(async (requester: NeighborRequestSchema) => {
+          const username = await this.findUserById(requester.requestFrom);
+          return { _id: requester.requestFrom, username };
+        });
 
-  //         const users = requestReceived.map(request => [request.requestTo, 'requestReceived']);
-  //         // const users = requestReceived.forEach(request => console.log(request));
+        return listUsers;
 
-  //         return {
-  //             isOK: true,
-  //             response: users,
-  //         }
+    } catch (err) {
+        return err.toString();
+    }
+  } 
 
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+  /**
+   * List all users who have been sent a request by the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsSent(currentUserId: string): Promise<Array<String>> {
+      try {
+        const requestSent = await this.neighborRequests.find({'requestFrom': currentUserId}).toArray();
 
-  // /**
-  //  * List all users who have been sent a request by the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const requests = this.getCollection('neighbor_request');
+        const listUsers = requestSent.map(async (requestee: NeighborRequestSchema) => {
+          const username = await this.findUserById(requestee.requestTo);
+          return { _id: requestee.requestTo, username };
+        });
 
-  //         const requestFrom = await requests.find({'requestFrom': user}).toArray();
+        return listUsers;
 
-  //         const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
+      } catch (err) {
+        return err.toString();
+      }
+  }
 
-  //         return {
-  //             isOK: true,
-  //             response: users,
-  //         }
+  /**
+   * List all the neighbors of the current user
+   * @param user the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listNeighbors(currentUserId: string): Promise<Array<String>> {
+      try {
+          const neighborsList1 = await this.neighborMappings.find({'neighbor1': currentUserId}).toArray();
 
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+          const listUsers1 = neighborsList1.map(async (neighbor: NeighborMappingSchema) => {
+            const username = this.findUserById(neighbor.neighbor2);
+            return { _id: neighbor.neighbor2, username };
+          });
 
-  // /**
-  //  * List all the neighbors of the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listNeighbors(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const neighbors = this.getCollection('neighbor_mappings');
+          const neighborsList2 = await this.neighborMappings.find({'neighbor2': currentUserId}).toArray();
 
-  //         const neighborsList1 = await neighbors.find({'neighbor1': user}).toArray();
+          const listUsers2 = neighborsList2.map(async (neighbor: NeighborMappingSchema) => {
+            const username = this.findUserById(neighbor.neighbor1);
+            return { _id: neighbor.neighbor1, username };
+          });
 
-  //         const users1 = neighborsList1.map(neighbors => [neighbors.neighbor2, 'neighbor']);
+          return listUsers1.concat(listUsers2);
 
-  //         const neighborsList2 = await neighbors.find({'neighbor2': user}).toArray();
-
-  //         const users2 = neighborsList2.map(neighbors => [neighbors.neighbor1, 'neighbor']);
-
-  //         return {
-  //             isOK: true,
-  //             response: users1.concat(users2),
-  //         }
-
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+      } catch (err) {
+          return err.toString();
+      }
+  }
 
   /**
      * Check if the two users passed are currently neighbors
