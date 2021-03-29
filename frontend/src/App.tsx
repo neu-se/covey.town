@@ -241,12 +241,13 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     return (
       <Switch>
         <Route path="/login">
-          <LoginPage />
+          { user.isLoggedIn && <Redirect push to="/"/> }
+          {!user.isLoggedIn && <LoginPage />}
         </Route>
         <Route path='/signup'>
           <SignUp />
         </Route>
-        {!user.isLoggedIn && <Redirect push to="/login" />}
+        {!user.isLoggedIn && <Redirect push to="/login"/>}
         <Route path='/profile'>
           <UserProfile/>
         </Route>

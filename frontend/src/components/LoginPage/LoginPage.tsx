@@ -8,6 +8,7 @@ import {
   Input,
   Checkbox,
   Stack,
+  Image,
   Link,
   Button,
   Heading,
@@ -30,15 +31,40 @@ export default function SimpleCard(): JSX.Element {
   const signInHandler = async () => {
     const credential = { email, password };
     try {
-    await auth.loginWithEmailPassword(credential,authInfo.actions.setAuthState);
-    history.push('/');
+      await auth.loginWithEmailPassword(credential,authInfo.actions.setAuthState);
+      history.push('/');
+      toast({
+        title: 'Login Successful',
+        description: `with email ${email}`,
+        status: 'success'
+      })
     } catch(err) {
       toast({
         title: 'Login Failed',
-        description: err.toString()
+        description: err.toString(),
+        status: 'error'
       })
     }
   }
+
+  const signInGoogleHandler = async () => {
+    try {
+      await auth.loginWithGoogle(authInfo.actions.setAuthState);
+      history.push('/');
+      toast({
+        title: 'Login Successful',
+        description: 'with Google',
+        status: 'success'
+      })
+    } catch(e) {
+      toast({
+        title: 'Redirecting to Google failed',
+        description: e.toString(),
+        status: 'error'
+      })
+    }
+  }
+  
   return (
     <Flex
       minH='100vh'
@@ -78,6 +104,15 @@ export default function SimpleCard(): JSX.Element {
                   bg: 'blue.500',
                 }} onClick={signInHandler}>
                 Sign in
+              </Button>
+              <Button
+                bg='red.400'
+                color='white'
+                _hover={{
+                  bg: 'red.500',
+                }} onClick={signInGoogleHandler}>
+                Sign in with Google
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="" maxHeight="20px" maxWidth="20px" marginLeft="5px"/>
               </Button>
             </Stack>
           </Stack>
