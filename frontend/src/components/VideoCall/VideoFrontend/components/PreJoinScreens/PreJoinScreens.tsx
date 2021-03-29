@@ -4,13 +4,12 @@ import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen
 import IntroContainer from '../IntroContainer/IntroContainer';
 import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import TownSelection from '../../../../Login/TownSelection';
-import IAuth from '../../../../../services/authentication/IAuth';
-import RealmAuth from '../../../../../services/authentication/RealmAuth';
+import useAuthInfo from '../../../../../hooks/useAuthInfo';
 
 export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>; setMediaError?(error: Error): void }) {
   const toast = useToast();
-  const auth: IAuth = RealmAuth.getInstance();
-  const loggedInUser = auth.getCurrentUser();
+  const authInfo = useAuthInfo();
+  const loggedInUser = authInfo.currentUser;
   console.log(loggedInUser)
   if (loggedInUser === null) {
     toast({
