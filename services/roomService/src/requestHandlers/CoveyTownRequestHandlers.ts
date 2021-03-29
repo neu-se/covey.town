@@ -291,7 +291,7 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
   try {
     const db = new DatabaseController();
     await db.connect();
-    const findUser1 = await db.findUserById(requestData.currentUserId);
+    const findUser1 = await db.validateUser(requestData.currentUserId);
     if (findUser1 === 'user_not_found') {
       db.close();
       return {
@@ -299,7 +299,7 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
         message: 'Sending User Not Found',
       };
     }
-    const findUser2 = await db.findUserById(requestData.UserIdToRequest);
+    const findUser2 = await db.validateUser(requestData.UserIdToRequest);
     if (findUser2 === 'user_not_found') {
       db.close();
       return {
@@ -310,12 +310,12 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
 
     const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
     db.close();
-    if (result.status !== 'requestSent') {
-      return {
-        isOK: false,
-        message: "Request doesn't exist", // this doesn't feel right
-      };
-    }
+    // if (result.status !== 'neighbor') {
+    //   return {
+    //     isOK: false,
+    //     message: "Request doesn't exist",
+    //   };
+    // }
 
     return {
       isOK: true,

@@ -1,6 +1,6 @@
 import assert from 'assert';
 import dotenv from 'dotenv';
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 import { mongo } from 'mongoose';
 
 dotenv.config();
@@ -56,6 +56,11 @@ export default class DatabaseController {
     return this.client.db('coveytown').collection(collection);
   }
 
+  /**
+     * Works to remove a user from the user collection in the coveytown db
+     * @param userID name of the collection to remove user from
+     * @returns a string with the deletion status
+     */
   async removeUserFromCollection(userID: string): Promise<string> {
     try {
       const users = this.getCollection('user');
@@ -67,6 +72,12 @@ export default class DatabaseController {
     }
   }
 
+  /**
+     * Works to remove a request from the neighbor_request collection in the coveytown db
+     * @param requestFrom name of the user sending the request to be removed
+     * @param requestTo name of the user receiving the request to be removed
+     * @returns a string with the deletion status
+     */
   async removeRequestFromCollection(requestFrom: string, requestTo: string): Promise<string> {
     try {
       const neighborRequests = this.getCollection('neighbor_request');
@@ -192,7 +203,7 @@ export default class DatabaseController {
   async findUserById(id: string) : Promise<string> {
     try {
 
-      const findUser = await this.userCollection.find({ '_id': new ObjectId(id) }).limit(1).toArray();
+      const findUser = await this.userCollection.find({ '_id': new ObjectID(id) }).limit(1).toArray();
       if (findUser.length === 1) {
         return findUser[0].username as string;
       }
@@ -203,6 +214,21 @@ export default class DatabaseController {
     }
   }
   
+
+  async validateUser(userID: string) : Promise<string> { 
+    try {
+      const user = this.getCollection('user');
+
+      const findUser = await user.find({ '_id': new ObjectID(userID)}).limit(1).toArray();
+      if (findUser.length === 1) {
+        return 'existing user';
+      }
+      return 'user_not_found';
+
+    } catch (err) {
+      return err.toString();
+    }
+  }
 
   /**
      * Sending a neighbor request. Attempts to send a neighbor_request from requestFrom to requestTo

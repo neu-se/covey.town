@@ -21,7 +21,6 @@ describe('db', () => {
       const resp = await db.insertUser(username, password);
       expect(resp.username).toEqual('create1');
       expect(resp._id).toBeDefined();
-      console.log(resp._id);
       await db.removeUserFromCollection(resp._id);
     });
   });
@@ -118,6 +117,7 @@ describe('db', () => {
 
       await db.removeUserFromCollection(resp._id);
       await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp._id, resp2._id);
     });
 
     it('already sent request', async () => {
@@ -135,6 +135,7 @@ describe('db', () => {
       
       await db.removeUserFromCollection(resp._id);
       await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp._id, resp2._id);
     });
 
     it('already received request', async () => {
@@ -152,7 +153,12 @@ describe('db', () => {
       
       await db.removeUserFromCollection(resp._id);
       await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp._id, resp2._id);
     });
+
+    it('already neighbors', async () => {
+      // TODO
+    })
   });
 
   describe('findUserId()', () => {
@@ -174,7 +180,7 @@ describe('db', () => {
 
   describe('neighborStatus()', () => {
     it('neighbor', async () => {
-        // test with acceptRequest
+        // TODO test with acceptRequest
     });
 
     it('request sent', async () => {
@@ -228,6 +234,29 @@ describe('db', () => {
       await db.removeUserFromCollection(resp._id);
       await db.removeUserFromCollection(resp2._id);
     });
+  });
+
+  describe('validateUser()', () => {
+    it('success', async () => {
+      const username = 'create20';
+      const password = 'pass20';
+      const resp: AccountCreateResponse = await db.insertUser(username, password);
+
+      const validation: string = await db.validateUser(resp._id);
+      expect(validation).toEqual('existing user');
+
+      await db.removeUserFromCollection(resp._id);
+    });
+
+    it('failure', async () => {
+      const username = 'create21';
+      const password = 'pass21';
+      const resp: AccountCreateResponse = await db.insertUser(username, password);
+      await db.removeUserFromCollection(resp._id);
+
+      const validation: string = await db.validateUser(resp._id);
+      expect(validation).toEqual('user_not_found');
+    })
   });
 });
 
