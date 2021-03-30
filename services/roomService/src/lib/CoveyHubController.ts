@@ -1,6 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
-import CoveyTownListener from '../types/CoveyTownListener';
+import CoveyHubListener from '../types/CoveyHubListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
@@ -60,7 +60,7 @@ export default class CoveyHubController {
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
-  private _listeners: CoveyTownListener[] = [];
+  private _listeners: CoveyHubListener[] = [];
 
   private readonly _coveyHubID: string;
 
@@ -128,7 +128,7 @@ export default class CoveyHubController {
    *
    * @param listener New listener
    */
-  addTownListener(listener: CoveyTownListener): void {
+  addHubListener(listener: CoveyHubListener): void {
     this._listeners.push(listener);
   }
 
@@ -138,7 +138,7 @@ export default class CoveyHubController {
    * @param listener The listener to unsubscribe, must be a listener that was registered
    * with addTownListener, or otherwise will be a no-op
    */
-  removeTownListener(listener: CoveyTownListener): void {
+  removeHubListener(listener: CoveyHubListener): void {
     this._listeners = this._listeners.filter((v) => v !== listener);
   }
 
@@ -153,6 +153,6 @@ export default class CoveyHubController {
   }
 
   disconnectAllPlayers(): void {
-    this._listeners.forEach((listener) => listener.onTownDestroyed());
+    this._listeners.forEach((listener) => listener.onHubDestroyed());
   }
 }

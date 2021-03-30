@@ -27,7 +27,7 @@ export default class CoveyHubStore {
     return this._hubs.find(hub => hub.coveyHubID === coveyHubID);
   }
 
-  getTowns(): CoveyTownList {
+  getHubs(): CoveyTownList {
     return this._hubs.filter(hubController => hubController.isPubliclyListed)
       .map(hubController => ({
         coveyTownID: hubController.coveyHubID,
