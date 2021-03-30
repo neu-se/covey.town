@@ -12,6 +12,7 @@ beforeAll(async () => {
 
 afterAll(() => {
     db.close();
+
 });
 
 describe('CoveyTownRequestHandlers', () => {
