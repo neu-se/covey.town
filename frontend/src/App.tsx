@@ -1,10 +1,12 @@
+/* eslint-disable */
+
 import React, {
   Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, FormLabel } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import YouTube from 'react-youtube'; // Andrew - this is the package that we use as a light wrapper around the iframe component
@@ -27,6 +29,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import { ContactSupportOutlined } from '@material-ui/icons';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -204,6 +207,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         if (state.showYTPlayer) {
           // if (time.now() - state.lastScoketEmission < 200) // Andrew - Leaving here as a TA suggestion for emitting socket message
           state.socket?.emit('clientSharedVideoInfo', { url: update.ytplayer?.getVideoUrl(), timestamp: update.ytplayer?.getCurrentTime(), isPlaying: update.ytplayer?.getPlayerState() === 1 ? true : false })
+          state.youtubeplayer?.playVideo(); 
         }
       }, 200)
       break;
@@ -221,6 +225,43 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
 
   return nextState;
 }
+
+const YoutubeWidget: React.FC<Props> = ({appState, dispatchAppUpdate}) => {
+
+    //  After components unmounts, the setInterval will be cleared and player nullified
+    useEffect(() => {
+      // create interval here potentially; Andrew - suggestion from TA
+      return () => {
+        dispatchAppUpdate({ action: 'clearSyncInterval' });
+        dispatchAppUpdate({ action: 'nullifyYTplayer' });
+      }
+    },[appState.syncInterval]); // if this variable changes (reliant on interval)); Andrew - suggestion from TA
+  
+    // Andrew - below is a <YouTube/> react component from the react-youtube package that is a wrapper for the iframe Youtube API
+    return <YouTube
+    opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 1}}}
+    onPause={(event) => {
+        appState.socket?.emit('clientPaused');
+    }}
+    onPlay={(event) => {
+        appState.socket?.emit('clientPlayed');
+    }} 
+    onReady={(event) => {
+        console.log('YTPlayer added')
+        dispatchAppUpdate({ action: 'addYTplayer', ytplayer: event.target })
+        appState.socket?.emit('clientEnteredTVArea');
+    }}
+    onError={(event) => {
+      console.log(event.data);
+    }}
+    onEnd={(event) => {
+      console.log('end');
+      appState.socket?.emit('clientVideoEnded');
+    }}
+    onStateChange={(event) => {
+        // Andrew - this might be useful to add something here in the future, but it's not doing anything now
+    }}/>};
+
 
 async function GameController(initData: TownJoinResponse,
   dispatchAppUpdate: (update: CoveyAppUpdate) => void) {
@@ -266,6 +307,7 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({ action: 'syncVideo', videoInfo: currentVideoInfo });
   });
 
+
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
     dispatchAppUpdate({ action: 'weMoved', location });
@@ -294,11 +336,13 @@ interface Props {
   dispatchAppUpdate: Dispatch<CoveyAppUpdate>
 }
 
+
 // Andrew - this would be to add the widget for voting on videos
 // const ButtonWidgets: React.FC<Prop> = 
 
-// Andew - React component for the youtube player 
-const YTplayer: React.FC<Props> = ({appState, dispatchAppUpdate}) => {
+// Andew - React component for the youtube player
+// Adam Moved 
+/* const YTplayer: React.FC<Props> = ({appState, dispatchAppUpdate}) => {
 
   //  After components unmounts, the setInterval will be cleared and player nullified
   useEffect(() => {
@@ -310,8 +354,9 @@ const YTplayer: React.FC<Props> = ({appState, dispatchAppUpdate}) => {
   },[]); // if this variable changes (reliant on interval)); Andrew - suggestion from TA
 
   // Andrew - below is a <YouTube/> react component from the react-youtube package that is a wrapper for the iframe Youtube API
-  return <YouTube
-  opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 0}}}
+  // ADAM - Moved to YoutubeWidget
+   return <YouTube
+  opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 1}}}
   onPause={(event) => {
       appState.socket?.emit('clientPaused');
   }}
@@ -332,7 +377,7 @@ const YTplayer: React.FC<Props> = ({appState, dispatchAppUpdate}) => {
   }}
   onStateChange={(event) => {
       // Andrew - this might be useful to add something here in the future, but it's not doing anything now
-  }}/>};
+  }}/>}; */
 
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
@@ -360,6 +405,12 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
 
     // Andrew - I changed the layout of the HTML so that the youtube player is normall in the upper right of page.
     // Also, appState.showYTPlayer is the boolean that controls whether <YTplayer/> is rendered or not
+
+    /* { appState.showYTPlayer ? <YTplayer 
+      appState={appState}
+      dispatchAppUpdate={dispatchAppUpdate}
+/> : null } */
+
     return (
       <div>
         <div style={{width: "100%;"}}>
@@ -367,22 +418,27 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
             <WorldMap /> 
             <VideoOverlay preferredMode="fullwidth" />
           </div>
-          <div style={{marginLeft: "50%;"}}> 
-            { appState.showYTPlayer ? <YTplayer 
-                      appState={appState}
-                      dispatchAppUpdate={dispatchAppUpdate}
-            /> : null }
-          </div>
-        </div>
+      </div>
       </div>
     );
-  }, [setupGameController, appState.sessionToken, videoInstance, appState.showYTPlayer, appState.mostRecentVideoSync]);
+  }, [setupGameController, appState.sessionToken, videoInstance]);
+
+  const page2 = useMemo(() => {
+    return (
+          <div style={{marginLeft: "50%;"}}> 
+              { appState.showYTPlayer ?  <YoutubeWidget appState={appState}
+          dispatchAppUpdate={dispatchAppUpdate} /> : null }
+        </div>
+    );
+  }, [appState.showYTPlayer, appState.mostRecentVideoSync]);
+
   return (
 
     <CoveyAppContext.Provider value={appState}>
       <VideoContext.Provider value={Video.instance()}>
         <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
           {page}
+          {page2}
         </NearbyPlayersContext.Provider>
       </VideoContext.Provider>
     </CoveyAppContext.Provider>
@@ -417,3 +473,4 @@ export default function AppStateWrapper(): JSX.Element {
     </BrowserRouter>
   );
 }
+/* eslint-enable */

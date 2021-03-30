@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation, YoutubeVideoInfo } from '../CoveyTypes';
+import { UserLocation, videoActionTimeStamp, YoutubeVideoInfo } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -13,6 +13,7 @@ const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
  * can occur (e.g. joining a town, moving, leaving a town)
  */
 export default class CoveyTownController {
+
 
   get capacity(): number {
     return this._capacity;
@@ -78,6 +79,7 @@ export default class CoveyTownController {
 
   // Andrew - map of players to their current video info. Players are recorded so that their video info is 
   // removed from this map when they leave the tv area
+
   private _currentVideoInfoMap: Map<Player, YoutubeVideoInfo> = new Map<Player, YoutubeVideoInfo>();
 
   // Andrew - default video info to send to player that is first to join tv area
@@ -86,6 +88,8 @@ export default class CoveyTownController {
     timestamp: 0,
     isPlaying: true,
   };
+
+  public _videActionTimeStamps : videoActionTimeStamp[] = []
 
   // Andrew - map of video URL to how many votes it has received so that, at the end of the current video, the
   // server can choose the next video URL and send it to each client to play. 
@@ -177,11 +181,16 @@ export default class CoveyTownController {
 
   // Andrew - have every client pause their video
   pauseVideos(): void {
+    this._videActionTimeStamps.push( { actionType: 'pause', actionDate: new Date()  })
+    console.log(this._videActionTimeStamps)
     this._listeners.forEach((listener) => listener.onPlayerPaused());
   }
 
   // Andrew - have every client play their video
   playVideos(): void {
+    this._videActionTimeStamps.push( { actionType: 'play', actionDate: new Date()  })
+    console.log(this._videActionTimeStamps)
+    // this._videActionTimeStamps.push( { actionType: 'play', actionDate: new Date()  })
     this._listeners.forEach((listener) => listener.onPlayerPlayed());
   }
 
@@ -190,13 +199,33 @@ export default class CoveyTownController {
   addToTVArea(playerToAdd: Player, listenerToAdd: CoveyTownListener) {
     this._listenersInTVAreaMap.set(playerToAdd, listenerToAdd);
     if (this._listenersInTVAreaMap.size === 1) {
+      // Clearning old time stamps
+      this._videActionTimeStamps = []
+      //Adding the initial one for this video
+      this._videActionTimeStamps.push( {actionType: 'add', actionDate: new Date() })
       listenerToAdd.onVideoSyncing(this._defaultVideoInfo);
     } else {
       // get video info from map that is constantly updating with current video infos.
       const firstPersonKey = this._currentVideoInfoMap.keys().next().value;
-      const upToDateVideoInfo: YoutubeVideoInfo | undefined = this._currentVideoInfoMap.get(firstPersonKey);
-      if (upToDateVideoInfo) {
-        listenerToAdd.onVideoSyncing(upToDateVideoInfo);
+      // get youtube info
+      const firstPersonYoutubeVideoInfo = this._currentVideoInfoMap.get(firstPersonKey)
+
+      // the
+      let a = this._videActionTimeStamps[0].actionDate;
+      const lastPause = this._videActionTimeStamps.reduce(function(prev, current) {
+        return (prev.actionDate.getDate > current.actionDate.getDate && current.actionType === 'pause') ? prev : current
+      });
+      console.log(this._videActionTimeStamps)
+      console.log(lastPause.actionDate)
+
+      // Account for cases
+      const currentTime = lastPause.actionDate.getTime() - this._videActionTimeStamps[1].actionDate.getTime()
+
+      if (firstPersonYoutubeVideoInfo){
+        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: firstPersonYoutubeVideoInfo.url, timestamp:  currentTime / 1000, isPlaying : firstPersonYoutubeVideoInfo.isPlaying };
+        if (upToDateVideoInfo) {
+          listenerToAdd.onVideoSyncing(upToDateVideoInfo);
+        }
       }
     }
   }
@@ -212,7 +241,8 @@ export default class CoveyTownController {
   shareVideoInfo(player: Player, videoInfo: YoutubeVideoInfo) {
     if (!videoInfo.timestamp || videoInfo.timestamp === 0) {return;}
     this._currentVideoInfoMap.set(player, videoInfo);
-    console.log(`Player at ${videoInfo.timestamp}`);
+    //console.log(this._videActionTimeStamps)
+    // console.log(`Player at ${videoInfo.timestamp}`);
     
     // if any of the videos are not within a couple seconds then update all to the same time
     // let earliestTime = this._currentVideoInfoMap.get(this._currentVideoInfoMap.keys().next().value)?.timestamp;

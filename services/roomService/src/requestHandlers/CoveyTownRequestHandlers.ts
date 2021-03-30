@@ -261,6 +261,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   // have controller add player/listener to map of others around tv and also send synced video 
   // info to this client
   socket.on('clientEnteredTVArea', () => {
+    console.log('Client Entered TV Area')
     townController.addToTVArea(s.player, listener);
   });
 
