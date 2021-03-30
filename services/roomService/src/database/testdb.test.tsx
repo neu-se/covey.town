@@ -71,7 +71,6 @@ describe('db', () => {
       const searchResp = await db.searchUsersByUsername(ans._id.toString(), userToSearch);
 
       const usersReturned = searchResp.users;
-      console.log(usersReturned);
       // const id_one: String = usersReturned[0]._id as String;
       // const user_one: String = usersReturned[0].username as String;
       // expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
