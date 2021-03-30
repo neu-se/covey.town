@@ -38,9 +38,10 @@ const TownMerging: React.FunctionComponent = () => {
 
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
-  const {apiClient, currentTownID, currentTownFriendlyName} = useCoveyAppState();
+  const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsMergeable} = useCoveyAppState();
   const [friendlyName, setFriendlyName] = useState<string>(currentTownFriendlyName);
   const [townChosen, setTownChosen] = useState<string>('');
+  const [isMergeable, setIsMergeable] = useState<boolean>(currentTownIsMergeable);
 
   const openSettings = useCallback(()=>{
     onOpen();
@@ -76,9 +77,19 @@ const TownMerging: React.FunctionComponent = () => {
 
   }
 
+  const whatToSay = () => {
+    let toReturn =  'this is false';
+    if(isMergeable === true){
+      toReturn = 'this is true';
+    } else if(isMergeable === undefined) {
+      toReturn = 'this is undefined'
+    }
+    return toReturn;
+}
+
   return <>
     <MenuItem data-testid='openMenuButton' onClick={openSettings}>
-      <Typography variant="body1">Merge with Other Towns</Typography>
+      <Typography variant="body1">Merge with Other Towns {whatToSay()} hello</Typography>
     </MenuItem>
     <Modal isOpen={isOpen} onClose={closeSettings}>
       <ModalOverlay/>
