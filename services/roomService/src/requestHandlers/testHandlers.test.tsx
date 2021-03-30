@@ -1,7 +1,7 @@
 import { AccountCreateRequest, LoginRequest, SearchUsersRequest, 
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
     searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
-import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
+import DatabaseController, {AccountCreateResponse, LoginResponse, ListUsersResponse, UserWithRelationship } from '../database/db';
 let db: DatabaseController;
 
 beforeAll(async () => {
@@ -147,7 +147,7 @@ describe('CoveyTownRequestHandlers', () => {
                 expect (resp.isOK).toBeTruthy();
 
                 const searchReq: SearchUsersRequest = { currentUserId: userSearchingResp.response._id.toString(), username: 'create7' };
-                const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+                const searchResp: ResponseEnvelope<ListUsersResponse<UserWithRelationship>> = await searchUsersByUsername(searchReq);
                 expect(searchResp.isOK).toBeTruthy();
                 if (searchResp.response && resp.response) {
                     const ans = { _id: resp.response._id, username: 'create7', relationship: { status: 'unknown' } }
@@ -182,7 +182,7 @@ describe('CoveyTownRequestHandlers', () => {
                 expect(resp.isOK).toBeTruthy();
 
                 const searchReq: SearchUsersRequest = { currentUserId: userSearchingResp.response._id.toString(), username: 'create8' };
-                const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+                const searchResp: ResponseEnvelope<ListUsersResponse<UserWithRelationship>> = await searchUsersByUsername(searchReq);
                 expect(searchResp.isOK).toBeTruthy();
                 if (searchResp.response && resp.response) {
                     const ans = { _id: resp.response._id, username: 'create8user', relationship: { status: 'unknown'} }
@@ -213,7 +213,7 @@ describe('CoveyTownRequestHandlers', () => {
             const userSearchingResp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(userSearchingRequest);
             if (userSearchingResp.response) {
                 const searchReq: SearchUsersRequest = { currentUserId: userSearchingResp.response._id.toString(), username: 'create9' };
-                const searchResp: ResponseEnvelope<SearchUsersResponse> = await searchUsersByUsername(searchReq);
+                const searchResp: ResponseEnvelope<ListUsersResponse<UserWithRelationship>> = await searchUsersByUsername(searchReq);
                 expect(searchResp.isOK).toBeTruthy();
                 if (searchResp.response) {
                     expect(searchResp.response.users).toEqual([]);

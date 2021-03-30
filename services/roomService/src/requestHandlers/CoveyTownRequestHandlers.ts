@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import DatabaseController, { AccountCreateResponse, LoginResponse, SearchUsersResponse } from '../database/db';
+import DatabaseController, { AccountCreateResponse, LoginResponse, ListUsersResponse, UserWithRelationship, UsersList } from '../database/db';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -267,13 +267,12 @@ export async function loginHandler(requestData: LoginRequest): Promise<ResponseE
   }
 }
 
-export async function searchUsersByUsername(requestData: SearchUsersRequest) : Promise<ResponseEnvelope<SearchUsersResponse>> {
+export async function searchUsersByUsername(requestData: SearchUsersRequest) : Promise<ResponseEnvelope<ListUsersResponse<UserWithRelationship>>> {
   try {
     const db = new DatabaseController();
     await db.connect();
     const result = await db.searchUsersByUsername(requestData.currentUserId, requestData.username);
 
-    
     db.close();
     return {
       isOK: true,
@@ -328,6 +327,70 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
     };
   }
 }
+
+export async function listNeighbors(currentUserId: string) : Promise<ResponseEnvelope<ListUsersResponse<UsersList>>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const neighborsList = await db.listNeighbors(currentUserId);
+
+    db.close();
+    return {
+      isOK: true,
+      response: neighborsList,
+    }
+
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
+export async function listRequestsReceived(currentUserId: string) : Promise<ResponseEnvelope<ListUsersResponse<UsersList>>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const requestsReceivedList = await db.listRequestsReceived(currentUserId);
+
+    db.close();
+    return {
+      isOK: true,
+      response: requestsReceivedList,
+    }
+
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
+export async function listRequestsSent(currentUserId: string) : Promise<ResponseEnvelope<ListUsersResponse<UsersList>>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const requestsSentList = await db.listRequestsSent(currentUserId);
+
+    db.close();
+    return {
+      isOK: true,
+      response: requestsSentList,
+    }
+
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
 
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
