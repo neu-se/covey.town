@@ -4,14 +4,14 @@ import { AccountCreateRequest, LoginRequest, SearchUsersRequest,
 import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
 let db: DatabaseController;
 
-beforeAll(async () => {
-  db = new DatabaseController();
-  await db.connect();
-});
+// beforeAll(async () => {
+//   db = new DatabaseController();
+//   await db.connect();
+// });
 
-afterAll(() => {
-    db.close();
-});
+// afterAll(() => {
+//     db.close();
+// });
 
 describe('CoveyTownRequestHandlers', () => {
     describe('accountCreateHandler()', () => {
