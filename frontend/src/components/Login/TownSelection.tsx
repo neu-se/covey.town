@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import assert from "assert";
 import { useHistory } from 'react-router-dom';
 import {
+  Avatar, 
+  AvatarBadge,
   Box,
   Button,
   Checkbox,
@@ -19,7 +21,10 @@ import {
   Th,
   Thead,
   Tr,
-  useToast
+  useToast,
+  Image,
+  List,
+  ListItem
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
@@ -28,12 +33,22 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 import IAuth from '../../services/authentication/IAuth';
 import RealmAuth from '../../services/authentication/RealmAuth';
 import useAuthInfo from '../../hooks/useAuthInfo';
+import { CoveyUserProfile } from '../../CoveyTypes';
+
+const DEFAULT_PROFILE_PICTURE = 'https://w7.pngwing.com/pngs/752/876/png-transparent-yellow-emoji-illustration-emoji-sticker-text-messaging-iphone-emoticon-blushing-emoji-face-heart-smiley.png';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
+type Friend = {
+  profile: CoveyUserProfile,
+  status: boolean,
+  room?: string,
+}
+
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
+  const [friendList, setFriendList] = useState<Friend[]>([])
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const history = useHistory();
@@ -89,6 +104,50 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const fetchFriend = () => {
+    setFriendList([{
+      profile: {
+        user_id: '1',
+        userName: 'Danny',
+        email: 'danny@gmail.com',
+        pfpURL: DEFAULT_PROFILE_PICTURE,
+      },
+      status: false
+    },
+    {
+      profile: {
+        user_id: '2',
+        userName: 'Nick',
+        email: 'nick@gmail.com',
+        pfpURL: DEFAULT_PROFILE_PICTURE,
+      },
+      status: true
+    },
+    {
+      profile: {
+        user_id: '3',
+        userName: 'Genevieve',
+        email: 'genevieve@gmail.com',
+        pfpURL: DEFAULT_PROFILE_PICTURE,
+      },
+      status: true,
+      room: 'abc'
+    },
+    {
+      profile: {
+        user_id: '4',
+        userName: 'Brian',
+        email: 'brian@gmail.com',
+        pfpURL: DEFAULT_PROFILE_PICTURE,
+      },
+      status: false
+    }])
+  }
+
+  useEffect(() => {
+    fetchFriend()
+  }, [authInfo])
+
   const handleProfile = () => history.push('/profile')
 
   return (
@@ -99,18 +158,68 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Heading as="h2" size="lg">You are logged in as: {userName}</Heading>
             <Flex p="4">
               <Box flex="1">
-            <FormControl>
-              <div>
-                <Button data-testid="editProfileButton"
-                onClick={() => handleEditProfile()}>Edit or View Profile</Button>
-                <Button m={1} data-testid="logoutButton"
-                onClick={() => handleLogout()}>Logout</Button>
-              </div>
-            </FormControl>
-            <img src={loggedInUser?.profile.pfpURL}/>
-            </Box>
+                <FormControl>
+                  <div>
+                    <Button data-testid="editProfileButton"
+                    onClick={() => handleEditProfile()}>Edit or View Profile</Button>
+                    <Button m={1} data-testid="logoutButton"
+                    onClick={() => handleLogout()}>Logout</Button>
+                  </div>
+                </FormControl>
+                <img alt="" src={loggedInUser?.profile.pfpURL}/>
+              </Box>
             </Flex>
           </Box>
+
+          <Box p="4" borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg">Friends:</Heading>
+            <Box maxH="500px" overflowY="scroll">
+              <Table>
+                <TableCaption placement="top">Online</TableCaption>
+                <Thead><Tr><Th>Friend Name</Th><Th>Status</Th><Th>Join friend&apos;s town</Th></Tr></Thead>
+                <Tbody>
+                  {
+                    friendList.map(friend => friend.status &&
+                      <Tr key={friend.profile.user_id}>
+                        <Td role='cell'>
+                          <Flex>
+                            <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px">
+                              <AvatarBadge boxSize="1.25em" bg="green.500" />
+                            </Avatar>
+                            { friend.profile.userName }
+                          </Flex> 
+                        </Td>
+                        <Td role='cell'>{
+                          friend.room? `In room ${friend.room}` : 'In lobby'
+                        }</Td>
+                        {
+                          friend.room? <Td><Button onClick={handleJoin}>Connect</Button></Td> : <Td/>
+                        }
+                      </Tr>)
+                  }
+                </Tbody>
+              </Table>
+              <Table>
+                <TableCaption placement="top">Offline</TableCaption>
+                <Tbody>
+                  {
+                    friendList.map(friend => !friend.status &&  
+                    <Tr key={friend.profile.user_id}>
+                      <Td role='cell'>
+                        <Flex>
+                          <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px">
+                            <AvatarBadge boxSize="1.25em" bg="gray.50" />
+                          </Avatar>
+                            {friend.profile.userName}
+                        </Flex> 
+                      </Td>
+                    </Tr>)
+                  }
+                </Tbody>
+              </Table>
+            </Box>
+          </Box>
+
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
