@@ -2,16 +2,17 @@ import { AccountCreateRequest, LoginRequest, SearchUsersRequest,
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
     searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
 import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
+
 let db: DatabaseController;
 
-// beforeAll(async () => {
-//   db = new DatabaseController();
-//   await db.connect();
-// });
+beforeAll(async () => {
+  db = new DatabaseController();
+  await db.connect();
+});
 
-// afterAll(() => {
-//     db.close();
-// });
+afterAll(() => {
+    db.close();
+});
 
 describe('CoveyTownRequestHandlers', () => {
     describe('accountCreateHandler()', () => {

@@ -98,7 +98,7 @@ describe('db', () => {
     });
 
     it('searched and none found', async () => {
-      const searchResp = await db.searchUsersByUsername('1', 'create6');
+      const searchResp = await db.searchUsersByUsername('1', 'create111111');
       expect(searchResp.users).toEqual([]);
     });
   });
