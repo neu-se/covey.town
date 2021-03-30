@@ -182,14 +182,14 @@ export default class CoveyTownController {
   // Andrew - have every client pause their video
   pauseVideos(): void {
     this._videActionTimeStamps.push( { actionType: 'pause', actionDate: new Date()  })
-    console.log(this._videActionTimeStamps)
+    // console.log(this._videActionTimeStamps)
     this._listeners.forEach((listener) => listener.onPlayerPaused());
   }
 
   // Andrew - have every client play their video
   playVideos(): void {
     this._videActionTimeStamps.push( { actionType: 'play', actionDate: new Date()  })
-    console.log(this._videActionTimeStamps)
+    // console.log(this._videActionTimeStamps)
     // this._videActionTimeStamps.push( { actionType: 'play', actionDate: new Date()  })
     this._listeners.forEach((listener) => listener.onPlayerPlayed());
   }
@@ -215,8 +215,8 @@ export default class CoveyTownController {
       const lastPause = this._videActionTimeStamps.reduce(function(prev, current) {
         return (prev.actionDate.getDate > current.actionDate.getDate && current.actionType === 'pause') ? prev : current
       });
-      console.log(this._videActionTimeStamps)
-      console.log(lastPause.actionDate)
+      // console.log(this._videActionTimeStamps)
+      // console.log(lastPause.actionDate)
 
       // Account for cases
       const currentTime = lastPause.actionDate.getTime() - this._videActionTimeStamps[1].actionDate.getTime()
