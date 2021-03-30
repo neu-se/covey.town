@@ -145,13 +145,14 @@ export async function townMergeableListHandler(): Promise<ResponseEnvelope<TownL
 
 export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
+  console.log('got into town create')
   if (requestData.friendlyName.length === 0) {
     return {
       isOK: false,
       message: 'FriendlyName must be specified',
     };
   }
-  const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed);
+  const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed, requestData.isMergeable);
   return {
     isOK: true,
     response: {
