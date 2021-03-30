@@ -29,6 +29,16 @@ function generateTestLocation(): UserLocation {
   };
 }
 
+function createTownAddListeners(listeners?: CoveyTownListener[]): CoveyTownController {
+  const newController = new CoveyTownController('NewController', true);
+  if (listeners && listeners.length > 0) {
+    listeners.forEach((listener) => {
+      newController.addTownListener(listener);
+    });
+  }
+  return newController;
+}
+
 describe('CoveyTownController', () => {
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
@@ -66,6 +76,21 @@ describe('CoveyTownController', () => {
       mockListeners.forEach(listener => testingTown.addTownListener(listener));
       testingTown.updatePlayerLocation(player, newLocation);
       mockListeners.forEach(listener => expect(listener.onPlayerMoved).toBeCalledWith(player));
+    });
+    it('should notify added listeners of player movement between super and sub map when updatePlayerRoom is called [%s]', async () => {
+      const newController = createTownAddListeners([mockListeners[0]]);
+      const playerToMigrate = new Player('Player1');
+      await newController.addPlayer(playerToMigrate);
+      expect(playerToMigrate.mapId).toEqual('0');
+
+      newController.updatePlayerMap(playerToMigrate, '1');
+      newController.addTownListener(mockListeners[2]);
+      newController.updatePlayerMap(playerToMigrate, '0');
+
+      expect(mockListeners[0].onPlayerMapChange).toHaveBeenCalledWith(playerToMigrate);
+      expect(mockListeners[0].onPlayerMapChange).toBeCalledTimes(2);
+      expect(mockListeners[2].onPlayerMapChange).toHaveBeenCalledWith(playerToMigrate);
+      expect(mockListeners[1].onPlayerMapChange).toBeCalledTimes(0);
     });
     it('should notify added listeners of player disconnections when destroySession is called', async () => {
       const player = new Player('test player');
