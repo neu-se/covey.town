@@ -1,4 +1,4 @@
-/* import { AccountCreateRequest, LoginRequest, SearchUsersRequest, 
+import { AccountCreateRequest, LoginRequest, SearchUsersRequest, 
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
     searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
 import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
@@ -10,9 +10,9 @@ beforeAll(async () => {
   await db.connect();
 });
 
-afterAll(async (done) => {
+afterAll(() => {
     db.close();
-    done();
+
 });
 
 describe('CoveyTownRequestHandlers', () => {
@@ -370,4 +370,4 @@ describe('CoveyTownRequestHandlers', () => {
             // TODO
         });
     });
-  }); */
+  });
