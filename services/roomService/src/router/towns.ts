@@ -1,18 +1,19 @@
-import { Express } from 'express';
 import BodyParser from 'body-parser';
-import io from 'socket.io';
+import { Express } from 'express';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
+import io from 'socket.io';
 import {
-  townCreateHandler, townDeleteHandler,
+  accountCreateHandler,
+  loginHandler,
+  searchUsersByUsername,
+  sendAddNeighborRequest,
+  townCreateHandler,
+  townDeleteHandler,
   townJoinHandler,
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
-  accountCreateHandler,
-  searchUsersByUsername,
-  loginHandler,
-  sendAddNeighborRequest
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -26,14 +27,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         userName: req.body.userName,
         coveyTownID: req.body.coveyTownID,
       });
-      res.status(StatusCodes.OK)
-        .json(result);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          message: 'Internal server error, please see log in server for more details',
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
     }
   });
 
@@ -46,14 +45,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         coveyTownID: req.params.townID,
         coveyTownPassword: req.params.townPassword,
       });
-      res.status(200)
-        .json(result);
+      res.status(200).json(result);
     } catch (err) {
       logError(err);
-      res.status(500)
-        .json({
-          message: 'Internal server error, please see log in server for details',
-        });
+      res.status(500).json({
+        message: 'Internal server error, please see log in server for details',
+      });
     }
   });
 
@@ -63,14 +60,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   app.get('/towns', BodyParser.json(), async (_req, res) => {
     try {
       const result = await townListHandler();
-      res.status(StatusCodes.OK)
-        .json(result);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          message: 'Internal server error, please see log in server for more details',
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
     }
   });
 
@@ -80,14 +75,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   app.post('/towns', BodyParser.json(), async (req, res) => {
     try {
       const result = await townCreateHandler(req.body);
-      res.status(StatusCodes.OK)
-        .json(result);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          message: 'Internal server error, please see log in server for more details',
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
     }
   });
   /**
@@ -101,50 +94,44 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         friendlyName: req.body.friendlyName,
         coveyTownPassword: req.body.coveyTownPassword,
       });
-      res.status(StatusCodes.OK)
-        .json(result);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          message: 'Internal server error, please see log in server for more details',
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
     }
   });
 
   /**
    * Create an account
    */
-    app.post('/signup', BodyParser.json(), async (req, res) => {
+  app.post('/signup', BodyParser.json(), async (req, res) => {
     try {
       console.log(req.body);
       const result = await accountCreateHandler(req.body);
-      res.status(StatusCodes.OK)
-        .json(result);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          message: 'Internal server error, please see log in server for more details',
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
     }
   });
 
   /**
    * Login to an existing account to get id
    */
-   app.post('/login', BodyParser.json(), async (req, res) => {
+  app.post('/login', BodyParser.json(), async (req, res) => {
     try {
       console.log(req.body);
       const result = await loginHandler(req.body);
-      res.status(StatusCodes.OK)
-        .json(result);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          message: 'Internal server error, please see log in server for more details',
-        });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
     }
   });
 
@@ -152,37 +139,34 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    * Search for an account with the passed username
    */
   app.get('/users/:username', BodyParser.json(), async (req, res) => {
-  try {
-    const result = await searchUsersByUsername({
-      username: req.params.username
-    });
-    res.status(StatusCodes.OK)
-      .json(result);
-  } catch (err) {
-    logError(err);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({
+    try {
+      const result = await searchUsersByUsername({
+        currentUserId: req.params.currentUserId,
+        username: req.params.username,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: 'Internal server error, please see log in server for more details',
       });
-  }
-});
+    }
+  });
 
-/*
-* Send neighbor request
-*/
-app.get('/users/request_neighbor', BodyParser.json(), async (req, res) => {
-try {
- const result = await sendAddNeighborRequest(req.body);
- res.status(StatusCodes.OK)
-   .json(result);
-} catch (err) {
- logError(err);
- res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-   .json({
-     message: 'Internal server error, please see log in server for more details',
-   });
-}
-});
+  /*
+   * Send neighbor request
+   */
+  app.get('/users/request_neighbor', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await sendAddNeighborRequest(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);
