@@ -273,7 +273,6 @@ export async function searchUsersByUsername(requestData: SearchUsersRequest) : P
     await db.connect();
     const result = await db.searchUsersByUsername(requestData.currentUserId, requestData.username);
 
-    
     db.close();
     return {
       isOK: true,
@@ -310,12 +309,6 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
 
     const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
     db.close();
-    // if (result.status !== 'neighbor') {
-    //   return {
-    //     isOK: false,
-    //     message: "Request doesn't exist",
-    //   };
-    // }
 
     return {
       isOK: true,

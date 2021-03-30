@@ -91,6 +91,21 @@ export default class DatabaseController {
   }
 
   /**
+     * Works to remove a mapping from the neighbor_mappings collection in the coveytown db
+     * @param neighbor1 name of the user whose friend request was accepted
+     * @param neighbor2 name of the user who accepted the friend request
+     * @returns a string with the deletion status
+     */
+   async removeMappingFromCollection(neighbor1: string, neighbor2: string): Promise<string> {
+    try {
+      await this.neighborMappings.deleteOne({'neighbor1': neighbor1, 'neighbor2': neighbor2});
+      return 'deletedRequest';
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  /**
      * Creates an account using the passed username and password.
      * @param username the username of the new user
      * @param password the password of the new user

@@ -1,7 +1,5 @@
 import DatabaseController from './db';
 
-// import { AddNeighborResponse } from '../requestHandlers/CoveyTownRequestHandlers';
-
 const db = new DatabaseController();
 
 beforeAll(async () => {
@@ -156,7 +154,23 @@ describe('db', () => {
     });
 
     it('already neighbors', async () => {
-      // TODO
+      const username = 'create32';
+      const password = 'pass32';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create33';
+      const password2 = 'pass33';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      await db.acceptRequest(resp2._id, resp._id);
+      
+      const resp3 = await db.sendRequest(resp._id, resp2._id);
+      expect(resp3.status).toEqual('neighbor');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeMappingFromCollection(resp._id, resp2._id);
     })
   });
 
@@ -179,7 +193,23 @@ describe('db', () => {
 
   describe('neighborStatus()', () => {
     it('neighbor', async () => {
-        // TODO test with acceptRequest
+      const username = 'create30';
+      const password = 'pass30';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create31';
+      const password2 = 'pass31';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      await db.acceptRequest(resp2._id, resp._id);
+      
+      const resp3 = await db.neighborStatus(resp._id, resp2._id);
+      expect(resp3.status).toEqual('neighbor');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeMappingFromCollection(resp._id, resp2._id);
     });
 
     it('request sent', async () => {
@@ -257,11 +287,254 @@ describe('db', () => {
       expect(validation).toEqual('user_not_found');
     })
   });
+
+  describe('acceptRequest()', () => { // all of them expect a neighbor status
+    it('successfully accepted request', async () => {
+      const username = 'create22';
+      const password = 'pass22';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create23';
+      const password2 = 'pass23';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      
+      const resp3 = await db.acceptRequest(resp2._id, resp._id);
+      expect(resp3.status).toEqual('neighbor');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeMappingFromCollection(resp._id, resp2._id);
+    });
+
+    it('already neighbors so cannot accept', async () => {
+      const username = 'create24';
+      const password = 'pass24';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create25';
+      const password2 = 'pass25';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      
+      await db.acceptRequest(resp2._id, resp._id);
+      const resp3 = await db.acceptRequest(resp2._id, resp._id); // repeat call
+      expect(resp3.status).toEqual('neighbor');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeMappingFromCollection(resp._id, resp2._id);
+    });
+
+    it('request was sent (not received) so cannot accept', async () => {
+      const username = 'create26';
+      const password = 'pass26';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create27';
+      const password2 = 'pass27';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      
+      const resp3 = await db.acceptRequest(resp._id, resp2._id);
+      expect(resp3.status).toEqual('requestSent');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp._id, resp2._id);
+    });
+
+    it('unknown relationship so cannot accept', async () => {
+      const username = 'create28';
+      const password = 'pass28';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create29';
+      const password2 = 'pass29';
+      const resp2 = await db.insertUser(username2, password2);
+      
+      const resp3 = await db.acceptRequest(resp._id, resp2._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+  });
+
+  describe('removeNeighborRequest()', () => { 
+    it('successfully removed a sent request', async () => { // should return unknown
+      const username = 'create34';
+      const password = 'pass34';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create35';
+      const password2 = 'pass35';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      
+      const resp3 = await db.removeNeighborRequest(resp._id, resp2._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+
+    it('neighbors already so no request to remove', async () => {
+      const username = 'create36';
+      const password = 'pass36';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create37';
+      const password2 = 'pass37';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      await db.acceptRequest(resp2._id, resp._id);
+
+      const resp3 = await db.removeNeighborRequest(resp._id, resp2._id);
+      expect(resp3.status).toEqual('neighbor');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeMappingFromCollection(resp._id, resp2._id);
+    });
+
+    it('request was received so cannot remove', async () => {
+      const username = 'create38';
+      const password = 'pass38';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create39';
+      const password2 = 'pass39';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      
+      const resp3 = await db.removeNeighborRequest(resp2._id, resp._id);
+      expect(resp3.status).toEqual('requestReceived');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp._id, resp2._id);
+    });
+
+    it('unknown relationship so no request to remove', async () => {
+      const username = 'create40';
+      const password = 'pass40';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create41';
+      const password2 = 'pass41';
+      const resp2 = await db.insertUser(username2, password2);
+      
+      const resp3 = await db.removeNeighborRequest(resp._id, resp2._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+  });
+
+  describe('removeNeighbor()', () => { 
+    it('successfully removed an existing neighbor mapping way 1', async () => { // should return unknown
+      const username = 'create42';
+      const password = 'pass42';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create43';
+      const password2 = 'pass43';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      await db.acceptRequest(resp2._id, resp._id);
+
+      const resp3 = await db.removeNeighbor(resp._id, resp2._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+
+    it('successfully removed an existing neighbor mapping way 2', async () => { // should return unknown
+      const username = 'create44';
+      const password = 'pass44';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create45';
+      const password2 = 'pass45';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+      await db.acceptRequest(resp2._id, resp._id);
+
+      const resp3 = await db.removeNeighbor(resp2._id, resp._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+
+    it('requestSent relationship so no neighbor mapping to remove', async () => { 
+      const username = 'create46';
+      const password = 'pass46';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create47';
+      const password2 = 'pass47';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp._id, resp2._id);
+
+      const resp3 = await db.removeNeighbor(resp._id, resp2._id);
+      expect(resp3.status).toEqual('requestSent');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp._id, resp2._id);
+    });
+
+    it('requestReceived relationship so no neighbor mapping to remove', async () => { 
+      const username = 'create48';
+      const password = 'pass48';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create49';
+      const password2 = 'pass49';
+      const resp2 = await db.insertUser(username2, password2);
+
+      await db.sendRequest(resp2._id, resp._id);
+
+      const resp3 = await db.removeNeighbor(resp._id, resp2._id);
+      expect(resp3.status).toEqual('requestReceived');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+      await db.removeRequestFromCollection(resp2._id, resp._id);
+    });
+
+    it('unknown relationship so no neighbor mapping to remove', async () => { 
+      const username = 'create50';
+      const password = 'pass50';
+      const resp = await db.insertUser(username, password);
+
+      const username2 = 'create51';
+      const password2 = 'pass51';
+      const resp2 = await db.insertUser(username2, password2);
+
+      const resp3 = await db.removeNeighbor(resp._id, resp2._id);
+      expect(resp3.status).toEqual('unknown');
+
+      await db.removeUserFromCollection(resp._id);
+      await db.removeUserFromCollection(resp2._id);
+    });
+  });
 });
 
 /*
-NOT USED or tested yet:
-- acceptReqest
-- removeNeighborRequest
-- removeNeighbor
+NOT tested yet:
+- FIX THE NEIGHBOR STUFF IN TEST HANDLERS after acceptRequest handler implemented
 */
