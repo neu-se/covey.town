@@ -309,12 +309,6 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
 
     const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
     db.close();
-    // if (result.status !== 'neighbor') {
-    //   return {
-    //     isOK: false,
-    //     message: "Request doesn't exist",
-    //   };
-    // }
 
     return {
       isOK: true,
@@ -390,6 +384,15 @@ export async function listRequestsSent(currentUserId: string) : Promise<Response
     }
   }
 }
+// TODO
+// acceptRequest handler 
+// removeRequest handler 
+// removeNeighbor handler 
+
+// listNeighbors handler 
+// + check who is online with coveytownstore
+// listRequestsSent handler 
+// listRequestsReceived handler 
 
 
 /**

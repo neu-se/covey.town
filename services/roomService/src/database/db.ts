@@ -2,7 +2,6 @@ import assert from 'assert';
 import dotenv from 'dotenv';
 import { MongoClient, ObjectID } from 'mongodb';
 import { mongo } from 'mongoose';
-import { stringify } from 'querystring';
 
 dotenv.config();
 
@@ -12,7 +11,6 @@ export interface AccountCreateResponse {
   _id: string,
   username: string,
 }
-
 
 export interface UserWithRelationship {
   _id: string,
@@ -84,9 +82,8 @@ export default class DatabaseController {
      */
   async removeUserFromCollection(userID: string): Promise<string> {
     try {
-      const users = this.getCollection('user');
       const deleteUser = new mongo.ObjectId(userID);
-      await users.deleteOne({'_id': deleteUser});
+      await this.userCollection.deleteOne({'_id': deleteUser});
       return 'deletedUser';
     } catch (err) {
       return err.toString();
@@ -101,8 +98,22 @@ export default class DatabaseController {
      */
   async removeRequestFromCollection(requestFrom: string, requestTo: string): Promise<string> {
     try {
-      const neighborRequests = this.getCollection('neighbor_request');
-      await neighborRequests.deleteOne({'requestFrom': requestFrom, 'requestTo': requestTo});
+      await this.neighborRequests.deleteOne({'requestFrom': requestFrom, 'requestTo': requestTo});
+      return 'deletedRequest';
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  /**
+     * Works to remove a mapping from the neighbor_mappings collection in the coveytown db
+     * @param neighbor1 name of the user whose friend request was accepted
+     * @param neighbor2 name of the user who accepted the friend request
+     * @returns a string with the deletion status
+     */
+   async removeMappingFromCollection(neighbor1: string, neighbor2: string): Promise<string> {
+    try {
+      await this.neighborMappings.deleteOne({'neighbor1': neighbor1, 'neighbor2': neighbor2});
       return 'deletedRequest';
     } catch (err) {
       return err.toString();
@@ -117,8 +128,7 @@ export default class DatabaseController {
      */
   async insertUser(username: string, password: string) : Promise<AccountCreateResponse> {
     try {
-      const user = this.getCollection('user');
-      const accountCreateResponse = await user.insertOne({'username':username, 'password':password});
+      const accountCreateResponse = await this.userCollection.insertOne({'username':username, 'password':password});
 
       return  {
         _id: String(accountCreateResponse.ops[0]._id),
@@ -139,8 +149,7 @@ export default class DatabaseController {
   async login(username: string, password: string) : Promise<LoginResponse | string> {
     try {
 
-      const allUsers = this.getCollection('user');
-      const findUser = await allUsers.find({'username': username, 'password': password}).limit(1).toArray();
+      const findUser = await this.userCollection.find({'username': username, 'password': password}).limit(1).toArray();
 
       if (findUser.length === 0) {
         return 'Invalid Username and Password';
@@ -175,7 +184,7 @@ export default class DatabaseController {
 
           const searchPartialMatch = await this.userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();
 
-          const matchesWithStatus = await Promise.all<{_id: string, username: string, relationship: NeighborStatus}>(searchPartialMatch.map(async (match: any) => {
+          const matchesWithStatus = await Promise.all<UserWithRelationship>(searchPartialMatch.map(async (match: any) => {
             assert(match._id);
             assert(match.username);
             const status: NeighborStatus = await this.neighborStatus(currentUserId, match._id.toString());
@@ -218,7 +227,7 @@ export default class DatabaseController {
 
   /**
    * Find a user's ID given their username
-   * @param id: the string username of the user to search for
+   * @param id: the string id of the user to search for
    * @returns a string containing the username
    */
   async findUserById(id: string) : Promise<string> {
@@ -238,9 +247,7 @@ export default class DatabaseController {
 
   async validateUser(userID: string) : Promise<string> { 
     try {
-      const user = this.getCollection('user');
-
-      const findUser = await user.find({ '_id': new ObjectID(userID)}).limit(1).toArray();
+      const findUser = await this.userCollection.find({ '_id': new ObjectID(userID)}).limit(1).toArray();
       if (findUser.length === 1) {
         return 'existing user';
       }
@@ -259,8 +266,6 @@ export default class DatabaseController {
      */
   async sendRequest(requestFrom: string, requestTo: string) : Promise<NeighborStatus> {
     try {
-      const neighborRequest = this.getCollection('neighbor_request');
-
       // Determine if this request has already been sent
       const neighborStatus = await this.neighborStatus(requestFrom, requestTo);
 
@@ -268,7 +273,7 @@ export default class DatabaseController {
         return neighborStatus;
       }
 
-      await neighborRequest.insertOne({'requestFrom': requestFrom, 'requestTo': requestTo});
+      await this.neighborRequests.insertOne({'requestFrom': requestFrom, 'requestTo': requestTo});
 
       return { status: 'requestSent' };
 
@@ -291,9 +296,6 @@ export default class DatabaseController {
         return { status: 'neighbor' };
       }
 
-      // const user1 = JSON.stringify(user);
-      // const otherUser1 = JSON.stringify(otherUser);
-      // const neighborRequest = this.getCollection('neighbor_request');
       const requestSent = await this.neighborRequests.find({requestFrom: user, requestTo: otherUser}).toArray();
       if (requestSent.length === 1) {
         return { status: 'requestSent'};
@@ -304,7 +306,6 @@ export default class DatabaseController {
         return { status: 'requestReceived' };
       }
 
-    
       return { status: 'unknown' };
 
     } catch (err) {
@@ -434,13 +435,9 @@ export default class DatabaseController {
         return neighborStatus;
       }
 
-      const requests = this.getCollection('neighbor_request');
+      await this.neighborRequests.deleteOne({'requestFrom': userSent, 'requestTo': userAccepting});
 
-      await requests.deleteOne({'requestFrom': userSent, 'requestTo': userAccepting});
-
-      const neighborMappings = this.getCollection('neighbor_mappings');
-
-      await neighborMappings.insertOne({'neighbor1': userSent, 'neighbor2': userAccepting});
+      await this.neighborMappings.insertOne({'neighbor1': userSent, 'neighbor2': userAccepting});
 
       return {
         status: 'neighbor',
@@ -459,7 +456,6 @@ export default class DatabaseController {
      */
   async removeNeighborRequest(user: string, requestedUser: string): Promise<NeighborStatus> {
     try {
-      const requests = this.getCollection('neighbor_request');
 
       const findRequest = await this.neighborStatus(user, requestedUser);
 
@@ -467,7 +463,7 @@ export default class DatabaseController {
         return findRequest;
       }
 
-      await requests.deleteOne({'requestFrom': user, 'requestTo': requestedUser});
+      await this.neighborRequests.deleteOne({'requestFrom': user, 'requestTo': requestedUser});
 
       return { status: 'unknown' };
 
@@ -484,21 +480,20 @@ export default class DatabaseController {
      */
   async removeNeighbor(user: string, neighbor: string): Promise<NeighborStatus> {
     try {
-      const neighbors = this.getCollection('neighbor_mappings');
       const neighborStatus = await this.neighborStatus(user, neighbor);
 
       if (neighborStatus.status !== 'neighbor') {
         return neighborStatus;
       }
 
-      const neighbor1 = await neighbors.find({'neighbor1': user, 'neighbor2': neighbor}).limit(1).toArray();
+      const neighbor1 = await this.neighborMappings.find({'neighbor1': user, 'neighbor2': neighbor}).limit(1).toArray();
 
       if (neighbor1.length === 1) {
-        await neighbors.deleteOne({'neighbor1': user, 'neighbor2': neighbor});
+        await this.neighborMappings.deleteOne({'neighbor1': user, 'neighbor2': neighbor});
         return { status: 'unknown' };
       }
 
-      await neighbors.deleteOne({'neighbor1': neighbor, 'neighbor2': user});
+      await this.neighborMappings.deleteOne({'neighbor1': neighbor, 'neighbor2': user});
       return { status: 'unknown' };
             
 

@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/neu-se/covey.town#readme",
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit",
     "start": "npm run build:live",
     "production": "npm run build && node build/server.js",
     "build": "tsc -p .",
