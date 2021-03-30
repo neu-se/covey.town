@@ -141,6 +141,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   app.get('/users/:username', BodyParser.json(), async (req, res) => {
     try {
       const result = await searchUsersByUsername({
+        currentUserId: req.params.currentUserId,
         username: req.params.username,
       });
       res.status(StatusCodes.OK).json(result);
