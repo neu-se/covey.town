@@ -220,6 +220,62 @@
                  "width":89.546875,
                  "x":1045.48494238827,
                  "y":871.339298184358
+                }, 
+                {
+                 "height":98.5212689863055,
+                 "id":295,
+                 "name":"tictactoe",
+                 "rotation":0.517924512100985,
+                 "type":"",
+                 "visible":true,
+                 "width":159.023958254113,
+                 "x":353.964079204055,
+                 "y":827.804561574348
+                }, 
+                {
+                 "height":63.1607968717414,
+                 "id":296,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                    {
+                     "pixelsize":20,
+                     "text":"PLAY TIC TAC TOE",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":110.908161054831,
+                 "x":374.104078900896,
+                 "y":843.10693715077
+                }, 
+                {
+                 "height":69.0141,
+                 "id":297,
+                 "name":"leaderboard",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":188.758311442587,
+                 "x":573.560143251996,
+                 "y":831.522999449252
+                }, 
+                {
+                 "height":63.1608,
+                 "id":298,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                    {
+                     "pixelsize":20,
+                     "text":"VIEW LEADERBOARD",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":184.98998358194,
+                 "x":582.26769213534,
+                 "y":840.719575783576
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -228,7 +284,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":295,
+ "nextobjectid":299,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -237,7 +293,7 @@
          "value":"clamped"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"2021.02.15",
  "tileheight":32,
  "tilesets":[
         {
@@ -255,15 +311,6 @@
          "margin":1,
          "name":"tuxmon-sample-32px-extruded",
          "spacing":2,
-         "terrains":[
-                {
-                 "name":"Path",
-                 "tile":173
-                }, 
-                {
-                 "name":"Grass",
-                 "tile":125
-                }],
          "tilecount":720,
          "tileheight":32,
          "tiles":[
@@ -1399,8 +1446,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 1, 1, 1]
+                        }]
                 }, 
                 {
                  "id":126,
@@ -1607,8 +1653,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 1, 1, 0]
+                        }]
                 }, 
                 {
                  "id":149,
@@ -1617,8 +1662,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 1, 0, 0]
+                        }]
                 }, 
                 {
                  "id":150,
@@ -1627,8 +1671,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 1, 0, 1]
+                        }]
                 }, 
                 {
                  "id":151,
@@ -1808,8 +1851,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 0, 0, 1]
+                        }]
                 }, 
                 {
                  "id":171,
@@ -1818,8 +1860,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 0, 1, 0]
+                        }]
                 }, 
                 {
                  "id":172,
@@ -1828,8 +1869,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 0, 1, 0]
+                        }]
                 }, 
                 {
                  "id":173,
@@ -1838,8 +1878,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 0, 0, 0]
+                        }]
                 }, 
                 {
                  "id":174,
@@ -1848,8 +1887,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 1, 0, 1]
+                        }]
                 }, 
                 {
                  "id":175,
@@ -2029,8 +2067,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 1, 0, 0]
+                        }]
                 }, 
                 {
                  "id":195,
@@ -2039,8 +2076,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 0, 0, 0]
+                        }]
                 }, 
                 {
                  "id":196,
@@ -2049,8 +2085,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[1, 0, 1, 1]
+                        }]
                 }, 
                 {
                  "id":197,
@@ -2059,8 +2094,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 0, 1, 1]
+                        }]
                 }, 
                 {
                  "id":198,
@@ -2069,8 +2103,7 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
-                        }],
-                 "terrain":[0, 1, 1, 1]
+                        }]
                 }, 
                 {
                  "id":199,
@@ -6329,10 +6362,86 @@
                          "value":false
                         }]
                 }],
-         "tilewidth":32
+         "tilewidth":32,
+         "wangsets":[
+                {
+                 "colors":[
+                        {
+                         "color":"#ff0000",
+                         "name":"Path",
+                         "probability":1,
+                         "tile":173
+                        }, 
+                        {
+                         "color":"#00ff00",
+                         "name":"Grass",
+                         "probability":1,
+                         "tile":125
+                        }],
+                 "name":"Terrains",
+                 "tile":-1,
+                 "type":"corner",
+                 "wangtiles":[
+                        {
+                         "tileid":125,
+                         "wangid":[0, 2, 0, 2, 0, 2, 0, 2]
+                        }, 
+                        {
+                         "tileid":148,
+                         "wangid":[0, 2, 0, 1, 0, 2, 0, 2]
+                        }, 
+                        {
+                         "tileid":149,
+                         "wangid":[0, 2, 0, 1, 0, 1, 0, 2]
+                        }, 
+                        {
+                         "tileid":150,
+                         "wangid":[0, 2, 0, 2, 0, 1, 0, 2]
+                        }, 
+                        {
+                         "tileid":170,
+                         "wangid":[0, 1, 0, 2, 0, 1, 0, 1]
+                        }, 
+                        {
+                         "tileid":171,
+                         "wangid":[0, 1, 0, 1, 0, 2, 0, 1]
+                        }, 
+                        {
+                         "tileid":172,
+                         "wangid":[0, 1, 0, 1, 0, 2, 0, 2]
+                        }, 
+                        {
+                         "tileid":173,
+                         "wangid":[0, 1, 0, 1, 0, 1, 0, 1]
+                        }, 
+                        {
+                         "tileid":174,
+                         "wangid":[0, 2, 0, 2, 0, 1, 0, 1]
+                        }, 
+                        {
+                         "tileid":194,
+                         "wangid":[0, 2, 0, 1, 0, 1, 0, 1]
+                        }, 
+                        {
+                         "tileid":195,
+                         "wangid":[0, 1, 0, 1, 0, 1, 0, 2]
+                        }, 
+                        {
+                         "tileid":196,
+                         "wangid":[0, 1, 0, 2, 0, 2, 0, 2]
+                        }, 
+                        {
+                         "tileid":197,
+                         "wangid":[0, 1, 0, 2, 0, 2, 0, 1]
+                        }, 
+                        {
+                         "tileid":198,
+                         "wangid":[0, 2, 0, 2, 0, 2, 0, 1]
+                        }]
+                }]
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":1.5,
  "width":40
 }

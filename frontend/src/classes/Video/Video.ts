@@ -24,6 +24,8 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
+  openGameModal: () => void = ()=>{};
+
   pauseGame: () => void = ()=>{};
 
   unPauseGame: () => void = ()=>{};

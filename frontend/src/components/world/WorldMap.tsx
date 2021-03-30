@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import GameModal from '../TicTacToe/GameModal';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
@@ -246,7 +247,7 @@ class CoveyGameScene extends Phaser.Scene {
     transporters.forEach(transporter => {
         const sprite = transporter as Phaser.GameObjects.Sprite;
         sprite.y += 2 * sprite.height; // Phaser and Tiled seem to disagree on which corner is y
-        sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
+        // sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
                                   // the map
       }
     );
@@ -312,7 +313,7 @@ class CoveyGameScene extends Phaser.Scene {
         const transportTargetID = transporter.getData('target') as number;
         const target = map.findObject('Objects', obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID);
         if(target && target.x && target.y && this.lastLocation){
-          // Move the player to the target, update lastLocation and send it to other players
+       //   Move the player to the target, update lastLocation and send it to other players
           this.player.sprite.x = target.x;
           this.player.sprite.y = target.y;
           this.lastLocation.x = target.x;
@@ -324,6 +325,43 @@ class CoveyGameScene extends Phaser.Scene {
         }
       }
     })
+
+    // tic tac toe 
+        // Find all of the transporters, add them to the physics engine
+    const tictactoe = map.createFromObjects('Objects',
+        { name: 'tictactoe' })
+      this.physics.world.enable(tictactoe);
+  
+      // For each of the transporters (rectangle objects), we need to tweak their location on the scene
+      // for reasons that are not obvious to me, but this seems to work. We also set them to be invisible
+      // but for debugging, you can comment out that line.
+      tictactoe.forEach(t => {
+          const sprite1 = t as Phaser.GameObjects.Sprite;
+          sprite1.y += 2 * sprite1.height; // Phaser and Tiled seem to disagree on which corner is y
+          sprite1.setVisible(false); // Comment this out to see the transporter rectangles drawn on
+                                    // the map
+        }
+      );
+
+
+    this.physics.add.overlap(sprite, tictactoe,
+      (overlappingObject, t)=>{
+      if(cursorKeys.space.isDown && this.player){
+        this.video.openGameModal();
+        this.pause();
+        // return (<GameModal/>)
+        }
+        else{
+          // throw new Error(`Unable to find target object `);
+        }
+      }
+    )
+
+
+
+
+
+
 
     this.emitMovement({
       rotation: 'front',
@@ -468,5 +506,5 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  return <div id="map-container"/>;
+  return <><div id="map-container"/><GameModal/></>;
 }
