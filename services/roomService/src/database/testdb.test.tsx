@@ -71,11 +71,10 @@ describe('db', () => {
       const searchResp = await db.searchUsersByUsername(ans._id.toString(), userToSearch);
 
       const usersReturned = searchResp.users;
-      console.log(usersReturned);
-      // const id_one: String = usersReturned[0]._id as String;
-      // const user_one: String = usersReturned[0].username as String;
-      // expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
-      // expect(user_one).toEqual(ans.username);
+      const id_one: String = usersReturned[0]._id as String;
+      const user_one: String = usersReturned[0].username as String;
+      expect(JSON.stringify(id_one)).toEqual(JSON.stringify(userToSearchFor._id));
+      expect(user_one).toEqual(userToSearchFor.username);
       await db.removeUserFromCollection(resp._id);
       await db.removeUserFromCollection(userAns._id);
     });
@@ -85,14 +84,13 @@ describe('db', () => {
       const username = 'create5user';
       const password = 'pass5';
       const resp = await db.insertUser(username, password);
-      
+
       const searchResp = await db.searchUsersByUsername(resp._id.toString(), 'create5');
       const ans = { _id: resp._id, username: username };
       const usersReturned = searchResp.users;
       const id_one = usersReturned[0]._id;
       const user_one = usersReturned[0].username
-      // Need to figure out why that check fails
-      // expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
+      expect(JSON.stringify(id_one)).toEqual(JSON.stringify(ans._id));
       expect(user_one).toEqual(ans.username);
       await db.removeUserFromCollection(resp._id);
     });
