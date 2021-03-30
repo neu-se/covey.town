@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { withRouter,useHistory } from 'react-router-dom';
+import * as auth0 from "auth0-js";
 import {
   Flex,
   Box,
@@ -27,6 +28,26 @@ function RegisterComponent() {
     })
     const history = useHistory();
 
+  const signup = () => {
+
+    const webAuth = new auth0.WebAuth({
+      domain:       'dev-fse.us.auth0.com',
+      clientID:     'jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh',
+      redirectUri: 'http://localhost:3000/',
+    });
+
+    webAuth.signup({
+      connection: 'MongoDB',
+      email: state.email,
+      password: state.password,
+      username: "johndoe",
+    }, (err) => {
+      if (err) return alert(`Something went wrong: ${err}`);
+      return alert('success signup without login!')
+    });
+
+  }
+
     const handleChange = (e: any) => {
         const {id , value} = e.target
         setState(prevState => ({
@@ -52,19 +73,20 @@ function RegisterComponent() {
         mt={50}
 
       >
-       
+
           <>
             <Box textAlign="center">
               <Heading>Register</Heading>
             </Box>
             <Box my={4} textAlign="left">
               <form>
-               
+
                 <FormControl isRequired>
                   <FormLabel>Email</FormLabel>
                   <Input
                     type="email"
-                    placeholder="test@test.com"                    
+                    placeholder="test@test.com"
+                    onChange={(e)=>{handleChange(e)}}
                   />
                 </FormControl>
                  <FormControl isRequired>
@@ -72,9 +94,7 @@ function RegisterComponent() {
                   <Input
                     type="email"
                     placeholder="Enter your Name"
-                    
-               
-                    
+                    onChange={(e)=>{handleChange(e)}}
                   />
                 </FormControl>
                  <FormControl isRequired>
@@ -82,35 +102,33 @@ function RegisterComponent() {
                   <Input
                     type="email"
                     placeholder="Enter your username"
-                   
-                   
-                    
+                    onChange={(e)=>{handleChange(e)}}
                   />
                 </FormControl>
                 <FormControl isRequired mt={6}>
                   <FormLabel>Password</FormLabel>
                   <InputGroup>
                     <Input
-                     
+
                       placeholder="*******"
-                     
-                     
+                      onChange={(e)=>{handleChange(e)}}
+
                     />
-                   
-                   
+
+
                   </InputGroup>
                 </FormControl>
                 <FormControl isRequired mt={6}>
                   <FormLabel>Confirm Password</FormLabel>
                   <InputGroup>
                     <Input
-                     
+
                       placeholder="*******"
-                      
-                     
+                      onChange={(e)=>{handleChange(e)}}
+
                     />
-                   
-                   
+
+
                   </InputGroup>
                 </FormControl>
                 <Button
@@ -120,13 +138,13 @@ function RegisterComponent() {
                   width="full"
                   mt={4}
                 >
-                                  
-                    Sign In               
+
+                    Sign In
                 </Button>
               </form>
             </Box>
           </>
-       
+
       </Box>
     </Flex>
     )

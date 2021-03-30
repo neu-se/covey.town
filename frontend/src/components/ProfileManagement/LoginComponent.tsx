@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as auth0 from "auth0-js";
 import {useHistory, withRouter} from 'react-router-dom';
 import {
   Flex,
@@ -25,6 +26,9 @@ function LoginComponent() {
         successMessage: null
     })
 
+
+
+
     const handleChange = (e: any) => {
         const {id , value} = e.target
         setState(prevState => ({
@@ -40,6 +44,26 @@ function LoginComponent() {
     }
 
 
+    const handleLogin = () => {
+
+      const webAuth = new auth0.WebAuth({
+        domain:       'dev-fse.us.auth0.com',
+        clientID:     'jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh',
+        redirectUri: 'http://localhost:3000/',
+      });
+
+      webAuth.login({
+        email: state.email,
+        password: state.password,
+        realm: "MongoDB",
+        responseType: 'token id_token'
+      }, (err) => {
+        if (err) console.log(`incorrect: ${err}`);
+        console.log('success!')
+      });
+    }
+
+
 
     return (
        <Flex width="full" align="center" justifyContent="center">
@@ -52,31 +76,31 @@ function LoginComponent() {
         borderColor="grey"
         mt={50}
 
-      >       
+      >
           <>
             <Box textAlign="center">
               <Heading>Login</Heading>
             </Box>
             <Box my={4} textAlign="left">
               <form>
-               
+
                 <FormControl isRequired>
                   <FormLabel>Email</FormLabel>
                   <Input
                     type="email"
                     placeholder="test@test.com"
                     size="lg"
-                   
+                    onChange={(e)=>{handleChange(e)}}
                   />
                 </FormControl>
                 <FormControl isRequired mt={6}>
                   <FormLabel>Password</FormLabel>
                   <InputGroup>
-                    <Input                    
+                    <Input
                       placeholder="*******"
-                      size="lg" 
-                                        
-                    />                   
+                      size="lg"
+                      onChange={(e)=>{handleChange(e)}}
+                    />
                   </InputGroup>
                 </FormControl>
                 <Button
@@ -85,13 +109,15 @@ function LoginComponent() {
                   type="submit"
                   width="full"
                   mt={4}
-                >                                  
-                    Sign In               
+                  onClick={()=>{handleLogin()}}
+                >
+                    Sign In
                 </Button>
+
                 <Text  onClick={redirectToRegister}> Do not have an account? Register </Text>
               </form>
             </Box>
-          </>       
+          </>
       </Box>
     </Flex>
     )

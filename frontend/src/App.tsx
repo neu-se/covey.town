@@ -6,7 +6,7 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    
+
 } from "react-router-dom";
 import {
    ThemeProvider,
@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { io, Socket } from 'socket.io-client';
 import assert from 'assert';
+import {CalendarToday} from "@material-ui/icons";
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
@@ -36,6 +37,10 @@ import LoginComponent from "./components/ProfileManagement/LoginComponent";
 import RegisterComponent from "./components/ProfileManagement/RegisterComponent";
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
+import LoginButton from "./components/ProfileManagement/LoginButton";
+
+
+
 
 
 type CoveyAppUpdate =
@@ -269,34 +274,36 @@ function EmbeddedTwilioAppWrapper() {
 }
 
 export default function AppStateWrapper(): JSX.Element {
+
+
   return (
     <ThemeProvider theme={theme}>
-     
+
         <CSSReset />
          <Router>
-      
-      <div className="App">
-          <div className="mb-4">
-            <HeaderComponent/>
-          </div>
-          <Switch>
-              <Route path="/" exact={true}>
-                  <RegisterComponent/>
-              </Route>
-              <Route path="/register">
-                  <RegisterComponent/>
-              </Route>
-              <Route path="/login">
-                  <LoginComponent/>
-                  </Route>
-              <Route path="/profile">
-                  <ProfileComponent/>
-              </Route>
 
-          </Switch>
+        <div className="App">
+            <div className="mb-4">
+              <HeaderComponent/>
+            </div>
+            <Switch>
+                <Route path="/">
+                    <LoginComponent/>
+                </Route>
+                <Route path="/register">
+                    <RegisterComponent/>
+                </Route>
+                <Route path="/login">
+                    <LoginComponent/>
+                    </Route>
+                <Route path="/profile">
+                    <ProfileComponent/>
+                </Route>
+
+            </Switch>
       </div>
       </Router>
-     
+
       </ThemeProvider>
   );
 }
