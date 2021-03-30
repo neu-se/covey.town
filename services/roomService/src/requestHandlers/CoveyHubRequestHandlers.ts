@@ -56,7 +56,7 @@ export interface HubCreateResponse {
  * Response from the server for a Hub list request
  */
 export interface HubListResponse {
-    hubs: CoveyHubList;
+  hubs: CoveyHubList;
 }
 
 /**
