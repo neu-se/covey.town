@@ -12,19 +12,19 @@ import TTLGame from './TTLGame';
 
 
 export default class GameController {
-  private _gameModel;
 
-  get gameModel() {
-    return this._gameModel;
+  private _gamesList!: (TTLGame | HangmanGame | TicTacToeGame)[];
+
+  get gamesList(): (TTLGame | HangmanGame | TicTacToeGame)[] {
+    return this._gamesList;
   }
 
-  set gameModel(game) {
-    this._gameModel = game;
+  set gamesList(value: (TTLGame | HangmanGame | TicTacToeGame)[]) {
+    this._gamesList = value;
   }
 
-  // TODO: Specify gameView types
-  constructor(gameModel: TicTacToeGame | HangmanGame | TTLGame) {
-    this._gameModel = gameModel;
+  constructor() {
+    this.gamesList = [];
   }
 
   /**
@@ -48,7 +48,7 @@ export default class GameController {
         message: 'Error: No game type specified',
       };
     }
-    this.gameModel = newGame;
+    this.gamesList.push(newGame)
     return {
       isOK: true,
       response: {
@@ -61,11 +61,18 @@ export default class GameController {
 
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
     const {player2} = requestData;
-    this.gameModel.playerJoin(player2);
+    const targetGame = this.gamesList.find(game => game.id == requestData.gameID);
+    if (targetGame === undefined) {
+      return {
+        isOK: false,
+        message: 'Error: Target game not found',
+      };
+    }
+    targetGame.playerJoin(player2);
     return {
       isOK: true,
       response: {
-        gameID: requestData.gameID,
+        gameID: targetGame.id,
       },
     };
   }
@@ -77,7 +84,14 @@ export default class GameController {
    */
   async updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
     const {move} = requestData;
-    const success = this.gameModel.move(move);
+    const targetGame = this.gamesList.find(game => game.id == requestData.gameID);
+    if (targetGame === undefined) {
+      return {
+        isOK: false,
+        message: 'Error: Target game not found',
+      };
+    }
+    const success = targetGame.move(move);
     return {
       isOK: true,
       response: {},
