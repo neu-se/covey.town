@@ -297,7 +297,7 @@ export async function currentPlayerHandler(requestData: infoRequest): Promise<Re
 export async function getBoardHandler(requestData: infoRequest): Promise<ResponseEnvelope<getBoardResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.getBoard(requestData.coveyTownID);
-      if (game === undefined) {
+      if (game === null) {
         return {
           isOK: false,
           message: 'Could not find game',
@@ -315,7 +315,7 @@ export async function getBoardHandler(requestData: infoRequest): Promise<Respons
 export async function makeMoveHandler(requestData: makeMoveRequest): Promise<ResponseEnvelope<getBoardResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.makeMove(requestData.coveyTownID, Number(requestData.x), Number(requestData.y), requestData.player);
-      if (undefined === game) {
+      if (null === game) {
         return {
           isOK: false,
           message: 'Could not make move',
