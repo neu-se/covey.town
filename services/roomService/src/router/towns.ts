@@ -138,7 +138,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Search for an account with the passed username
    */
-  app.get('/users/:username', BodyParser.json(), async (req, res) => {
+  app.get('/users/:currentUserId/:username', BodyParser.json(), async (req, res) => {
     try {
       const result = await searchUsersByUsername({
         currentUserId: req.params.currentUserId,
