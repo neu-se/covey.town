@@ -1,3 +1,7 @@
+/* This class was created by DreamOfAWhale and is implemented in our code to find the time left
+   and time remaining in  our timeout.
+   https://www.reddit.com/r/learnjavascript/comments/hzc3ux/how_to_find_the_remaining_time_in_settimeout/
+*/
 export default class Timer {
     id;
     endTime: number;
