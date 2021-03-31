@@ -46,6 +46,7 @@ describe('CoveyTownsStore', () => {
     it('Should allow multiple towns with the same friendlyName', () => {
       const firstTown = createTownForTesting();
       const secondTown = createTownForTesting(firstTown.friendlyName);
+      
       expect(firstTown)
         .not
         .toBe(secondTown);
