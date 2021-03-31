@@ -26,7 +26,7 @@ export default class CoveyHubController {
     return this._isPubliclyListed;
   }
 
-  get townUpdatePassword(): string {
+  get hubUpdatePassword(): string {
     return this._hubUpdatePassword;
   }
 

@@ -39,6 +39,12 @@ describe('CoveyTownController', () => {
     expect(townController.friendlyName)
       .toBe(townName);
   });
+  it('constructor should set Hubs', () => { // Included in handout
+    const townName = `FriendlyNameTest-${nanoid()}`;
+    const townController = new CoveyTownController(townName, true);
+    expect(townController.hubs.length).toBe(8);
+    
+  });
   describe('addPlayer', () => { // Included in handout
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {

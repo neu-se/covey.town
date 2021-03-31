@@ -1,5 +1,6 @@
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
+import CoveyHubController from './CoveyHubController';
 
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
@@ -15,6 +16,7 @@ export default class CoveyTownsStore {
   private static _instance: CoveyTownsStore;
 
   private _towns: CoveyTownController[] = [];
+  private _hubs: CoveyHubController[] = [];
 
   static getInstance(): CoveyTownsStore {
     if (CoveyTownsStore._instance === undefined) {

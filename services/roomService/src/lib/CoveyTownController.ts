@@ -2,6 +2,7 @@ import { customAlphabet, nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import CoveyHubController from './CoveyHubController';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
@@ -50,6 +51,13 @@ export default class CoveyTownController {
     return this._coveyTownID;
   }
 
+  get hubs(): CoveyHubController[] {
+   return this._hubs; 
+  }
+
+  /** The List of Hubs in the town */
+  private _hubs: CoveyHubController[] = []
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -78,6 +86,24 @@ export default class CoveyTownController {
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    // Add Hubs
+    const hospital = new CoveyHubController('hospital', true);
+    this._hubs.push(hospital);
+    const club = new CoveyHubController('club', true);
+    this._hubs.push(club);
+    const privateHub_1 = new CoveyHubController('house_1', false);
+    this._hubs.push(privateHub_1);
+    const privateHub_2 = new CoveyHubController('house_2', false);
+    this._hubs.push(privateHub_2);
+    const privateHub_3 = new CoveyHubController('house_3', false);
+    this._hubs.push(privateHub_3);
+    const privateHub_4 = new CoveyHubController('house_4', false);
+    this._hubs.push(privateHub_4);
+    const privateHub_5 = new CoveyHubController('house_5', false);
+    this._hubs.push(privateHub_5);
+    const privateHub_6 = new CoveyHubController('house_6', false);
+    this._hubs.push(privateHub_6);
+    
   }
 
   /**
