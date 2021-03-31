@@ -1,5 +1,5 @@
-import { userModel as User}  from './../data/Models/users/user.model.server';
-import { townCreateHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
+import { userModel as User}  from './../data/models/users/user.model.server';
+import { townCreateHandler, townDeleteHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
 /**
  * All the resolvers are defined here.
  */
@@ -83,6 +83,16 @@ export const resolvers = {
         friendlyName: args.input.friendlyName,
         isPubliclyListed: args.input.isPubliclyListed,
       });
-    }
+    },
+
+    townDeleteRequest: async (_: any, args: any) => {
+      console.log("here");
+      const response = await townDeleteHandler({
+        coveyTownID: args.input.coveyTownID,
+        coveyTownPassword: args.input.coveyTownPassword,
+      });
+      console.log(response);
+      return response;
+    },
   }
 };

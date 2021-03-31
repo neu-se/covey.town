@@ -37,6 +37,11 @@ input townCreateRequestInput {
   isPubliclyListed: Boolean!
 }
 
+input townDeleteRequestInput {
+  coveyTownID: String!
+  coveyTownPassword: String!
+}
+
 type UserLocation {
   x: Int!
   y: Int!
@@ -76,9 +81,20 @@ type TownCreateResponseEnevelope {
   message : String
 }
 
+type TownDeleteResponse {
+  val: String
+}
+
+type TownDeleteResponseEnvelope {
+  isOK: Boolean!
+  response: TownDeleteResponse
+  message : String
+}
+
 type Mutation {
   signUp(input: signUpInput) : User
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
+  townDeleteRequest(input: townDeleteRequestInput): TownDeleteResponseEnvelope
 }
 `;
