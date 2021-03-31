@@ -123,16 +123,16 @@ export default class CoveyTownsStore {
   }
 
 
-  getBoard(coveyTownID:string): number[][] | boolean{
+  getBoard(coveyTownID:string): number[][] {
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown) {
       return existingTown.getBoard();
     }
-    return false;
+    return undefined;
   }
 
 
-  makeMove(coveyTownID:string, x:number, y:number, player: string): number[][] | boolean{
+  makeMove(coveyTownID:string, x:number, y:number, player: string): number[][]{
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown) {
       const currentPlayer = existingTown.currentPlayer();
@@ -140,7 +140,7 @@ export default class CoveyTownsStore {
         return existingTown.makeMove(x,y);
     }
   }
-    return false;
+    return undefined;
   }
 
   endGame(coveyTownID:string): boolean {
