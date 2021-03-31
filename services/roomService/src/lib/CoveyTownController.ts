@@ -97,8 +97,9 @@ export default class CoveyTownController {
     isPlaying: this._defaultVideoInfo.isPlaying,
   }
 
-  public _masterTimeElapsed = 0
-  public _currentTimer : Timer | null
+  private _masterVideoTime = 120000
+  private _masterTimeElapsed = 0
+  private _currentTimer : Timer | null
 
 
   // public _videActionTimeStamps : videoActionTimeStamp[] = []
@@ -192,43 +193,55 @@ export default class CoveyTownController {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
   }
 
+  getMilisecondsForTimer(){
+    return  (this._masterVideoTime - this._masterTimeElapsed) * 1000
+  }
+
+  createrTimer(){
+    return new Timer( () => { this.chooseNextVideo() }, this.getMilisecondsForTimer() );
+  }
+
   // Andrew - have every client pause their video
   pauseVideos(): void {
+    console.log('Pause Video')
     // Get Time Elapsed
-    let timeElapsed = this._currentTimer?.getElapsedTime()
-    console.log(timeElapsed)
+    let timeElapsed = this._currentTimer?.getElapsedSeconds();
+    // Making Timer null, will make a new one when play is pressed
+    this._currentTimer?.clearTimer();
+    this._currentTimer = null;
 
     // Add this time to the master time elapsed for anyone joinging
     if(timeElapsed){
       this._masterTimeElapsed = this._masterTimeElapsed + timeElapsed
+      console.log(this._masterTimeElapsed)
     }
     
-    // Making Timer null, will make a new one when play is pressed
-    this._currentTimer = null
-
     this._listeners.forEach((listener) => listener.onPlayerPaused());
   }
 
+
   // Andrew - have every client play their video
-  playVideos(): void { 
-    this._currentTimer = new Timer( () => {}, 120000);
-    console.log(this._currentTimer) 
+  playVideos(): void {
+    console.log('Play Video')
+    this._currentTimer = this.createrTimer();
+    console.log(this._currentTimer.getRemainingSeconds())
     this._listeners.forEach((listener) => listener.onPlayerPlayed());
   }
 
   // Andrew - if player is first to enter, then emit message to client to play default video. 
   // Otherwise, emit message to client to load curent video at timestamp of the other players. 
   addToTVArea(playerToAdd: Player, listenerToAdd: CoveyTownListener) {
-    
+
+    console.log('addToTVArea')
+
     this._listenersInTVAreaMap.set(playerToAdd, listenerToAdd);
 
     /* If this timer is running, we know that the video is currenrtly 
        playing because when paused, we set the cvurrent timer to null */
     if (this._currentTimer){
-
         /* When video is playing, we determine the current time to display by getting the
         master time elapsed and time elapsed on the timer*/
-        let currentTime = this._masterTimeElapsed + this._currentTimer.getElapsedTime() 
+        let currentTime = this._masterTimeElapsed + this._currentTimer.getElapsedSeconds() 
         const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  currentTime, isPlaying : this._currentVideoInfo.isPlaying};
 
         // If timer is already playing, we just call onVideoSyncing
@@ -239,14 +252,84 @@ export default class CoveyTownController {
     }else{
         /* We re-calculate the master time elapsed of the video when it is paused and null the timer, therefore,
            if there is not a timer, we know the master time elapsed is currently caught up. Also, when we */
-        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed, isPlaying : this._currentVideoInfo.isPlaying};
+        console.log('Here')
+        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed, isPlaying : true};
         if (upToDateVideoInfo) {
-          // I think we want this timer here, need to do a bit more testing
-          this._currentTimer = new Timer( () => {}, 120000)
+          this._currentTimer = this.createrTimer();
           listenerToAdd.onVideoSyncing(upToDateVideoInfo);
         }
       }
     }
+
+
+  // Andrew - remove listeners and most-recent video info associated with player after they leave tv area
+  removeFromTVArea(playerToRemove: Player) {
+    this._currentVideoInfoMap.delete(playerToRemove);
+    this._listenersInTVAreaMap.delete(playerToRemove);
+
+    console.log(this._listenersInTVAreaMap.size)
+
+    /* Logic to check if there is no longer anyone in the tv area
+       We need to clear the time elapsed and we need clear the timer*/
+    if (this._listenersInTVAreaMap.size === 0){
+        this._masterTimeElapsed = 0
+        this._currentTimer = null
+      }
+  }
+
+  // Andrew - This is how the server chooses the video URL with the most votes. If ther eare no votes then a 
+  // default video will be played.
+  chooseNextVideo() {
+    console.log('In Choose Next Video')
+
+    this._currentTimer?.clearTimer();
+    this._currentTimer = null;
+    this._masterTimeElapsed = 0
+
+    // Select video with most votes and send it out to all clients to start
+    let maxVotes = 0;
+    let maxVotedURL = 'https://www.youtube.com/watch?v=5kcdRBHM7kM'; // if there are no votes then default vid plays
+    this._videoURLVotes.forEach((votes, vidURL) => {
+      if (votes > maxVotes) {
+        maxVotes = votes;
+        maxVotedURL = vidURL;
+      }
+    })
+
+    // Reset Master Time and create a new timer based on voted video
+    
+    this._currentTimer = this.createrTimer();
+    // console.log(this._currentTimer.getRemainingSeconds())
+
+    this._listeners.forEach((listener) => listener.onVideoSyncing({
+      url: maxVotedURL.valueOf(),
+      timestamp: 0,
+      isPlaying: true
+    }));
+
+    // clear votes now for next round
+    this._videoURLVotes = new Map<string, number>();
+  }
+
+  // Andrew - increase the number of votes for the video URL by 1 if it exists already, otherwise, set to 1.
+  // I had to use JSON.stringify(videoURL) to convert the object with one value to just a string (this was such
+  // a weird JS/TS thing that took me a while to find a solution for since the map's set() and get() functions
+  // were not working propely when I simply used videoURL).
+  voteForVideo(videoURL: string) {
+    console.log(this._videoURLVotes);
+    const stringVideoURL = JSON.stringify(videoURL);
+    const firstSplit: string = stringVideoURL.substring(13, stringVideoURL.length - 2)
+    let seenVid = false;
+    this._videoURLVotes.forEach((numVotes, viddURL) => {
+      if (viddURL == firstSplit) {
+        seenVid = true;
+        this._videoURLVotes.set(viddURL, numVotes + 1);
+      }
+    })
+    if (!seenVid) {
+      this._videoURLVotes.set(firstSplit, 1);
+    }
+  }
 
   // Andrew - each user sends info to this regularly so that people that join tv area have synced video info
   // to start their youtube player at. NOTE: The commented part is supposed to check everyone's current video
@@ -280,64 +363,5 @@ export default class CoveyTownController {
     //     }
     //   })
     // }
-  }
-
-  // Andrew - remove listeners and most-recent video info associated with player after they leave tv area
-  removeFromTVArea(playerToRemove: Player) {
-    this._currentVideoInfoMap.delete(playerToRemove);
-    this._listenersInTVAreaMap.delete(playerToRemove);
-
-    console.log(this._listenersInTVAreaMap.size)
-
-    /* Logic to check if there is no longer anyone in the tv area
-       We need to clear the time elapsed and we need clear the timer*/
-    if (this._listenersInTVAreaMap.size === 0){
-        this._masterTimeElapsed = 0
-        this._currentTimer = null
-      }
-  }
-
-  // Andrew - This is how the server chooses the video URL with the most votes. If ther eare no votes then a 
-  // default video will be played.
-  chooseNextVideo() {
-    // Select video with most votes and send it out to all clients to start
-    let maxVotes = 0;
-    let maxVotedURL = 'https://www.youtube.com/watch?v=5kcdRBHM7kM'; // if there are no votes then default vid plays
-    console.log(this._videoURLVotes)
-    this._videoURLVotes.forEach((votes, vidURL) => {
-      if (votes > maxVotes) {
-        maxVotes = votes;
-        maxVotedURL = vidURL;
-      }
-    })
-
-    this._listeners.forEach((listener) => listener.onVideoSyncing({
-      url: maxVotedURL.valueOf(),
-      timestamp: 0,
-      isPlaying: true
-    }));
-
-    // clear votes now for next round
-    this._videoURLVotes = new Map<string, number>();
-  }
-
-  // Andrew - increase the number of votes for the video URL by 1 if it exists already, otherwise, set to 1.
-  // I had to use JSON.stringify(videoURL) to convert the object with one value to just a string (this was such
-  // a weird JS/TS thing that took me a while to find a solution for since the map's set() and get() functions
-  // were not working propely when I simply used videoURL).
-  voteForVideo(videoURL: string) {
-    console.log(this._videoURLVotes);
-    const stringVideoURL = JSON.stringify(videoURL);
-    const firstSplit: string = stringVideoURL.substring(13, stringVideoURL.length - 2)
-    let seenVid = false;
-    this._videoURLVotes.forEach((numVotes, viddURL) => {
-      if (viddURL == firstSplit) {
-        seenVid = true;
-        this._videoURLVotes.set(viddURL, numVotes + 1);
-      }
-    })
-    if (!seenVid) {
-      this._videoURLVotes.set(firstSplit, 1);
-    }
   }
 }
