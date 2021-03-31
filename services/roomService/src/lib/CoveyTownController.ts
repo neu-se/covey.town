@@ -219,19 +219,29 @@ export default class CoveyTownController {
   // Andrew - if player is first to enter, then emit message to client to play default video. 
   // Otherwise, emit message to client to load curent video at timestamp of the other players. 
   addToTVArea(playerToAdd: Player, listenerToAdd: CoveyTownListener) {
-    this._listenersInTVAreaMap.set(playerToAdd, listenerToAdd);
     
+    this._listenersInTVAreaMap.set(playerToAdd, listenerToAdd);
+
+    /* If this timer is running, we know that the video is currenrtly 
+       playing because when paused, we set the cvurrent timer to null */
     if (this._currentTimer){
-        let currentTime = this._currentTimer.getElapsedTime() + this._masterTimeElapsed
-        console.log(currentTime);
+
+        /* When video is playing, we determine the current time to display by getting the
+        master time elapsed and time elapsed on the timer*/
+        let currentTime = this._masterTimeElapsed + this._currentTimer.getElapsedTime() 
         const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  currentTime, isPlaying : this._currentVideoInfo.isPlaying};
+
+        // If timer is already playing, we just call onVideoSyncing
         if (upToDateVideoInfo) {
           listenerToAdd.onVideoSyncing(upToDateVideoInfo);
         }
+
     }else{
-        console.log(this._masterTimeElapsed);
-        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed, isPlaying : false};
+        /* We re-calculate the master time elapsed of the video when it is paused and null the timer, therefore,
+           if there is not a timer, we know the master time elapsed is currently caught up. Also, when we */
+        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed, isPlaying : this._currentVideoInfo.isPlaying};
         if (upToDateVideoInfo) {
+          // I think we want this timer here, need to do a bit more testing
           this._currentTimer = new Timer( () => {}, 120000)
           listenerToAdd.onVideoSyncing(upToDateVideoInfo);
         }
@@ -276,6 +286,15 @@ export default class CoveyTownController {
   removeFromTVArea(playerToRemove: Player) {
     this._currentVideoInfoMap.delete(playerToRemove);
     this._listenersInTVAreaMap.delete(playerToRemove);
+
+    console.log(this._listenersInTVAreaMap.size)
+
+    /* Logic to check if there is no longer anyone in the tv area
+       We need to clear the time elapsed and we need clear the timer*/
+    if (this._listenersInTVAreaMap.size === 0){
+        this._masterTimeElapsed = 0
+        this._currentTimer = null
+      }
   }
 
   // Andrew - This is how the server chooses the video URL with the most votes. If ther eare no votes then a 
