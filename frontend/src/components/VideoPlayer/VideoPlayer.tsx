@@ -33,33 +33,64 @@ export default function VideoPlayer(): JSX.Element {
     });
   },[socket]);
 
+  // return (<div>
+  //     { showYTPlayer ? <div> <YouTube
+  //       ref={playerRef}
+  //       opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 1}}}
+  //       onPause={(event) => {
+  //       //   socket?.emit('clientPaused');
+  //       }}
+  //       onPlay={(event) => {
+  //       //   socket?.emit('clientPlayed');
+  //       }} 
+  //       onReady={(event) => {
+  //           log('player is ready')
+  //       }}
+  //       onError={(event) => {
+  //         console.log('Error:', event.data);
+  //       }}
+  //       onEnd={(event) => {
+  //         socket?.emit('clientVideoEnded');
+  //       }}
+  //       onStateChange={(event) => {
+  //           // Andrew - this might be useful to add something here in the future, but it's not doing anything now
+  //       }}/>
+  //       <button type="submit" onClick={() => socket?.emit('clientPlayed')}>Play___</button>
+  //       <button type="submit" onClick={() => socket?.emit('clientPaused')}>Pause___</button>
+  //       <button type="submit" onClick={() => socket?.emit('clientEnteredTVArea')}>Sync up</button>
+  //       </div>
+  //        : null}
+  //   </div>)
+  
   return (<div>
-      { showYTPlayer ? <div> <YouTube
-        ref={playerRef}
-        opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 0}}}
-        onPause={(event) => {
-        //   socket?.emit('clientPaused');
-        }}
-        onPlay={(event) => {
-        //   socket?.emit('clientPlayed');
-        }} 
-        onReady={(event) => {
-            log('player is ready')
-        }}
-        onError={(event) => {
-          console.log('Error:', event.data);
-        }}
-        onEnd={(event) => {
-          socket?.emit('clientVideoEnded');
-        }}
-        onStateChange={(event) => {
-            // Andrew - this might be useful to add something here in the future, but it's not doing anything now
-        }}/>
-        <button type="submit" onClick={() => socket?.emit('clientPlayed')}>Play___</button>
-        <button type="submit" onClick={() => socket?.emit('clientPaused')}>Pause___</button>
-        <button type="submit" onClick={() => socket?.emit('clientEnteredTVArea')}>Sync up</button>
-        </div>
-         : null}
-    </div>)
+    { showYTPlayer ? <div> <div style={{position: 'absolute', zIndex: 300000, height: '200px', width: '400px'}}> </div> <div> <YouTube
+      ref={playerRef}
+      opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 0}}}
+      onPause={(event) => {
+      //   socket?.emit('clientPaused');
+      }}
+      onPlay={(event) => {
+      //   socket?.emit('clientPlayed');
+      }} 
+      onReady={(event) => {
+          log('player is ready')
+      }}
+      onError={(event) => {
+        console.log('Error:', event.data);
+      }}
+      onEnd={(event) => {
+        socket?.emit('clientVideoEnded');
+      }}
+      onStateChange={(event) => {
+          // Andrew - this might be useful to add something here in the future, but it's not doing anything now
+      }}/> </div>
+      <div>
+      <button type="submit" onClick={() => socket?.emit('clientPlayed')}>Play___</button>
+      <button type="submit" onClick={() => socket?.emit('clientPaused')}>Pause___</button>
+      <button type="submit" onClick={() => socket?.emit('clientEnteredTVArea')}>Sync up</button>
+      </div>
+      </div>
+       : null}
+  </div>)
 
 }
