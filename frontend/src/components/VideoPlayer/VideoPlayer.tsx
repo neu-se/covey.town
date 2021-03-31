@@ -30,6 +30,9 @@ export default function VideoPlayer(): JSX.Element {
         console.log('in vidSync here');
         const vidID = currentVideoInfo.url.split('=')[currentVideoInfo.url.split('=').length - 1];
         playerRef.current.internalPlayer.loadVideoById(vidID, currentVideoInfo.timestamp);
+        if (!currentVideoInfo.isPlaying) {
+          playerRef.current.internalPlayer.pauseVideo();
+        }
     });
   },[socket]);
 
@@ -79,7 +82,7 @@ export default function VideoPlayer(): JSX.Element {
         console.log('Error:', event.data);
       }}
       onEnd={(event) => {
-        socket?.emit('clientVideoEnded');
+        // socket?.emit('clientVideoEnded');
       }}
       onStateChange={(event) => {
           // Andrew - this might be useful to add something here in the future, but it's not doing anything now
