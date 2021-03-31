@@ -297,7 +297,7 @@ export async function currentPlayerHandler(requestData: infoRequest): Promise<Re
 export async function getBoardHandler(requestData: infoRequest): Promise<ResponseEnvelope<getBoardResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.getBoard(requestData.coveyTownID);
-      const newArray = new Number[]][];
+      const newArray = new Number[][];
       if (game === newArray ) {
         return {
           isOK: false,
@@ -316,7 +316,7 @@ export async function getBoardHandler(requestData: infoRequest): Promise<Respons
 export async function makeMoveHandler(requestData: makeMoveRequest): Promise<ResponseEnvelope<getBoardResponse>> {
       const townsStore = CoveyTownsStore.getInstance();
       const game = townsStore.makeMove(requestData.coveyTownID, Number(requestData.x), Number(requestData.y), requestData.player);
-      const newArray = new Number[]][];
+      const newArray = new Number[][];
       if (game === newArray ) {
         return {
           isOK: false,

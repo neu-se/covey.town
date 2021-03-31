@@ -128,7 +128,7 @@ export default class CoveyTownsStore {
     if (existingTown) {
       return existingTown.getBoard();
     }
-    const newArray = new Number[]][];
+    const newArray = new Number[][];
     return newArray;
   }
 
@@ -141,7 +141,7 @@ export default class CoveyTownsStore {
         return existingTown.makeMove(x,y);
     }
   }
-    const newArray = new Number[]][];
+    const newArray = new Number[][];
     return newArray;
   }
 
