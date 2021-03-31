@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
-
+// test
 /**
  * Each user who is connected to a town is represented by a Player object
  */
