@@ -60,6 +60,13 @@ export interface TownListResponse {
 }
 
 /**
+ * Response from the server for a Hub list request
+ */
+export interface HubListResponse {
+  towns: CoveyHubInfo[];
+}
+
+/**
  * Payload sent by the client to delete a Town
  */
 export interface TownDeleteRequest {
@@ -93,6 +100,13 @@ export type CoveyTownInfo = {
   coveyTownID: string;
   currentOccupancy: number;
   maximumOccupancy: number
+};
+
+export type CoveyHubInfo = { 
+  friendlyName: string; 
+  coveyHubID: string; 
+  currentOccupancy: number; 
+  maximumOccupancy: number;
 };
 
 export default class TownsServiceClient {
@@ -140,11 +154,14 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async listHubs(): Promise<HubListResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<HubListResponse>>('/hubs');
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
 }
-
-// Practice commit - To be removed
