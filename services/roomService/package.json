@@ -54,6 +54,7 @@
     "http-status-codes": "^2.1.4",
     "nanoid": "^3.1.20",
     "socket.io": "^3.0.4",
-    "twilio": "^3.54.2"
+    "twilio": "^3.54.2",
+    "typescript-dotnet-commonjs": "^4.11.2"
   }
 }
