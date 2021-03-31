@@ -5,6 +5,7 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import Timer from '../timer'
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -88,8 +89,19 @@ export default class CoveyTownController {
     timestamp: 0,
     isPlaying: true,
   };
+  
+  // Adam
+  private _currentVideoInfo: YoutubeVideoInfo = {
+    url: this._defaultVideoInfo.url, // mario video
+    timestamp: this._defaultVideoInfo.timestamp,
+    isPlaying: this._defaultVideoInfo.isPlaying,
+  }
 
-  public _videActionTimeStamps : videoActionTimeStamp[] = []
+  public _masterTimeElapsed = 0
+  public _currentTimer : Timer | null
+
+
+  // public _videActionTimeStamps : videoActionTimeStamp[] = []
 
   // Andrew - map of video URL to how many votes it has received so that, at the end of the current video, the
   // server can choose the next video URL and send it to each client to play. 
@@ -101,6 +113,7 @@ export default class CoveyTownController {
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    this._currentTimer = null;
   }
 
   /**
@@ -181,16 +194,25 @@ export default class CoveyTownController {
 
   // Andrew - have every client pause their video
   pauseVideos(): void {
-    this._videActionTimeStamps.push( { actionType: 'pause', actionDate: new Date()  })
-    // console.log(this._videActionTimeStamps)
+    // Get Time Elapsed
+    let timeElapsed = this._currentTimer?.getElapsedTime()
+    console.log(timeElapsed)
+
+    // Add this time to the master time elapsed for anyone joinging
+    if(timeElapsed){
+      this._masterTimeElapsed = this._masterTimeElapsed + timeElapsed
+    }
+    
+    // Making Timer null, will make a new one when play is pressed
+    this._currentTimer = null
+
     this._listeners.forEach((listener) => listener.onPlayerPaused());
   }
 
   // Andrew - have every client play their video
-  playVideos(): void {
-    this._videActionTimeStamps.push( { actionType: 'play', actionDate: new Date()  })
-    // console.log(this._videActionTimeStamps)
-    // this._videActionTimeStamps.push( { actionType: 'play', actionDate: new Date()  })
+  playVideos(): void { 
+    this._currentTimer = new Timer( () => {}, 120000);
+    console.log(this._currentTimer) 
     this._listeners.forEach((listener) => listener.onPlayerPlayed());
   }
 
@@ -198,37 +220,23 @@ export default class CoveyTownController {
   // Otherwise, emit message to client to load curent video at timestamp of the other players. 
   addToTVArea(playerToAdd: Player, listenerToAdd: CoveyTownListener) {
     this._listenersInTVAreaMap.set(playerToAdd, listenerToAdd);
-    if (this._listenersInTVAreaMap.size === 1) {
-      // Clearning old time stamps
-      this._videActionTimeStamps = []
-      //Adding the initial one for this video
-      this._videActionTimeStamps.push( {actionType: 'add', actionDate: new Date() })
-      listenerToAdd.onVideoSyncing(this._defaultVideoInfo);
-    } else { // listenerToAdd.onVideoSyncing({url: this._defaultVideoInfo.url, timestamp: 70, isPlaying: true});
-      // get video info from map that is constantly updating with current video infos.
-      const firstPersonKey = this._currentVideoInfoMap.keys().next().value;
-      // get youtube info
-      const firstPersonYoutubeVideoInfo = this._currentVideoInfoMap.get(firstPersonKey)
-
-      // the
-      let a = this._videActionTimeStamps[0].actionDate;
-      const lastPause = this._videActionTimeStamps.reduce(function(prev, current) {
-        return (prev.actionDate.getDate > current.actionDate.getDate && current.actionType === 'pause') ? prev : current
-      });
-      console.log(this._videActionTimeStamps)
-      // console.log(lastPause.actionDate)
-
-      // Account for cases
-      const currentTime = lastPause.actionDate.getTime() - this._videActionTimeStamps[1].actionDate.getTime()
-
-      if (firstPersonYoutubeVideoInfo){
-        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: firstPersonYoutubeVideoInfo.url, timestamp:  currentTime / 1000, isPlaying : firstPersonYoutubeVideoInfo.isPlaying };
+    
+    if (this._currentTimer){
+        let currentTime = this._currentTimer.getElapsedTime() + this._masterTimeElapsed
+        console.log(currentTime);
+        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  currentTime, isPlaying : this._currentVideoInfo.isPlaying};
         if (upToDateVideoInfo) {
+          listenerToAdd.onVideoSyncing(upToDateVideoInfo);
+        }
+    }else{
+        console.log(this._masterTimeElapsed);
+        const upToDateVideoInfo: YoutubeVideoInfo | undefined = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed, isPlaying : false};
+        if (upToDateVideoInfo) {
+          this._currentTimer = new Timer( () => {}, 120000)
           listenerToAdd.onVideoSyncing(upToDateVideoInfo);
         }
       }
     }
-  }
 
   // Andrew - each user sends info to this regularly so that people that join tv area have synced video info
   // to start their youtube player at. NOTE: The commented part is supposed to check everyone's current video
