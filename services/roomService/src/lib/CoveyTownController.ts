@@ -169,7 +169,7 @@ export default class CoveyTownController {
 
 //** TicTacToe calls **/
   startGame(player1: string, player2: string): void {
-    if ( this._players.some(e => e.id() === player1) && this._players.some(e => e.id() === player2) ){
+    if ( this._players.some(e => e.id === player1) && this._players.some(e => e.id === player2) ){
       this._tictactoe.startGame(player1,player2);
     }
     else{
