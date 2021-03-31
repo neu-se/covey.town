@@ -40,8 +40,8 @@ export interface NeighborMappingSchema {
 
 export interface NeighborRequestSchema {
   _id: string, 
-  requestTo: string,
-  requestFrom: string,
+  requestTo: string, // will be user id
+  requestFrom: string, // will be user id
 }
 
 export default class DatabaseController {
@@ -376,6 +376,7 @@ export default class DatabaseController {
             return { _id: neighbor.neighbor2, username };
           }));
 
+
           const neighborsList2 = await this.neighborMappings.find({'neighbor2': currentUserId}).toArray();
 
           const listUsers2 = await Promise.all<UsersList>(neighborsList2.map(async (neighbor: NeighborMappingSchema) => {
@@ -383,8 +384,10 @@ export default class DatabaseController {
             return { _id: neighbor.neighbor1, username };
           }));
 
+          console.log(listUsers1.concat(listUsers2))
+
           return {
-            users: listUsers1.concat(listUsers2)
+            users: listUsers1.concat(listUsers2),
           }
 
       } catch (err) {

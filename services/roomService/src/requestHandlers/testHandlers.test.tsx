@@ -1,6 +1,6 @@
 import { AccountCreateRequest, LoginRequest, SearchUsersRequest, 
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
-    searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
+    searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope, listNeighbors, listRequestsReceived, listRequestsSent} from './CoveyTownRequestHandlers';
 import DatabaseController, {AccountCreateResponse, LoginResponse, ListUsersResponse, UserWithRelationship } from '../database/db';
 let db: DatabaseController;
 
@@ -11,7 +11,6 @@ beforeAll(async () => {
 
 afterAll(() => {
     db.close();
-
 });
 
 describe('CoveyTownRequestHandlers', () => {
@@ -367,6 +366,53 @@ describe('CoveyTownRequestHandlers', () => {
 
         it('already neighbors', async () => {
             // TODO
+        });
+    });
+    describe('listingMethods()', () => {
+        it('returns empty list if no neighbors found', async () => {
+            const userId = '1';
+            const neighborList = await listNeighbors(userId);
+            expect(neighborList.isOK).toBeTruthy();
+
+            if (neighborList.isOK && neighborList.response) {
+                const users = neighborList.response.users;
+                expect(users).toEqual([]);
+            } else {
+                throw new Error('this failed when it should have passed');
+            }
+        });
+        it('returns neighbors regardless of order in mongo document', async () => {
+            const userId1 = '6063abfc7a797cb3923c3195';
+            const userId2 = '6063ac3c7a797cb3923c3197';
+
+            const neighborList1 = await listNeighbors(userId1);
+            const neighborList2 = await listNeighbors(userId2);
+
+            if (neighborList1.isOK && neighborList2.isOK && neighborList1.response && neighborList2.response) {
+                const neighbors1 = neighborList1.response.users;
+                expect(neighbors1[0]._id.toString()).toEqual(userId2);
+
+                const neighbors2 = neighborList2.response.users;
+                expect(neighbors2[0]._id.toString()).toEqual(userId1);
+            } else {
+                throw new Error('this failed when it should have passed');
+            }
+        });
+
+        it('returns id and username', async () => {
+            const userId1 = '6063abfc7a797cb3923c3195';
+            const userId2 = '6063ac3c7a797cb3923c3197';
+
+            const neighborList1 = await listNeighbors(userId1);
+
+            if (neighborList1.isOK && neighborList1.response) {
+                const neighbors1 = neighborList1.response.users;
+                expect(neighbors1[0]._id.toString()).toEqual(userId2);
+                expect(neighbors1[0].username).toEqual('testNeighborList2');
+
+            } else {
+                throw new Error('this failed when it should have passed');
+            }
         });
     });
   });

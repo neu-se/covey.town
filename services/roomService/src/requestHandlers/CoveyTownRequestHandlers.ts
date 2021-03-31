@@ -328,6 +328,7 @@ export async function listNeighbors(currentUserId: string) : Promise<ResponseEnv
     await db.connect();
 
     const neighborsList = await db.listNeighbors(currentUserId);
+    console.log(neighborsList);
 
     db.close();
     return {
