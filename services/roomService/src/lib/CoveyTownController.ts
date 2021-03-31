@@ -5,6 +5,9 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import AChatMessage from '../types/AChatMessage';
+import PrivateChatMessage from '../types/PrivateChatMessage';
+import GlobalChatMessage from '../types/GlobalChatMessage';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -152,5 +155,13 @@ export default class CoveyTownController {
 
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
+  }
+
+  sendPrivatePlayerMessage(sendingPlayer: Player, receivingPlayer: Player, message: PrivateChatMessage): void {
+    this._listeners.forEach((listener) => listener.onPrivateMessage(sendingPlayer, receivingPlayer, message));
+  }
+
+  sendGlobalPlayerMessage(player: Player, message: GlobalChatMessage): void {
+    this._listeners.forEach((listener) => listener.onGlobalMessage(player, message));
   }
 }
