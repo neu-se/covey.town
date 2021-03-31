@@ -20,22 +20,11 @@ import {
 
 function LoginComponent() {
 
-    const [state , setState] = useState({
-        email : "",
-        password : "",
-        successMessage: null
-    })
+  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
 
 
-
-
-    const handleChange = (e: any) => {
-        const {id , value} = e.target
-        setState(prevState => ({
-            ...prevState,
-            [id] : value
-        }))
-    }
 
     const history = useHistory();
 
@@ -52,9 +41,12 @@ function LoginComponent() {
         redirectUri: 'http://localhost:3000/',
       });
 
+      console.log(email);
+      console.log(password);
+
       webAuth.login({
-        email: state.email,
-        password: state.password,
+        email,
+        password,
         realm: "MongoDB",
         responseType: 'token id_token'
       }, (err) => {
@@ -90,7 +82,8 @@ function LoginComponent() {
                     type="email"
                     placeholder="test@test.com"
                     size="lg"
-                    onChange={(e)=>{handleChange(e)}}
+                    defaultValue={email}
+                    onChange={(e)=>{setEmail(e.target.value)}}
                   />
                 </FormControl>
                 <FormControl isRequired mt={6}>
@@ -99,7 +92,8 @@ function LoginComponent() {
                     <Input
                       placeholder="*******"
                       size="lg"
-                      onChange={(e)=>{handleChange(e)}}
+                      defaultValue={password}
+                      onChange={(e)=>{setPassword(e.target.value)}}
                     />
                   </InputGroup>
                 </FormControl>

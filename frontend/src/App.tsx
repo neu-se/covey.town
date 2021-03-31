@@ -3,19 +3,18 @@ import React, {
 } from 'react';
 import './App.css';
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
+  BrowserRouter as Router,
+  Switch,
+  Route,
 
 } from "react-router-dom";
 import {
-   ThemeProvider,
+  ThemeProvider,
   CSSReset,
   theme
 } from '@chakra-ui/react';
 import { io, Socket } from 'socket.io-client';
 import assert from 'assert';
-import {CalendarToday} from "@material-ui/icons";
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
@@ -37,10 +36,6 @@ import LoginComponent from "./components/ProfileManagement/LoginComponent";
 import RegisterComponent from "./components/ProfileManagement/RegisterComponent";
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
-import LoginButton from "./components/ProfileManagement/LoginButton";
-
-
-
 
 
 type CoveyAppUpdate =
@@ -165,7 +160,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
 }
 
 async function GameController(initData: TownJoinResponse,
-  dispatchAppUpdate: (update: CoveyAppUpdate) => void) {
+                              dispatchAppUpdate: (update: CoveyAppUpdate) => void) {
   // Now, set up the game sockets
   const gamePlayerID = initData.coveyUserID;
   const sessionToken = initData.coveySessionToken;
@@ -274,36 +269,33 @@ function EmbeddedTwilioAppWrapper() {
 }
 
 export default function AppStateWrapper(): JSX.Element {
-
-
   return (
     <ThemeProvider theme={theme}>
 
-        <CSSReset />
-         <Router>
+      <CSSReset />
+      <Router>
 
         <div className="App">
-            <div className="mb-4">
-              <HeaderComponent/>
-            </div>
-            <Switch>
-                <Route path="/">
-                    <LoginComponent/>
-                </Route>
-                <Route path="/register">
-                    <RegisterComponent/>
-                </Route>
-                <Route path="/login">
-                    <LoginComponent/>
-                    </Route>
-                <Route path="/profile">
-                    <ProfileComponent/>
-                </Route>
-
-            </Switch>
-      </div>
+          <div className="mb-4">
+            <HeaderComponent/>
+          </div>
+          <Switch>
+            <Route path="/" exact>
+              <LoginComponent/>
+            </Route>
+            <Route path="/register">
+              <RegisterComponent/>
+            </Route>
+            <Route path="/login">
+              <LoginComponent/>
+            </Route>
+            <Route path="/profile">
+              <ProfileComponent/>
+            </Route>
+          </Switch>
+        </div>
       </Router>
 
-      </ThemeProvider>
+    </ThemeProvider>
   );
 }

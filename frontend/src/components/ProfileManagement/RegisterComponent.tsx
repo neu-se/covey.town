@@ -23,6 +23,7 @@ function RegisterComponent() {
     const [state , setState] = useState({
         email : "",
         password : "",
+        username: "",
         confirmPassword: "",
         successMessage: null
     })
@@ -33,7 +34,7 @@ function RegisterComponent() {
     const webAuth = new auth0.WebAuth({
       domain:       'dev-fse.us.auth0.com',
       clientID:     'jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh',
-      redirectUri: 'http://localhost:3000/',
+      redirectUri: 'http://localhost:3000/profile',
     });
 
     webAuth.signup({
@@ -109,26 +110,18 @@ function RegisterComponent() {
                   <FormLabel>Password</FormLabel>
                   <InputGroup>
                     <Input
-
                       placeholder="*******"
                       onChange={(e)=>{handleChange(e)}}
-
                     />
-
-
                   </InputGroup>
                 </FormControl>
                 <FormControl isRequired mt={6}>
                   <FormLabel>Confirm Password</FormLabel>
                   <InputGroup>
                     <Input
-
                       placeholder="*******"
                       onChange={(e)=>{handleChange(e)}}
-
                     />
-
-
                   </InputGroup>
                 </FormControl>
                 <Button
@@ -137,8 +130,8 @@ function RegisterComponent() {
                   type="submit"
                   width="full"
                   mt={4}
+                  onClick={()=>{signup()}}
                 >
-
                     Sign In
                 </Button>
               </form>
