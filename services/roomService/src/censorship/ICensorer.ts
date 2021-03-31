@@ -1,11 +1,10 @@
-
 export default interface ICensorer {
 
       /**
-   * Retrieve the CoveyTownController for a given town. If no controller exists,
-   * this method should create one.
+   * Censors banned words from the incoming message, changing the characters to stars, doesn't change unbanned words
+   * returns the censored version of the message
    *
-   * @param coveyTownID the ID of the requested town
+   * @param incomingMessage the message to be censored
    */
   censorMessage(incomingMessage: string): string
 
