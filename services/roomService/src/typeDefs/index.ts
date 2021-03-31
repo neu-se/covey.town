@@ -11,20 +11,20 @@ type Query {
 
 type User {
   id: ID!
-  name: String
+  userName: String
   email: String
 }
 
 
 input signUpInput {
-  name: String !
+  userName: String !
   email: String
   password : String!
 }
 
 input loginInput {
   email: String!
-  pasword: String!
+  password: String!
 }
 
 input townJoinRequestInput {
@@ -35,6 +35,17 @@ input townJoinRequestInput {
 input townCreateRequestInput {
   friendlyName: String!
   isPubliclyListed: Boolean!
+}
+
+input updateUserInput {
+  id: ID!
+  userName: String
+  email: String
+  password: String
+}
+
+input deleteUserInput {
+  email: String
 }
 
 type UserLocation {
@@ -80,5 +91,7 @@ type Mutation {
   signUp(input: signUpInput) : User
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
+  updateUser(input: updateUserInput): User
+  deleteUser(input: deleteUserInput): Boolean
 }
 `;
