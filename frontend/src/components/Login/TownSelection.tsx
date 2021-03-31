@@ -49,6 +49,7 @@ type Friend = {
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const [friendList, setFriendList] = useState<Friend[]>([])
+  const [addFriendEmail, setAddFriendEmail] = useState<string>('');
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const history = useHistory();
@@ -105,6 +106,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   };
 
   const fetchFriend = () => {
+    // TODO: Fetch friend list from DB
     setFriendList([{
       profile: {
         user_id: '1',
@@ -149,6 +151,28 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [authInfo])
 
   const handleProfile = () => history.push('/profile')
+
+  const handleAddFriend = () => {
+    if(addFriendEmail.length > 0) {
+      // TODO: Find user with given addFriendEmail and call DB to add friend
+      toast({
+        title: `Unable to add friend`,
+        description: `Unable to find a user with email ${addFriendEmail}`,
+        status: 'error'
+      })
+      toast({
+        title: `Successfully added friend`,
+        description: `${addFriendEmail} is now your friend!`,
+        status: 'success'
+      })
+    } else {
+      toast({
+        title: 'Enter a valid email to add friend',
+        description: `You didn't enter a valid email address`,
+        status: 'info'
+      })
+    }
+  }
 
   return (
     <>
@@ -217,6 +241,15 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                   }
                 </Tbody>
               </Table>
+            </Box>
+            <Box marginTop="2">
+              <FormControl>
+                <FormLabel htmlFor="addFriendEmail">Add friend</FormLabel>
+                <Flex>
+                  <Input name="addFriendEmail" placeholder="Add friend using their email address" value={addFriendEmail} onChange={event => setAddFriendEmail(event.target.value)}/>
+                  <Button marginLeft="2" onClick={handleAddFriend}>Add</Button>
+                </Flex>
+              </FormControl>
             </Box>
           </Box>
 
