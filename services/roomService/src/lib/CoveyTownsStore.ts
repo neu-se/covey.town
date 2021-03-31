@@ -13,6 +13,9 @@ function passwordMatches(provided: string, expected: string): boolean {
 
 export default class CoveyTownsStore {
   private static _instance: CoveyTownsStore;
+  private _errorForBug = [[5,0,0],
+              [0,0,0],
+              [0,0,0]];
 
   private _towns: CoveyTownController[] = [];
 
@@ -128,8 +131,7 @@ export default class CoveyTownsStore {
     if (existingTown) {
       return existingTown.getBoard();
     }
-    const newArray = new Number[][];
-    return newArray;
+    return _errorForBug;
   }
 
 
@@ -141,8 +143,7 @@ export default class CoveyTownsStore {
         return existingTown.makeMove(x,y);
     }
   }
-    const newArray = new Number[][];
-    return newArray;
+    return _errorForBug;
   }
 
   endGame(coveyTownID:string): boolean {
