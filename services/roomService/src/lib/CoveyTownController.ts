@@ -204,7 +204,7 @@ export default class CoveyTownController {
       //Adding the initial one for this video
       this._videActionTimeStamps.push( {actionType: 'add', actionDate: new Date() })
       listenerToAdd.onVideoSyncing(this._defaultVideoInfo);
-    } else {
+    } else { // listenerToAdd.onVideoSyncing({url: this._defaultVideoInfo.url, timestamp: 70, isPlaying: true});
       // get video info from map that is constantly updating with current video infos.
       const firstPersonKey = this._currentVideoInfoMap.keys().next().value;
       // get youtube info
@@ -215,7 +215,7 @@ export default class CoveyTownController {
       const lastPause = this._videActionTimeStamps.reduce(function(prev, current) {
         return (prev.actionDate.getDate > current.actionDate.getDate && current.actionType === 'pause') ? prev : current
       });
-      // console.log(this._videActionTimeStamps)
+      console.log(this._videActionTimeStamps)
       // console.log(lastPause.actionDate)
 
       // Account for cases

@@ -248,12 +248,14 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Andrew - Register an event listener for the client socket: if client paused video then
   // have controller pause everyone's video
   socket.on('clientPaused', () => {
+    console.log('the player paused');
     townController.pauseVideos();
   });
 
   // Andrew - Register an event listener for the client socket: if client played video then
   // have controller play everyone's video
   socket.on('clientPlayed', () => {
+    console.log('the player played')
     townController.playVideos();
   });
 
@@ -261,7 +263,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   // have controller add player/listener to map of others around tv and also send synced video 
   // info to this client
   socket.on('clientEnteredTVArea', () => {
-    console.log('Client Entered TV Area')
+    console.log('Client Entered TV Area');
     townController.addToTVArea(s.player, listener);
   });
 
@@ -275,6 +277,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Andrew - Register an event listener for the client socket: remove player from appropriate maps
   // in controller when player leaves TV area
   socket.on('clientLeftTVArea', () => {
+    console.log('A client left the tv area'); // Andrew - maybe here we check if messages were received in quick succession given double sending
     townController.removeFromTVArea(s.player);
   });
 
