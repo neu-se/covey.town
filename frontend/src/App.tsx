@@ -13,6 +13,7 @@ import {
   CSSReset,
   theme
 } from '@chakra-ui/react';
+import { useAuth0 } from "@auth0/auth0-react";
 import { io, Socket } from 'socket.io-client';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
@@ -36,6 +37,7 @@ import LoginComponent from "./components/ProfileManagement/LoginComponent";
 import RegisterComponent from "./components/ProfileManagement/RegisterComponent";
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
+import LoginButton from "./components/ProfileManagement/LoginButton";
 
 
 type CoveyAppUpdate =
@@ -269,6 +271,13 @@ function EmbeddedTwilioAppWrapper() {
 }
 
 export default function AppStateWrapper(): JSX.Element {
+
+  const {isAuthenticated} = useAuth0();
+
+  useEffect(() => {
+
+  })
+
   return (
     <ThemeProvider theme={theme}>
 
@@ -279,20 +288,10 @@ export default function AppStateWrapper(): JSX.Element {
           <div className="mb-4">
             <HeaderComponent/>
           </div>
-          <Switch>
-            <Route path="/" exact>
-              <LoginComponent/>
-            </Route>
-            <Route path="/register">
-              <RegisterComponent/>
-            </Route>
-            <Route path="/login">
-              <LoginComponent/>
-            </Route>
-            <Route path="/profile">
-              <ProfileComponent/>
-            </Route>
-          </Switch>
+          {
+            isAuthenticated &&
+            <ProfileComponent/>
+          }
         </div>
       </Router>
 
