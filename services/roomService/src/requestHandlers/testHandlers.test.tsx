@@ -1,7 +1,7 @@
 import { AccountCreateRequest, LoginRequest, SearchUsersRequest, 
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
-    searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope} from './CoveyTownRequestHandlers';
-import DatabaseController, {AccountCreateResponse, LoginResponse, SearchUsersResponse} from '../database/db';
+    searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope, AcceptNeighborRequestRequest, acceptRequestHandler, RemoveNeighborRequestRequest, removeNeighborRequestHandler, RemoveNeighborMappingRequest, removeNeighborMappingHandler} from './CoveyTownRequestHandlers';
+import DatabaseController, {AccountCreateResponse, LoginResponse, NeighborStatus, SearchUsersResponse} from '../database/db';
 
 let db: DatabaseController;
 
@@ -367,7 +367,387 @@ describe('CoveyTownRequestHandlers', () => {
         });
 
         it('already neighbors', async () => {
-            // TODO
+            const req: AccountCreateRequest = { username: 'create42user', password: 'create42pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create43user', password: 'create43pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp2.response._id, userSent: resp.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeTruthy();
+                const neighborResp2: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp2.isOK).toBeTruthy();
+                if (neighborResp2.response) {
+                    expect(neighborResp2.response.status).toEqual('neighbor');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeMappingFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+    });
+
+    describe('acceptRequestHandler()', () => {
+
+        it('accept new request', async () => {
+            const req: AccountCreateRequest = { username: 'create20user', password: 'create20pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create21user', password: 'create21pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp2.response._id, userSent: resp.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeTruthy();
+                if (acceptResp.response) {
+                    expect(acceptResp.response.status).toEqual('neighbor');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeMappingFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('already neighbors', async () => {
+            const req: AccountCreateRequest = { username: 'create22user', password: 'create22pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create23user', password: 'create23pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp2.response._id, userSent: resp.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeTruthy();
+                const acceptResp2: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp2.isOK).toBeTruthy();
+                if (acceptResp2.response) {
+                    expect(acceptResp2.response.status).toEqual('neighbor');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeMappingFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('request was sent (not received) so cannot accept', async () => {
+            const req: AccountCreateRequest = { username: 'create24user', password: 'create24pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create25user', password: 'create25pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp.response._id, userSent: resp2.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeFalsy();
+                if (acceptResp.response) {
+                    expect(acceptResp.response.status).toEqual('requestSent');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeRequestFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('unknown relationship so cannot accept', async () => {
+            const req: AccountCreateRequest = { username: 'create22user', password: 'create22pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create23user', password: 'create23pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp.response._id, userSent: resp2.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeFalsy();
+                if (acceptResp.response) {
+                    expect(acceptResp.response.status).toEqual('unknown');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+    });
+
+    describe('removeNeighborRequestHandler()', () => {
+
+        it('successfully remove request', async () => {
+            const req: AccountCreateRequest = { username: 'create24user', password: 'create24pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create25user', password: 'create25pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const removeReq: RemoveNeighborRequestRequest =  { currentUser: resp.response._id, requestedUser: resp2.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborRequestHandler(removeReq);
+                expect(removeResp.isOK).toBeTruthy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('unknown');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('neighbors already so cannot remove request', async () => {
+            const req: AccountCreateRequest = { username: 'create26user', password: 'create26pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create27user', password: 'create27pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp2.response._id, userSent: resp.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeTruthy();
+                const removeReq: RemoveNeighborRequestRequest =  { currentUser: resp.response._id, requestedUser: resp2.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborRequestHandler(removeReq);
+                expect(removeResp.isOK).toBeFalsy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('neighbor');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeMappingFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('request was received so cannot remove', async () => {
+            const req: AccountCreateRequest = { username: 'create28user', password: 'create28pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create29user', password: 'create29pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const removeReq: RemoveNeighborRequestRequest =  { currentUser: resp2.response._id, requestedUser: resp.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborRequestHandler(removeReq);
+                expect(removeResp.isOK).toBeFalsy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('requestReceived');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeRequestFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('unknown relationship so no request to remove', async () => {
+            const req: AccountCreateRequest = { username: 'create30user', password: 'create30pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create31user', password: 'create31pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const removeReq: RemoveNeighborRequestRequest =  { currentUser: resp.response._id, requestedUser: resp2.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborRequestHandler(removeReq);
+                expect(removeResp.isOK).toBeTruthy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('unknown');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+    });
+
+    describe('removeNeighborHandler()', () => {
+
+        it('successfully remove existing neighbor mapping way 1', async () => {
+            const req: AccountCreateRequest = { username: 'create32user', password: 'create32pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create33user', password: 'create33pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp2.response._id, userSent: resp.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeTruthy();
+                const removeReq: RemoveNeighborMappingRequest =  { currentUser: resp.response._id, neighbor: resp2.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborMappingHandler(removeReq);
+                expect(removeResp.isOK).toBeTruthy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('unknown');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('successfully remove existing neighbor mapping way 2', async () => {
+            const req: AccountCreateRequest = { username: 'create34user', password: 'create34pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create35user', password: 'create35pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const acceptReq: AcceptNeighborRequestRequest =  { userAccepting: resp2.response._id, userSent: resp.response._id };
+                const acceptResp: ResponseEnvelope<NeighborStatus> = await acceptRequestHandler(acceptReq);
+                expect(acceptResp.isOK).toBeTruthy();
+                const removeReq: RemoveNeighborMappingRequest =  { currentUser: resp2.response._id, neighbor: resp.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborMappingHandler(removeReq);
+                expect(removeResp.isOK).toBeTruthy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('unknown');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('requestSent relationship so no neighbor mapping to remove', async () => {
+            const req: AccountCreateRequest = { username: 'create36user', password: 'create36pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create37user', password: 'create37pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const neighborReq: AddNeighborRequest = { currentUserId: resp.response._id, UserIdToRequest: resp2.response._id };
+                const neighborResp: ResponseEnvelope<AddNeighborResponse> = await sendAddNeighborRequest(neighborReq);
+                expect(neighborResp.isOK).toBeTruthy();
+                const removeReq: RemoveNeighborMappingRequest =  { currentUser: resp.response._id, neighbor: resp2.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborMappingHandler(removeReq);
+                expect(removeResp.isOK).toBeFalsy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('requestSent');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+                await db.removeRequestFromCollection(resp.response._id, resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
+        });
+
+        it('unknown relationship so no neighbor mapping to remove', async () => {
+            const req: AccountCreateRequest = { username: 'create40user', password: 'create40pass' };
+            const resp: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req);
+            expect(resp.isOK).toBeTruthy();
+
+            const req2: AccountCreateRequest = { username: 'create41user', password: 'create41pass' };
+            const resp2: ResponseEnvelope<AccountCreateResponse> = await accountCreateHandler(req2);
+            expect(resp2.isOK).toBeTruthy();
+
+            if (resp.response && resp2.response) {
+                const removeReq: RemoveNeighborMappingRequest =  { currentUser: resp.response._id, neighbor: resp2.response._id };
+                const removeResp: ResponseEnvelope<NeighborStatus> = await removeNeighborMappingHandler(removeReq);
+                expect(removeResp.isOK).toBeTruthy();
+                if (removeResp.response) {
+                    expect(removeResp.response.status).toEqual('unknown');
+                } else {
+                    throw Error('this failed when it should be passing');
+                }
+                await db.removeUserFromCollection(resp.response._id);
+                await db.removeUserFromCollection(resp2.response._id);
+            } else {
+                throw Error('this failed when it should be passing');
+            }
         });
     });
   });

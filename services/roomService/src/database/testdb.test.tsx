@@ -533,8 +533,3 @@ describe('db', () => {
     });
   });
 });
-
-/*
-NOT tested yet:
-- FIX THE NEIGHBOR STUFF IN TEST HANDLERS after acceptRequest handler implemented
-*/
