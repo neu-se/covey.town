@@ -26,6 +26,8 @@ export default class Video {
 
   openGameModal: () => void = ()=>{};
 
+  openLeaderboardModal: () => void = ()=>{};
+
   pauseGame: () => void = ()=>{};
 
   unPauseGame: () => void = ()=>{};
