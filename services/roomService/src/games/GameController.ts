@@ -38,6 +38,7 @@ export default class GameController {
     if (requestData.gameType === 'Hangman') {
       newGame = new HangmanGame();
     } else if (requestData.gameType === 'TTL') {
+      // TODO: figure out if initialState is necessary for constructor
       newGame = new TTLGame();
     } else if (requestData.gameType === 'TicTacToe') {
       newGame = new TicTacToeGame();
@@ -48,7 +49,7 @@ export default class GameController {
         message: 'Error: No game type specified',
       };
     }
-    this.gamesList.push(newGame)
+    this.gamesList.push(newGame);
     return {
       isOK: true,
       response: {
@@ -61,13 +62,14 @@ export default class GameController {
 
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
     const {player2} = requestData;
-    const targetGame = this.gamesList.find(game => game.id == requestData.gameID);
+    const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
     if (targetGame === undefined) {
       return {
         isOK: false,
         message: 'Error: Target game not found',
       };
     }
+    // TODO: Implement playerJoin method in all game classes
     targetGame.playerJoin(player2);
     return {
       isOK: true,
@@ -84,13 +86,15 @@ export default class GameController {
    */
   async updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
     const {move} = requestData;
-    const targetGame = this.gamesList.find(game => game.id == requestData.gameID);
+    const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
     if (targetGame === undefined) {
       return {
         isOK: false,
         message: 'Error: Target game not found',
       };
     }
+    // TODO: Figure out how to handle different move data types
+    // TODO: move() method should return a boolean value
     const success = targetGame.move(move);
     return {
       isOK: true,
@@ -104,24 +108,37 @@ export default class GameController {
    *
    */
   async findAllGames(): Promise<ResponseEnvelope<GameListResponse>>  {
+    const games = this.gamesList.map(game => ({
+      gameID: game.id,
+      gameState: game.gameState,
+    }),
+    );
     return {
       isOK: true,
       response: {
-        games:
+        games,
       },
-    };    }
+    };
+  }
 
   /**
    * Deletes a game from the server after it is finished
    *
    * @param requestData
    */
-  static async deleteGame(requestData: GameDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>>  {
-    const success =
+  async deleteGame(requestData: GameDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>>  {
+    let success;
+    const updatedList = this.gamesList.filter(game => game.id !== requestData.gameID);
+    if (this.gamesList.length !== updatedList.length) {
+      this.gamesList = updatedList;
+      success = true;
+    } else {
+      success = false;
+    }
     return {
       isOK: true,
       response: {},
-      message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
+      message: !success ? 'Game to delete not found. Game ID may be invalid.' : undefined,
     };
   }
 
