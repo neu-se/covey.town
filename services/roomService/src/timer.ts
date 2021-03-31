@@ -1,4 +1,4 @@
-/* This class was created by DreamOfAWhale and is implemented in our code to find the time left
+/* This class was created by DreamOfAWhale and is modified in our code to find the time left
    and time remaining in  our timeout.
    https://www.reddit.com/r/learnjavascript/comments/hzc3ux/how_to_find_the_remaining_time_in_settimeout/
 */
@@ -20,15 +20,23 @@ export default class Timer {
         clearTimeout(this.id);
     }
 
-    getRemainingTime() {
-        // const remainingTime = Math.round( (this.endTime - new Date().getTime() ) / 1000);
-        const remainingTime = (this.endTime - new Date().getTime()) / 1000;
+    getRemainingMiliseconds() {
+        const remainingTime = (this.endTime - new Date().getTime());
         return remainingTime > 0 ? remainingTime : 0;
     }
 
-    getElapsedTime() {
-        const remainingTime = (this.videoLength/1000) - this.getRemainingTime() + 1;
-        return remainingTime > 0 ? remainingTime : 0;
+    getElapsedMiliseconds() {
+        // I added one because it looked better
+        const elapsedTime = this.videoLength - this.getRemainingMiliseconds() + 1;
+        return elapsedTime > 0 ? elapsedTime : 0;
+    }
+
+    getRemainingSeconds() {
+        return this.getRemainingMiliseconds() / 1000;
+    }
+
+    getElapsedSeconds() {
+        return this.getElapsedMiliseconds() / 1000;
     }
 
 }
