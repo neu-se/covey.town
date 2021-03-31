@@ -26,7 +26,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
-import Chat from './components/Chat/Chat';
+import Chat from './components/Chat/chat';
 
 
 type CoveyAppUpdate =
