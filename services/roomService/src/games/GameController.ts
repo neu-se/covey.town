@@ -4,16 +4,15 @@ import {
   GameCreateResponse,
   GameDeleteRequest,
   GameJoinRequest, GameJoinResponse,
-  GameUpdateRequest
+  GameUpdateRequest, GameListResponse,
 } from '../client/Types';
-import TicTacToeGame from "./TicTacToeGame";
-import HangmanGame from "./HangmanGame";
-import TTLGame from "./TTLGame";
+import TicTacToeGame from './TicTacToeGame';
+import HangmanGame from './HangmanGame';
+import TTLGame from './TTLGame';
 
 
 export default class GameController {
   private _gameModel;
-  private _gameView;
 
   get gameModel() {
     return this._gameModel;
@@ -23,55 +22,52 @@ export default class GameController {
     this._gameModel = game;
   }
 
-  get gameView() {
-    return this._gameView;
-  }
-
-  set gameView(value) {
-    this._gameView = value;
-  }
-
   // TODO: Specify gameView types
-  constructor(gameModel: TicTacToeGame | HangmanGame | TTLGame, gameView) {
+  constructor(gameModel: TicTacToeGame | HangmanGame | TTLGame) {
     this._gameModel = gameModel;
-    this._gameView = gameView
-}
+  }
 
   /**
    * Creates a new game session initialized by one player
    *
    */
   async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse>> {
-    const player1 = requestData.player1
-    const initialState = requestData.initialGameState
-    const newGame = (requestData.gameType === "Hangman" ?  new HangmanGame :
-      requestData.gameType === "TTL" ? new TTLGame :
-        requestData.gameType === "TicTacToe" ? new TicTacToeGame : undefined)
+    let newGame;
+    const {player1} = requestData;
+    const initialState = requestData.initialGameState;
+    if (requestData.gameType === 'Hangman') {
+      newGame = new HangmanGame();
+    } else if (requestData.gameType === 'TTL') {
+      newGame = new TTLGame();
+    } else if (requestData.gameType === 'TicTacToe') {
+      newGame = new TicTacToeGame();
+    }
     if (newGame === undefined) {
       return {
         isOK: false,
         message: 'Error: No game type specified',
       };
     }
-    this.gameModel = newGame
+    this.gameModel = newGame;
     return {
       isOK: true,
       response: {
-        gameID: newGame.id
-      }
-    }
+        gameID: newGame.id,
+      },
+    };
   }
 
 
 
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
-    const player2 = requestData.player2
+    const {player2} = requestData;
+    this.gameModel.playerJoin(player2);
     return {
       isOK: true,
       response: {
-        gameID: requestData.gameID
-      }
-    }
+        gameID: requestData.gameID,
+      },
+    };
   }
 
   /**
@@ -79,25 +75,40 @@ export default class GameController {
    *
    * @param requestData
    */
-  static async updateGame(requestData: GameUpdateRequest) {
-    return requestData;
+  async updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+    const {move} = requestData;
+    const success = this.gameModel.move(move);
+    return {
+      isOK: true,
+      response: {},
+      message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
+    };
   }
 
   /**
    * Returns list of all games on the server
    *
    */
-  static async findAllGames()  {
-    return 0;
-  }
+  async findAllGames(): Promise<ResponseEnvelope<GameListResponse>>  {
+    return {
+      isOK: true,
+      response: {
+        games:
+      },
+    };    }
 
   /**
    * Deletes a game from the server after it is finished
    *
    * @param requestData
    */
-  static async deleteGame(requestData: GameDeleteRequest)  {
-    return requestData;
+  static async deleteGame(requestData: GameDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>>  {
+    const success =
+    return {
+      isOK: true,
+      response: {},
+      message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
+    };
   }
 
 }
