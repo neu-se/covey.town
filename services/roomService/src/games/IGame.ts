@@ -3,17 +3,17 @@ import {TicMove, HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlay
 export default interface IGame {
 
 
-    gameState : string;
+  gameState : string;
 
-    player1ID: string;
+  player1ID: string;
 
-    player2ID : string;
+  player2ID : string;
 
-    initializeGame(): void;
+  initializeGame(): void;
 
-    move(move: TicMove | TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move) : void;
+  move(move: TicMove | TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move) : void;
 
-    isGameOver() : boolean;
+  isGameOver() : boolean;
 
-    finishGame(gameState : string, player1ID: string, player2ID: string): void;
+  finishGame(gameState : string, player1ID: string, player2ID: string): void;
 }
