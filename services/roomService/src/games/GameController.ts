@@ -3,8 +3,16 @@ import {
   GameCreateRequest,
   GameCreateResponse,
   GameDeleteRequest,
-  GameJoinRequest, GameJoinResponse,
-  GameUpdateRequest, GameListResponse,
+  GameJoinRequest,
+  GameJoinResponse,
+  GameUpdateRequest,
+  GameListResponse,
+  TTLChoices,
+  HangmanWord,
+  HangmanPlayer1Move,
+  HangmanPlayer2Move,
+  TicMove,
+  TTLPlayer1Move, TTLPlayer2Move,
 } from '../client/Types';
 import TicTacToeGame from './TicTacToeGame';
 import HangmanGame from './HangmanGame';
@@ -13,7 +21,7 @@ import TTLGame from './TTLGame';
 
 export default class GameController {
 
-  private _gamesList!: (TTLGame | HangmanGame | TicTacToeGame)[];
+  private _gamesList: (TTLGame | HangmanGame | TicTacToeGame)[] = [];
 
   get gamesList(): (TTLGame | HangmanGame | TicTacToeGame)[] {
     return this._gamesList;
@@ -21,10 +29,6 @@ export default class GameController {
 
   set gamesList(value: (TTLGame | HangmanGame | TicTacToeGame)[]) {
     this._gamesList = value;
-  }
-
-  constructor() {
-    this.gamesList = [];
   }
 
   /**
@@ -36,12 +40,11 @@ export default class GameController {
     const {player1} = requestData;
     const initialState = requestData.initialGameState;
     if (requestData.gameType === 'Hangman') {
-      newGame = new HangmanGame();
+      newGame = new HangmanGame(player1, <HangmanWord>(initialState));
     } else if (requestData.gameType === 'TTL') {
-      // TODO: figure out if initialState is necessary for constructor
-      newGame = new TTLGame();
+      newGame = new TTLGame(player1, <TTLChoices>(initialState));
     } else if (requestData.gameType === 'TicTacToe') {
-      newGame = new TicTacToeGame();
+      newGame = new TicTacToeGame(player1);
     }
     if (newGame === undefined) {
       return {
@@ -58,8 +61,10 @@ export default class GameController {
     };
   }
 
-
-
+  /**
+   * Connects a second player to an existing game
+   *
+   */
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
     const {player2} = requestData;
     const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
@@ -69,7 +74,6 @@ export default class GameController {
         message: 'Error: Target game not found',
       };
     }
-    // TODO: Implement playerJoin method in all game classes
     targetGame.playerJoin(player2);
     return {
       isOK: true,
@@ -93,13 +97,21 @@ export default class GameController {
         message: 'Error: Target game not found',
       };
     }
-    // TODO: Figure out how to handle different move data types
     // TODO: move() method should return a boolean value
-    const success = targetGame.move(move);
+    let success;
+    if (targetGame instanceof TicTacToeGame) {
+      success = targetGame.move(<TicMove>move);
+    } else if (targetGame instanceof TTLGame) {
+      success = targetGame.move(<TTLPlayer2Move>move);
+    } else if (targetGame instanceof HangmanGame) {
+      success = (targetGame.move(<HangmanPlayer2Move>move));
+    } else {
+      success = false;
+    }
     return {
       isOK: true,
       response: {},
-      message: !success ? 'Invalid password or update values specified. Please double check your town update password.' : undefined,
+      message: !success ? 'Invalid update values specified.' : undefined,
     };
   }
 
