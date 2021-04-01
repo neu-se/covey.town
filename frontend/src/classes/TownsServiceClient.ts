@@ -78,13 +78,6 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
-export interface TownUpdateRequest {
-  coveyTownID: string;
-  coveyTownPassword: string;
-  friendlyName?: string;
-  isPubliclyListed?: boolean;
-}
-
 export interface LeaderboardRequest {
   coveyTownID: string;
 }

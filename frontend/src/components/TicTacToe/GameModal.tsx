@@ -1,11 +1,6 @@
 import React, { useCallback, useState } from 'react';
-
 import {
   Button,
-  Checkbox,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,11 +12,19 @@ import {
   useToast
 } from '@chakra-ui/react';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
+import Board from './Board'
+// import Game from './Game'
+
 
 
 const GameModal: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [piece, setPiece] = React.useState('');
+  const [isRoomCreator, setIsRoomCreator] = React.useState(false);
+  const [isDisabled, setIsDisabled] = React.useState(false);
+  const [myTurn, setMyTurn] = React.useState(false);
 
   const openGame = useCallback(()=>{
     onOpen();
@@ -42,7 +45,16 @@ const GameModal: React.FunctionComponent = () => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay/>
       <ModalContent>
-        <ModalHeader>TIC TAC TOE</ModalHeader>
+      <ModalHeader>TIC TAC TOE</ModalHeader>
+    <div className="game">
+              <div className="board">
+                <Board
+                    squares={9}
+                    // onClick={index => null}
+                  />  
+                  </div>
+                  </div>
+        
         <Button onClick={closeGame}>Close</Button>
           <ModalBody pb={6}/>
       </ModalContent>
