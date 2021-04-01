@@ -244,10 +244,12 @@ export default class CoveyTownController {
   playVideos(): void {
     console.log('Play Video')
 
-    //Create a new timer to track time elapsed after play is hit
-    this._currentTimer = this.createTimer();
-
-    this._listeners.forEach((listener) => listener.onPlayerPlayed());
+    // NOTE : We added this to avoid users spamming play
+    if(!this._currentTimer){
+          //Create a new timer to track time elapsed after play is hit
+      this._currentTimer = this.createTimer();
+      this._listeners.forEach((listener) => listener.onPlayerPlayed());
+    }
   }
 
   // Andrew - if player is first to enter, then emit message to client to play default video. 
@@ -287,17 +289,16 @@ export default class CoveyTownController {
     }
     
     // Adam - Logic to only remove if player is in the current listener in tv area map
-    if( this._listenersInTVAreaMap.has( playerToRemove) ){
+    if( this._listenersInTVAreaMap.has(playerToRemove) ){
       this._listenersInTVAreaMap.get(playerToRemove)?.onDisablePlayPause(); // Andrew - so that play/pause buttons don't display after client rejoins tv area
       this._listenersInTVAreaMap.get(playerToRemove)?.onEnableVoting(); // Andrew - so that voting button works after client rejoins tv area
       this._listenersInTVAreaMap.delete(playerToRemove);
-
     }
 
     /* Adam - Logic to check if there is no longer anyone in the tv area
        We need to clear the timer and time elapsed*/
     if (this._listenersInTVAreaMap.size === 0){
-        this.destroyTimer(); 
+        this.destroyTimer();
         this._masterTimeElapsed = 0
       }
   }
@@ -333,17 +334,18 @@ export default class CoveyTownController {
     //   isPlaying: true
     // }));
 
+    this._currentVideoInfo.url = maxVotedURL.valueOf();
+
     // We only want to call onVideoSyncing to listeners in the TV Area Map
     this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
-      url: maxVotedURL.valueOf(),
+      url: this._currentVideoInfo.url,
       timestamp: 0,
       isPlaying: true
     }));
 
     /* Need to update current video url to the max voted, that way when someone joins
        after video changes we need them to load the current video*/
-    this._currentVideoInfo.url = maxVotedURL.valueOf();
-
+    
     // Andrew - this enables the voting button so that a client can vote this upcoming round
     this._listeners.forEach((listener) => listener.onEnableVoting());
 
