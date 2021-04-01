@@ -50,17 +50,6 @@ function ProfileComponent(): JSX.Element {
                   Friends
                 </Button>
                 </Link>
-                {/* <Button
-                  variantColor='teal'
-                  variant='outline'
-                  type='submit'
-                  width='full'
-                  mt={4}
-                  color='white'
-                >
-                  Friends
-                </Button> */}
-
                 <Button
                   variantColor='teal'
                   variant='outline'
