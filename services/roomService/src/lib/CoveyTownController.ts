@@ -99,7 +99,7 @@ export default class CoveyTownController {
 
   // Master video length and time elapsed are in seconds to be compatible with Youtube
   // TODO: Master video leghth for mario video
-  private _masterVideoLength = 10 // length of default mario video
+  private _masterVideoLength = 30 // length of default mario video
   //private _masterVideoLength = 1007
   private _masterTimeElapsed = 0
   private _currentTimer : Timer | null
@@ -315,7 +315,7 @@ export default class CoveyTownController {
 
     // Select video with most votes and send it out to all clients to start
     let maxVotes = 0;
-    let maxVotedURL = 'https://www.youtube.com/watch?v=5kcdRBHM7kM'; // if there are no votes then default vid plays
+    let maxVotedURL = 'https://www.youtube.com/watch?v=D7y_hoT_YZI'; // if there are no votes then default vid plays
     this._videoURLVotes.forEach((votes, vidURL) => {
       if (votes > maxVotes) {
         maxVotes = votes;
@@ -339,6 +339,10 @@ export default class CoveyTownController {
       timestamp: 0,
       isPlaying: true
     }));
+
+    /* Need to update current video url to the max voted, that way when someone joins
+       after video changes we need them to load the current video*/
+    this._currentVideoInfo.url = maxVotedURL.valueOf();
 
     // Andrew - this enables the voting button so that a client can vote this upcoming round
     this._listeners.forEach((listener) => listener.onEnableVoting());
