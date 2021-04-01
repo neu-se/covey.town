@@ -297,7 +297,6 @@ export default class CoveyTownController {
     /* Adam - Logic to check if there is no longer anyone in the tv area
        We need to clear the timer and time elapsed*/
     if (this._listenersInTVAreaMap.size === 0){
-        console.log('Here')
         this.destroyTimer(); 
         this._masterTimeElapsed = 0
       }
