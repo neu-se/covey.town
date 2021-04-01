@@ -23,6 +23,7 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { createTown } from '../../graphql/queries';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -107,7 +108,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       return;
     }
     try {
-      const newTownInfo = await apiClient.createTown({
+      const newTownInfo = await createTown({
         friendlyName: newTownName,
         isPubliclyListed: newTownIsPublic
       });
