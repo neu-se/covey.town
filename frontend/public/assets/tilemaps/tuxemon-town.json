@@ -61,15 +61,174 @@
                  "width":0,
                  "x":352,
                  "y":1216
+                }, 
+                {
+                 "height":64.5949720670387,
+                 "id":277,
+                 "name":"transporter",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"object",
+                         "value":279
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":85.5446927374302,
+                 "x":815.293296089385,
+                 "y":864.175977653632
+                }, 
+                {
+                 "height":0,
+                 "id":279,
+                 "name":"target_statue",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1108.58938547486,
+                 "y":322.101955307263
+                }, 
+                {
+                 "height":61.1033519553071,
+                 "id":283,
+                 "name":"transporter",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"object",
+                         "value":284
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":60.2304469273743,
+                 "x":192.912011173184,
+                 "y":1186.27793296089
+                }, 
+                {
+                 "height":0,
+                 "id":284,
+                 "name":"target_fountain",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":939.245810055866,
+                 "y":848.463687150838
+                }, 
+                {
+                 "height":71.5782122905028,
+                 "id":286,
+                 "name":"transporter",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"object",
+                         "value":275
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":63.722067039106,
+                 "x":990.747206703911,
+                 "y":280.20251396648
+                }, 
+                {
+                 "height":18.84375,
+                 "id":287,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                    {
+                     "pixelsize":10,
+                     "text":"To Fountain",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":89.546875,
+                 "x":192.656730097765,
+                 "y":1220.50130935754
+                }, 
+                {
+                 "height":18.8438,
+                 "id":288,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                    {
+                     "pixelsize":10,
+                     "text":"To Statue",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":89.5469,
+                 "x":819.402527653631,
+                 "y":882.687038547486
+                }, 
+                {
+                 "height":18.8438,
+                 "id":289,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                    {
+                     "pixelsize":10,
+                     "text":"Back to Start",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":89.5469,
+                 "x":993.983533240223,
+                 "y":291.730334636872
+                }, 
+                {
+                 "height":63.7220670391062,
+                 "id":293,
+                 "name":"transporter",
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"object",
+                         "value":275
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":88.1634078212292,
+                 "x":1041.37569832402,
+                 "y":862.430167597765
+                }, 
+                {
+                 "height":18.84375,
+                 "id":294,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                    {
+                     "text":"To start",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":89.546875,
+                 "x":1045.48494238827,
+                 "y":871.339298184358
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":277,
+ "nextobjectid":295,
  "orientation":"orthogonal",
  "properties":[
         {
