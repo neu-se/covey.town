@@ -1,6 +1,6 @@
 import React from "react";
 import "../Styles/Profile.css";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import {
   Flex,
   Box,
@@ -13,6 +13,7 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
+
 
 function ProfileComponent(): JSX.Element {
   return (
@@ -36,7 +37,9 @@ function ProfileComponent(): JSX.Element {
                 <Text color='white'>John Doe</Text>
                 <Text color='white'>username: john_doe</Text>
                 <Text color='white'>DOB: December 18th</Text>
-                <Button
+                <Link to='/friendsPage'>
+                  {" "}
+                  <Button
                   variantColor='teal'
                   variant='outline'
                   type='submit'
@@ -46,6 +49,17 @@ function ProfileComponent(): JSX.Element {
                 >
                   Friends
                 </Button>
+                </Link>
+                {/* <Button
+                  variantColor='teal'
+                  variant='outline'
+                  type='submit'
+                  width='full'
+                  mt={4}
+                  color='white'
+                >
+                  Friends
+                </Button> */}
 
                 <Button
                   variantColor='teal'

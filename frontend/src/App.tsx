@@ -39,6 +39,7 @@ import theme from './components/VideoCall/VideoFrontend/theme';
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
 import StarterPage from "./components/ProfileManagement/StarterPage";
+import FriendsPage from "./components/UserProfiles/FriendsPage";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -287,12 +288,14 @@ export default function AppStateWrapper(): JSX.Element {
           <div className="mb-4">
             <HeaderComponent/>    
               </div>
-                 <Route path = '/twilio' exact component={EmbeddedTwilioAppWrapper} />
+              <Route path='/twilio' exact component={EmbeddedTwilioAppWrapper} />
+              
           {
             !isAuthenticated && <StarterPage/>
           }
               <Route path='/' exact component={ProfileComponent} />
-              <Route path = '/starterPage' exact component = {StarterPage}/>
+              <Route path='/starterPage' exact component={StarterPage} />
+              <Route path = '/friendsPage' component={FriendsPage} />
           
         </div>
           </AppStateProvider>
