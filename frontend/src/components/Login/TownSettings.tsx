@@ -22,7 +22,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 const TownSettings: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed } = useCoveyAppState();
+  const { currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed } = useCoveyAppState();
 
   const toast = useToast()
   const processUpdates = async () => {
