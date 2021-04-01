@@ -10,18 +10,6 @@ const client = new ApolloClient({
   uri: 'http://localhost:8081/graphql',
   cache: new InMemoryCache()
 });
-client
-  .query({
-    query: gql`
-      query GetBooks {
-        books {
-          title
-          author
-        }
-      }
-    `
-  })
-  .then(result => console.log(result));
 
 ReactDOM.render(
   <React.StrictMode>
