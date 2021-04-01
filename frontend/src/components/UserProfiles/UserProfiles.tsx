@@ -1,11 +1,12 @@
 import { Box, Button, Flex, Heading, Stack } from '@chakra-ui/react';
 import React from 'react';
-import findAllUserProfiles from '../../graphql/queries';
+import { findAllUserProfiles } from '../../graphql/queries';
 
 export default function UserProfiles(): JSX.Element {
   // Function to create a town
   const handleCreate = async () => {
     const users = findAllUserProfiles();
+    // leave this console statement until the user profile management jsx is integrated with this
     console.log(users);
   };
 
