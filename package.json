@@ -1,52 +1,96 @@
 {
-    "name": "covey-town",
-    "version": "1.0.0",
-    "description": "Development setup",
-    "main": "index.js",
-    "scripts": {
-        "heroku-postbuild": "cd services/roomService && npm ci && npm run build",
-        "run-services-actions": "heroku local -p 3001 web",
-        "lint": "cd services/roomService && npm run-script lint && cd ../../frontend && npm run-script lint"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/neu-se/covey.town.git"
-    },
-    "author": "Jonathan Bell",
-    "license": "BSD-3-Clause",
-    "bugs": {
-        "url": "https://github.com/neu-se/covey.town/issues"
-    },
-    "homepage": "https://github.com/neu-se/covey.town#readme",
-    "devDependencies": {
-        "@types/jest": "^26.0.15",
-        "@typescript-eslint/eslint-plugin": "^4.8.1",
-        "@typescript-eslint/parser": "^4.8.1",
-        "eslint": "^7.13.0",
-        "eslint-plugin-jest": "^24.1.3",
-        "eslint-plugin-react": "^7.21.5",
-        "eslint-plugin-react-hooks": "^4.2.0",
-        "husky": "^4.3.0",
-        "lint-staged": "^10.5.1",
-        "prettier": "^2.1.2",
-        "prettier-plugin-organize-imports": "^1.1.1",
-        "typescript": "^4.1.2"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*.{js,css,md}": "prettier --write"
-    },
-    "engines": {
-        "node": "15.4.0",
-        "npm": "7.3.x"
-    },
-    "dependencies": {
-        "@types/ramda": "^0.27.34",
-        "ramda": "^0.27.1",
-        "typescript-is": "^0.17.0"
-    }
+  "name": "covey-town",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/client": "^3.3.12",
+    "@chakra-ui/icons": "^1.0.7",
+    "@chakra-ui/react": "^1.1.2",
+    "@emotion/react": "^11.1.4",
+    "@emotion/styled": "^11.0.0",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/icons": "^4.9.1",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react-hooks": "^3.7.0",
+    "@types/d3-timer": "^1.0.9",
+    "@types/enzyme": "^3.10.8",
+    "@types/fscreen": "^1.0.1",
+    "@types/jest": "^26.0.15",
+    "@types/lodash.throttle": "^4.1.6",
+    "@types/react": "^16.9.53",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-router-dom": "^5.1.6",
+    "@types/twilio-video": "^2.7.0",
+    "axios": "^0.21.1",
+    "concurrently": "^5.1.0",
+    "cross-env": "^7.0.2",
+    "d3-timer": "^1.0.10",
+    "dotenv": "^8.2.0",
+    "enzyme": "^3.11.0",
+    "framer-motion": "^3.2.0",
+    "fscreen": "^1.0.2",
+    "graphql": "^15.5.0",
+    "graphql-tag": "^2.11.0",
+    "lodash.throttle": "^4.1.1",
+    "nanoid": "^3.1.12",
+    "node-sass": "^4.14.1",
+    "normalize.css": "^8.0.1",
+    "phaser": "^3.24.1",
+    "react": "^17.0.1",
+    "react-context-mutex": "^1.0.8",
+    "react-dom": "^17.0.1",
+    "react-hook-form": "^6.14.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.1",
+    "realm": "^10.2.0",
+    "realm-web": "^1.2.1",
+    "sass-loader": "8.0.2",
+    "socket.io-client": "^3.0.4",
+    "strip-color": "^0.1.0",
+    "twilio": "^3.54.2",
+    "twilio-video": "^2.7.2",
+    "typescript": "^4.0.3",
+    "web-vitals": "^0.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "cross-env DEBUG_PRINT_LIMIT=0 jest",
+    "eject": "react-scripts eject",
+    "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx "
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.8.0",
+    "@types/node": "^12.20.6",
+    "@typescript-eslint/eslint-plugin": "^4.13.0",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "jest-mock-extended": "^1.0.13",
+    "ts-jest": "^26.5.2"
+  }
 }
