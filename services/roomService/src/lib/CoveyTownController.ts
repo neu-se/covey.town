@@ -167,6 +167,11 @@ export default class CoveyTownController {
     return this._leaderboard.getTopScores();
   }
 
+  updateLeaderboard(userName: string, points: number): ScoreList {
+    this._leaderboard.updateScore(userName, points);
+    return this._leaderboard.getTopScores();
+  }
+
 //** TicTacToe calls **/
   startGame(player1: string, player2: string): void {
     if ( this._players.some(e => e.id === player1) && this._players.some(e => e.id === player2) ){

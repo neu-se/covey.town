@@ -87,6 +87,12 @@ export interface LeaderboardResponse {
   scores: ScoreList;
 }
 
+export interface UpdateLeaderboardRequest {
+  coveyTownID: string;
+  userName: string;
+  points: number;
+}
+
 export interface startGameRequest{
   coveyTownID: string;
   player1: string;
@@ -212,6 +218,23 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 export async function leaderboardHandler(requestData: LeaderboardRequest): Promise<ResponseEnvelope<LeaderboardResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   const leaderboard = townsStore.getLeaderboard(requestData.coveyTownID);
+  if (!leaderboard) {
+    return {
+      isOK: false,
+      message: 'Invalid Town ID',
+    }
+  }
+  return {
+    isOK: true,
+    response: {
+      scores: leaderboard
+    },
+  }
+}
+
+export async function updateLeaderboardHandler(requestData: UpdateLeaderboardRequest): Promise<ResponseEnvelope<LeaderboardResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const leaderboard = townsStore.updateLeaderboard(requestData.coveyTownID, requestData.userName, requestData.points);
   if (!leaderboard) {
     return {
       isOK: false,
