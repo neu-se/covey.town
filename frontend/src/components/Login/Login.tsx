@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import {Switch, Route} from 'react-router-dom'; 
+import Profile from '../Authentication/Profile'
 import PreJoinScreens from '../VideoCall/VideoFrontend/components/PreJoinScreens/PreJoinScreens';
 import MediaErrorSnackbar
   from '../VideoCall/VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
@@ -12,12 +14,19 @@ export default function Login({ doLogin }: LoginProps): JSX.Element {
   const [mediaError, setMediaError] = useState<Error>();
 
   return (
-    <>
-      <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />
-      <PreJoinScreens
-        doLogin={doLogin}
-        setMediaError={setMediaError}
-      />
-    </>
+    <Switch>
+      <Route exact path="/profile">
+        <Profile />
+      </Route>
+      <Route>
+      <>
+        <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />
+        <PreJoinScreens
+          doLogin={doLogin}
+          setMediaError={setMediaError}
+        />
+      </>
+      </Route>
+  </Switch>
   );
 }
