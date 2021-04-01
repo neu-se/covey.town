@@ -33,7 +33,7 @@ import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClie
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
-const TownMerging: React.FunctionComponent = () => {
+const TownVoting: React.FunctionComponent = () => {
   const [currentMergeableTowns, setCurrentMergeableTowns] = useState<CoveyTownInfo[]>();
 
   const {isOpen, onOpen, onClose} = useDisclosure()
@@ -41,10 +41,14 @@ const TownMerging: React.FunctionComponent = () => {
   const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsMergeable} = useCoveyAppState();
   const [friendlyName, setFriendlyName] = useState<string>(currentTownFriendlyName);
   const [townChosen, setTownChosen] = useState<string>('');
+  const [userResponse, setUserResponse] = useState<boolean>(false);
+  const [myTime, setMyTime] = useState<number>(75);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const openSettings = useCallback(()=>{
     onOpen();
     video?.pauseGame();
+    setIsModalOpen(true);
   }, [onOpen, video]);
 
   const closeSettings = useCallback(()=>{
@@ -70,88 +74,55 @@ const TownMerging: React.FunctionComponent = () => {
       clearInterval(timer)
     };
   }, [updateMergeableTowns]);
+
+  useEffect(() => {
+    const timer2 = setInterval(() => {setMyTime(myTime - 1)}, 1000);
+    return () => {
+        clearInterval(timer2)
+    };
+  }, [isModalOpen, myTime]);
   
 
   const handleMergeRequest = async () => {
     // do last check on the numbers between the rwo rooms and then shut down the two rooms 
     closeSettings();
-    return <>
-     <Modal isOpen={isOpen} onClose={closeSettings}>
-      <ModalOverlay/>
-      <ModalContent>
-        <ModalHeader>Merge {currentTownFriendlyName} ({currentTownID}) with another town?</ModalHeader>
-        <ModalCloseButton/>
-        {/* maybe don't need this form */}
-        <form onSubmit={(ev)=>{ev.preventDefault(); handleMergeRequest()}}>
-          <ModalBody pb={6}>
-            <Heading as="h4" size="md">Hello!!</Heading>
-            <form>
-              { currentMergeableTowns?.map((town) => (
-                <div key={town.coveyTownID} className="radio">
-                  <FormControl>
-                    <input type="radio" value={town.coveyTownID} 
-                      checked={townChosen === town.coveyTownID}
-                      onChange={event => setTownChosen(event.target.value)} />
-                      { town.friendlyName }   { town.currentOccupancy }/{ town.maximumOccupancy }
-                  </FormControl>
-                </div>
-              )) }
-            </form>
-            <form>
-            <Heading as="h4" size="md">Or enter Town ID</Heading>
-            <FormControl>
-              <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                    value={townChosen}
-                    onChange={event => setTownChosen(event.target.value)}/>
-            </FormControl>
-            </form>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button data-testid='submit' colorScheme="blue" mr={3} value="update" name='action2' onClick={()=>handleMergeRequest()}>
-              Submit
-            </Button>
-            <Button onClick={closeSettings}>Cancel</Button>
-          </ModalFooter>
-        </form>
-      </ModalContent>
-    </Modal>
-  </>
+    
   }
 
   return <>
     <MenuItem data-testid='openMenuButton' onClick={openSettings} disabled={!currentTownIsMergeable}>
-      <Typography variant="body1">Merge with Other Towns</Typography>
+      <Typography variant="body1">Temp Voting Button</Typography>
     </MenuItem>
     <Modal isOpen={isOpen} onClose={closeSettings}>
       <ModalOverlay/>
       <ModalContent>
-        <ModalHeader>Merge {currentTownFriendlyName} ({currentTownID}) with another town?</ModalHeader>
+        <ModalHeader>Vote to merge with another town</ModalHeader>
         <ModalCloseButton/>
         {/* maybe don't need this form */}
         <form onSubmit={(ev)=>{ev.preventDefault(); handleMergeRequest()}}>
           <ModalBody pb={6}>
-            <Heading as="h4" size="md">Select a public town to merge with</Heading>
+            <Heading as="h4" size="md">Choose yes to merge or no to not merge</Heading>
             <form>
-              { currentMergeableTowns?.map((town) => (
-                <div key={town.coveyTownID} className="radio">
+                <div key='Yes' className="radio">
                   <FormControl>
-                    <input type="radio" value={town.coveyTownID} 
-                      checked={townChosen === town.coveyTownID}
-                      onChange={event => setTownChosen(event.target.value)} />
-                      { town.friendlyName }   { town.currentOccupancy }/{ town.maximumOccupancy }
+                    <input type="radio" value= "Yes"
+                      checked={userResponse === true}
+                      onChange={event => setUserResponse(true)} /> Yes
+                  </FormControl> 
+                </div>
+                <div key='No' className="radio">
+                  <FormControl>
+                  <input type="radio" value= "No"
+                      checked={userResponse === false}
+                      onChange={event => setUserResponse(false)} /> No
                   </FormControl>
                 </div>
-              )) }
             </form>
-            <form>
-            <Heading as="h4" size="md">Or enter Town ID</Heading>
-            <FormControl>
-              <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                    value={townChosen}
-                    onChange={event => setTownChosen(event.target.value)}/>
-            </FormControl>
-            </form>
+
+            <div>
+                {myTime} 
+            </div>
+           
           </ModalBody>
 
           <ModalFooter>
@@ -167,4 +138,4 @@ const TownMerging: React.FunctionComponent = () => {
 }
 
 
-export default TownMerging;
+export default TownVoting;

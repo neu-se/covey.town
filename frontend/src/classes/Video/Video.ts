@@ -74,6 +74,7 @@ export default class Video {
             this.videoToken = result.providerVideoToken;
             this._townFriendlyName = result.friendlyName;
             this._isPubliclyListed = result.isPubliclyListed;
+            this._isMergeable = result.isMergeable;
             resolve(result);
           })
           .catch((err) => {
