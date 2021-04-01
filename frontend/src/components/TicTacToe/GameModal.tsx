@@ -20,11 +20,7 @@ import Board from './Board'
 const GameModal: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const [piece, setPiece] = React.useState('');
-  const [isRoomCreator, setIsRoomCreator] = React.useState(false);
-  const [isDisabled, setIsDisabled] = React.useState(false);
-  const [myTurn, setMyTurn] = React.useState(false);
+
 
   const openGame = useCallback(()=>{
     onOpen();

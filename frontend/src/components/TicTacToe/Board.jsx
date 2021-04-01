@@ -7,10 +7,10 @@ class Board extends React.Component {
     const board = [];
     let cellCounter = 0;
 
-    for (let i = 0; i < row; i += 1) {
+    for (let i = 0; i < row; i +=1) {
       const columns = [];
-      for (let j = 0; j < col; j += 1) {
-        columns.push(this.renderSquare(cellCounter++));
+      for (let j = 0; j < col; j +=1) {
+        columns.push(this.renderSquare(cellCounter+=1));
       }
       board.push(
         <div key={i} className='board-row'>
@@ -23,7 +23,8 @@ class Board extends React.Component {
   }
 
   renderSquare(i) {
-    return <Square key={i} value={this.props.squares[i]} onClick={() => this.props.onClick(i)} />;
+    const squares = this.props;
+    return <Square key={i} value={squares[i]} onClick={console.log("ah")} />;
   }
 
   render() {
