@@ -4,7 +4,7 @@ import {
   Button
 } from '@chakra-ui/react'
 
-const LogoutButton = () => {
+const LogoutButton = (): JSX.Element => {
   const { logout } = useAuth0();
 
   return (
