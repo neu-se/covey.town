@@ -83,7 +83,9 @@ export default class RealmDBClient implements IDBClient {
   async saveUser(coveyUser: CoveyUser): Promise<CoveyUser> {
     const mutationQuery = gql
       `mutation {
-      insertOneCoveyuser(data: {
+      upsertOneCoveyuser(query : {
+        userID: "${coveyUser.userID}"
+      }, data: {
         userID: "${coveyUser.userID}",
         profile: {
           username: "${coveyUser.profile.username}",
