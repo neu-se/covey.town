@@ -17,6 +17,9 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  listNeighbors,
+  listRequestsReceived,
+  listRequestsSent
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -184,6 +187,8 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+
+
   /*
    * Remove neighbor request
    */
@@ -200,11 +205,56 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   });
 
   /*
-   * Remove neighbor mapping
-   */
+  * Remove neighbor mapping
+  */
   app.delete('/users/remove_neighbor_mapping', BodyParser.json(), async (req, res) => {
     try {
       const result = await removeNeighborMappingHandler(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * List all neighbors for a given user id
+  */
+  app.get('/neighbors/:currentUserId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await listNeighbors(req.params.currentUserId);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * List all requests sent by the user id
+  */
+  app.get('/requests_sent/:currentUserId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await listRequestsSent(req.params.currentUserId);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * List all requests sent to the user id
+  */
+  app.get('/requests_received/:currentUserId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await listRequestsReceived(req.params.currentUserId);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);

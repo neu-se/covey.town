@@ -18,8 +18,13 @@ export interface UserWithRelationship {
   relationship: NeighborStatus,
 }
 
-export interface SearchUsersResponse {
-  users: UserWithRelationship[]
+export interface UsersList {
+  _id: string,
+  username: string,
+}
+
+export interface ListUsersResponse<T> {
+  users: T[]
 }
 
 export interface LoginResponse {
@@ -27,7 +32,17 @@ export interface LoginResponse {
   username: string,
 }
 
+export interface NeighborMappingSchema {
+  _id: string,
+  neighbor1: string, // will be user id
+  neighbor2: string, // will be user id
+}
 
+export interface NeighborRequestSchema {
+  _id: string, 
+  requestTo: string, // will be user id
+  requestFrom: string, // will be user id
+}
 
 export default class DatabaseController {
     private client: MongoClient;
@@ -149,7 +164,7 @@ export default class DatabaseController {
     }
 }
 
-    async searchUsersByUsername(currentUserId: string, username: string) : Promise<SearchUsersResponse> {
+    async searchUsersByUsername(currentUserId: string, username: string) : Promise<ListUsersResponse<UserWithRelationship>> {
 
       //need to also take in username of player searching to get neighborStatus
       try {
@@ -299,82 +314,82 @@ export default class DatabaseController {
   }
 
 
-  // /**
-  //  * List all users that have sent a request to the current user
-  //  * @param currentUserId the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listRequestsReceived(currentUserId: string): Promise<Array<String>> {
-  //     try {
-  //         const requestReceived = await this.neighborRequests.find({'requestTo': currentUserId}).toArray();
+  /**
+   * List all users that have sent a request to the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsReceived(currentUserId: string): Promise<ListUsersResponse<UsersList>> {
+    try {
+        const requestReceived = await this.neighborRequests.find({'requestTo': currentUserId}).toArray();
 
-  //         const listUsers = requestReceived.map(async (requester: {_id: string, requestTo: string, requestFrom: string}) => {
-  //           const username = await this.findUserById(requester.requestFrom);
-  //           return { _id: requester.requestFrom, username };
-  //         });
+        const listUsers = await Promise.all<UsersList>(requestReceived.map(async (requester: NeighborRequestSchema) => {
+          const username = await this.findUserById(requester.requestFrom);
+          return { _id: requester.requestFrom, username };
+        }));
 
-  //         return listUsers;
+        return {
+          users: listUsers
+        }
 
-  //     } catch (err) {
-  //         return err.toString();
-  //     }
-  // }
+    } catch (err) {
+        return err.toString();
+    }
+  } 
 
-  // /**
-  //  * List all users who have been sent a request by the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const requests = this.getCollection('neighbor_request');
+  /**
+   * List all users who have been sent a request by the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsSent(currentUserId: string): Promise<ListUsersResponse<UsersList>> {
+      try {
+        const requestSent = await this.neighborRequests.find({'requestFrom': currentUserId}).toArray();
 
-  //         const requestFrom = await requests.find({'requestFrom': user}).toArray();
+        const listUsers = await Promise.all<UsersList>(requestSent.map(async (requestee: NeighborRequestSchema) => {
+          const username = await this.findUserById(requestee.requestTo);
+          return { _id: requestee.requestTo, username };
+        }));
 
-  //         const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
+        return {
+          users: listUsers
+        }
 
-  //         return {
-  //             isOK: true,
-  //             response: users,
-  //         }
+      } catch (err) {
+        return err.toString();
+      }
+  }
 
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+  /**
+   * List all the neighbors of the current user
+   * @param user the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listNeighbors(currentUserId: string): Promise<ListUsersResponse<UsersList>> {
+      try {
+          const neighborsList1 = await this.neighborMappings.find({'neighbor1': currentUserId}).toArray();
 
-  // /**
-  //  * List all the neighbors of the current user
-  //  * @param user the string_id of the current user
-  //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-  //  */
-  // async listNeighbors(user: string): Promise<ResponseEnvelope<Array<String>>> {
-  //     try {
-  //         const neighbors = this.getCollection('neighbor_mappings');
+          const listUsers1 = await Promise.all<UsersList>(neighborsList1.map(async (neighbor: NeighborMappingSchema) => {
+            const username = await this.findUserById(neighbor.neighbor2);
+            return { _id: neighbor.neighbor2, username };
+          }));
 
-  //         const neighborsList1 = await neighbors.find({'neighbor1': user}).toArray();
 
-  //         const users1 = neighborsList1.map(neighbors => [neighbors.neighbor2, 'neighbor']);
+          const neighborsList2 = await this.neighborMappings.find({'neighbor2': currentUserId}).toArray();
 
-  //         const neighborsList2 = await neighbors.find({'neighbor2': user}).toArray();
+          const listUsers2 = await Promise.all<UsersList>(neighborsList2.map(async (neighbor: NeighborMappingSchema) => {
+            const username = await this.findUserById(neighbor.neighbor1);
+            return { _id: neighbor.neighbor1, username };
+          }));
 
-  //         const users2 = neighborsList2.map(neighbors => [neighbors.neighbor1, 'neighbor']);
+          return {
+            users: listUsers1.concat(listUsers2),
+          }
 
-  //         return {
-  //             isOK: true,
-  //             response: users1.concat(users2),
-  //         }
-
-  //     } catch (err) {
-  //         return {
-  //             isOK: false,
-  //             message: err.toString(),
-  //         }
-  //     }
-  // }
+      } catch (err) {
+          return err.toString();
+      }
+  }
 
   /**
      * Check if the two users passed are currently neighbors
