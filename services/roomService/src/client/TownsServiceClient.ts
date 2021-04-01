@@ -1,10 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-<<<<<<< HEAD
-import { UserLocation } from '../CoveyTypes';
-=======
 import { ScoreList, UserLocation } from '../CoveyTypes';
->>>>>>> origin/master
 import { LeaderboardRequest, LeaderboardResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
 
