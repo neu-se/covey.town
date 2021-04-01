@@ -346,8 +346,6 @@ export default class DatabaseController {
       try {
         const requestSent = await this.neighborRequests.find({'requestFrom': currentUserId}).toArray();
 
-        console.log(requestSent);
-
         const listUsers = await Promise.all<UsersList>(requestSent.map(async (requestee: NeighborRequestSchema) => {
           const username = await this.findUserById(requestee.requestTo);
           return { _id: requestee.requestTo, username };
@@ -383,8 +381,6 @@ export default class DatabaseController {
             const username = await this.findUserById(neighbor.neighbor1);
             return { _id: neighbor.neighbor1, username };
           }));
-
-          console.log(listUsers1.concat(listUsers2))
 
           return {
             users: listUsers1.concat(listUsers2),

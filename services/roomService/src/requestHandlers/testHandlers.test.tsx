@@ -2,6 +2,7 @@ import { AccountCreateRequest, LoginRequest, SearchUsersRequest,
     AddNeighborRequest, AddNeighborResponse, accountCreateHandler, loginHandler,
     searchUsersByUsername, sendAddNeighborRequest, ResponseEnvelope, listNeighbors, listRequestsReceived, listRequestsSent} from './CoveyTownRequestHandlers';
 import DatabaseController, {AccountCreateResponse, LoginResponse, ListUsersResponse, UserWithRelationship } from '../database/db';
+import { request } from 'express';
 let db: DatabaseController;
 
 beforeAll(async () => {
@@ -369,16 +370,28 @@ describe('CoveyTownRequestHandlers', () => {
         });
     });
     describe('listingMethods()', () => {
-        it('returns empty list if no neighbors found', async () => {
-            const userId = '1';
-            const neighborList = await listNeighbors(userId);
-            expect(neighborList.isOK).toBeTruthy();
-
+        it('returns empty list for no neighbors for invalid userId', async () => {
+            const invalidUserId = '1';
+            const neighborList = await listNeighbors(invalidUserId);
             if (neighborList.isOK && neighborList.response) {
-                const users = neighborList.response.users;
-                expect(users).toEqual([]);
-            } else {
-                throw new Error('this failed when it should have passed');
+                const neighbors = neighborList.response.users;
+                expect(neighbors.length).toEqual(0);
+            }
+        });
+        it('returns empty list for no requests sent for invalid userId', async () => {
+            const invalidUserId = '1';
+            const requestsSentList = await listRequestsSent(invalidUserId);
+            if (requestsSentList.isOK && requestsSentList.response) {
+                const requestsList = requestsSentList.response.users;
+                expect(requestsList.length).toEqual(0);
+            }
+        });
+        it('returns empty list for no requests received for invalid userId', async () => {
+            const invalidUserId = '1';
+            const requestsReceivedList = await listRequestsReceived(invalidUserId);
+            if (requestsReceivedList.isOK && requestsReceivedList.response) {
+                const requestsList = requestsReceivedList.response.users;
+                expect(requestsList.length).toEqual(0);
             }
         });
         it('returns neighbors regardless of order in mongo document', async () => {
@@ -399,7 +412,7 @@ describe('CoveyTownRequestHandlers', () => {
             }
         });
 
-        it('returns id and username', async () => {
+        it('returns id and username for each neighbor', async () => {
             const userId1 = '6063abfc7a797cb3923c3195';
             const userId2 = '6063ac3c7a797cb3923c3197';
 
@@ -414,5 +427,34 @@ describe('CoveyTownRequestHandlers', () => {
                 throw new Error('this failed when it should have passed');
             }
         });
+
+        it('returns id and username for each request sent', async () => {
+            const userId1 = '6065e4fbaa247a984be6a590';
+            const userId2 = '6065e50faa247a984be6a591';
+
+            const requestsSentList = await listRequestsSent(userId1);
+
+            if (requestsSentList.isOK && requestsSentList.response) {
+                const sentList = requestsSentList.response.users;
+                expect(sentList[0]._id.toString()).toEqual(userId2);
+                expect(sentList[0].username).toEqual('testRequestReceived');
+            }  else {
+                throw new Error('this failed when it should have passed');
+            }
+        });
+        it('returns id and username for each request received', async () => {
+            const userId1 = '6065e4fbaa247a984be6a590';
+            const userId2 = '6065e50faa247a984be6a591';
+
+            const requestsReceivedList = await listRequestsReceived(userId2);
+
+            if (requestsReceivedList.isOK && requestsReceivedList.response) {
+                const receivedList = requestsReceivedList.response.users;
+                expect(receivedList[0]._id.toString()).toEqual(userId1);
+                expect(receivedList[0].username).toEqual('testRequestSent');
+            }
+        });
+
+
     });
   });
