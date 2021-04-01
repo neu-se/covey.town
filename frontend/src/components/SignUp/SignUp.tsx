@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
-import assert from 'assert';
 
 import {
   Flex,
@@ -8,12 +7,9 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Checkbox,
   Stack,
-  Link,
   Button,
   Heading,
-  Text,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -36,55 +32,57 @@ export default function SimpleCard(): JSX.Element {
   const authInfo = useAuthInfo();
   const dbClient: IDBClient = RealmDBClient.getInstance();
 
-  function validateEmailAndPassword(): boolean {
-    if (!email || email.length === 0) {
-      toast({
-        title: 'Unable to create account',
-        description: 'Please enter an email address',
-        status: 'error',
-        isClosable: true
-      })
-      return false;
-    }
 
-    if (!password || password.length === 0) {
-      toast({
-        title: 'Unable to create account',
-        description: 'Please enter a password',
-        status: 'error',
-        isClosable: true
-      })
-      return false;
-    }
-
-    if (!userName || userName.length === 0) {
-      toast({
-        title: 'Unable to create account',
-        description: 'Please enter a username',
-        status: 'error',
-        isClosable: true
-      })
-    }
-
-    if (confirmPassword !== password) {
-      toast({
-        title: 'Passwords do not match',
-        description: 'You must confirm the input password'
-      })
-      return false;
-    }
-
-    if (password.length < 8) {
-      toast({
-        title: 'Invalid password',
-        description: 'Passwords must be at least 8 characters'
-      })
-      return false;
-    }
-    return true;
-  }
 
   const createAccountHandler = async () => {
+    function validateEmailAndPassword(): boolean {
+      if (!email || email.length === 0) {
+        toast({
+          title: 'Unable to create account',
+          description: 'Please enter an email address',
+          status: 'error',
+          isClosable: true
+        })
+        return false;
+      }
+  
+      if (!password || password.length === 0) {
+        toast({
+          title: 'Unable to create account',
+          description: 'Please enter a password',
+          status: 'error',
+          isClosable: true
+        })
+        return false;
+      }
+  
+      if (!userName || userName.length === 0) {
+        toast({
+          title: 'Unable to create account',
+          description: 'Please enter a username',
+          status: 'error',
+          isClosable: true
+        })
+      }
+  
+      if (confirmPassword !== password) {
+        toast({
+          title: 'Passwords do not match',
+          description: 'You must confirm the input password'
+        })
+        return false;
+      }
+  
+      if (password.length < 8) {
+        toast({
+          title: 'Invalid password',
+          description: 'Passwords must be at least 8 characters'
+        })
+        return false;
+      }
+      return true;
+    }
+    
     if (!validateEmailAndPassword()) {
       return;
     }
@@ -106,25 +104,26 @@ export default function SimpleCard(): JSX.Element {
       await auth.registerUserEmailPassword(credential);
       const user = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
       const newUserProfile: CoveyUserProfile = {
-        user_id: user.id,
-        userName,
+        username: userName,
         email,
         bio: user.profile.bio,
         pfpURL: user.profile.pfpURL
       }
-      await dbClient.saveUserProfile(newUserProfile);
-      assert(authInfo.currentUser);
-      authInfo.currentUser.profile = newUserProfile;
-      authInfo.actions.setAuthState({
-        isLoggedIn: user.isLoggedIn,
-        currentUser: authInfo.currentUser
-      })
+      user.profile = newUserProfile;
+      await dbClient.saveUser(user);
       history.push('/');
     } catch (e) {
-      toast({
-        title: 'Create Account Error',
-        description: e.error.toString()
-      })
+      if (e.error && e.error !== undefined) {
+        toast({
+          title: 'Create Account Error',
+          description: e.error.toString()
+        })
+      } else {
+        toast({
+          title: 'Create Account Error',
+          description: e.toString()
+        })
+      }
     }
   }
 

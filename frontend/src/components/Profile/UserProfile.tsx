@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import assert from 'assert';
 import {
@@ -61,16 +61,16 @@ export default function UserProfile(): JSX.Element {
     editing: false,
   })
 
-  const populateProfileData = async () => {
+  const populateProfileData = useCallback(async () => {
     if(authInfo.currentUser) {
       setState({
-        username: `${authInfo.currentUser.profile.userName || `You don't have a username yet!`}`,
+        username: `${authInfo.currentUser.profile.username || `You don't have a username yet!`}`,
         bio: `${authInfo.currentUser.profile.bio || 'Your bio is empty!'}`,
         email: `${authInfo.currentUser.profile.email || `How can you not have an email by now???`}`,
         pfpURL: `${authInfo.currentUser.profile.pfpURL || DEFAULT_PROFILE_PICTURE}`
       })
     }
-  }
+  }, [authInfo.currentUser])
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setState((prevProps) => ({
@@ -82,14 +82,13 @@ export default function UserProfile(): JSX.Element {
   const handleSubmit = async () => {
     if(state && authInfo.currentUser) {
       const changes : CoveyUserProfile = {
-        user_id: authInfo.currentUser.id,
-        userName: authInfo.currentUser.profile.userName,
+        username: authInfo.currentUser.profile.username,
         email: authInfo.currentUser.profile.email,
         pfpURL: authInfo.currentUser.profile.pfpURL,
         bio: authInfo.currentUser.profile.bio,
       }
       if(editState.editUsername) {
-        changes.userName = state.username
+        changes.username = state.username
       }
       if(editState.editBio) {
         changes.bio = state.bio
@@ -101,18 +100,17 @@ export default function UserProfile(): JSX.Element {
         changes.pfpURL = state.pfpURL
       }
       try {
-        await db.saveUserProfile(changes);
+        await db.saveUserProfile(authInfo.currentUser.userID, changes);
         assert(authInfo.currentUser);
         if(authInfo.currentUser) {
           authInfo.currentUser.profile = changes;
           authInfo.actions.setAuthState({
-            isLoggedIn: authInfo.currentUser.isLoggedIn,
             currentUser: authInfo.currentUser
           })
         }
         toast({
           title: 'Form Submitted!',
-          description: `Your profile has been saved! Username: ${changes.userName}, Email: ${changes.email}, Bio: ${changes.bio}`,
+          description: `Your profile has been saved! Username: ${changes.username}, Email: ${changes.email}, Bio: ${changes.bio}`,
           status: 'success'
         });
         setEditState(() => ({
@@ -161,7 +159,7 @@ export default function UserProfile(): JSX.Element {
 
   useEffect(() => {
     populateProfileData();
-  }, [db]);
+  }, [db, populateProfileData]);
 
   return (
     <>
