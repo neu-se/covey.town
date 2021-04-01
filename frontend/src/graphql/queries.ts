@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
+import { TownCreateRequest } from '../classes/TownsServiceClient';
 import client from './client';
-import { TownJoinRequest } from '../classes/TownsServiceClient';
 
 const findAllUsers = gql`
   query findAllUsers {
@@ -11,43 +11,31 @@ const findAllUsers = gql`
   }
 `;
 
-const findAllUserProfiles = async () => {
+const createTownMutation = gql`
+  mutation townCreate($input: townCreateRequestInput!) {
+    townCreateRequest(input: $input) {
+      isOK
+      response {
+        coveyTownID
+        coveyTownPassword
+      }
+      message
+    }
+  }
+`;
+
+export const findAllUserProfiles = async (): Promise<any> => {
   const { data } = await client.query({ query: findAllUsers });
   return data.users;
 };
-export default findAllUserProfiles;
 
-const joinTownMutation = gql`
-  mutation joinTown($input: townJoinJoinRequestInput!)
-  {
-    isOK
-    response {
-      coveyUserID
-      coveySessionToken
-      providerVideoToken
-      currentPlayers {
-        _id
-      }
-    friendlyName
-    isPubliclyListed 
-  }
-  message
-}
-`;
-
-
-export const joinTown = async (payload: TownJoinRequest) : Promise<any> =>  {
-const { data } = await client.mutate({
-  mutation: joinTownMutation,
-  variables: { input: payload }
-});
-  
-  if (data.townJoinJoinRequest.isOK) {
-    return data.townJoinJoinRequest.response;
+export const createTown = async (payload: TownCreateRequest): Promise<any> => {
+  const { data } = await client.mutate({
+    mutation: createTownMutation,
+    variables: { input: payload },
+  });
+  if (data.townCreateRequest.isOK) {
+    return data.townCreateRequest.response;
   }
   return null;
-  
-}
-
-
-
+};
