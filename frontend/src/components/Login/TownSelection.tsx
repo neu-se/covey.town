@@ -139,7 +139,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   return (
     <>
-      <LoginButton />
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
