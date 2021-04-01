@@ -99,7 +99,7 @@ export default class CoveyTownController {
 
   // Master video length and time elapsed are in seconds to be compatible with Youtube
   // TODO: Master video leghth for mario video
-  private _masterVideoLength = 30 // length of default mario video
+  private _masterVideoLength = 162 // length of default mario video
   //private _masterVideoLength = 1007
   private _masterTimeElapsed = 0
   private _currentTimer : Timer | null
@@ -297,7 +297,8 @@ export default class CoveyTownController {
     /* Adam - Logic to check if there is no longer anyone in the tv area
        We need to clear the timer and time elapsed*/
     if (this._listenersInTVAreaMap.size === 0){
-        this._currentTimer?.clearTimer(); 
+        console.log('Here')
+        this.destroyTimer(); 
         this._masterTimeElapsed = 0
       }
   }
