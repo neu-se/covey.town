@@ -39,11 +39,13 @@ class CoveyGameScene extends Phaser.Scene {
     this.emitMovement = emitMovement;
   }
 
+
+  
   preload() {
     // this.load.image("logo", logoImg);
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
-    this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
+    this.load.atlas( 'atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
     this.load.atlas('test', '/assets/testSprite/john.png', '/assets/testSprite/test.json');
   }
 

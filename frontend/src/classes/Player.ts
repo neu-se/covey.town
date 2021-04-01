@@ -5,13 +5,16 @@ export default class Player {
 
   private readonly _userName: string;
 
+  private readonly _avatar: string;
+
   public sprite?: Phaser.GameObjects.Sprite;
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation) {
+  constructor(id: string, userName: string, location: UserLocation, avatar: string) {
     this._id = id;
     this._userName = userName;
+    this._avatar = avatar;
     this.location = location;
   }
 
