@@ -19,6 +19,7 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import { useAuth0 } from "@auth0/auth0-react";
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
@@ -28,8 +29,16 @@ interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
+function getDefaultUsername(isAuthenticated:boolean, user:any){
+  if(!isAuthenticated) {
+    return 'Guest';
+  }
+  return user.given_name  || user.nickname;
+}
+
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+  const { user, isAuthenticated } = useAuth0();
+  const [userName, setUserName] = useState<string>(Video.instance()?.userName || getDefaultUsername(isAuthenticated, user));
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -140,7 +149,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     <>
       <form>
         <Stack>
-          <Box p="4" borderWidth="1px" borderRadius="lg">
+        <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Select a username</Heading>
 
             <FormControl>
