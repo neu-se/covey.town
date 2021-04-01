@@ -11,20 +11,20 @@ type Query {
 
 type User {
   id: ID!
-  name: String
+  userName: String
   email: String
 }
 
 
 input signUpInput {
-  name: String !
+  userName: String !
   email: String
   password : String!
 }
 
 input loginInput {
   email: String!
-  pasword: String!
+  password: String!
 }
 
 input townJoinRequestInput {
@@ -40,6 +40,17 @@ input townCreateRequestInput {
 input townDeleteRequestInput {
   coveyTownID: String!
   coveyTownPassword: String!
+}
+
+input updateUserInput {
+  id: ID!
+  userName: String
+  email: String
+  password: String
+}
+
+input deleteUserInput {
+  email: String
 }
 
 type UserLocation {
@@ -96,5 +107,7 @@ type Mutation {
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
   townDeleteRequest(input: townDeleteRequestInput): TownDeleteResponseEnvelope
+  updateUser(input: updateUserInput): User
+  deleteUser(input: deleteUserInput): Boolean
 }
 `;

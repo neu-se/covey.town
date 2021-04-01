@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 export const userSchema = new Schema({
-    name: String,
+    userName: String,
     email: String,
     password: String,
 }, {collection:'User'});
