@@ -91,7 +91,6 @@ export const resolvers = {
         coveyTownID: args.input.coveyTownID,
         coveyTownPassword: args.input.coveyTownPassword,
       });
-      console.log(response);
       return response;
     },
   }

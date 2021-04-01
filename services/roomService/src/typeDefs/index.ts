@@ -82,7 +82,7 @@ type TownCreateResponseEnevelope {
 }
 
 type TownDeleteResponse {
-  val: String
+  response: String
 }
 
 type TownDeleteResponseEnvelope {
