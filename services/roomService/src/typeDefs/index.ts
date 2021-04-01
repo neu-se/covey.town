@@ -7,12 +7,16 @@ export const typeDefs = gql`
 type Query {
   users: [User!]
   user(id: ID!): User
+  searchUser(input: searchUserInput): [User!]
 }
 
 type User {
   id: ID!
-  userName: String
+  username: String
   email: String
+  requests:[String!]
+  friends:[String!]
+  sentRequests:[String!]
 }
 
 
@@ -37,16 +41,15 @@ input townCreateRequestInput {
   isPubliclyListed: Boolean!
 }
 
-input townDeleteRequestInput {
-  coveyTownID: String!
-  coveyTownPassword: String!
-}
-
 input updateUserInput {
   id: ID!
   userName: String
   email: String
   password: String
+}
+
+input searchUserInput {
+  username: String
 }
 
 input deleteUserInput {
@@ -75,6 +78,11 @@ type Town {
   isPubliclyListed: Boolean!
 }
 
+type searchUserResponse {
+  users: [User!]
+}
+
+
 type TownJoinResponse {
   isOK: Boolean!
   response: Town
@@ -92,22 +100,19 @@ type TownCreateResponseEnevelope {
   message : String
 }
 
-type TownDeleteResponse {
-  response: String
-}
-
-type TownDeleteResponseEnvelope {
-  isOK: Boolean!
-  response: TownDeleteResponse
-  message : String
+input addFriendInput{
+  userNameTo: String
+  userNameFrom: String
 }
 
 type Mutation {
+  addFriend(input: addFriendInput): Boolean
   signUp(input: signUpInput) : User
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
-  townDeleteRequest(input: townDeleteRequestInput): TownDeleteResponseEnvelope
   updateUser(input: updateUserInput): User
   deleteUser(input: deleteUserInput): Boolean
+  acceptFriend(input: addFriendInput): Boolean
+  rejectFriend(input: addFriendInput): Boolean
 }
 `;
