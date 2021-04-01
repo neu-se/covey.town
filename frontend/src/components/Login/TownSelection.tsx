@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import assert from "assert";
 import { useHistory } from 'react-router-dom';
 import {
@@ -8,7 +8,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Link,
+
   Heading,
   Input,
   Stack,
@@ -24,9 +24,7 @@ import {
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { TownJoinResponse, } from '../../classes/TownsServiceClient';
-import useCoveyAppState from '../../hooks/useCoveyAppState';
-import IAuth from '../../services/authentication/IAuth';
-import RealmAuth from '../../services/authentication/RealmAuth';
+
 import useAuthInfo from '../../hooks/useAuthInfo';
 
 interface TownSelectionProps {
@@ -35,7 +33,7 @@ interface TownSelectionProps {
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
+  // const { apiClient } = useCoveyAppState();
   const history = useHistory();
   const authInfo = useAuthInfo();
   const loggedInUser = authInfo.currentUser
@@ -48,26 +46,33 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       status: "error"
     })
   }
-  const userName = loggedInUser?.profile.userName;
+  const userName = loggedInUser?.profile.username;
 
-  function handleEditProfile() : void {
+  function handleEditProfile(): void {
     history.push('/profile');
   }
 
-  async function handleLogout() : Promise<void> {
+  async function handleLogout(): Promise<void> {
     try {
       await authInfo.actions.handleLogout();
       authInfo.actions.setAuthState({
-        isLoggedIn: false,
         currentUser: null
       })
       history.push('/login');
     } catch (err) {
-      toast({
-        title: "Unable to logout",
-        description: err.error.toString(),
-        status: "error"
-      })
+      if (err.error) {
+        toast({
+          title: "Unable to logout",
+          description: err.error.toString(),
+          status: "error"
+        })
+      } else {
+        toast({
+          title: "Unable to logout",
+          description: err.toString(),
+          status: "error"
+        })
+      }
     }
   }
 
@@ -97,8 +102,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
-  const handleProfile = () => history.push('/profile')
-
   return (
     <>
       <form>
@@ -107,16 +110,16 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Heading as="h2" size="lg">You are logged in as: {userName}</Heading>
             <Flex p="4">
               <Box flex="1">
-            <FormControl>
-              <div>
-                <Button data-testid="editProfileButton"
-                onClick={() => handleEditProfile()}>Edit or View Profile</Button>
-                <Button m={1} data-testid="logoutButton"
-                onClick={() => handleLogout()}>Logout</Button>
-              </div>
-            </FormControl>
-            <img src={loggedInUser?.profile.pfpURL} alt=""/>
-            </Box>
+                <FormControl>
+                  <div>
+                    <Button data-testid="editProfileButton"
+                      onClick={() => handleEditProfile()}>Edit or View Profile</Button>
+                    <Button m={1} data-testid="logoutButton"
+                      onClick={() => handleLogout()}>Logout</Button>
+                  </div>
+                </FormControl>
+                <img src={loggedInUser?.profile.pfpURL} alt="" />
+              </Box>
             </Flex>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
@@ -129,11 +132,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                   />
                 </FormControl>
               </Box><Box>
-              <FormControl>
-                <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                <Checkbox id="isPublic" name="isPublic"/>
-              </FormControl>
-            </Box>
+                <FormControl>
+                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                  <Checkbox id="isPublic" name="isPublic" />
+                </FormControl>
+              </Box>
               <Box>
                 <Button data-testid="newTownButton">Create</Button>
               </Box>
@@ -146,7 +149,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Box borderWidth="1px" borderRadius="lg">
               <Flex p="4"><FormControl>
                 <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
-                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"/>
+                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list" />
               </FormControl>
                 <Button data-testid='joinTownByIDButton' onClick={handleJoin}>Connect</Button>
               </Flex>
@@ -160,7 +163,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <Tbody>
                   <Tr key='demoTownID'><Td role='cell'>DEMO_TOWN_NAME</Td><Td
                     role='cell'>Unknown/Unknown <Button
-                    onClick={handleJoin}>Connect</Button></Td></Tr>
+                      onClick={handleJoin}>Connect</Button></Td></Tr>
                 </Tbody>
               </Table>
             </Box>

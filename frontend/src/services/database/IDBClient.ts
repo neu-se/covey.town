@@ -1,4 +1,4 @@
-import { CoveyUserProfile } from "../../CoveyTypes";
+import { CoveyUser, CoveyUserProfile } from "../../CoveyTypes";
 
 /**
  * Interface for a database client
@@ -9,11 +9,17 @@ export default interface IDBClient {
      * If not, insert new user profile.
      * @param userProfile user profile to save
      */
-    saveUserProfile(userProfile: CoveyUserProfile): Promise<CoveyUserProfile>;
+    saveUserProfile(userId:string, userProfile: CoveyUserProfile): Promise<CoveyUserProfile>;
 
     /**
-     * Search a user profile by their user ID.
+     * Get a Covey User from the database
      * @param userId 
      */
-    searchUserProfileById(userId: string): Promise<CoveyUserProfile | null>
+    getUser(userId:string): Promise<CoveyUser | null>;
+    
+    /**
+     * Save a Covey User to the database
+     * @param coveyUser 
+     */
+    saveUser(coveyUser: CoveyUser): Promise<CoveyUser>;
 }

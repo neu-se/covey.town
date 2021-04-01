@@ -2,7 +2,7 @@ import * as Realm from "realm-web";
 import assert from 'assert';
 import { setContext } from '@apollo/client/link/context';
 import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
-import { AuthState, CoveyUserProfile, EmailPasswordCredential, UserProfile } from '../../CoveyTypes';
+import { EmailPasswordCredential } from '../../CoveyTypes';
 
 /**
  * Singleton Realm App class to construct a realm app service and authorize a user client.

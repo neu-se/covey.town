@@ -33,10 +33,17 @@ export default function SimpleCard(): JSX.Element {
     await auth.loginWithEmailPassword(credential,authInfo.actions.setAuthState);
     history.push('/');
     } catch(err) {
-      toast({
-        title: 'Login Failed',
-        description: err.toString()
-      })
+      if (err.error && err.error !== undefined) {
+        toast({
+          title: 'Create Account Error',
+          description: err.error.toString()
+        })
+      } else {
+        toast({
+          title: 'Create Account Error',
+          description: err.toString()
+        })
+      }
     }
   }
   return (

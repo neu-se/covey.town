@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AuthInfoContext from '../../contexts/AuthInfoContext';
 import { AuthInfo, AuthState } from "../../CoveyTypes";
-import IAuth from "../../services/authentication/IAuth";
-import RealmAuth from "../../services/authentication/RealmAuth";
-import RealmApp from "../../services/database/RealmApp";
+import IDBClient from "../../services/database/IDBClient";
+import RealmDBClient from "../../services/database/RealmDBClient";
 
 
 interface AuthGuardProps {
@@ -15,34 +14,38 @@ interface AuthGuardProps {
  * @param param0 props
  */
 export default function AuthGuard({ children }: AuthGuardProps): JSX.Element {
-  const auth: IAuth = RealmAuth.getInstance();
-
-  const user = auth.getCurrentUser();
+  const dbClient: IDBClient = RealmDBClient.getInstance();
 
   const [authState, setAuthState] = useState<AuthState>({
-    isLoggedIn: user ? user?.isLoggedIn : false,
-    currentUser: user
+    currentUser: null
   });
-  useEffect(() => { }, [authState.isLoggedIn]);
 
+
+  useEffect(() => {
+  }, [authState]);
+
+  /**
+   * Handles logout operation
+   * 1. Logouts the user
+   * 2. Turns logged in status to false
+   * 3. Removes user's current town
+   */
   const handleLogout = useCallback(async () => {
-    if (!user) {
+    if (!authState.currentUser) {
       return;
     }
-    await user.actions.logout();
-    // await RealmApp.getInstance().CurrentUser?.logOut();
-    setAuthState({ isLoggedIn: false, currentUser: null });
-  }, [user]);
+    await dbClient.saveUser(authState.currentUser);
+    await authState.currentUser.actions.logout();
+    setAuthState({ currentUser: null });
+  }, [authState.currentUser, dbClient]);
 
   const authInfo = React.useMemo(() => {
-    const { isLoggedIn, currentUser } = authState;
     const value: AuthInfo = {
-      isLoggedIn,
-      currentUser,
+      currentUser: authState.currentUser,
       actions: { handleLogout, setAuthState },
     };
     return value;
-  }, [authState, handleLogout]);
+  }, [authState, handleLogout, setAuthState]);
 
   return (
     <AuthInfoContext.Provider value={authInfo}>
