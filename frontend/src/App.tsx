@@ -37,13 +37,11 @@ type CoveyAppUpdate =
     userName: string,
     townFriendlyName: string,
     townID: string,
-    townIsPubliclyListed: boolean,
     sessionToken: string,
     myPlayerID: string, socket: Socket,
     players: Player[],
     emitMovement: (location: UserLocation) => void,
     emitMessage: (message: PlayerMessage) => void,
-    setWorldMapFocus: (isFocused: boolean) => void,
   }
 }
   | { action: 'addPlayer'; player: Player }
@@ -52,29 +50,13 @@ type CoveyAppUpdate =
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'playerMessage'; message: PlayerMessage }
   | { action: 'disconnect' }
-  | { action: 'setWorldMapFocus'; isFocused: boolean }
   ;
 
 function defaultAppState(): CoveyAppState {
   return {
     nearbyPlayers: {nearbyPlayers: []},
     players: [],
-    messages: [
-      new PlayerMessage(
-        '1234',
-        'someId',
-        'UNICORN',
-        'some content',
-        'town',
-        new Date()),
-      new PlayerMessage(
-        '1234567890ABCDEF',
-        'AnotherId',
-        'ANOTHER_UNICORN',
-        'some content',
-        'town',
-        new Date()),
-    ],
+    messages: [],
     myPlayerID: '',
     currentTownFriendlyName: '',
     currentTownID: '',
@@ -85,12 +67,9 @@ function defaultAppState(): CoveyAppState {
     currentLocation: {
       x: 0, y: 0, rotation: 'front', moving: false,
     },
-    isWorldMapFocused: true,
     emitMovement: () => {
     },
     emitMessage: () => {
-    },
-    setWorldMapFocus: () => {
     },
     apiClient: new TownsServiceClient(),
   };
@@ -109,10 +88,8 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
     socket: state.socket,
-    isWorldMapFocused: state.isWorldMapFocused,
     emitMovement: state.emitMovement,
     emitMessage: state.emitMessage,
-    setWorldMapFocus: state.setWorldMapFocus,
     apiClient: state.apiClient,
   };
 
@@ -143,11 +120,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.myPlayerID = update.data.myPlayerID;
       nextState.currentTownFriendlyName = update.data.townFriendlyName;
       nextState.currentTownID = update.data.townID;
-      nextState.currentTownIsPubliclyListed = update.data.townIsPubliclyListed;
       nextState.userName = update.data.userName;
       nextState.emitMovement = update.data.emitMovement;
       nextState.emitMessage = update.data.emitMessage;
-      nextState.setWorldMapFocus = update.data.setWorldMapFocus;
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
       break;
@@ -187,9 +162,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       break;
     case 'playerMessage':
       nextState.messages = [...state.messages, update.message];
-      break;
-    case 'setWorldMapFocus':
-      nextState.isWorldMapFocused = update.isFocused;
       break;
     case 'disconnect':
       state.socket?.disconnect();
@@ -252,11 +224,6 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({action: 'weMoved', location});
   };
 
-  const setWorldMapFocus = (isFocused: boolean) => dispatchAppUpdate({
-    action: 'setWorldMapFocus',
-    isFocused
-  })
-
   dispatchAppUpdate({
     action: 'doConnect',
     data: {
@@ -265,10 +232,8 @@ async function GameController(initData: TownJoinResponse,
       townFriendlyName: roomName,
       townID: video.coveyTownID,
       myPlayerID: gamePlayerID,
-      townIsPubliclyListed: video.isPubliclyListed,
       emitMovement,
       emitMessage,
-      setWorldMapFocus,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
     },

@@ -25,6 +25,7 @@ import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
 import PlayerMention from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
+import useMaybeVideo from "../../hooks/useMaybeVideo";
 
 
 const useStyles = makeStyles({
@@ -105,7 +106,6 @@ const ChatBox = (): JSX.Element => {
     myPlayerID,
     userName,
     emitMessage,
-    setWorldMapFocus,
     currentTownFriendlyName,
     players,
     socket
@@ -113,8 +113,9 @@ const ChatBox = (): JSX.Element => {
   const [newText, setNewText] = useState<string>('')
   const classes = useStyles();
   const [users, setUsers] = useState<MentionUser []>([]);
-  const onFocus = () => setWorldMapFocus(false)
-  const onBlur = () => setWorldMapFocus(true)
+  const video = useMaybeVideo();
+  const onFocus = () => video?.pauseGame();
+  const onBlur = () => video?.unPauseGame();
 
   useEffect(() => {
     setUsers(players.map(player => new MentionUser(player.id, player.userName)));
