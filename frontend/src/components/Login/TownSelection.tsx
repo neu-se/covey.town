@@ -33,17 +33,16 @@ interface TownSelectionProps {
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-    
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+  const authInfo = useAuthInfo();
+  const loggedInUser = authInfo.currentUser;
+  const [userName, setUserName] = useState<string>(loggedInUser?.profile.username || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  // const { apiClient } = useCoveyAppState();
+  const { apiClient } = useCoveyAppState();
   const history = useHistory();
-  const authInfo = useAuthInfo();
-  const loggedInUser = authInfo.currentUser
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
@@ -70,7 +69,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       status: "error"
     })
   }
-  const userName = loggedInUser?.profile.username;
 
   function handleEditProfile(): void {
     history.push('/profile');
