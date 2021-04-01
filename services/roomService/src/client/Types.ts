@@ -19,6 +19,7 @@ export interface GameCreateResponse {
 
 export interface GameUpdateRequest {
   gameID: string;
+  player?: number;
   move: TicMove | TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move;
 }
 

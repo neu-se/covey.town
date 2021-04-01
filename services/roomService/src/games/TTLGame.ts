@@ -4,7 +4,7 @@ import IGame from './IGame';
 
 export default class TTLGame implements IGame {
 
-  private _id: string;
+  private _id!: string;
 
   gameState: string;
 
