@@ -16,6 +16,7 @@ export default class CoveyTownsStore {
   private static _instance: CoveyTownsStore;
 
   private _towns: CoveyTownController[] = [];
+  
   private _hubs: CoveyHubController[] = [];
 
   static getInstance(): CoveyTownsStore {

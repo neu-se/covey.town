@@ -52,11 +52,11 @@ export default class CoveyTownController {
   }
 
   get hubs(): CoveyHubController[] {
-   return this._hubs; 
+    return this._hubs; 
   }
 
   /** The List of Hubs in the town */
-  private _hubs: CoveyHubController[] = []
+  private _hubs: CoveyHubController[] = [];
 
   /** The list of players currently in the town * */
   private _players: Player[] = [];
@@ -87,22 +87,22 @@ export default class CoveyTownController {
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
     // Add Hubs
-    const hospital = new CoveyHubController('hospital', true);
+    const hospital = new CoveyHubController('Hospital', true);
     this._hubs.push(hospital);
-    const club = new CoveyHubController('club', true);
+    const club = new CoveyHubController('Club', true);
     this._hubs.push(club);
-    const privateHub_1 = new CoveyHubController('house_1', false);
-    this._hubs.push(privateHub_1);
-    const privateHub_2 = new CoveyHubController('house_2', false);
-    this._hubs.push(privateHub_2);
-    const privateHub_3 = new CoveyHubController('house_3', false);
-    this._hubs.push(privateHub_3);
-    const privateHub_4 = new CoveyHubController('house_4', false);
-    this._hubs.push(privateHub_4);
-    const privateHub_5 = new CoveyHubController('house_5', false);
-    this._hubs.push(privateHub_5);
-    const privateHub_6 = new CoveyHubController('house_6', false);
-    this._hubs.push(privateHub_6);
+    const privateHub1 = new CoveyHubController('House_1', false);
+    this._hubs.push(privateHub1);
+    const privateHub2 = new CoveyHubController('House_2', false);
+    this._hubs.push(privateHub2);
+    const privateHub3 = new CoveyHubController('House_3', false);
+    this._hubs.push(privateHub3);
+    const privateHub4 = new CoveyHubController('House_4', false);
+    this._hubs.push(privateHub4);
+    const privateHub5 = new CoveyHubController('House_5', false);
+    this._hubs.push(privateHub5);
+    const privateHub6 = new CoveyHubController('House_6', false);
+    this._hubs.push(privateHub6);
     
   }
 
