@@ -5,6 +5,7 @@ import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
   leaderboardHandler,
+  updateLeaderboardHandler,
   townCreateHandler, townDeleteHandler,
   townJoinHandler,
   townListHandler,
@@ -124,6 +125,27 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     try {
       const result = await leaderboardHandler({
         coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Update the leaderboard of a town
+   */
+   app.patch('/leaderboard/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await updateLeaderboardHandler({
+        coveyTownID: req.params.townID,
+        userName: req.body.userName,
+        points: req.body.points,
       });
       res.status(StatusCodes.OK)
         .json(result);

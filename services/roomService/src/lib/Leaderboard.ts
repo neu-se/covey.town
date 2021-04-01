@@ -5,9 +5,9 @@ import { ScoreList } from "../CoveyTypes";
 **/
 export default class Leaderboard {
 
-    private _allScores: Map<string, number>;
+    private _allScores: { userID: string, userName: string, score: number }[];
 
-    get allScores(): Map<string, number> {
+    get allScores(): { userID: string, userName: string, score: number }[] {
         return this._allScores;
     }
 
@@ -16,25 +16,22 @@ export default class Leaderboard {
     }
 
     constructor() {
-        this._allScores = new Map([
-            ['user1', 5],
-            ['user2', 3],
-            ['user3', 6]
-       ]);
+        this._allScores = [];
+
+        // dummy data
+        this._allScores = [
+            { userID: '001', userName: 'user1', score: 2 },
+            { userID: '002', userName: 'user2', score: 5 },
+            { userID: '003', userName: 'user3', score: 3 }
+        ];
     }
 
-    /**
-     * Update the given player's score with the given number of points
-     * 
-     */
-    updateScore(username: string, points: number) {
-        const userPoints = this.allScores.get(username);
-
-        if (typeof userPoints !== 'undefined') {
-            this.allScores.set(username, userPoints + points);
-        } else {
-            this.allScores.set(username, points);
-        }
+    updateScore(userID: string, points: number) {
+        const user = this._allScores.map((userInfo) => {
+            if (userInfo.userID == userID) {
+                userInfo.score += points;
+            }
+        });
     }
 
     /**
@@ -42,21 +39,16 @@ export default class Leaderboard {
      * 
      */
     getTopScores(): ScoreList {
-        let topScores: { userName: string, score: number }[]  = [];
-        let allScoreValues: { userName: string, score: number}[] = [];
+        let allScoreValues: { userID: string, userName: string, score: number }[] = [];
 
-        const allScores = this.allScores;
-
-        allScores.forEach((value: number, key: string) => {
-            allScoreValues.push({ userName: key, score: value });
-        })
+        allScoreValues = this._allScores;
 
         // sort values
-        Object.values(topScores).sort((score1, score2) => {
+        allScoreValues.sort((score1, score2) => {
             return score2.score - score1.score;
         });
 
-        topScores = allScoreValues.slice(0, 10);
+        const topScores: { userName: string, score: number }[]  = allScoreValues.slice(0, 10);
 
         return topScores;
     }

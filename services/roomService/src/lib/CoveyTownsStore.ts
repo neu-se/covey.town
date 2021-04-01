@@ -81,6 +81,14 @@ export default class CoveyTownsStore {
     return existingTown;
   }
 
+  updateLeaderboard(coveyTownID: string, userName: string, points: number): ScoreList | undefined {
+    const existingTown = this.getControllerForTown(coveyTownID);
+    if (existingTown) {
+      return existingTown.updateLeaderboard(userName, points);
+    }
+    return existingTown;
+  }
+
   /**  related to tictactoe**/
 
   startGame(coveyTownID:string, player1: string, player2: string): boolean {
