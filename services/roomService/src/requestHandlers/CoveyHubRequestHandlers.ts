@@ -143,7 +143,7 @@ export async function hubCreateHandler(requestData: HubCreateRequest): Promise<R
     isOK: true,
     response: {
       coveyHubID: newHub.coveyHubID,
-      coveyHubPassword: newHub.townUpdatePassword,
+      coveyHubPassword: newHub.hubUpdatePassword,
     },
   };
 }
