@@ -4,15 +4,10 @@ import React, {
 import './App.css';
 import {
   BrowserRouter ,
-  Switch,
   Route,
-  useLocation,
-
 } from "react-router-dom";
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {
-  ThemeProvider,
-  CSSReset,
   ChakraProvider,
 } from '@chakra-ui/react';
 import { useAuth0 } from "@auth0/auth0-react";
