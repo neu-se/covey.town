@@ -22,10 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>; setMediaError?(error: Error): void }) {
   const { buttonContainer } = useStyles();
   const { user, isAuthenticated } = useAuth0(); 
-  let welcomeMessage = <div>Welcome to Covey.Town!</div>;
+  let welcomeMessage = <div>Welcome, Guest!</div>;
   if(isAuthenticated){
     welcomeMessage = (<div>
-      {"Welcome to Covey.Town, "} <Link to="/Profile">{`${user.given_name}!`}</Link>
+      {"Welcome, "} <Link to="/Profile">{`${user.given_name || user.nickname}!`}</Link>
       </div>
       )
   }

@@ -29,8 +29,16 @@ interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
+function getDefaultUsername(isAuthenticated:boolean, user:any){
+  if(!isAuthenticated) {
+    return 'Guest';
+  }
+  return user.given_name  || user.nickname;
+}
+
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+  const { user, isAuthenticated } = useAuth0();
+  const [userName, setUserName] = useState<string>(Video.instance()?.userName || getDefaultUsername(isAuthenticated, user));
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -38,7 +46,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
-  const { isAuthenticated } = useAuth0();
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -142,7 +149,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     <>
       <form>
         <Stack>
-        {isAuthenticated ? null : (<Box p="4" borderWidth="1px" borderRadius="lg">
+        <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Select a username</Heading>
 
             <FormControl>
@@ -152,7 +159,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
-          </Box>)} 
+          </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
