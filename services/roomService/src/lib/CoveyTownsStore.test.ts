@@ -2,6 +2,8 @@ import { nanoid } from 'nanoid';
 import CoveyTownsStore from './CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import PrivateChatMessage from '../types/PrivateChatMessage';
+import GlobalChatMessage from '../types/GlobalChatMessage';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
@@ -19,6 +21,14 @@ function mockCoveyListener(): CoveyTownListener {
     },
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
+    },
+    onGlobalMessage(sender: Player, message: GlobalChatMessage) {
+      mockCoveyListenerOtherFns(sender, message);
+
+    },
+    onPrivateMessage(sender: Player, receiver: Player, message: PrivateChatMessage) {
+      mockCoveyListenerOtherFns(sender, receiver, message);
+
     },
   };
 }
