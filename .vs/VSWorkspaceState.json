@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\frontend",
+    "\\frontend\\public",
+    "\\frontend\\public\\assets",
+    "\\frontend\\public\\assets\\atlas",
+    "\\frontend\\public\\assets\\atlas\\tuxemon-misa",
+    "\\frontend\\src",
+    "\\frontend\\src\\components",
+    "\\frontend\\src\\components\\world",
+    "\\frontend\\src\\contexts"
+  ],
+  "SelectedNode": "\\frontend\\public\\assets\\atlas\\atlas.json",
+  "PreviewInSolutionExplorer": false
+}
