@@ -4,11 +4,11 @@ import {
   Button
 } from '@chakra-ui/react'
 
-const LogoutButton = () => {
+const LogoutButton = (): JSX.Element => {
   const { logout } = useAuth0();
 
   return (
-    <Button onClick={() => logout({ returnTo: window.location.origin })}>
+    <Button color = "blue.500" onClick={() => logout({ returnTo: window.location.origin })}>
       Log Out
     </Button>
   );
