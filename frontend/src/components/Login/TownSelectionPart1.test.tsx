@@ -1,13 +1,14 @@
 /* eslint-disable no-await-in-loop,@typescript-eslint/no-loop-func,no-restricted-syntax */
 import React from 'react'
 import '@testing-library/jest-dom'
-import { ChakraProvider } from '@chakra-ui/react'
-import { render, waitFor, within } from '@testing-library/react'
-import { nanoid } from 'nanoid';
+import {ChakraProvider} from '@chakra-ui/react'
+import {render, waitFor, within} from '@testing-library/react'
+import {nanoid} from 'nanoid';
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import PlayerMessage from "../../classes/PlayerMessage";
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -16,7 +17,7 @@ jest.mock('../../classes/TownsServiceClient');
 jest.mock('../../classes/Video/Video');
 jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts', () => ({
   __esModule: true, // this property makes it work
-  default: () => ({ connect: mockConnect })
+  default: () => ({connect: mockConnect})
 }));
 jest.mock("@chakra-ui/react", () => {
   const ui = jest.requireActual("@chakra-ui/react");
@@ -81,22 +82,25 @@ const listTowns = (suffix: string) => Promise.resolve({
 
 function wrappedTownSelection() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
-    nearbyPlayers: { nearbyPlayers: [] },
+    nearbyPlayers: {nearbyPlayers: []},
     players: [],
+    messages: [],
     myPlayerID: '',
+    currentTownFriendlyName: '',
     currentTownID: '',
     currentTownIsPubliclyListed: false,
-    currentTownFriendlyName: '',
     sessionToken: '',
     userName: '',
     socket: null,
     currentLocation: {
-      x: 0,
-      y: 0,
-      rotation: 'front',
-      moving: false,
+      x: 0, y: 0, rotation: 'front', moving: false,
     },
+    isWorldMapFocused: true,
     emitMovement: () => {
+    },
+    emitMessage: () => {
+    },
+    setWorldMapFocus: () => {
     },
     apiClient: new TownsServiceClient(),
   }}>
@@ -109,13 +113,12 @@ describe('Part 1 - Public room listing', () => {
     mocklistTowns.mockReset();
   })
   it('is called when rendering (hopefully by a useeffect, this will be checked manually)', async () => {
-    jest.useRealTimers();
     mocklistTowns.mockImplementation(() => listTowns(nanoid()));
     const renderData = render(wrappedTownSelection());
     await waitFor(() => {
       expect(mocklistTowns)
-        .toHaveBeenCalledTimes(1);
-    }, {timeout: 200})
+        .toBeCalledTimes(1);
+    })
     renderData.unmount();
   });
   it('updates every 2000 msec', async () => {

@@ -1,9 +1,11 @@
 import assert from 'assert';
-import { Socket } from 'socket.io';
+import {Socket} from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import {CoveyTownList, UserLocation} from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import PlayerMessage, {ClientPlayerMessage} from '../types/PlayerMessage';
+import PlayerMention, {ClientPlayerMention} from '../types/PlayerMention';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -126,7 +128,7 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   const townsStore = CoveyTownsStore.getInstance();
   return {
     isOK: true,
-    response: { towns: townsStore.getTowns() },
+    response: {towns: townsStore.getTowns()},
   };
 }
 
@@ -190,6 +192,12 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    onPlayerMessage(message: PlayerMessage) {
+      socket.emit('receivePlayerMessage', message);
+    },
+    onPlayerMention(message: PlayerMention) {
+      socket.emit('receivePlayerMention', message);
+    },
   };
 }
 
@@ -201,14 +209,14 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
 export function townSubscriptionHandler(socket: Socket): void {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinTownHandler
-  const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
+  const {token, coveyTownID} = socket.handshake.auth as { token: string; coveyTownID: string };
 
   const townController = CoveyTownsStore.getInstance()
     .getControllerForTown(coveyTownID);
 
   // Retrieve our metadata about this player from the TownController
-  const s = townController?.getSessionByToken(token);
-  if (!s || !townController) {
+  const playerSession = townController?.getSessionByToken(token);
+  if (!playerSession || !townController) {
     // No valid session exists for this token, hence this client's connection should be terminated
     socket.disconnect(true);
     return;
@@ -217,19 +225,36 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Create an adapter that will translate events from the CoveyTownController into
   // events that the socket protocol knows about
   const listener = townSocketAdapter(socket);
-  townController.addTownListener(listener);
+  // TODO See if it's okay that we have chosen to change the
+  //  addTownListener signature to support associating a player with a listener
+  townController.addTownListener(listener, playerSession.player.id);
 
   // Register an event listener for the client socket: if the client disconnects,
   // clean up our listener adapter, and then let the CoveyTownController know that the
   // player's session is disconnected
   socket.on('disconnect', () => {
     townController.removeTownListener(listener);
-    townController.destroySession(s);
+    townController.destroySession(playerSession);
   });
 
   // Register an event listener for the client socket: if the client updates their
   // location, inform the CoveyTownController
   socket.on('playerMovement', (movementData: UserLocation) => {
-    townController.updatePlayerLocation(s.player, movementData);
+    townController.updatePlayerLocation(playerSession.player, movementData);
   });
+
+  socket.on('sendPlayerMessage', (message: ClientPlayerMessage) => {
+
+    townController.sendMessage(PlayerMessage.fromClientPlayerMessage(message));
+  });
+
+
+  socket.on('sendPlayerMention', (message: ClientPlayerMention) => {
+    console.log('hey', message);
+
+    townController.sendPlayerMention(PlayerMention.fromClientPlayerMention(message));
+  });
+
+  
+
 }

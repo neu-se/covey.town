@@ -36,3 +36,15 @@
         transform: rotate(360deg);
     }
 }
+
+.chatbox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 50%
+}
+
+.messageWindow {
+  min-height: 50vh;
+}
+
