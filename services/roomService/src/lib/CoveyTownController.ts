@@ -323,6 +323,8 @@ export default class CoveyTownController {
         maxVotedURL = vidURL;
       }
     })
+
+    this._masterVideoLength = 104;
     
     // Create a timer for this max voted video
     // TODO: Before this, we need to update _masterVideoLength
