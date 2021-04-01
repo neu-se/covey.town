@@ -99,7 +99,7 @@ export default class CoveyTownController {
 
   // Master video length and time elapsed are in seconds to be compatible with Youtube
   // TODO: Master video leghth for mario video
-  private _masterVideoLength = 162000
+  private _masterVideoLength = 10 // length of default mario video
   //private _masterVideoLength = 1007
   private _masterTimeElapsed = 0
   private _currentTimer : Timer | null
@@ -283,7 +283,7 @@ export default class CoveyTownController {
           upToDateVideoInfo = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed, isPlaying : false};
         }
 
-        // this._currentTimer = this.createTimer();
+        this._currentTimer = this.createTimer();
         listenerToAdd.onVideoSyncing(upToDateVideoInfo);
       }
   }
@@ -309,6 +309,8 @@ export default class CoveyTownController {
   // // Andrew - remove listeners and most-recent video info associated with player after they leave tv area
   removeFromTVArea(playerToRemove: Player) {
     this._currentVideoInfoMap.delete(playerToRemove);
+    this._listenersInTVAreaMap.get(playerToRemove)?.onDisablePlayPause(); // Andrew - so that play/pause buttons don't display after client rejoins tv area
+    this._listenersInTVAreaMap.get(playerToRemove)?.onEnableVoting(); // Andrew - so that voting button works after client rejoins tv area
     this._listenersInTVAreaMap.delete(playerToRemove);
 
     /* Logic to check if there is no longer anyone in the tv area
@@ -351,6 +353,10 @@ export default class CoveyTownController {
       isPlaying: true
     }));
 
+    // Andrew - this enables the voting button so that a client can vote this upcoming round
+    this._listeners.forEach((listener) => listener.onEnableVoting());
+
+
     // clear votes now for next round
     this._videoURLVotes = new Map<string, number>();
   }
@@ -359,20 +365,41 @@ export default class CoveyTownController {
   // I had to use JSON.stringify(videoURL) to convert the object with one value to just a string (this was such
   // a weird JS/TS thing that took me a while to find a solution for since the map's set() and get() functions
   // were not working propely when I simply used videoURL).
+  // voteForVideo(videoURL: string) {
+  //   console.log(this._videoURLVotes);
+  //   const stringVideoURL = JSON.stringify(videoURL);
+  //   const firstSplit: string = stringVideoURL.substring(13, stringVideoURL.length - 2)
+  //   let seenVid = false;
+  //   this._videoURLVotes.forEach((numVotes, viddURL) => {
+  //     if (viddURL == firstSplit) {
+  //       seenVid = true;
+  //       this._videoURLVotes.set(viddURL, numVotes + 1);
+  //     }
+  //   })
+  //   if (!seenVid) {
+  //     this._videoURLVotes.set(firstSplit, 1);
+  //   }
+  // }
+
   voteForVideo(videoURL: string) {
-    console.log(this._videoURLVotes);
-    const stringVideoURL = JSON.stringify(videoURL);
-    const firstSplit: string = stringVideoURL.substring(13, stringVideoURL.length - 2)
-    let seenVid = false;
-    this._videoURLVotes.forEach((numVotes, viddURL) => {
-      if (viddURL == firstSplit) {
-        seenVid = true;
-        this._videoURLVotes.set(viddURL, numVotes + 1);
-      }
-    })
-    if (!seenVid) {
-      this._videoURLVotes.set(firstSplit, 1);
-    }
+    console.log(this._videoURLVotes, videoURL);
+    // const stringVideoURL = JSON.stringify(videoURL);
+    // const firstSplit: string = stringVideoURL.substring(13, stringVideoURL.length - 2)
+    // let seenVid = false;
+    // this._videoURLVotes.forEach((numVotes, viddURL) => {
+    //   if (viddURL == firstSplit) {
+    //     seenVid = true;
+    //     this._videoURLVotes.set(viddURL, numVotes + 1);
+    //   }
+    // })
+    // if (!seenVid) {
+    //   this._videoURLVotes.set(firstSplit, 1);
+    // }
+  }
+
+  checkNewURLValidity(videoURL: string) {
+    console.log('Proposed URL:', videoURL);
+    // this is where the controller checks for the validity of the proposed URL with youtube API
   }
 
   // Andrew - each user sends info to this regularly so that people that join tv area have synced video info

@@ -36,4 +36,10 @@ export default interface CoveyTownListener {
 
   // Andrew - called when this player should sync their youtube player up with whatever the most recent video is
   onVideoSyncing(videoInfo: YoutubeVideoInfo): void;
+
+  // Andrew - called when client should have voting button enabled when new video starts
+  onEnableVoting(): void;
+
+  // Andrew - called when client should disable play/pause buttons before next time it joins tv sream
+  onDisablePlayPause(): void;
 }

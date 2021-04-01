@@ -196,11 +196,19 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     // Andrew - emits message to client to play video
     onPlayerPlayed() {
-      socket.emit('playerPlayed')
+      socket.emit('playerPlayed');
     },
     // Andrew - emits message to client to sync up youtube player with given video info
     onVideoSyncing(videoInfo: YoutubeVideoInfo) {
-      socket.emit('videoSynchronization', videoInfo)
+      socket.emit('videoSynchronization', videoInfo);
+    },
+    // Andrew - enables voting button for next round for video player
+    onEnableVoting() {
+      socket.emit('enableVotingButton');
+    },
+    // Andrew - disables play/pause buttons for video player
+    onDisablePlayPause() {
+      socket.emit('disablePlayPauseButtons');
     },
   };
 }
@@ -290,6 +298,12 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Andrew - Register an event listener for the client socket: if a client casts a vote for a 
   // video URL then have controller add a vote for that URL
   socket.on('clientVoted', (videoURL: string) => {
-    townController.voteForVideo(videoURL); // should we restrict voting >1 in controller or on frontend button
+    townController.voteForVideo(videoURL);
+  });
+
+  // Andrew - Register an event listener for the client socket: if a client submits a new URL, then controller
+  // should check if it is a valid URL before having all clients add it to their list of videos they can vote for
+  socket.on('clientProposedNewURL', (videoURL: string) => {
+    townController.checkNewURLValidity(videoURL);
   });
 }

@@ -13,6 +13,7 @@ import { YouTubePlayer } from 'youtube-player/dist/types'; // Andrew - This is t
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import VideoPlayer from './components/VideoPlayer/VideoPlayer'; // Andrew - separate component for youtube
+import VideoListWidget from './components/VideoListWidget/VideoListWidget'; // Andrew - separate component for youtube
 import { CoveyAppState, NearbyPlayers, YoutubeVideoInfo } from './CoveyTypes';
 import useCoveyAppState from './hooks/useCoveyAppState';
 import VideoContext from './contexts/VideoContext';
@@ -307,6 +308,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         <WorldMap /> 
         <VideoOverlay preferredMode="fullwidth" />
         <VideoPlayer />
+        <VideoListWidget />
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
