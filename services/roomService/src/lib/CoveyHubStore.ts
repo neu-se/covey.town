@@ -43,9 +43,9 @@ export default class CoveyHubStore {
     return newHub;
   }
 
-  updateHub(coveyHubID: string, coveyTownPassword: string, friendlyName?: string, makePublic?: boolean): boolean {
+  updateHub(coveyHubID: string, coveyHubPassword: string, friendlyName?: string, makePublic?: boolean): boolean {
     const existingHub = this.getControllerForHub(coveyHubID);
-    if (existingHub && passwordMatches(coveyTownPassword, existingHub.townUpdatePassword)) {
+    if (existingHub && passwordMatches(coveyHubPassword, existingHub.hubUpdatePassword)) {
       if (friendlyName !== undefined) {
         if (friendlyName.length === 0) {
           return false;
@@ -60,9 +60,9 @@ export default class CoveyHubStore {
     return false;
   }
 
-  deleteHub(coveyHubID: string, coveyTownPassword: string): boolean {
+  deleteHub(coveyHubID: string, coveyHubPassword: string): boolean {
     const existingHub = this.getControllerForHub(coveyHubID);
-    if (existingHub && passwordMatches(coveyTownPassword, existingHub.townUpdatePassword)) {
+    if (existingHub && passwordMatches(coveyHubPassword, existingHub.hubUpdatePassword)) {
       this._hubs = this._hubs.filter(hub => hub !== existingHub);
       existingHub.disconnectAllPlayers();
       return true;
