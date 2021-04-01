@@ -9,8 +9,10 @@ class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
   };
-
+   
   private id?: string;
+
+  private avatar: string;
 
   private players: Player[] = [];
 
@@ -37,6 +39,7 @@ class CoveyGameScene extends Phaser.Scene {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
+    this.avatar = 'john'
   }
 
 
@@ -45,7 +48,7 @@ class CoveyGameScene extends Phaser.Scene {
     // this.load.image("logo", logoImg);
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
-    this.load.atlas( 'atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
+    this.load.atlas( 'misa', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
     this.load.atlas('john', '/assets/testSprite/john.png', '/assets/testSprite/test.json');
   }
 
@@ -92,13 +95,16 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location, player.avatar);
       this.players.push(myPlayer);
     }
+    console.log(this.id)
+    console.log(myPlayer.id)
+    console.log(myPlayer.avatar)
     if (this.id !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore - JB todo
-          .sprite(0, 0, `${player.avatar}`, `${player.avatar}-front`)
+          .sprite(0, 0, `${myPlayer.avatar}`, `${myPlayer.avatar}-front`)
           .setSize(30, 40)
           .setOffset(0, 24);
         const label = this.add.text(0, 0, myPlayer.userName, {
@@ -118,7 +124,7 @@ class CoveyGameScene extends Phaser.Scene {
         sprite.anims.play(`${player.avatar}-${player.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
-        sprite.setTexture(`${player.avatar}`, `${player.avatar}-${player.location.rotation}`);
+        sprite.setTexture(`${player.avatar}`, `john-${player.location.rotation}`);
       }
     }
   }
@@ -143,6 +149,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.paused) {
       return;
     }
+
     if (this.player && this.cursors) {
       const speed = 175;
       const prevVelocity = this.player.sprite.body.velocity.clone();
@@ -155,31 +162,31 @@ class CoveyGameScene extends Phaser.Scene {
       switch (primaryDirection) {
         case 'left':
           body.setVelocityX(-speed);
-          this.player.sprite.anims.play('john-left-walk', true);
+          this.player.sprite.anims.play(`${this.avatar}-left-walk`, true);
           break;
         case 'right':
           body.setVelocityX(speed);
-          this.player.sprite.anims.play('john-right-walk', true);
+          this.player.sprite.anims.play(`${this.avatar}-right-walk`, true);
           break;
         case 'front':
           body.setVelocityY(speed);
-          this.player.sprite.anims.play('john-front-walk', true);
+          this.player.sprite.anims.play(`${ this.avatar }-front-walk`, true);
           break;
         case 'back':
           body.setVelocityY(-speed);
-          this.player.sprite.anims.play('john-back-walk', true);
+          this.player.sprite.anims.play(`${this.avatar}-back-walk`, true);
           break;
         default:
           // Not moving
           this.player.sprite.anims.stop();
           // If we were moving, pick and idle frame to use
           if (prevVelocity.x < 0) {
-            this.player.sprite.setTexture('test', 'john-left');
+            this.player.sprite.setTexture(`${this.avatar}`, `${this.avatar}-left`);
           } else if (prevVelocity.x > 0) {
-            this.player.sprite.setTexture('test', 'john-right');
+            this.player.sprite.setTexture(`${this.avatar}`, `${this.avatar}-right`);
           } else if (prevVelocity.y < 0) {
-            this.player.sprite.setTexture('test', 'john-back');
-          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('test', 'john-front');
+            this.player.sprite.setTexture(`${this.avatar}`, `${this.avatar}-back`);
+          } else if (prevVelocity.y > 0) this.player.sprite.setTexture(`${this.avatar}`, `${this.avatar}-front`);
           break;
       }
 
@@ -289,7 +296,7 @@ class CoveyGameScene extends Phaser.Scene {
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
     // player's body.
     const sprite = this.physics.add
-      .sprite(spawnPoint.x, spawnPoint.y, 'test', 'john-front')
+      .sprite(spawnPoint.x, spawnPoint.y, `${this.avatar}`, `${this.avatar}-front`)
       .setSize(30, 40)
       .setOffset(0, 24);
     const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, '(You)', {
@@ -347,7 +354,7 @@ class CoveyGameScene extends Phaser.Scene {
     const { anims } = this;
     anims.create({
       key: 'misa-left-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-left-walk.',
         start: 0,
         end: 3,
@@ -358,7 +365,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'misa-right-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-right-walk.',
         start: 0,
         end: 3,
@@ -369,7 +376,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'misa-front-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-front-walk.',
         start: 0,
         end: 3,
@@ -380,7 +387,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'misa-back-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-back-walk.',
         start: 0,
         end: 3,
@@ -392,7 +399,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     anims.create({
       key: 'john-left-walk',
-      frames: anims.generateFrameNames('test', {
+      frames: anims.generateFrameNames('john', {
         prefix: 'john-left-walk.',
         start: 0,
         end: 3,
@@ -403,7 +410,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'john-right-walk',
-      frames: anims.generateFrameNames('test', {
+      frames: anims.generateFrameNames('john', {
         prefix: 'john-right-walk.',
         start: 0,
         end: 3,
@@ -414,7 +421,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'john-front-walk',
-      frames: anims.generateFrameNames('test', {
+      frames: anims.generateFrameNames('john', {
         prefix: 'john-front-walk.',
         start: 0,
         end: 3,
@@ -425,7 +432,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'john-back-walk',
-      frames: anims.generateFrameNames('test', {
+      frames: anims.generateFrameNames('john', {
         prefix: 'john-back-walk.',
         start: 0,
         end: 3,
