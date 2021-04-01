@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 export const userSchema = new Schema({
-    userName: String,
-    email: String,
-    password: String,
+  username: String,
+  email: String,
+  password: String,
+  requests:[String],
+  sentRequests:[String],
+  friends:[String]
 }, {collection:'User'});
 
- 
