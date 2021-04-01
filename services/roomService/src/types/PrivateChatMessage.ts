@@ -1,13 +1,13 @@
-import AChatMessage from "./AChatMessage";
-import Player from "./Player";
+import AChatMessage from './AChatMessage';
+import Player from './Player';
 /**
  * TODO:
  */
 export default class PrivateChatMessage extends AChatMessage {
-    private _receiver: Player
+  private _receiver: Player;
 
-    constructor(message: string, sender: Player, townID: string, receiver: Player) {
-        super(message, sender, townID);
-        this._receiver = receiver
-    }
+  constructor(message: string, sender: Player, townID: string, receiver: Player) {
+    super(message, sender, townID);
+    this._receiver = receiver;
+  }
 }

@@ -37,7 +37,7 @@ export default interface CoveyTownListener {
    * @param sender the player sending the message
    * @param message the message being sent
    */
-   onGlobalMessage(sender: Player, message: GlobalChatMessage): void;
+  onGlobalMessage(sender: Player, message: GlobalChatMessage): void;
 
   /**
    * Called when a town is destroyed, causing all players to disconnect
