@@ -2,6 +2,8 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
 
+
+
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
@@ -76,6 +78,16 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
+export interface LeaderboardRequest {
+  coveyTownID: string;
+}
+
+export type ScoreList = { userName: string, score: number };
+
+export interface LeaderboardResponse {
+  scores: ScoreList[];
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -142,4 +154,8 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async leaderboard(requestData: LeaderboardRequest): Promise<LeaderboardResponse> {
+    const responseWrapper = await this._axios.get(`/leaderboard/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
 }
