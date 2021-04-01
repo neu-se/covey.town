@@ -9,10 +9,8 @@ import {
   GameListResponse,
   TTLChoices,
   HangmanWord,
-  HangmanPlayer1Move,
   HangmanPlayer2Move,
-  TicMove,
-  TTLPlayer1Move, TTLPlayer2Move,
+  TicMove, TTLPlayer2Move,
 } from '../client/Types';
 import TicTacToeGame from './TicTacToeGame';
 import HangmanGame from './HangmanGame';
@@ -44,7 +42,8 @@ export default class GameController {
     } else if (requestData.gameType === 'TTL') {
       newGame = new TTLGame(player1, <TTLChoices>(initialState));
     } else if (requestData.gameType === 'TicTacToe') {
-      newGame = new TicTacToeGame(player1);
+      // TODO: add params for TicTacToe constructor
+      newGame = new TicTacToeGame();
     }
     if (newGame === undefined) {
       return {
@@ -98,13 +97,13 @@ export default class GameController {
       };
     }
     // TODO: move() method should return a boolean value
-    let success;
+    let success = true;
     if (targetGame instanceof TicTacToeGame) {
-      success = targetGame.move(<TicMove>move);
+      targetGame.move(<TicMove>move);
     } else if (targetGame instanceof TTLGame) {
-      success = targetGame.move(<TTLPlayer2Move>move);
+      targetGame.move(<TTLPlayer2Move>move);
     } else if (targetGame instanceof HangmanGame) {
-      success = (targetGame.move(<HangmanPlayer2Move>move));
+      targetGame.move(<HangmanPlayer2Move>move);
     } else {
       success = false;
     }

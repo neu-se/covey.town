@@ -2,6 +2,7 @@ import {TicMove, HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlay
 
 export default interface IGame {
 
+  id : string;
 
   gameState : string;
 
