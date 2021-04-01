@@ -11,7 +11,7 @@ function LoginButton() {
   } = useAuth0();
 
   return  (
-    <>{!isAuthenticated && <Button onClick={loginWithRedirect}>Log in</Button>}</>
+    <>{!isAuthenticated && <Button color = "blue.500" onClick={loginWithRedirect}>Log in</Button>}</>
   );
 }
 

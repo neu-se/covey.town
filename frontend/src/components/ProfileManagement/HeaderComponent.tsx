@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import {withRouter} from "react-router-dom";
+import {withRouter, Link} from "react-router-dom";
 import {
   Box,
   Flex,
   Avatar,
   HStack,
-  Link,
   IconButton,
   Button,
   Menu,
@@ -16,8 +15,11 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
+  Heading,
+  Spacer,
 } from '@chakra-ui/react';
 import { useAuth0 } from "@auth0/auth0-react";
+
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
 import "../Styles/Header.css";
@@ -35,18 +37,28 @@ function HeaderComponent() {
 
     return (
       <>
-        <Box bg="blue.500" px={4}>
+        <Box bg="blue.500" px={5}>
           <Flex color="white" h={16} alignItems="center" justifyContent="space-between">
             <HStack spacing={1000} alignItems="center">
-              <Box>Covey Town</Box>
-              <Flex color="blue.500" alignItems="right">
+              <Box boxShadow="base" paddingLeft="100px">
+                <Heading size="md" fontSize="29px" >Covey Town</Heading>
+                </Box>
+                <Stack direction="row" spacing={5} align="right">
+                {
+                  isAuthenticated && <Link to = "/twilio" > <Button size="md" color = "blue.500">
+                  Enter Town
+                </Button></Link>
+                
+                }
+        
                 {
                   isAuthenticated && <LogoutButton/>
                 }
+  
                 {
                   !isAuthenticated && <LoginButton/>
                 }
-              </Flex>
+              </Stack>
             </HStack>
           </Flex>
         </Box>

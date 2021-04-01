@@ -3,15 +3,17 @@ import React, {
 } from 'react';
 import './App.css';
 import {
-  BrowserRouter as Router,
+  BrowserRouter ,
   Switch,
   Route,
+  useLocation,
 
 } from "react-router-dom";
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import {
   ThemeProvider,
   CSSReset,
-  theme
+  ChakraProvider,
 } from '@chakra-ui/react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { io, Socket } from 'socket.io-client';
@@ -33,12 +35,10 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
-import LoginComponent from "./components/ProfileManagement/LoginComponent";
-import RegisterComponent from "./components/ProfileManagement/RegisterComponent";
+import theme from './components/VideoCall/VideoFrontend/theme';
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
-import LoginButton from "./components/ProfileManagement/LoginButton";
-
+import StarterPage from "./components/ProfileManagement/StarterPage";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -256,7 +256,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   );
 }
 
-function EmbeddedTwilioAppWrapper() {
+export function EmbeddedTwilioAppWrapper() {
   const { error, setError } = useAppState();
   const [onDisconnect, setOnDisconnect] = useState<Callback | undefined>();
   const connectionOptions = useConnectionOptions();
@@ -272,29 +272,32 @@ function EmbeddedTwilioAppWrapper() {
 
 export default function AppStateWrapper(): JSX.Element {
 
-  const {isAuthenticated} = useAuth0();
+  const { isAuthenticated } = useAuth0();
 
   useEffect(() => {
 
   })
 
   return (
-    <ThemeProvider theme={theme}>
-
-      <CSSReset />
-      <Router>
-
-        <div className="App">
+      <BrowserRouter>
+      <ChakraProvider>
+        <MuiThemeProvider theme={theme('rgb(185, 37, 0)')}>
+          <AppStateProvider preferredMode='fullwidth' highlightedProfiles={[]}>
+            <div className="App">
           <div className="mb-4">
-            <HeaderComponent/>
-          </div>
+            <HeaderComponent/>    
+              </div>
+                 <Route path = '/twilio' exact component={EmbeddedTwilioAppWrapper} />
           {
-            isAuthenticated &&
-            <ProfileComponent/>
+            !isAuthenticated && <StarterPage/>
           }
+              <Route path='/' exact component={ProfileComponent} />
+              <Route path = '/starterPage' exact component = {StarterPage}/>
+          
         </div>
-      </Router>
-
-    </ThemeProvider>
+          </AppStateProvider>
+        </MuiThemeProvider>
+      </ChakraProvider>
+    </BrowserRouter>
   );
 }

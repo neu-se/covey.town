@@ -22,6 +22,7 @@ import {
   List, ListItem, ListIcon, OrderedList, UnorderedList
   
 } from '@chakra-ui/react';
+import FriendSearch from "./FriendSearch";
 
 
 
@@ -34,12 +35,27 @@ function ProfileComponent() {
         h="80vh"
         mt={50}
         class="box-profile">
-        <Stack direction={["column", "row"]} spacing="0px">
-  <Box w="35%" h="60vh" bg="#1E90FF" boxShadow="lg">
+         <Stack direction={["column", "row"]} spacing="0px">
+       
+           <Box w="35%" h="60vh" bg="blue.500" boxShadow="lg">
+                 <Heading size="md" paddingTop="20px"> <Text color="white" >Hello User</Text></Heading>
     <Flex width="full" align="center" justifyContent="center">
     <Box mt={90}>
     <Text color="white" >John Doe</Text>
-    <Text color="white" >username-john</Text>
+                 <Text color="white" >username: john_doe</Text>
+                 <Text color="white" >DOB: December 18th</Text>
+                  <Button
+                  variantColor="teal"
+                  variant="outline"
+                  type="submit"
+                  width="full"
+                  mt={4}
+                  color="white"
+                >
+                                  
+                     Friends            
+                </Button>
+
      <Button
                   variantColor="teal"
                   variant="outline"
@@ -49,7 +65,7 @@ function ProfileComponent() {
                   color="white"
                 >
                                   
-                     Deactivate Account              
+                     Edit Profile             
                 </Button>
     </Box>
     
@@ -58,7 +74,8 @@ function ProfileComponent() {
   </Box>
   <Box w="65%" h="60vh" bg="white">
      <Flex width="full" align="center" justifyContent="center">
-     <Box mt={5}>
+               <Box mt={5}>
+               <FriendSearch/>
      <Text className="bold-text"> Information</Text>
      <Divider orientation="horizontal" w="50vw" />
      <Grid templateColumns="repeat(5, 1fr)" gap={4}>
