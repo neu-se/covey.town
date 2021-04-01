@@ -4,10 +4,12 @@ import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen
 import IntroContainer from '../IntroContainer/IntroContainer';
 import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import TownSelection from '../../../../Login/TownSelection';
+import AuthHero from '../../../../Authentication/AuthHero';
 
 export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>; setMediaError?(error: Error): void }) {
   return (
     <IntroContainer>
+      <AuthHero />
       <Heading as="h2" size="xl">Welcome to Covey.Town!</Heading>
       <Text p="4">
         Covey.Town is a social platform that integrates a 2D game-like metaphor with video chat.
