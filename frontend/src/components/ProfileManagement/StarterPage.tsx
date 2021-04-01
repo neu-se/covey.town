@@ -22,7 +22,7 @@ export default function StarterPage(): JSX.Element {
           src='/assets/networking.png'
           boxSize='600px'
           objectFit='cover'
-          alt='Segun Adebayo'
+          alt='coveytown'
         />
       </Box>
     </>
