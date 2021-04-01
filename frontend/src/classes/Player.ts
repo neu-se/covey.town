@@ -14,7 +14,7 @@ export default class Player {
   constructor(id: string, userName: string, location: UserLocation, avatar: string) {
     this._id = id;
     this._userName = userName;
-    this._avatar = avatar;
+    this._avatar = 'john';
     this.location = location;
   }
 

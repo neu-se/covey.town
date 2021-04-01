@@ -7,7 +7,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
-    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text, avatar: string
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
   };
 
   private id?: string;
@@ -46,7 +46,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
     this.load.atlas( 'atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
-    this.load.atlas('test', '/assets/testSprite/john.png', '/assets/testSprite/test.json');
+    this.load.atlas('john', '/assets/testSprite/john.png', '/assets/testSprite/test.json');
   }
 
   updatePlayersLocations(players: Player[]) {
@@ -90,9 +90,6 @@ class CoveyGameScene extends Phaser.Scene {
         };
       }
       myPlayer = new Player(player.id, player.userName, location, player.avatar);
-      if (myPlayer !== undefined && this.player !== undefined) {
-        this.player.avatar = myPlayer.avatar;
-      }
       this.players.push(myPlayer);
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
@@ -301,9 +298,10 @@ class CoveyGameScene extends Phaser.Scene {
       // padding: {x: 20, y: 10},
       backgroundColor: '#ffffff',
     });
+
     this.player = {
       sprite,
-      label
+      label,
     };
 
     /* Configure physics overlap behavior for when the player steps into
