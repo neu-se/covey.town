@@ -10,7 +10,7 @@ import {
   TTLChoices,
   HangmanWord,
   HangmanPlayer2Move,
-  TicMove, TTLPlayer2Move,
+  TicMove, TTLPlayer2Move
 } from '../client/Types';
 import TicTacToeGame from './TicTacToeGame';
 import HangmanGame from './HangmanGame';

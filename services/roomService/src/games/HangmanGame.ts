@@ -113,7 +113,4 @@ export default class HangmanGame implements IGame {
       throw new Error('Game is already full');
     }
   }
-
-
-
 }
