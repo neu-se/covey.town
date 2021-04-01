@@ -278,26 +278,26 @@ export default function AppStateWrapper(): JSX.Element {
 
   })
 
-  return (
-      <BrowserRouter>
-      <ChakraProvider>
-        <MuiThemeProvider theme={theme('rgb(185, 37, 0)')}>
-          <AppStateProvider preferredMode='fullwidth' highlightedProfiles={[]}>
-            <div className="App">
-          <div className="mb-4">
-            <HeaderComponent/>    
-              </div>
-                 <Route path = '/twilio' exact component={EmbeddedTwilioAppWrapper} />
-          {
-            !isAuthenticated && <StarterPage/>
-          }
+return (
+  <BrowserRouter>
+    <ChakraProvider>
+      <MuiThemeProvider theme={theme("rgb(185, 37, 0)")}>
+        <AppStateProvider preferredMode='fullwidth' highlightedProfiles={[]}>
+          <div className='App'>
+            <div className='mb-4'>
+              <HeaderComponent />
+            </div>
+            <Route path='/twilio' exact component={EmbeddedTwilioAppWrapper} />
+            {!isAuthenticated && <StarterPage />}
+            {isAuthenticated && (
               <Route path='/' exact component={ProfileComponent} />
-              <Route path = '/starterPage' exact component = {StarterPage}/>
-          
-        </div>
-          </AppStateProvider>
-        </MuiThemeProvider>
-      </ChakraProvider>
-    </BrowserRouter>
-  );
+            )}
+
+            <Route path='/starterPage' exact component={StarterPage} />
+          </div>
+        </AppStateProvider>
+      </MuiThemeProvider>
+    </ChakraProvider>
+  </BrowserRouter>
+);
 }
