@@ -23,6 +23,17 @@ code {
   color: #cb4854;
 }
 
+.games-container-title {
+  font-size: x-large;
+  font-weight: bold;
+  padding: 2px;
+  text-align: center;
+}
+
+.games-container-body {
+  text-align: center;
+}
+
 .games-subhead {
   font-size: large;
   font-style: italic;

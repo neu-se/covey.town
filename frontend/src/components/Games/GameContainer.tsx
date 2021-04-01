@@ -26,24 +26,26 @@ export default function GameContainer({gameType, player1Username, player2Usernam
         <ModalOverlay />
         <ModalContent>
       <div className="col-12">
-        <h1 className="games-headline">{gameType}</h1>
+        <h1 className="games-headline">
+          {gameType === "TTL" ? "Two Truths and a Lie" : gameType}
+        </h1>
         <ModalCloseButton />
         <hr/>
         <p className="games-subhead">{player1Username} vs. {player2Username}</p>
         <br/>
       </div>
 
-          <div className="games-border">
+          <div className="games-border games-extra-padded">
             {gameType === "TicTacToe" &&
             <TicTacToeDisplay/>
             }
             {gameType === "TTL" &&
-            <TTLDisplay/>
+            //  TODO: Fill game data programmatically
+            <TTLDisplay choice1="I am in graduate school" choice2="I am silly" choice3="I live in New York" correctChoice={2}/>
             }
             {gameType === "Hangman" &&
             <HangmanDisplay/>
             }
-            test data here
           </div>
           <br/>
 
@@ -57,6 +59,7 @@ export default function GameContainer({gameType, player1Username, player2Usernam
           <Button className="games-extra-padded" colorScheme="green">
             Submit
           </Button>
+            <br/>
           </div>
         </ModalContent>
     </Modal>
