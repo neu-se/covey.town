@@ -15,3 +15,26 @@ const findAllUserProfiles = async () => {
   return data.users;
 };
 export default findAllUserProfiles;
+
+const joinTownMutation = gql`
+  mutation joinTown($TownJoinRequest: TownJoinRequest!)
+  @rest(type: "Town", path: "/sessions", method: "POST") {
+    isOK
+    response
+    message
+  }
+  `;
+
+const TownJoinRequest = gql`
+  type TownJoinRequest {
+    userName: String!
+    coveyTownID: String!
+  }
+`;
+
+export async function joinTown(TownJoinRequest: any) {
+const { data } = await client.mutate({
+  mutation: joinTownMutation,
+  variables: { input: TownJoinRequest }
+});
+}

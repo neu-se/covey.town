@@ -2,17 +2,11 @@
  *  caching.
  */
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost';
-import { RestLink } from "apollo-link-rest";
-
-const restLink = new RestLink({
-  uri: "http://localhost:4000"
-});
 
 /** Corresponds to http URL */
 const httpUrl = 'http://localhost:4000/graphql';
 
-
-const httpLink = new HttpLink({ uri: httpUrl });
+const httpLink = ApolloLink.from([new HttpLink({ uri: httpUrl })]);
 
 /** Creating instance for apollo client */
 const client = new ApolloClient({
@@ -25,7 +19,7 @@ const client = new ApolloClient({
    * queries such as Mutation. We want apollo client to fetch the req-response from server.
    */
   cache: new InMemoryCache(),
-  link: ApolloLink.from([restLink,  httpLink]),
+  link: httpLink,
   defaultOptions: { query: { fetchPolicy: 'no-cache' } },
 });
 
