@@ -1,6 +1,7 @@
 import { userModel as User}  from './../data/models/users/user.model.server';
-import { townCreateHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
+import { townCreateHandler, townDeleteHandler, townJoinHandler } from "../requestHandlers/CoveyTownRequestHandlers";
 import { userInfo } from 'os';
+
 /**
  * All the resolvers are defined here.
  */
@@ -74,7 +75,7 @@ export const resolvers = {
           if (args.input.password !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, { password: args.input.password  });
           }
-          return await user;
+          return  user;
         }
         else {
           throw new Error("User does not exist");
@@ -130,6 +131,14 @@ export const resolvers = {
         friendlyName: args.input.friendlyName,
         isPubliclyListed: args.input.isPubliclyListed,
       });
-    }
+    },
+
+    townDeleteRequest: async (_: any, args: any) => {
+      const response = await townDeleteHandler({
+        coveyTownID: args.input.coveyTownID,
+        coveyTownPassword: args.input.coveyTownPassword,
+      });
+      return response;
+    },
   }
 };

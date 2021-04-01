@@ -37,6 +37,11 @@ input townCreateRequestInput {
   isPubliclyListed: Boolean!
 }
 
+input townDeleteRequestInput {
+  coveyTownID: String!
+  coveyTownPassword: String!
+}
+
 input updateUserInput {
   id: ID!
   userName: String
@@ -87,10 +92,21 @@ type TownCreateResponseEnevelope {
   message : String
 }
 
+type TownDeleteResponse {
+  response: String
+}
+
+type TownDeleteResponseEnvelope {
+  isOK: Boolean!
+  response: TownDeleteResponse
+  message : String
+}
+
 type Mutation {
   signUp(input: signUpInput) : User
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
+  townDeleteRequest(input: townDeleteRequestInput): TownDeleteResponseEnvelope
   updateUser(input: updateUserInput): User
   deleteUser(input: deleteUserInput): Boolean
 }
