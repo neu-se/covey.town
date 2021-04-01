@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import assert from "assert";
+import { useHistory } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -7,6 +8,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+
   Heading,
   Input,
   Stack,
@@ -24,18 +26,24 @@ import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
+import useAuthInfo from '../../hooks/useAuthInfo';
+
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
+    
   const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
+  // const { apiClient } = useCoveyAppState();
+  const history = useHistory();
+  const authInfo = useAuthInfo();
+  const loggedInUser = authInfo.currentUser
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
@@ -54,6 +62,43 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       clearInterval(timer)
     };
   }, [updateTownListings]);
+
+  if (loggedInUser === null) {
+    toast({
+      title: "Unable to find user profile",
+      description: "Unable to find user profile",
+      status: "error"
+    })
+  }
+  const userName = loggedInUser?.profile.username;
+
+  function handleEditProfile(): void {
+    history.push('/profile');
+  }
+
+  async function handleLogout(): Promise<void> {
+    try {
+      await authInfo.actions.handleLogout();
+      authInfo.actions.setAuthState({
+        currentUser: null
+      })
+      history.push('/login');
+    } catch (err) {
+      if (err.error) {
+        toast({
+          title: "Unable to logout",
+          description: err.error.toString(),
+          status: "error"
+        })
+      } else {
+        toast({
+          title: "Unable to logout",
+          description: err.toString(),
+          status: "error"
+        })
+      }
+    }
+  }
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
@@ -141,15 +186,20 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Select a username</Heading>
-
-            <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
-              />
-            </FormControl>
+            <Heading as="h2" size="lg">You are logged in as: {userName}</Heading>
+            <Flex p="4">
+              <Box flex="1">
+                <FormControl>
+                  <div>
+                    <Button data-testid="editProfileButton"
+                      onClick={() => handleEditProfile()}>Edit or View Profile</Button>
+                    <Button m={1} data-testid="logoutButton"
+                      onClick={() => handleLogout()}>Logout</Button>
+                  </div>
+                </FormControl>
+                <img src={loggedInUser?.profile.pfpURL} alt="" />
+              </Box>
+            </Flex>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
@@ -162,7 +212,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                          onChange={event => setNewTownName(event.target.value)}
                   />
                 </FormControl>
-              </Box><Box>
+              </Box>
+              <Box>
               <FormControl>
                 <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
                 <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
