@@ -82,22 +82,25 @@ const listTowns = (suffix: string) => Promise.resolve({
 
 function wrappedTownSelection() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
-    nearbyPlayers: { nearbyPlayers: [] },
+    nearbyPlayers: {nearbyPlayers: []},
     players: [],
+    messages: [],
     myPlayerID: '',
+    currentTownFriendlyName: '',
     currentTownID: '',
     currentTownIsPubliclyListed: false,
-    currentTownFriendlyName: '',
     sessionToken: '',
     userName: '',
     socket: null,
     currentLocation: {
-      x: 0,
-      y: 0,
-      rotation: 'front',
-      moving: false,
+      x: 0, y: 0, rotation: 'front', moving: false,
     },
+    isWorldMapFocused: true,
     emitMovement: () => {
+    },
+    emitMessage: () => {
+    },
+    setWorldMapFocus: () => {
     },
     apiClient: new TownsServiceClient(),
   }}>

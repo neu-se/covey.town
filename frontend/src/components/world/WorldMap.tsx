@@ -307,24 +307,24 @@ class CoveyGameScene extends Phaser.Scene {
      */
     this.physics.add.overlap(sprite, transporters,
       (overlappingObject, transporter)=>{
-      if(cursorKeys.space.isDown && this.player){
-        // In the tiled editor, set the 'target' to be an *object* pointer
-        // Here, we'll see just the ID, then find the object by ID
-        const transportTargetID = transporter.getData('target') as number;
-        const target = map.findObject('Objects', obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID);
-        if(target && target.x && target.y && this.lastLocation){
-          // Move the player to the target, update lastLocation and send it to other players
-          this.player.sprite.x = target.x;
-          this.player.sprite.y = target.y;
-          this.lastLocation.x = target.x;
-          this.lastLocation.y = target.y;
-          this.emitMovement(this.lastLocation);
+        if(cursorKeys.space.isDown && this.player){
+          // In the tiled editor, set the 'target' to be an *object* pointer
+          // Here, we'll see just the ID, then find the object by ID
+          const transportTargetID = transporter.getData('target') as number;
+          const target = map.findObject('Objects', obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID);
+          if(target && target.x && target.y && this.lastLocation){
+            // Move the player to the target, update lastLocation and send it to other players
+            this.player.sprite.x = target.x;
+            this.player.sprite.y = target.y;
+            this.lastLocation.x = target.x;
+            this.lastLocation.y = target.y;
+            this.emitMovement(this.lastLocation);
+          }
+          else{
+            throw new Error(`Unable to find target object ${target}`);
+          }
         }
-        else{
-          throw new Error(`Unable to find target object ${target}`);
-        }
-      }
-    })
+      })
 
     this.emitMovement({
       rotation: 'front',

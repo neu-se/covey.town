@@ -1,10 +1,12 @@
-import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import {customAlphabet, nanoid} from 'nanoid';
+import {UserLocation} from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import PlayerMessage from '../types/PlayerMessage';
+import PlayerMention from '../types/PlayerMention';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -13,7 +15,6 @@ const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
  * can occur (e.g. joining a town, moving, leaving a town)
  */
 export default class CoveyTownController {
-
   get capacity(): number {
     return this._capacity;
   }
@@ -35,7 +36,7 @@ export default class CoveyTownController {
   }
 
   get occupancy(): number {
-    return this._listeners.length;
+    return this._listeners.size;
   }
 
   get friendlyName(): string {
@@ -60,7 +61,7 @@ export default class CoveyTownController {
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
-  private _listeners: CoveyTownListener[] = [];
+  private _listeners: Map<string, CoveyTownListener> = new Map();
 
   private readonly _coveyTownID: string;
 
@@ -72,12 +73,18 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
+  private readonly townChat: PlayerMessage[];
+
+  private readonly privateChats: Map<string, Array<{ recipientId: string, messages: PlayerMessage[] }>>;
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    this.privateChats = new Map();
+    this.townChat = [];
   }
 
   /**
@@ -126,10 +133,11 @@ export default class CoveyTownController {
    * Subscribe to events from this town. Callers should make sure to
    * unsubscribe when they no longer want those events by calling removeTownListener
    *
-   * @param listener New listener
+   * @param listener the listener for the user
+   * @param userId the id to key the listener by
    */
-  addTownListener(listener: CoveyTownListener): void {
-    this._listeners.push(listener);
+  addTownListener(listener: CoveyTownListener, userId: string): void {
+    this._listeners.set(userId, listener);
   }
 
   /**
@@ -139,7 +147,7 @@ export default class CoveyTownController {
    * with addTownListener, or otherwise will be a no-op
    */
   removeTownListener(listener: CoveyTownListener): void {
-    this._listeners = this._listeners.filter((v) => v !== listener);
+    this._listeners.forEach((v, k) => v === listener ? this._listeners.delete(k) : null);
   }
 
   /**
@@ -154,5 +162,40 @@ export default class CoveyTownController {
 
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
+  }
+
+  sendMessage(message: PlayerMessage): void {
+    if (!this._listeners.get(message.senderProfileId)) {
+      throw new Error('Invalid sender profile id');
+    }
+    let recipientListener: CoveyTownListener | undefined;
+    switch (typeof message.recipient) {
+      case 'object':
+        recipientListener = this._listeners.get(message.recipient.recipientId);
+        if (!recipientListener) {
+          throw new Error('Invalid recipient id');
+        }
+        recipientListener.onPlayerMessage(message);
+        this._listeners.get(message.senderProfileId)?.onPlayerMessage(message);
+        break;
+      default:
+        this._listeners.forEach(listener => listener.onPlayerMessage(message));
+    }
+  }
+
+
+  sendPlayerMention(message: PlayerMention): void {
+    if (!this._listeners.get(message.senderProfileId)) {
+      throw new Error('Invalid sender profile id');
+    }
+   
+   
+    const recipientListener:CoveyTownListener | undefined = this._listeners.get(message.recipient);
+    if (!recipientListener) {
+      throw new Error('Invalid recipient id');
+    }
+    recipientListener.onPlayerMention(message);      
+      
+    
   }
 }

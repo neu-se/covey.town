@@ -1,4 +1,6 @@
 import Player from './Player';
+import PlayerMessage from './PlayerMessage';
+import PlayerMention from './PlayerMention';
 
 /**
  * A listener for player-related events in each town
@@ -26,4 +28,8 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+  onPlayerMessage(message: PlayerMessage): void;
+
+  onPlayerMention(message:PlayerMention):void;
 }
