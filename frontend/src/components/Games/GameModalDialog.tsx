@@ -55,9 +55,9 @@ export default function GameModalDialog({dialogType, gameType, player1Username}:
         <ModalFooter>
           {dialogType === "joining" &&
           //  TODO: add onClick to this button that joins Player2 to the game and starts the game
-          <Button className="games-padded-button" colorScheme="green">Join Game</Button>
+          <Button className="games-padded-asset" colorScheme="green">Join Game</Button>
           }
-          <Button className="games-padded-button" colorScheme="blue" mr={3} onClick={onClose}>
+          <Button className="games-padded-asset" colorScheme="blue" mr={3} onClick={onClose}>
             Close
           </Button>
         </ModalFooter>
