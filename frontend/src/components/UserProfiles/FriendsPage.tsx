@@ -34,19 +34,15 @@ function FriendsPage(): JSX.Element {
         >
           <Stack direction={["column", "row"]} spacing='10px' >
             <Box w='40%'>
-              <Text className='bold-text'> Friend List</Text>
-              <Box h='80vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
+              <Text className='bold-text' color='blue.500'> Friend List</Text>
+              <Box h='60vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
                 <Flex align='center' justifyContent='center'>
                   <Box mt={5} >
-                    
                       {friendList.map((friend) => (
                         <Box bg="white" width="120%" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg" >
-                          
                           <Text alignContent="Left">{friend}</Text>
                           <Button onClick={toastWindow} alignContent="Right">Invite</Button>
-                          
                         </Box>
-                        
                       ))}
                   </Box>
                 </Flex> 
@@ -54,15 +50,15 @@ function FriendsPage(): JSX.Element {
             </Box>
 
             <Box w='35%' marginLeft="10% !important" right="0">
-            <Text className='bold-text'> Friend Requests</Text>
-            <Box h='80vh' boxShadow='lg' overflowY="auto">
+            <Text className='bold-text' color='blue.500'> Friend Requests</Text>
+            <Box h='60vh' boxShadow='lg' overflowY="auto">
               <Flex align='center' justifyContent='center' >
                 
                 <Box mt={5}>
                   <Divider orientation='horizontal'  />
                   <Stack>
                   {friendRequestList.map((friend) => (
-                      <Box bg="white" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg">
+                    <Box bg="white" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg">
                         {friend }
                           <Button size='md' color='blue.500'> <span>&#10003;</span> </Button>
                           <Button size='md' color='blue.500'> <span>&#10005;</span> </Button>
