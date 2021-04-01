@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { ScoreList, UserLocation } from '../CoveyTypes';
-import { LeaderboardRequest } from '../requestHandlers/CoveyTownRequestHandlers';
+import { UserLocation } from '../CoveyTypes';
+import { LeaderboardRequest, LeaderboardResponse } from '../requestHandlers/CoveyTownRequestHandlers';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
@@ -146,7 +146,7 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async leaderboard(requestData: LeaderboardRequest): Promise<ScoreList> {
+  async leaderboard(requestData: LeaderboardRequest): Promise<LeaderboardResponse> {
     const responseWrapper = await this._axios.get(`/leaderboard/${requestData.coveyTownID}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
