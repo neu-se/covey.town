@@ -4,6 +4,8 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import GlobalChatMessage from '../types/GlobalChatMessage';
+import PrivateChatMessage from '../types/PrivateChatMessage';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -190,9 +192,14 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    onGlobalMessage(sender: Player, message: GlobalChatMessage) {
+      socket.emit('globalMessage', sender, message);
+    },
+    onPrivateMessage(sender: Player, receiver: Player, message: PrivateChatMessage) {
+      socket.emit('privateMessage', sender, receiver, message);
+    },
   };
 }
-
 /**
  * A handler to process a remote player's subscription to updates for a town
  *

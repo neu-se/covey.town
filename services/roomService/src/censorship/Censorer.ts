@@ -35,7 +35,7 @@ export default class Censorer implements ICensorer {
     let ret = '';
     words.forEach(curr => {
       if (this._regexp.isMatch(curr)) {
-        ret += replaceWithStars(curr);
+        ret += Censorer.replaceWithStars(curr);
       } else {
         ret += curr;
       }

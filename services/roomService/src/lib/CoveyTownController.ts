@@ -5,7 +5,6 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
-import AChatMessage from '../types/AChatMessage';
 import PrivateChatMessage from '../types/PrivateChatMessage';
 import GlobalChatMessage from '../types/GlobalChatMessage';
 
@@ -19,6 +18,7 @@ export default class CoveyTownController {
   get capacity(): number {
     return this._capacity;
   }
+
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
