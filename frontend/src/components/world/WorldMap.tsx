@@ -7,7 +7,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
-    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text, avatar: string
   };
 
   private id?: string;
@@ -90,6 +90,9 @@ class CoveyGameScene extends Phaser.Scene {
         };
       }
       myPlayer = new Player(player.id, player.userName, location, player.avatar);
+      if (myPlayer !== undefined && this.player !== undefined) {
+        this.player.avatar = myPlayer.avatar;
+      }
       this.players.push(myPlayer);
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
@@ -98,7 +101,7 @@ class CoveyGameScene extends Phaser.Scene {
         sprite = this.physics.add
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore - JB todo
-          .sprite(0, 0, 'test', 'john-front')
+          .sprite(0, 0, `${player.avatar}`, `${player.avatar}-front`)
           .setSize(30, 40)
           .setOffset(0, 24);
         const label = this.add.text(0, 0, myPlayer.userName, {
@@ -115,10 +118,10 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer.label?.setX(player.location.x);
       myPlayer.label?.setY(player.location.y - 20);
       if (player.location.moving) {
-        sprite.anims.play(`john-${player.location.rotation}-walk`, true);
+        sprite.anims.play(`${player.avatar}-${player.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
-        sprite.setTexture('test', `john-${player.location.rotation}`);
+        sprite.setTexture(`${player.avatar}`, `${player.avatar}-${player.location.rotation}`);
       }
     }
   }
