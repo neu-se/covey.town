@@ -124,13 +124,17 @@ const ChatBox = (): JSX.Element => {
     setUsers(players.map(player => new MentionUser(player.id, player.userName)));
   }, [players])
 
-
-  socket?.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
-    toast({
-      title: `${serverMessage._senderName} mentioned you !`,     
-      status: 'success',
+  useEffect(() => {
+    socket?.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
+      toast({
+        title: `${serverMessage._senderName} mentioned you !`,     
+        status: 'success',
+      });
     });
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+
+  
 
   
 const getDisplayTextFromMention = (text:string) => {
@@ -142,7 +146,7 @@ const getDisplayTextFromMention = (text:string) => {
     const tagData = myTag.slice(3, -2)
     const tagDataArray = tagData.split('||')
     const tagDisplayValue = tagDataArray[1]
-    displayText = displayText.replace(new RegExp(_escapeRegExp(myTag), 'gi'), `'<b>' + ${tagDisplayValue} +'</b>' `)
+    displayText = displayText.replace(new RegExp(_escapeRegExp(myTag), 'gi'), `${tagDisplayValue} `)
   })
   return displayText;
 }
