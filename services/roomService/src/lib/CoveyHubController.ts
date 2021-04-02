@@ -9,8 +9,8 @@ import IVideoClient from './IVideoClient';
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
 /**
- * The CoveyTownController implements the logic for each town: managing the various events that
- * can occur (e.g. joining a town, moving, leaving a town)
+ * The CoveyHubController implements the logic for each hub: managing the various events that
+ * can occur (e.g. joining a hub, moving, leaving a hub)
  */
 export default class CoveyHubController {
 
@@ -50,6 +50,11 @@ export default class CoveyHubController {
     return this.coveyHubID;
   }
 
+
+  get coveyTownID(): string {
+    return this.coveyTownID;
+  }
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -71,9 +76,12 @@ export default class CoveyHubController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
+  
+  private readonly _coveyTownID: string;
 
-  constructor(friendlyName: string, isPubliclyListed: boolean) {
+  constructor(friendlyName: string, isPubliclyListed: boolean, coveyTownID: string) {
     this._coveyHubID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
+    this._coveyTownID = coveyTownID;
     this._capacity = 50;
     this._hubUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
