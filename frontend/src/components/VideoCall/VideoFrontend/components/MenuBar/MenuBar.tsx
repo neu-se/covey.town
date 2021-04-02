@@ -99,7 +99,7 @@ export default function MenuBar(props: { setMediaError?(error: Error): void }) {
                 <GameModalDialog dialogType={"joining"} gameType={"TicTacToe"} player1Username={"bayley"}/>
                 <GameModalDialog dialogType={"unavailable"} gameType={"Hangman"} player1Username={"kayla"}/>
                 <CreateGameModalDialog/>
-                <GameContainer gameType={"TicTacToe"} player1Username={"miranda"} player2Username={"bayley"}/>
+                <GameContainer gameType={"TTL"} player1Username={"miranda"} player2Username={"bayley"}/>
                 <Menu />
                 <EndCallButton />
               </Grid>
