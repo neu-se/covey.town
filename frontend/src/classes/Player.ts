@@ -5,18 +5,17 @@ export default class Player {
 
   private readonly _userName: string;
 
-  private readonly _avatar: string;
+  private readonly _avatarID: string;
 
   public sprite?: Phaser.GameObjects.Sprite;
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation, avatar: string) {
+  constructor(id: string, userName: string, location: UserLocation, avatarID: string) {
     this._id = id;
     this._userName = userName;
-    this._avatar = avatar;
-    this._avatar = 'misa';
     this.location = location;
+    this._avatarID = avatarID;
   }
 
   get userName(): string {
@@ -27,21 +26,31 @@ export default class Player {
     return this._id;
   }
 
-  get avatar(): string {
-    return this._avatar;
+  get avatarID(): string {
+    return this._avatarID;
   }
 
   static fromServerPlayer(playerFromServer: ServerPlayer): Player {
-    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location, playerFromServer._avatar);
+    return new Player(
+      playerFromServer._id,
+      playerFromServer._userName,
+      playerFromServer.location,
+      playerFromServer._avatarID,
+    );
   }
 }
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _avatar: string };
+export type ServerPlayer = {
+  _id: string;
+  _userName: string;
+  location: UserLocation;
+  _avatarID: string;
+};
 
-export type Direction = 'front'|'back'|'left'|'right';
+export type Direction = 'front' | 'back' | 'left' | 'right';
 
 export type UserLocation = {
-  x: number,
-  y: number,
-  rotation: Direction,
-  moving: boolean
+  x: number;
+  y: number;
+  rotation: Direction;
+  moving: boolean;
 };
