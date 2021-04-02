@@ -1,16 +1,11 @@
 import {nanoid} from 'nanoid';
 import {mock, mockReset} from 'jest-mock-extended';
-import {Socket} from 'socket.io';
 import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyHubController from './CoveyHubController';
 import CoveyHubListener from '../types/CoveyHubListener';
 import {UserLocation} from '../CoveyTypes';
-import PlayerSession from '../types/PlayerSession';
-import {hubSubscriptionHandler} from '../requestHandlers/CoveyHubRequestHandlers';
-import CoveyHubStore from './CoveyHubStore';
-import * as TestUtils from '../client/TestUtils';
 
 jest.mock('./TwilioVideo');
 
@@ -37,6 +32,7 @@ describe('hub listeners and events', () => {
   beforeEach(() => {
     const townName = `FriendlyNameTest-${nanoid()}`;
     const townController = new CoveyTownController(townName, true);
+    // eslint-disable-next-line prefer-destructuring
     testingHub = townController.getHubControllers()[0];
     mockListeners.forEach(mockReset);
   });

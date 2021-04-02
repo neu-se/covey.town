@@ -6,7 +6,6 @@ import CoveyHubController from './CoveyHubController';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
-import CoveyHubStore from './CoveyHubStore';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 

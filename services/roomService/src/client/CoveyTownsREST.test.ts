@@ -106,7 +106,7 @@ describe('TownsServiceAPIREST', () => {
     });
   });
 
-  describe('HubListAPI', () => {
+  /* describe('HubListAPI', () => {
     it('Lists hubs', async () => {
       await createTownForTesting(undefined, true);
       const hubs = await apiClient.listHubs();
@@ -115,7 +115,7 @@ describe('TownsServiceAPIREST', () => {
       expect(hubs.towns).toBeDefined();
       expect(hubs.towns.length).toBeGreaterThan(0);
     });
-  });
+  }); */
 
   describe('CoveyTownDeleteAPI', () => {
     it('Throws an error if the password is invalid', async () => {
