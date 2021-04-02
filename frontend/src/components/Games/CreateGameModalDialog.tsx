@@ -36,7 +36,7 @@ export default function CreateGameModalDialog(): JSX.Element {
             <label htmlFor="tictactoe">
               <input type="radio" id="tictactoe" name="gameChoice" value="tictactoe"
               checked={gameSelection === 'tictactoe'}
-                     onChange={(e) =>
+                     onChange={() =>
                        setGameSelection(
                          "tictactoe"
                        )}/>
@@ -45,7 +45,7 @@ export default function CreateGameModalDialog(): JSX.Element {
             <label htmlFor="hangman">
               <input type="radio" id="hangman" name="gameChoice" value="hangman"
                      checked={gameSelection === 'hangman'}
-                     onChange={(e) =>
+                     onChange={() =>
                        setGameSelection(
                          "hangman"
                        )}/>
@@ -54,7 +54,7 @@ export default function CreateGameModalDialog(): JSX.Element {
             <label htmlFor="ttl">
               <input type="radio" id="ttl" name="gameChoice" value="ttl"
                      checked={gameSelection === 'ttl'}
-                     onChange={(e) =>
+                     onChange={() =>
                        setGameSelection(
                          "ttl"
                        )}/>
