@@ -20,6 +20,7 @@
     "homepage": "https://github.com/neu-se/covey.town#readme",
     "devDependencies": {
         "@types/jest": "^26.0.15",
+        "@types/mongodb": "^3.6.11",
         "@typescript-eslint/eslint-plugin": "^4.8.1",
         "@typescript-eslint/parser": "^4.8.1",
         "eslint": "^7.13.0",
@@ -46,6 +47,7 @@
     },
     "dependencies": {
         "@types/ramda": "^0.27.34",
+        "mongodb": "^3.6.5",
         "ramda": "^0.27.1",
         "typescript-is": "^0.17.0"
     }
