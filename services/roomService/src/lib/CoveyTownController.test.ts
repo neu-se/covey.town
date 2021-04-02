@@ -4,7 +4,6 @@ import {Socket} from 'socket.io';
 import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
-import CoveyHubController from './CoveyHubController';
 import CoveyTownListener from '../types/CoveyTownListener';
 import {UserLocation} from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
@@ -53,7 +52,7 @@ describe('CoveyTownController', () => {
   it('TownID should remain same for Hubs in each Town', () => { // Included in handout
     const testTownId = 'sample';
     const townController = new CoveyTownController(testTownId, true);
-    let hubs = townController.getHubControllers();
+    const hubs = townController.getHubControllers();
     const townId = townController.coveyTownID;
     expect(hubs.filter(e => e.coveyTownID === townId).length).toBe(8);   
     
