@@ -4,8 +4,11 @@ import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import io from 'socket.io';
 import {
+  acceptRequestHandler,
   accountCreateHandler,
   loginHandler,
+  removeNeighborMappingHandler,
+  removeNeighborRequestHandler,
   searchUsersByUsername,
   sendAddNeighborRequest,
   townCreateHandler,
@@ -14,6 +17,9 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  listNeighbors,
+  listRequestsReceived,
+  listRequestsSent
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -108,7 +114,6 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.post('/signup', BodyParser.json(), async (req, res) => {
     try {
-      console.log(req.body);
       const result = await accountCreateHandler(req.body);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
@@ -124,7 +129,6 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.post('/login', BodyParser.json(), async (req, res) => {
     try {
-      console.log(req.body);
       const result = await loginHandler(req.body);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
@@ -156,9 +160,101 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /*
    * Send neighbor request
    */
-  app.get('/users/request_neighbor', BodyParser.json(), async (req, res) => {
+  app.post('/users/request_neighbor', BodyParser.json(), async (req, res) => {
     try {
       const result = await sendAddNeighborRequest(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+   * Accept neighbor request
+   */
+  app.put('/users/accept_neighbor_request', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await acceptRequestHandler(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+
+
+  /*
+   * Remove neighbor request
+   */
+   app.delete('/users/remove_neighbor_request', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await removeNeighborRequestHandler(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * Remove neighbor mapping
+  */
+  app.delete('/users/remove_neighbor_mapping', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await removeNeighborMappingHandler(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * List all neighbors for a given user id
+  */
+  app.get('/neighbors/:currentUserId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await listNeighbors(req.params.currentUserId);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * List all requests sent by the user id
+  */
+  app.get('/requests_sent/:currentUserId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await listRequestsSent(req.params.currentUserId);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /*
+  * List all requests sent to the user id
+  */
+  app.get('/requests_received/:currentUserId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await listRequestsReceived(req.params.currentUserId);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);

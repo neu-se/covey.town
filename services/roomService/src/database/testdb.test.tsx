@@ -532,6 +532,61 @@ describe('db', () => {
       await db.removeUserFromCollection(resp2._id);
     });
   });
+  describe('listingMethods()', () => {
+    it('returns empty list for id with no neighbors', async () => {
+      const userId = '1';
+      const list = await db.listNeighbors(userId);
+
+      expect(list.users.length).toEqual(0);
+
+    });
+    it('returns empty list for id with no requests sent', async () => {
+      const userId = '1';
+      const list = await db.listRequestsSent(userId);
+
+      expect(list.users.length).toEqual(0);
+
+    });
+    it('returns empty list for id with no requests received', async () => {
+      const userId = '1';
+      const list = await db.listRequestsReceived(userId);
+
+      expect(list.users.length).toEqual(0);
+
+    });
+    it('returns a id and username for each neighbor', async () => {
+      const userId1 = '6063abfc7a797cb3923c3195';
+      const userId2 = '6063ac3c7a797cb3923c3197';
+
+      const neighborList1 = await db.listNeighbors(userId1);
+      const neighborList2 = await db.listNeighbors(userId2);
+
+      const neighbors1 = neighborList1.users;
+      expect(neighbors1[0]._id.toString()).toEqual(userId2);
+
+      const neighbors2 = neighborList2.users;
+      expect(neighbors2[0]._id.toString()).toEqual(userId1);
+    });
+    it('returns a id and username for each request sent', async () => {
+      const userId1 = '6065e4fbaa247a984be6a590';
+      const userId2 = '6065e50faa247a984be6a591';
+
+      const requestSentList = await db.listRequestsSent(userId1);
+
+      expect(requestSentList.users[0]._id.toString()).toEqual(userId2);
+
+    });
+
+    it('returns a id and username for each request sent', async () => {
+      const userId1 = '6065e4fbaa247a984be6a590';
+      const userId2 = '6065e50faa247a984be6a591';
+
+      const requestsReceivedList = await db.listRequestsReceived(userId2);
+
+      expect(requestsReceivedList.users[0]._id.toString()).toEqual(userId1);
+
+    });
+  });
 });
 
 /*
