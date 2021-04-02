@@ -199,9 +199,7 @@ async function GameController(initData: TownJoinResponse,
     });
   });
 
-  socket.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
-    console.log(serverMessage);
-  });
+  
 
 
   socket.on('playerMoved', (player: ServerPlayer) => {

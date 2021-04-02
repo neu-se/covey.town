@@ -2,6 +2,8 @@ import React, {useState, useEffect} from "react";
 
 import _escapeRegExp from 'lodash/escapeRegExp'
 import _uniqBy from 'lodash/uniqBy'
+import _clone from 'lodash/clone'
+
 
 import {
   Box,
@@ -17,13 +19,13 @@ import {
   Typography,
 } from "@material-ui/core";
 import {MentionsInput, Mention} from 'react-mentions'
-
+import {useToast} from '@chakra-ui/react';
 import '../../App.css';
 import {makeStyles} from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
-import PlayerMention from "../../classes/PlayerMention";
+import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
@@ -116,11 +118,34 @@ const ChatBox = (): JSX.Element => {
   const video = useMaybeVideo();
   const onFocus = () => video?.pauseGame();
   const onBlur = () => video?.unPauseGame();
+  const toast = useToast();
 
   useEffect(() => {
     setUsers(players.map(player => new MentionUser(player.id, player.userName)));
   }, [players])
 
+
+  socket?.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
+    toast({
+      title: `${serverMessage._senderName} mentioned you !`,     
+      status: 'success',
+    });
+  });
+
+  
+const getDisplayTextFromMention = (text:string) => {
+  let displayText:string = _clone(text)
+  // eslint-disable-next-line no-useless-escape
+  const tags:string[] = text.match(/@\{\{[^\}]+\}\}/gi) || []
+  // eslint-disable-next-line array-callback-return
+  tags.map(myTag => {
+    const tagData = myTag.slice(3, -2)
+    const tagDataArray = tagData.split('||')
+    const tagDisplayValue = tagDataArray[1]
+    displayText = displayText.replace(new RegExp(_escapeRegExp(myTag), 'gi'), `'<b>' + ${tagDisplayValue} +'</b>' `)
+  })
+  return displayText;
+}
 
   const getIdsFromMention = (text: string) => {
 
@@ -153,11 +178,14 @@ const ChatBox = (): JSX.Element => {
 
     });
 
+    const displayText = getDisplayTextFromMention(text);
+    
+
     emitMessage(new PlayerMessage(
       '',
       myPlayerID,
       userName,
-      text,
+      displayText,
       'town',
       new Date(),
     ));
@@ -215,6 +243,7 @@ const ChatBox = (): JSX.Element => {
                          onChange={(e) => setNewText(e.target.value)}
                          onFocus={onFocus}
                          onBlur={onBlur}
+                      
           >
             <Mention
 
