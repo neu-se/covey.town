@@ -88,13 +88,21 @@ async function main(){
   //     var record5 = {firstName: "Sebastian", lastName: "Vettel", email: "sv@gmail.com", friends: [], isOnline: false}
   //     var record6 = {firstName: "Lewis", lastName: "Hamilton", email: "lh@gmail.com", friends:[], isOnline:true}
   //     var record7 = {firstName: "Danny", lastName: "Ric", email: "dr@gmail.com", friends:[], isOnline:true}
+  // const record8 = {firstName: 'Carlos', lastName: 'Sainz', email: 'cs@gmail.com', friends:[], isOnline:true };
   try {
     // Connect to the MongoDB cluster
     await client.connect();
     console.log('connected ');
-    
-    const statuses = await getAllFriends(client, 'cl@gmail.com');
-    console.log(statuses);
+    const record8 = {firstName: 'Carlos', lastName: 'Sainz', email: 'cs@gmail.com', friends:[], isOnline:true };
+    await insertUser(client, record8);
+    // await addFriend(client, 'lh@gmail.com', 'cs@gmail.com');
+    let s = await getOnlineStatus(client, 'cs@gmail.com');
+    console.log('status:', s);
+    await setStatusOffline(client, 'cs@gmail.com');
+    s = await getOnlineStatus(client, 'cs@gmail.com');
+    console.log('status:', s);
+
+
 
   } catch (e) {
     console.error(e);
