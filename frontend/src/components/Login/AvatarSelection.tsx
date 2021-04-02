@@ -43,12 +43,13 @@ interface AvatarSelectionProps {
 export default function AvatarSelection({ setAvatarId }: AvatarSelectionProps): JSX.Element {
   const [selectedAvatar, setSelectedAvatar] = useState<Avatar>(avatars[0]);
   useEffect(() => {
+    setSelectedAvatar(selectedAvatar);
     setAvatarId(selectedAvatar.id);
-  });
+  }, [selectedAvatar, setAvatarId]);
 
   const handleAvatarSelection = (avatar: Avatar) => {
     setSelectedAvatar(avatar);
-    setAvatarId(avatar.id);
+    setAvatarId(selectedAvatar.id);
   };
   return (
     <>
@@ -66,7 +67,7 @@ export default function AvatarSelection({ setAvatarId }: AvatarSelectionProps): 
               as='h4'
               borderRadius='lg'
               bg={avatar.id === selectedAvatar.id ? 'green.200' : ''}
-              onClick={e => handleAvatarSelection(avatar)}>
+              onClick={() => handleAvatarSelection(avatar)}>
               <Center>
                 <Image
                   boxSize='150px'
