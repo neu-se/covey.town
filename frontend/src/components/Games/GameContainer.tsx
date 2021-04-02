@@ -48,19 +48,6 @@ export default function GameContainer({gameType, player1Username, player2Usernam
             }
           </div>
           <br/>
-
-      <div className="row games-center-div">
-          <input className="form-control games-extra-padded"
-                 size={30}
-                 placeholder="Enter your response"/>
-      </div>
-          <div className="row games-center-div">
-
-          <Button className="games-extra-padded" colorScheme="green">
-            Submit
-          </Button>
-            <br/>
-          </div>
         </ModalContent>
     </Modal>
       </>
