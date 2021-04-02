@@ -48,8 +48,8 @@ describe('CoveyTownController', () => {
     
   });
 
-  /*
-  // Town id for hubs
+  
+  
   it('TownID should remain same for Hubs in each Town', () => { // Included in handout
     const testTownId = 'sample';
     const townController = new CoveyTownController(testTownId, true);
@@ -57,19 +57,19 @@ describe('CoveyTownController', () => {
     const townId = townController.coveyTownID;
     expect(hubs.filter(e => e.coveyTownID === townId).length).toBe(8);   
     
-  }); */
+  });  
 
   it('Public Hubs are created', () => { // Included in handout
     const townName = `FriendlyNameTest-${nanoid()}`;
     const townController = new CoveyTownController(townName, true);
-    let hubs = townController.getHubControllers();
+    const hubs = townController.getHubControllers();
     expect(hubs.filter(e => e.isPubliclyListed === true).length).toBe(2);
   });
 
   it('Private Hubs are created', () => { // Included in handout
     const townName = `FriendlyNameTest-${nanoid()}`;
     const townController = new CoveyTownController(townName, true);
-    let hubs = townController.getHubControllers();
+    const hubs = townController.getHubControllers();
     expect(hubs.filter(e => e.isPubliclyListed === false).length).toBe(6); 
   });
   

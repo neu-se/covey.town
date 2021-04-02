@@ -185,6 +185,6 @@ export default class CoveyTownController {
   }
 
   getHubControllers(): CoveyHubController[]{
-    return this._hubs
-  };
+    return this._hubs;
+  }
 }

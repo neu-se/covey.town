@@ -52,7 +52,7 @@ export default class CoveyHubController {
 
 
   get coveyTownID(): string {
-    return this.coveyTownID;
+    return this._coveyTownID;
   }
 
   /** The list of players currently in the town * */
@@ -77,7 +77,7 @@ export default class CoveyHubController {
 
   private _capacity: number;
   
-  private readonly _coveyTownID: string;
+  private  _coveyTownID: string;
 
   constructor(friendlyName: string, isPubliclyListed: boolean, coveyTownID: string) {
     this._coveyHubID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());

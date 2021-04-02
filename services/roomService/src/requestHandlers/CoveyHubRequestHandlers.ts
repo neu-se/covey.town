@@ -42,6 +42,7 @@ export interface HubJoinResponse {
 export interface HubCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+
 }
 
 /**
@@ -122,6 +123,7 @@ export async function hubJoinHandler(requestData: HubJoinRequest): Promise<Respo
   };
 }
 
+// Get Hubs for Town Id
 export async function hubListHandler(): Promise<ResponseEnvelope<HubListResponse>> {
   const hubsStore = CoveyHubStore.getInstance();
   return {
@@ -130,7 +132,7 @@ export async function hubListHandler(): Promise<ResponseEnvelope<HubListResponse
   };
 }
 
-export async function hubCreateHandler(requestData: HubCreateRequest): Promise<ResponseEnvelope<HubCreateResponse>> {
+/* export async function hubCreateHandler(requestData: HubCreateRequest): Promise<ResponseEnvelope<HubCreateResponse>> {
   const hubsStore = CoveyHubStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
@@ -146,7 +148,7 @@ export async function hubCreateHandler(requestData: HubCreateRequest): Promise<R
       coveyHubPassword: newHub.hubUpdatePassword,
     },
   };
-}
+} */
 
 export async function hubDeleteHandler(requestData: HubDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const hubsStore = CoveyHubStore.getInstance();
