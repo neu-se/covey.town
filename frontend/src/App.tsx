@@ -29,6 +29,8 @@ import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatWindow from './components/Chat/chat';
+import PrivateChatWindow from './components/Chat/PrivateChat';
+
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void,broadcastChannelSID:string,videoToken:string } }
