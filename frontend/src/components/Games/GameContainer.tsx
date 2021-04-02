@@ -41,7 +41,7 @@ export default function GameContainer({gameType, player1Username, player2Usernam
             }
             {gameType === "TTL" &&
             //  TODO: Fill game data programmatically
-            <TTLDisplay choice1="I am in graduate school" choice2="I am silly" choice3="I live in New York" correctChoice={2}/>
+            <TTLDisplay choice1="I am in graduate school" choice2="I love sports" choice3="I live in New York" correctChoice={2}/>
             }
             {gameType === "Hangman" &&
             <HangmanDisplay/>

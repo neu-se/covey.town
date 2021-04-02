@@ -16,6 +16,7 @@ import TownSettings from '../../../../Login/TownSettings';
 import MenuContainer from '@material-ui/core/Menu';
 import GameModalDialog from "../../../../Games/GameModalDialog";
 import GameContainer from "../../../../Games/GameContainer";
+import CreateGameModalDialog from "../../../../Games/CreateGameModalDialog";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   container: {
@@ -97,6 +98,7 @@ export default function MenuBar(props: { setMediaError?(error: Error): void }) {
                 {/*TODO: Remove these from menu bar!*/}
                 <GameModalDialog dialogType={"joining"} gameType={"TicTacToe"} player1Username={"bayley"}/>
                 <GameModalDialog dialogType={"unavailable"} gameType={"Hangman"} player1Username={"kayla"}/>
+                <CreateGameModalDialog/>
                 <GameContainer gameType={"TTL"} player1Username={"miranda"} player2Username={"bayley"}/>
                 <Menu />
                 <EndCallButton />
