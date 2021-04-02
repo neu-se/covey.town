@@ -35,12 +35,17 @@ import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 const TownMerging: React.FunctionComponent = () => {
   const [currentMergeableTowns, setCurrentMergeableTowns] = useState<CoveyTownInfo[]>();
-
+  
   const {isOpen, onOpen, onClose} = useDisclosure()
+  // const {isOpenSecond, onOpen, onClose} = useDisclosure()
+
   const video = useMaybeVideo()
   const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsMergeable} = useCoveyAppState();
   const [friendlyName, setFriendlyName] = useState<string>(currentTownFriendlyName);
   const [townChosen, setTownChosen] = useState<string>('');
+  const [userResponse, setUserResponse] = useState<boolean>(false);
+  const [myTime, setMyTime] = useState<number>(75);
+
 
   const openSettings = useCallback(()=>{
     onOpen();
@@ -50,6 +55,7 @@ const TownMerging: React.FunctionComponent = () => {
   const closeSettings = useCallback(()=>{
     onClose();
     video?.unPauseGame();
+    // isOpenSecond = true;
   }, [onClose, video]);
 
   const toast = useToast()
@@ -152,6 +158,47 @@ const TownMerging: React.FunctionComponent = () => {
                     onChange={event => setTownChosen(event.target.value)}/>
             </FormControl>
             </form>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button data-testid='submit' colorScheme="blue" mr={3} value="update" name='action2' onClick={()=>handleMergeRequest()}>
+              Submit
+            </Button>
+            <Button onClick={closeSettings}>Cancel</Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
+    <Modal isOpen={isOpen} onClose={closeSettings}>
+      <ModalOverlay/>
+      <ModalContent>
+        <ModalHeader>Vote to merge with another town</ModalHeader>
+        <ModalCloseButton/>
+        {/* maybe don't need this form */}
+        <form onSubmit={(ev)=>{ev.preventDefault(); handleMergeRequest()}}>
+          <ModalBody pb={6}>
+            <Heading as="h4" size="md">Choose yes to merge or no to not merge</Heading>
+            <form>
+                <div key='Yes' className="radio">
+                  <FormControl>
+                    <input type="radio" value= "Yes"
+                      checked={userResponse === true}
+                      onChange={event => setUserResponse(true)} /> Yes
+                  </FormControl> 
+                </div>
+                <div key='No' className="radio">
+                  <FormControl>
+                  <input type="radio" value= "No"
+                      checked={userResponse === false}
+                      onChange={event => setUserResponse(false)} /> No
+                  </FormControl>
+                </div>
+            </form>
+
+            <div>
+                {myTime} 
+            </div>
+           
           </ModalBody>
 
           <ModalFooter>

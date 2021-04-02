@@ -56,9 +56,23 @@ const TownVoting: React.FunctionComponent = () => {
     video?.unPauseGame();
   }, [onClose, video]);
 
+  const openVoting = useCallback(()=>{
+    openSettings();
+    // startTimer();
+  }, []);
+
+  // emit event
+
+  // inside button click handler
+  // const startTimer = useCallback(()=>{
+  //   const timer2 = setInterval(() => {setMyTime(myTime - 1)}, 1000);
+  //   return () => {
+  //       clearInterval(timer2)
+  //   };
+  // }, []);
+
   const toast = useToast()
 
-  // TODO: need to only show mergeable towns
   const updateMergeableTowns = useCallback(() => {
     apiClient.listMergeableTowns()
       .then((towns) => {
@@ -70,17 +84,25 @@ const TownVoting: React.FunctionComponent = () => {
   useEffect(() => {
     updateMergeableTowns();
     const timer = setInterval(updateMergeableTowns, 2000);
+    // const timer2 = setInterval(() => {setMyTime(myTime - 1)}, 1000);
+    if (myTime > 0) {
+      setTimeout(() => setMyTime(myTime - 1), 1000);
+    } else {
+      setMyTime(0);
+    } 
     return () => {
       clearInterval(timer)
+      // clearInterval(timer2)
     };
-  }, [updateMergeableTowns]);
+  }, [updateMergeableTowns, myTime]);
 
-  useEffect(() => {
-    const timer2 = setInterval(() => {setMyTime(myTime - 1)}, 1000);
-    return () => {
-        clearInterval(timer2)
-    };
-  }, [isModalOpen, myTime]);
+  // useEffect(() => {
+  //   setMyTime(myTime - 1)
+  //   // const timer2 = setInterval(() => {setMyTime(myTime - 1)}, 1000);
+  //   // return () => {
+  //   //     clearInterval(timer2)
+  //   // };
+  // }, [myTime]);
   
 
   const handleMergeRequest = async () => {
@@ -90,7 +112,7 @@ const TownVoting: React.FunctionComponent = () => {
   }
 
   return <>
-    <MenuItem data-testid='openMenuButton' onClick={openSettings} disabled={!currentTownIsMergeable}>
+    <MenuItem data-testid='openMenuButton' onClick={openVoting} disabled={!currentTownIsMergeable}>
       <Typography variant="body1">Temp Voting Button</Typography>
     </MenuItem>
     <Modal isOpen={isOpen} onClose={closeSettings}>

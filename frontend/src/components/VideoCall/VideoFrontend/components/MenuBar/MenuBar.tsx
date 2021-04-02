@@ -93,7 +93,6 @@ export default function MenuBar(props: { setMediaError?(error: Error): void }) {
           <Hidden smDown>
             <Grid style={{ flex: 1 }}>
               <Grid container justify="flex-end">
-                {/* is this the right place for this??? */}
                 <TownVoting />
 
                 <TownMerging />
