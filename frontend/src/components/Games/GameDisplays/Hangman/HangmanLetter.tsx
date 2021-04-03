@@ -10,8 +10,10 @@ export default function HangmanLetter({letter} : HangmanLetterProps) : JSX.Eleme
 
   return (
     <>
+      {/* TODO: connect onClick to game state */}
       <Button classname="games-padded-asset"
               isDisabled={disabled}
+              value={letter}
               onClick={() => setDisabled(true)}>
         {letter}
       </Button>
