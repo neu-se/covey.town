@@ -4,8 +4,10 @@ import HangmanLetter from "./HangmanLetter";
 export default function HangmanDisplay(): JSX.Element {
   return(
     <>
+      {/* TODO: Hangman graphics go here */}
       <br/>
-      <div className="row">
+      <div className="games-center-div">
+        <div className="row">
         <HangmanLetter letter="A"/>
         <HangmanLetter letter="B"/>
         <HangmanLetter letter="C"/>
@@ -38,6 +40,7 @@ export default function HangmanDisplay(): JSX.Element {
         <HangmanLetter letter="X"/>
         <HangmanLetter letter="Y"/>
         <HangmanLetter letter="Z"/>
+      </div>
       </div>
       </>
   )
