@@ -44,7 +44,34 @@ describe('CoveyTownController', () => {
     const townController = new CoveyTownController(townName, true);
     expect(townController.hubs.length).toBe(8);
     
+    
   });
+
+  
+  
+  it('TownID should remain same for Hubs in each Town', () => { // Included in handout
+    const testTownId = 'sample';
+    const townController = new CoveyTownController(testTownId, true);
+    const hubs = townController.getHubControllers();
+    const townId = townController.coveyTownID;
+    expect(hubs.filter(e => e.coveyTownID === townId).length).toBe(8);   
+    
+  });  
+
+  it('Public Hubs are created', () => { // Included in handout
+    const townName = `FriendlyNameTest-${nanoid()}`;
+    const townController = new CoveyTownController(townName, true);
+    const hubs = townController.getHubControllers();
+    expect(hubs.filter(e => e.isPubliclyListed === true).length).toBe(2);
+  });
+
+  it('Private Hubs are created', () => { // Included in handout
+    const townName = `FriendlyNameTest-${nanoid()}`;
+    const townController = new CoveyTownController(townName, true);
+    const hubs = townController.getHubControllers();
+    expect(hubs.filter(e => e.isPubliclyListed === false).length).toBe(6); 
+  });
+  
   describe('addPlayer', () => { // Included in handout
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {

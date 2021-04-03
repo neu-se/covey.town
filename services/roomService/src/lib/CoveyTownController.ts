@@ -87,21 +87,21 @@ export default class CoveyTownController {
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
     // Add Hubs
-    const hospital = new CoveyHubController('Hospital', true);
+    const hospital = new CoveyHubController('Hospital', true, this._coveyTownID );
     this._hubs.push(hospital);
-    const club = new CoveyHubController('Club', true);
+    const club = new CoveyHubController('Club', true, this._coveyTownID);
     this._hubs.push(club);
-    const privateHub1 = new CoveyHubController('House_1', false);
+    const privateHub1 = new CoveyHubController('House_1', false, this._coveyTownID);
     this._hubs.push(privateHub1);
-    const privateHub2 = new CoveyHubController('House_2', false);
+    const privateHub2 = new CoveyHubController('House_2', false, this._coveyTownID);
     this._hubs.push(privateHub2);
-    const privateHub3 = new CoveyHubController('House_3', false);
+    const privateHub3 = new CoveyHubController('House_3', false, this._coveyTownID);
     this._hubs.push(privateHub3);
-    const privateHub4 = new CoveyHubController('House_4', false);
+    const privateHub4 = new CoveyHubController('House_4', false, this._coveyTownID);
     this._hubs.push(privateHub4);
-    const privateHub5 = new CoveyHubController('House_5', false);
+    const privateHub5 = new CoveyHubController('House_5', false, this._coveyTownID);
     this._hubs.push(privateHub5);
-    const privateHub6 = new CoveyHubController('House_6', false);
+    const privateHub6 = new CoveyHubController('House_6', false, this._coveyTownID);
     this._hubs.push(privateHub6);
     
   }
@@ -178,7 +178,12 @@ export default class CoveyTownController {
     return this._sessions.find((p) => p.sessionToken === token);
   }
 
+
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
+  }
+
+  getHubControllers(): CoveyHubController[]{
+    return this._hubs;
   }
 }

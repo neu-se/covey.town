@@ -37,11 +37,12 @@ export default class CoveyHubStore {
       }));
   }
 
-  createHub(friendlyName: string, isPubliclyListed: boolean): CoveyHubController {
-    const newHub = new CoveyHubController(friendlyName, isPubliclyListed);
+  
+  createHub(friendlyName: string, isPubliclyListed: boolean, townId: string): CoveyHubController {
+    const newHub = new CoveyHubController(friendlyName, isPubliclyListed, townId);
     this._hubs.push(newHub);
     return newHub;
-  }
+  } 
 
   updateHub(coveyHubID: string, coveyHubPassword: string, friendlyName?: string, makePublic?: boolean): boolean {
     const existingHub = this.getControllerForHub(coveyHubID);

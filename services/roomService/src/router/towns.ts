@@ -76,7 +76,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
   * List all hubs in a town
   */
-  app.get('/hubs', BodyParser.json(), async (_req, res) => {
+  app.get('/towns/:townID/hubs', BodyParser.json(), async (_req, res) => {
     try {
       const result = await hubListHandler();
       res.status(StatusCodes.OK)
