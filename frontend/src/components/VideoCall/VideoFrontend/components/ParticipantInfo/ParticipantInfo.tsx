@@ -254,7 +254,6 @@ export default function ParticipantInfo({
             </Typography>
           </a>
         </div>
-        <Button onClick={Popup}>Play Game</Button>
         <div>{isSelected && <PinIcon />}</div>
       </div>
       <div className={classes.innerContainer}>

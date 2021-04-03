@@ -394,38 +394,38 @@ class CoveyGameScene extends Phaser.Scene {
 
     // popup with fixed pos on screen
     // TODO: put this code into its own class
-    this.add.text(300, 300, 'Checkers', {
-      font: '30px monospace',
-        color: '#000000',
-        padding: {
-          left: 130,
-          right: 130,
-          top: 30,
-          bottom: 200
-        },
-        backgroundColor: '#ffffff',
-      })
-      .setScrollFactor(0)
-      .setDepth(33);
+    // this.add.text(300, 300, 'Checkers', {
+    //   font: '30px monospace',
+    //     color: '#000000',
+    //     padding: {
+    //       left: 130,
+    //       right: 130,
+    //       top: 30,
+    //       bottom: 200
+    //     },
+    //     backgroundColor: '#ffffff',
+    //   })
+    //   .setScrollFactor(0)
+    //   .setDepth(33);
     // gets set to true when 'play game' is clicked
-    let playingGame = false;
-    const playGameButton = this.add.text(300, 300, 'Play Game', { 
-      font: '18px monospace',
-        color: '#000000',
-        padding: {
-          left: 130,
-          right: 130,
-          top: 70,
-          bottom: 160
-        },
-      })
-      .setScrollFactor(0)
-      .setDepth(34);
-    playGameButton.setInteractive();
-    playGameButton.on('mousedown', () => {
-      playingGame = true;
-      playGameButton.setColor('#ff0000');
-    });
+    // let playingGame = false;
+    // const playGameButton = this.add.text(300, 300, 'Play Game', { 
+    //   font: '18px monospace',
+    //     color: '#000000',
+    //     padding: {
+    //       left: 130,
+    //       right: 130,
+    //       top: 70,
+    //       bottom: 160
+    //     },
+    //   })
+    //   .setScrollFactor(0)
+    //   .setDepth(34);
+    // playGameButton.setInteractive();
+    // playGameButton.on('mousedown', () => {
+    //   playingGame = true;
+    //   playGameButton.setColor('#ff0000');
+    // });
 
     // checkerboard that shows when 'play game' is clicked
     // 0 = white or red, 1 = black
@@ -446,8 +446,8 @@ class CoveyGameScene extends Phaser.Scene {
 
     // drawing game piece
     // TODO: game piece class
-    const redPiece = this.add.ellipse(724, 617, 56, 56, 0xff0000).setDepth(33);
-    const blackPiece = this.add.ellipse(660, 617, 56, 56, 0x0000000).setDepth(33);
+    // const redPiece = this.add.ellipse(724, 617, 56, 56, 0xff0000).setDepth(33);
+    // const blackPiece = this.add.ellipse(660, 617, 56, 56, 0x0000000).setDepth(33);
 
     // Help text that has a "fixed" position on the screen
     this.add

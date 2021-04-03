@@ -23,14 +23,25 @@ import React, { useEffect, useState } from 'react';
 // }
 
 export default function Popup(): JSX.Element {
-    // const { isOpen = true, onOpen, onClose } = useDisclosure()
-    return (
-        <VStack>
-  <Container maxW="container.xl">Extra-Large Container</Container>
-  <Container maxW="container.lg">Large Container</Container>
-  <Container maxW="container.md">Medium Container</Container>
-  <Container maxW="container.sm">Small Container</Container>
-</VStack>
-    )
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  return (
+    <>
+      <Button height="148px" width="300px" onClick={onOpen}>Play Checkers</Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant="ghost">Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  )
   
   }
