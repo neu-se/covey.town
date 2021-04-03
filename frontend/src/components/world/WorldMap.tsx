@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Phaser from 'phaser';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import useNearbyPlayers from '../../hooks/useNearbyPlayers';
+import NearbyPlayersContext from '../../contexts/NearbyPlayersContext';
+import GameBoard from './GameBoard';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
@@ -438,7 +441,8 @@ class CoveyGameScene extends Phaser.Scene {
       [1, 0, 1, 0, 1, 0, 1, 0],
     ];
     // drawing it
-    const g2 = this.add.grid(500, 840, 512, 512, 64, 64, 0xff0000).setAltFillStyle(0x000000).setOutlineStyle().setDepth(32);
+
+    
 
     // drawing game piece
     // TODO: game piece class
@@ -483,7 +487,7 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players,
+    emitMovement, players, nearbyPlayers
   } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
@@ -499,12 +503,15 @@ export default function WorldMap(): JSX.Element {
         },
       },
     };
+    
 
     const game = new Phaser.Game(config);
+    const gameBoard = new GameBoard(config);
     if (video) {
       const newGameScene = new CoveyGameScene(video, emitMovement);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
+      
       video.pauseGame = () => {
         newGameScene.pause();
       }
@@ -512,14 +519,31 @@ export default function WorldMap(): JSX.Element {
         newGameScene.resume();
       }
     }
+    
+    
+    
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement]);
+  }, [video, emitMovement, nearbyPlayers]);
 
   const deepPlayers = JSON.stringify(players);
+  let boardCreated = true;
   useEffect(() => {
+    // triggered when players move 
+    // keep track of whether board has been created or not bool
+    // gameScene.scene.get with gameBoard key
+    // game board singleton
+    // scene can be visible/invisible
+    // coveygamescene could have method showGameBoard/hideGameBoard
     gameScene?.updatePlayersLocations(players);
+    if(nearbyPlayers.nearbyPlayers.length > 0 && gameScene && gameScene.scene && !boardCreated) {
+      gameScene?.scene.add('board', new GameBoard('gameBoard'), true);
+      boardCreated = true;
+    } 
+    // else if (boardCreated) {
+    //   gameScene?.scene.remove('board');
+    // }
   }, [players, deepPlayers, gameScene]);
 
   return <div id="map-container"/>;

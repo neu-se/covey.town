@@ -8,6 +8,7 @@ import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import useScreenShareParticipant from '../../hooks/useScreenShareParticipant/useScreenShareParticipant';
 import { UserProfile } from '../../../../../CoveyTypes';
+import Popup from '../../../../Popup/Popup';
 
 import useNearbyPlayers from '../../../../../hooks/useNearbyPlayers';
 
@@ -106,7 +107,8 @@ export default function ParticipantList(props: { gridView: boolean }) {
               participant={participant}
               profile={remoteProfile}
               isSelected={participant === selectedParticipant}
-              onClick={() => setSelectedParticipant(participant)}
+              // show modal here? 
+              onClick={() => {setSelectedParticipant(participant)}}
               hideParticipant={hideParticipant}
               slot={participantWithSlot.slot}
               insideGrid={props.gridView}
