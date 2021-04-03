@@ -244,19 +244,43 @@ export default class CoveyTownController {
 
   // Andrew - have every client pause their video
   pauseVideos(): void {
-    // Add this time to the master time elapsed for anyone joining
-    this.addTimerToMasterTimeElapsed();
-    // Making Timer null, will make a new one when play is pressed
-    this.destroyTimer();
 
-    this._listenersInTVAreaMap.forEach((listener) => listener.onPlayerPaused()); // ANDREW CHANGE
+    if(this._currentTimer){
+      //Spam Logic - The idea here is if someone presses sync too many times or too many people at once press pause we dont want anything to break
+      if( this._currentTimer.getElapsedSeconds() < 2 ){
+        return;
+      }
+      // Add this time to the master time elapsed for anyone joining
+      this.addTimerToMasterTimeElapsed();
+      // Stop the timer
+      this.destroyTimer();
+      this._listenersInTVAreaMap.forEach((listener) => listener.onPlayerPaused());
+    }
   }
 
+  syncVideos(): void {
+
+    // If video is playing, update master time
+    if(this._currentTimer){
+      this.addTimerToMasterTimeElapsed();
+      this.destroyTimer();
+      this.playVideos()
+    }else{
+      this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
+        url: this._currentVideoInfo.url,
+        timestamp: this._masterTimeElapsed,
+        isPlaying: false
+      }));
+    }
+  }
 
   // Andrew - have every client play their video
   playVideos(): void {
-    // NOTE : We added this to avoid users spamming play
-    if(!this._currentTimer){ // ANDREW - CHANGE
+
+    // Spam Logic - If someone already pressed play, there current timer would not be null and we will not enter this condition
+    if(!this._currentTimer){
+
+      // Each time we play, sync all players to the master time elapsed
       this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
         url: this._currentVideoInfo.url,
         timestamp: this._masterTimeElapsed,
@@ -265,7 +289,6 @@ export default class CoveyTownController {
 
       //Create a new timer to track time elapsed after play is hit
       this._currentTimer = this.createTimer();
-      // this._listeners.forEach((listener) => listener.onPlayerPlayed()); // ANDREW - CHANGE
     }
   }
 
@@ -278,7 +301,6 @@ export default class CoveyTownController {
     /* Timer means video is playing -> gets current video info. Update masterTimeElapsed to account for time on timer
        and it is playing, so set is playing to true */
     if (this._currentTimer){
-        // this.addTimerToMasterTimeElapsed(); ANDREW CHANGE HERE AND LINE BELOW
         upToDateVideoInfo = { url: this._currentVideoInfo.url, timestamp:  this._masterTimeElapsed + this._currentTimer.getElapsedSeconds(), isPlaying : true}
     }else{
         // No Timer and first person -> gets default video info. Otherwise -> gets current video, master time, and not playing
