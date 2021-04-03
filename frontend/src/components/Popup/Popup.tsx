@@ -15,9 +15,12 @@ import {
     CloseButton,
     VStack,
     Container,
+    Image,
+    Box,
   } from "@chakra-ui/react";
 import React, { useEffect, useState } from 'react';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
+import GameBoard from '../world/GameBoard';
 
 // interface Props {
 //     showing : boolean;
@@ -30,7 +33,7 @@ export default function Popup(): JSX.Element {
 
   return (
     <>
-      <Button style={{ display: hasNearbyPlayer ? "block" : "none" }} height="148px" width="300px" onClick={onOpen}>Play Checkers</Button>
+      <Button top="60" left="80" style={{ display: hasNearbyPlayer ? "block" : "none" }} height="148px" width="300px" onClick={onOpen}>Play Checkers</Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -43,6 +46,9 @@ export default function Popup(): JSX.Element {
             </Button>
             <Button variant="ghost">Secondary Action</Button>
           </ModalFooter>
+          <Box boxSize="sm">
+            <Image src="checker-board.png" alt="Checkerboard" />
+          </Box>
         </ModalContent>
       </Modal>
     </>
