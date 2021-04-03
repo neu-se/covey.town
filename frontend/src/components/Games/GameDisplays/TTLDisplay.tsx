@@ -72,7 +72,7 @@ export default function TTLDisplay({choice1, choice2, choice3, correctChoice}: T
       }
 
       {!guessing && selection !== correctChoice &&
-      <h1>{`Oops, that wasn't right. The real lie was #{correctChoice}.`}</h1>
+      <h1>{`Oops, that wasn't right. The real lie was #${correctChoice}.`}</h1>
       }
     </div>
   )
