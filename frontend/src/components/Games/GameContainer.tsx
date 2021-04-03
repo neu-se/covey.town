@@ -2,9 +2,9 @@ import React from 'react'
 import {Button, Modal, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure} from "@chakra-ui/react";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import TicTacToeDisplay from "./GameDisplays/TicTacToeDisplay";
+import TicTacToeDisplay from "./GameDisplays/TicTacToe/TicTacToeDisplay";
 import TTLDisplay from "./GameDisplays/TTLDisplay";
-import HangmanDisplay from "./GameDisplays/HangmanDisplay";
+import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
 
 interface GameContainerProps {
   gameType: string;
