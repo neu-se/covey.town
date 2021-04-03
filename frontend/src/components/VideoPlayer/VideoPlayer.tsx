@@ -68,6 +68,7 @@ export default function VideoPlayer(): JSX.Element {
           { !arePlayPauseDisabled ? <div>
           <Button colorScheme="blue" disabled={arePlayPauseDisabled} onClick={() => socket?.emit('clientPlayed')}>Play</Button>
           <Button colorScheme="blue" disabled={arePlayPauseDisabled} type="submit" onClick={() => socket?.emit('clientPaused')}>Pause</Button>
+          <Button colorScheme="blue" disabled={arePlayPauseDisabled} type="submit" onClick={() => socket?.emit('clientSynced')}>Sync</Button>
           </div> : null }
           { arePlayPauseDisabled ? <div>
           <Button colorScheme="blue" disabled={!arePlayPauseDisabled} type="submit" onClick={() => {
