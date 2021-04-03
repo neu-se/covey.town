@@ -262,9 +262,15 @@ export default class CoveyTownController {
 
     // If video is playing, update master time
     if(this._currentTimer){
-      this.addTimerToMasterTimeElapsed();
-      this.destroyTimer();
-      this.playVideos()
+      // this.addTimerToMasterTimeElapsed();
+      // this.destroyTimer();
+      // this.playVideos()
+      this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
+        url: this._currentVideoInfo.url,
+        timestamp: this._masterTimeElapsed,
+        isPlaying: false
+      }));
+      
     }else{
       this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
         url: this._currentVideoInfo.url,

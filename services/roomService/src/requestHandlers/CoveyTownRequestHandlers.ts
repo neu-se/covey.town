@@ -282,6 +282,16 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.addToTVArea(s.player, listener);
   });
 
+  
+  // Adam - Playing with the idea of syncing
+  socket.on('clientSynced', () => {
+    //townController.addToTVArea(s.player, listener);
+    // townController.pauseVideos();
+    // townController.playVideos();
+    townController.syncVideos();
+
+  });
+
   // Andrew - Register an event listener for the client socket: remove player from appropriate maps
   // in controller when player leaves TV area
   socket.on('clientLeftTVArea', () => {
