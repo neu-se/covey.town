@@ -1,4 +1,3 @@
-import { User } from "realm-web";
 import { AuthState, CoveyUser, EmailPasswordCredential } from "../../CoveyTypes";
 
 /**
@@ -8,7 +7,7 @@ export default interface IAuth {
     /**
      * Get the current realm user if authenticated.
      */
-    getCurrentUser(): CoveyUser | null;
+    getCurrentUser(): Promise<CoveyUser | null>;
 
     /**
      * Login using email and password. After login, create a user profile if not exist.

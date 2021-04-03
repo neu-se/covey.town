@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [ dev]
   pull_request:
-    branches: [ master ]
+    branches: [ dev]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,8 +25,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Install dependencies
+        working-directory: ./frontend
         run: npm install
       - name: ESLINT test
+        working-directory: ./frontend
         run: npm run-script lint
 
       # Runs a single command using the runners shell

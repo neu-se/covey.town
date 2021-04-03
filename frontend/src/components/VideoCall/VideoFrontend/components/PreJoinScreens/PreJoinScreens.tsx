@@ -18,7 +18,7 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
       status: "error"
     })
   }
-  const userName = loggedInUser?.profile.userName;
+  const userName = loggedInUser?.profile.username;
 
   return (
     <IntroContainer>

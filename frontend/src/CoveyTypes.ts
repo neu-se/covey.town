@@ -35,12 +35,10 @@ export type EmailPasswordCredential = {
 }
 
 export type AuthState = {
-  isLoggedIn: boolean,
   currentUser: CoveyUser | null,
 }
 
 export type AuthInfo = {
-  isLoggedIn: boolean,
   currentUser: CoveyUser | null,
   actions: AuthActions
 }
@@ -51,8 +49,7 @@ export type AuthActions = {
 }
 
 export type CoveyUserProfile = {
-  user_id: string,
-  userName: string,
+  username: string,
   email:string,
   pfpURL?: string,
   bio?: string,
@@ -60,10 +57,17 @@ export type CoveyUserProfile = {
 
 
 export type CoveyUser = {
-  id: string,
+  userID: string,
   isLoggedIn: boolean
   profile: CoveyUserProfile,
+  currentTown?: CoveyTownInfo | null,
+  friendIDs: string[],
   actions: CoveyUserActions,
+}
+
+export type CoveyTownInfo = {
+  coveyTownID: string,
+  friendlyName: string
 }
 
 export type CoveyUserActions = {

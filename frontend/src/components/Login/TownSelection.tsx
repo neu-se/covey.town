@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import assert from "assert";
 import { useHistory } from 'react-router-dom';
 import {
-  Avatar, 
+  Avatar,
   AvatarBadge,
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Link,
+
   Heading,
   Input,
   Stack,
@@ -28,12 +28,12 @@ import {
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
-import { TownJoinResponse, } from '../../classes/TownsServiceClient';
+import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import IAuth from '../../services/authentication/IAuth';
-import RealmAuth from '../../services/authentication/RealmAuth';
+
 import useAuthInfo from '../../hooks/useAuthInfo';
-import { CoveyUserProfile } from '../../CoveyTypes';
+import { CoveyUser, CoveyUserProfile, CoveyUserActions } from '../../CoveyTypes';
+import RealmDBClient from '../../services/database/RealmDBClient';
 
 const DEFAULT_PROFILE_PICTURE = 'https://w7.pngwing.com/pngs/752/876/png-transparent-yellow-emoji-illustration-emoji-sticker-text-messaging-iphone-emoticon-blushing-emoji-face-heart-smiley.png';
 
@@ -41,21 +41,38 @@ interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
-type Friend = {
-  profile: CoveyUserProfile,
-  status: boolean,
-  room?: string,
-}
-
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [friendList, setFriendList] = useState<Friend[]>([])
+  const [friendList, setFriendList] = useState<CoveyUser[]>([])
   const [addFriendEmail, setAddFriendEmail] = useState<string>('');
+  const authInfo = useAuthInfo();
+  const loggedInUser = authInfo.currentUser;
+  const db = RealmDBClient.getInstance();
+  const [userName, setUserName] = useState<string>(loggedInUser?.profile.username || '');
+  const [newTownName, setNewTownName] = useState<string>('');
+  const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
+  const [townIDToJoin, setTownIDToJoin] = useState<string>('');
+  const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const history = useHistory();
-  const authInfo = useAuthInfo();
-  const loggedInUser = authInfo.currentUser
   const toast = useToast();
+
+  const updateTownListings = useCallback(() => {
+    // console.log(apiClient);
+    apiClient.listTowns()
+      .then((towns) => {
+        setCurrentPublicTowns(towns.towns
+          .sort((a, b) => b.currentOccupancy - a.currentOccupancy)
+        );
+      })
+  }, [setCurrentPublicTowns, apiClient]);
+  useEffect(() => {
+    updateTownListings();
+    const timer = setInterval(updateTownListings, 2000);
+    return () => {
+      clearInterval(timer)
+    };
+  }, [updateTownListings]);
 
   if (loggedInUser === null) {
     toast({
@@ -64,22 +81,36 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       status: "error"
     })
   }
-  const userName = loggedInUser?.profile.userName;
 
-  function handleEditProfile() : void {
+  function handleEditProfile(): void {
     history.push('/profile');
   }
 
-  async function handleLogout() : Promise<void> {
-    await authInfo.actions.handleLogout();
-    authInfo.actions.setAuthState({
-      isLoggedIn: false,
-      currentUser: null
-    })
-    history.push('/login');
+  async function handleLogout(): Promise<void> {
+    try {
+      await authInfo.actions.handleLogout();
+      authInfo.actions.setAuthState({
+        currentUser: null
+      })
+      history.push('/login');
+    } catch (err) {
+      if (err.error) {
+        toast({
+          title: "Unable to logout",
+          description: err.error.toString(),
+          status: "error"
+        })
+      } else {
+        toast({
+          title: "Unable to logout",
+          description: err.toString(),
+          status: "error"
+        })
+      }
+    }
   }
 
-  const handleJoin = async () => {
+  const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
       if (!userName || userName.length === 0) {
         toast({
@@ -89,7 +120,15 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, 'demoTownID');
+      if (!coveyRoomID || coveyRoomID.length === 0) {
+        toast({
+          title: 'Unable to join town',
+          description: 'Please enter a town ID',
+          status: 'error',
+        });
+        return;
+      }
+      const initData = await Video.setup(userName, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -103,47 +142,64 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  };
+  }, [doLogin, userName, connect, toast]);
 
   const fetchFriend = () => {
-    // TODO: Fetch friend list from DB
-    setFriendList([{
-      profile: {
-        user_id: '1',
-        userName: 'Danny',
-        email: 'danny@gmail.com',
-        pfpURL: DEFAULT_PROFILE_PICTURE,
-      },
-      status: false
-    },
-    {
-      profile: {
-        user_id: '2',
-        userName: 'Nick',
-        email: 'nick@gmail.com',
-        pfpURL: DEFAULT_PROFILE_PICTURE,
-      },
-      status: true
-    },
-    {
-      profile: {
-        user_id: '3',
-        userName: 'Genevieve',
-        email: 'genevieve@gmail.com',
-        pfpURL: DEFAULT_PROFILE_PICTURE,
-      },
-      status: true,
-      room: 'abc'
-    },
-    {
-      profile: {
-        user_id: '4',
-        userName: 'Brian',
-        email: 'brian@gmail.com',
-        pfpURL: DEFAULT_PROFILE_PICTURE,
-      },
-      status: false
-    }])
+    if (loggedInUser) {
+      const list: CoveyUser[] = [];
+      loggedInUser.friendIDs.map(async (id) => {
+        await db.getUser(id)
+          .then(response => {
+            if (response != null) {
+              list.push(response);
+            }
+            return response;
+          });
+      });
+      setFriendList(list);
+    }
+
+    // Test values
+    // setFriendList([{
+    //   userID: '1',
+    //   isLoggedIn: false,
+    //   profile: {
+    //     username: 'genevieve',
+    //     email: 'genevieve@gmail.com',
+    //   },
+    //   currentTown: null,
+    //   friendIDs: [],
+    //   actions: {
+    //     logout: () => new Promise<void>((resolve, reject) => {})
+    //   }
+    // },{
+    //   userID: '2',
+    //   isLoggedIn: true,
+    //   profile: {
+    //     username: 'nick',
+    //     email: 'nick@gmail.com',
+    //   },
+    //   currentTown: null,
+    //   friendIDs: [],
+    //   actions: {
+    //     logout: () => new Promise<void>((resolve, reject) => {})
+    //   }
+    // },{
+    //   userID: '3',
+    //   isLoggedIn: true,
+    //   profile: {
+    //     username: 'brian',
+    //     email: 'brian@gmail.com',
+    //   },
+    //   currentTown: {
+    //     coveyTownID: 'town1',
+    //     friendlyName: 'friendly room'
+    //   },
+    //   friendIDs: [],
+    //   actions: {
+    //     logout: () => new Promise<void>((resolve, reject) => {})
+    //   }
+    // }])
   }
 
   useEffect(() => {
@@ -151,9 +207,55 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [authInfo])
 
   const handleProfile = () => history.push('/profile')
+  const handleCreate = async () => {
+    if (!userName || userName.length === 0) {
+      toast({
+        title: 'Unable to create town',
+        description: 'Please select a username before creating a town',
+        status: 'error',
+      });
+      return;
+    }
+    if (!newTownName || newTownName.length === 0) {
+      toast({
+        title: 'Unable to create town',
+        description: 'Please enter a town name',
+        status: 'error',
+      });
+      return;
+    }
+    try {
+      const newTownInfo = await apiClient.createTown({
+        friendlyName: newTownName,
+        isPubliclyListed: newTownIsPublic
+      });
+      let privateMessage = <></>;
+      if (!newTownIsPublic) {
+        privateMessage =
+          <p>This town will NOT be publicly listed. To re-enter it, you will need to use this
+            ID: {newTownInfo.coveyTownID}</p>;
+      }
+      toast({
+        title: `Town ${newTownName} is ready to go!`,
+        description: <>{privateMessage}Please record these values in case you need to change the
+          room:<br />Town ID: {newTownInfo.coveyTownID}<br />Town Editing
+          Password: {newTownInfo.coveyTownPassword}</>,
+        status: 'success',
+        isClosable: true,
+        duration: null,
+      })
+      await handleJoin(newTownInfo.coveyTownID);
+    } catch (err) {
+      toast({
+        title: 'Unable to connect to Towns Service',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  };
 
   const handleAddFriend = () => {
-    if(addFriendEmail.length > 0) {
+    if (addFriendEmail.length > 0) {
       // TODO: Find user with given addFriendEmail and call DB to add friend
       toast({
         title: `Unable to add friend`,
@@ -185,68 +287,73 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <FormControl>
                   <div>
                     <Button data-testid="editProfileButton"
-                    onClick={() => handleEditProfile()}>Edit or View Profile</Button>
+                      onClick={() => handleEditProfile()}>Edit or View Profile</Button>
                     <Button m={1} data-testid="logoutButton"
-                    onClick={() => handleLogout()}>Logout</Button>
+                      onClick={() => handleLogout()}>Logout</Button>
                   </div>
                 </FormControl>
-                <img alt="" src={loggedInUser?.profile.pfpURL}/>
+                <img src={loggedInUser?.profile.pfpURL} alt="" />
               </Box>
             </Flex>
           </Box>
 
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Friends:</Heading>
-            <Box maxH="500px" overflowY="scroll">
-              <Table>
-                <TableCaption placement="top">Online</TableCaption>
-                <Thead><Tr><Th>Friend Name</Th><Th>Status</Th><Th>Join friend&apos;s town</Th></Tr></Thead>
-                <Tbody>
-                  {
-                    friendList.map(friend => friend.status &&
-                      <Tr key={friend.profile.user_id}>
-                        <Td role='cell'>
-                          <Flex>
-                            <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px">
-                              <AvatarBadge boxSize="1.25em" bg="green.500" />
-                            </Avatar>
-                            { friend.profile.userName }
-                          </Flex> 
-                        </Td>
-                        <Td role='cell'>{
-                          friend.room? `In room ${friend.room}` : 'In lobby'
-                        }</Td>
-                        {
-                          friend.room? <Td><Button onClick={handleJoin}>Connect</Button></Td> : <Td/>
-                        }
-                      </Tr>)
-                  }
-                </Tbody>
-              </Table>
-              <Table>
-                <TableCaption placement="top">Offline</TableCaption>
-                <Tbody>
-                  {
-                    friendList.map(friend => !friend.status &&  
-                    <Tr key={friend.profile.user_id}>
-                      <Td role='cell'>
-                        <Flex>
-                          <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px">
-                            <AvatarBadge boxSize="1.25em" bg="gray.50" />
-                          </Avatar>
-                            {friend.profile.userName}
-                        </Flex> 
-                      </Td>
-                    </Tr>)
-                  }
-                </Tbody>
-              </Table>
-            </Box>
+            {
+              friendList.length > 0 ?
+                <Box maxH="500px" overflowY="scroll">
+                  <Table>
+                    <Thead><Tr><Th>Friend Name</Th><Th>Status</Th><Th>Join friend&apos;s town</Th></Tr></Thead>
+                    <TableCaption placement="top">Online</TableCaption>
+                    <Tbody>
+                      {
+                        friendList.map(friend => friend.isLoggedIn &&
+                          <Tr key={friend.userID}>
+                            <Td role='cell'>
+                              <Flex>
+                                <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px">
+                                  <AvatarBadge boxSize="1.25em" bg="green.500" />
+                                </Avatar>
+                                {friend.profile.username}
+                              </Flex>
+                            </Td>
+                            <Td role='cell'>{
+                              (friend.currentTown && friend.currentTown !== null) ? `In room ${friend.currentTown.coveyTownID}` : 'In lobby'
+                            }</Td>
+                            {
+                              (friend.currentTown && friend.currentTown !== null) ? <Td><Button onClick={() => { if (friend.currentTown && friend.currentTown !== null) { handleJoin(friend.currentTown.coveyTownID) } }}>Connect</Button></Td> : <Td />
+                            }
+                          </Tr>)
+                      }
+                    </Tbody>
+                  </Table>
+                  <Table>
+                    <TableCaption placement="top">Offline</TableCaption>
+                    <Tbody>
+                      {
+                        friendList.map(friend => !friend.isLoggedIn &&
+                          <Tr key={friend.userID}>
+                            <Td role='cell'>
+                              <Flex>
+                                <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px">
+                                  <AvatarBadge boxSize="1.25em" bg="gray.50" />
+                                </Avatar>
+                                {friend.profile.username}
+                              </Flex>
+                            </Td>
+                          </Tr>)
+                      }
+                    </Tbody>
+                  </Table>
+                </Box> :
+                <Heading p="4" as="h6" size="sm">You have no friend</Heading>
+            }
+
             <Box marginTop="2">
               <FormControl>
                 <FormLabel htmlFor="addFriendEmail">Add friend</FormLabel>
                 <Flex>
-                  <Input name="addFriendEmail" placeholder="Add friend using their email address" value={addFriendEmail} onChange={event => setAddFriendEmail(event.target.value)}/>
+                  <Input name="addFriendEmail" placeholder="Add friend using their email address" value={addFriendEmail} onChange={event => setAddFriendEmail(event.target.value)} />
                   <Button marginLeft="2" onClick={handleAddFriend}>Add</Button>
                 </Flex>
               </FormControl>
@@ -260,16 +367,22 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <FormControl>
                   <FormLabel htmlFor="townName">New Town Name</FormLabel>
                   <Input name="townName" placeholder="New Town Name"
+                    value={newTownName}
+                    onChange={event => setNewTownName(event.target.value)}
                   />
                 </FormControl>
-              </Box><Box>
-              <FormControl>
-                <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                <Checkbox id="isPublic" name="isPublic"/>
-              </FormControl>
-            </Box>
+              </Box>
               <Box>
-                <Button data-testid="newTownButton">Create</Button>
+                <FormControl>
+                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                  <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
+                    onChange={(e) => {
+                      setNewTownIsPublic(e.target.checked)
+                    }} />
+                </FormControl>
+              </Box>
+              <Box>
+                <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
               </Box>
             </Flex>
           </Box>
@@ -280,21 +393,29 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Box borderWidth="1px" borderRadius="lg">
               <Flex p="4"><FormControl>
                 <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
-                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"/>
+                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
+                  value={townIDToJoin}
+                  onChange={event => setTownIDToJoin(event.target.value)} />
               </FormControl>
-                <Button data-testid='joinTownByIDButton' onClick={handleJoin}>Connect</Button>
+                <Button data-testid='joinTownByIDButton'
+                  onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
               </Flex>
+
             </Box>
 
             <Heading p="4" as="h4" size="md">Select a public town to join</Heading>
             <Box maxH="500px" overflowY="scroll">
               <Table>
                 <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
-                <Thead><Tr><Th>Town Name</Th><Th>Town ID</Th><Th>Activity</Th></Tr></Thead>
+                <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
                 <Tbody>
-                  <Tr key='demoTownID'><Td role='cell'>DEMO_TOWN_NAME</Td><Td
-                    role='cell'>Unknown/Unknown <Button
-                    onClick={handleJoin}>Connect</Button></Td></Tr>
+                  {currentPublicTowns?.map((town) => (
+                    <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
+                      role='cell'>{town.coveyTownID}</Td>
+                      <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
+                        <Button onClick={() => handleJoin(town.coveyTownID)}
+                          disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
+                  ))}
                 </Tbody>
               </Table>
             </Box>

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import { CoveyUserProfile } from '../../CoveyTypes';
+import { CoveyUser, CoveyUserProfile } from '../../CoveyTypes';
 import IDBClient from './IDBClient';
 
 import RealmApp from './RealmApp';
@@ -31,48 +31,88 @@ export default class RealmDBClient implements IDBClient {
    * Update profile if exists, insert otherwise.
    * @param userProfile 
    */
-  async saveUserProfile(userProfile: CoveyUserProfile): Promise<CoveyUserProfile> {
-    const mutationQuery = gql 
-    `mutation {
-      upsertOneUser_profile(data: {
-        bio: "${userProfile.bio ? userProfile.bio : ''}"
-        email: "${userProfile.email}"
-        pfpURL: "${userProfile.pfpURL ? userProfile.pfpURL : ''}"
-        user_id: "${userProfile.user_id}"
-        user_name: "${userProfile.userName ? userProfile.userName : ''}"
+  /** */
+  async saveUserProfile(userID: string, userProfile: CoveyUserProfile): Promise<CoveyUserProfile> {
+    const mutationQuery = gql
+      `mutation {
+      insertOneCoveyuser(data: {
+        userID: "${userID}",
+        profile: {
+          username: "${userProfile.username}",
+          email: "${userProfile.email}",
+          bio: "${userProfile.bio}",
+          pfpURL: "${userProfile.pfpURL}"
+        }
       }) {
-          bio
-          email
+        profile {
+          username,
+          email,
+          bio,
           pfpURL
-          user_id
-          user_name
+        },
       }
     }`;
     const mutationResult = await this._apolloClient.mutate({ mutation: mutationQuery });
-    const userProfileResult: CoveyUserProfile = mutationResult.data.insertOneUser_profile;
+    const userProfileResult: CoveyUserProfile = mutationResult.data.insertOneCovey_user;
     return userProfileResult;
   }
 
-  /**
-   * Search user profile using a user's id
-   * @param userId 
-   */
-  async searchUserProfileById(userId: string): Promise<CoveyUserProfile | null> {
-    const gqlQuery = gql
-    `query {
-      user_profile(query: {
-        user_id: "${userId}"
+  async getUser(userID: string): Promise<CoveyUser | null> {
+    const gqlQuery = gql`query {
+        coveyuser(query: {userID: "${userID}"}) {
+          userID,
+          isLoggedIn,
+          profile {
+            username,
+            email,
+            bio,
+            pfpURL
+          },
+          friendIDs,
+          currentTown {
+            coveyTownID,
+            friendlyName
+          }
+        }
+      }`;
+    const queryResult = await this._apolloClient.query({ query: gqlQuery });
+    const coveyUser: CoveyUser | null = queryResult.data.coveyuser;
+    return coveyUser;
+  }
+
+  async saveUser(coveyUser: CoveyUser): Promise<CoveyUser> {
+    const mutationQuery = gql
+      `mutation {
+      upsertOneCoveyuser(query : {
+        userID: "${coveyUser.userID}"
+      }, data: {
+        userID: "${coveyUser.userID}",
+        profile: {
+          username: "${coveyUser.profile.username}",
+          email: "${coveyUser.profile.email}",
+          bio: "${coveyUser.profile.bio ? coveyUser.profile.bio : ''}",
+          pfpURL: "${coveyUser.profile.pfpURL ? coveyUser.profile.pfpURL : ''}"
+        },
+        friendIDs: ${JSON.stringify(coveyUser.friendIDs)},
+        ${coveyUser.currentTown ? `currentTown: {coveyTownID: "${coveyUser.currentTown.coveyTownID}",friendlyName: "${coveyUser.currentTown.friendlyName}"},` : ''}
+        isLoggedIn: ${coveyUser.isLoggedIn}
       }) {
-        user_id
-        bio,
-        email,
-        pfpURL,
-        user_name
+      userID,
+        profile {
+          username,
+          email,
+          bio,
+          pfpURL
+        },
+      currentTown {
+        coveyTownID,
+        friendlyName
+      },
+      isLoggedIn
       }
-    }    
-    `;
-    const queryResult = await this._apolloClient.query({query: gqlQuery});
-    const userProfileResult: CoveyUserProfile | null = queryResult.data.user_profile;
-    return userProfileResult;
-  } 
+    }`;
+    const mutationResult = await this._apolloClient.mutate({ mutation: mutationQuery });
+    const coveyUserResult: CoveyUser = mutationResult.data.insertOneCoveyuser;
+    return coveyUserResult;
+  }
 }
