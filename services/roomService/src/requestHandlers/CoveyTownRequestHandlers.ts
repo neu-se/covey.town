@@ -4,6 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation, YoutubeVideoInfo } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import { YTVideo } from '../types/YTVideo';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -210,6 +211,12 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onDisablePlayPause() {
       socket.emit('disablePlayPauseButtons');
     },
+    onUpdatingNextVideoOptions(videoList: YTVideo[]) {
+      socket.emit('nextVideoOptions', videoList);
+    },
+    onResetVideoOptions() {
+      socket.emit('resetVideoOptions');
+    }
   };
 }
 
@@ -245,6 +252,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   socket.on('disconnect', () => {
     townController.removeTownListener(listener);
     townController.destroySession(s);
+    townController.removeFromTVArea(s.player);
   });
 
   // Register an event listener for the client socket: if the client updates their
@@ -271,28 +279,13 @@ export function townSubscriptionHandler(socket: Socket): void {
   // have controller add player/listener to map of others around tv and also send synced video 
   // info to this client
   socket.on('clientEnteredTVArea', () => {
-    console.log('Client Entered TV Area');
     townController.addToTVArea(s.player, listener);
-  });
-
-  // Andrew - Register an event listener for the client socket: when client shares video info
-  // every fixed amount of time, have controller take note of it so that it can sync other players
-  // that join
-  socket.on('clientSharedVideoInfo', (videoInfo: YoutubeVideoInfo) => {
-    townController.shareVideoInfo(s.player, videoInfo);
   });
 
   // Andrew - Register an event listener for the client socket: remove player from appropriate maps
   // in controller when player leaves TV area
   socket.on('clientLeftTVArea', () => {
-    console.log('A client left the tv area'); // Andrew - maybe here we check if messages were received in quick succession given double sending
     townController.removeFromTVArea(s.player);
-  });
-
-  // Andrew - Register an event listener for the client socket: if client's video ends then have 
-  // controller choose the next video and tell all clients to load it
-  socket.on('clientVideoEnded', () => {
-    townController.chooseNextVideo();
   });
 
   // Andrew - Register an event listener for the client socket: if a client casts a vote for a 

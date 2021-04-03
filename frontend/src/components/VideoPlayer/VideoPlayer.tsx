@@ -20,19 +20,19 @@ export default function VideoPlayer(): JSX.Element {
     // socket?.emit('clientEnteredTVArea');
     // Andrew - listens for server saying someone paused video
     socket?.on('playerPaused', () => {
-        playerRef.current.internalPlayer.pauseVideo();
+        playerRef.current?.internalPlayer.pauseVideo();
     });
     // Andrew - listens for server saying someone played video
     socket?.on('playerPlayed', () => {
-        playerRef.current.internalPlayer.playVideo();
+        playerRef.current?.internalPlayer.playVideo();
     });
     // Andrew - listens for server telling client to load a certain video at certain timestamp
     socket?.on('videoSynchronization', (currentVideoInfo: YoutubeVideoInfo) => {
         console.log('in vidSync here');
         const vidID = currentVideoInfo.url.split('=')[currentVideoInfo.url.split('=').length - 1];
-        playerRef.current.internalPlayer.loadVideoById(vidID, currentVideoInfo.timestamp);
+        playerRef.current?.internalPlayer.loadVideoById(vidID, currentVideoInfo.timestamp);
         if (!currentVideoInfo.isPlaying) {
-          playerRef.current.internalPlayer.pauseVideo();
+          playerRef.current?.internalPlayer.pauseVideo();
         }
     });
     // Andrew - listens for server re-enabling client's "Join Stream" button

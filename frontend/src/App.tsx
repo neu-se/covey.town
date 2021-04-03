@@ -1,6 +1,5 @@
-/*eslint-disable */
 import React, {
-  Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState, useRef,
+  Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
@@ -8,19 +7,19 @@ import { io, Socket } from 'socket.io-client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
-import YouTube from 'react-youtube'; // Andrew - this is the package that we use as a light wrapper around the iframe component
+// import YouTube from 'react-youtube'; // Andrew - this is the package that we use as a light wrapper around the iframe component
 import { YouTubePlayer } from 'youtube-player/dist/types'; // Andrew - This is the interface for the youtube player from the react-youtube package
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import VideoPlayer from './components/VideoPlayer/VideoPlayer'; // Andrew - separate component for youtube
 import VideoListWidget from './components/VideoListWidget/VideoListWidget'; // Andrew - separate component for youtube
 import { CoveyAppState, NearbyPlayers, YoutubeVideoInfo } from './CoveyTypes';
-import useCoveyAppState from './hooks/useCoveyAppState';
+// import useCoveyAppState from './hooks/useCoveyAppState';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
 import NearbyPlayersContext from './contexts/NearbyPlayersContext';
-import AppStateProvider, { StateContext, useAppState } from './components/VideoCall/VideoFrontend/state';
+import AppStateProvider, { useAppState } from './components/VideoCall/VideoFrontend/state'; // StateContext removed
 import useConnectionOptions from './components/VideoCall/VideoFrontend/utils/useConnectionOptions/useConnectionOptions';
 import UnsupportedBrowserWarning
   from './components/VideoCall/VideoFrontend/components/UnsupportedBrowserWarning/UnsupportedBrowserWarning';
@@ -31,9 +30,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
-import { Apps } from '@material-ui/icons';
-
-let log = console.log;
+// import { Apps } from '@material-ui/icons';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -296,7 +293,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   }, [dispatchAppUpdate, setOnDisconnect]); 
 
   const page = useMemo(() => {
-    log('at top of page component');
     if (!appState.sessionToken) {
       return <Login doLogin={setupGameController} />;
     } if (!videoInstance) {
@@ -384,4 +380,3 @@ export default function AppStateWrapper(): JSX.Element {
     </BrowserRouter>
   );
 }
-/* eslint-enable */

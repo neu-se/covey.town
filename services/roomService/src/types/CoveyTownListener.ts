@@ -1,5 +1,6 @@
 import { YoutubeVideoInfo } from '../CoveyTypes';
 import Player from './Player';
+import { YTVideo } from './YTVideo';
 
 /**
  * A listener for player-related events in each town
@@ -42,4 +43,8 @@ export default interface CoveyTownListener {
 
   // Andrew - called when client should disable play/pause buttons before next time it joins tv sream
   onDisablePlayPause(): void;
+
+  onUpdatingNextVideoOptions(videoList: YTVideo[]): void;
+
+  onResetVideoOptions(): void;
 }
