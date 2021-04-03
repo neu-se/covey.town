@@ -8,6 +8,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
+import GameBoard from './components/world/GameBoard';
 import Popup from './components/Popup/Popup';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
@@ -227,6 +228,10 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     return (
       <div>
         <WorldMap />
+        <div id="overlay">
+          <Popup />
+        </div>
+        
         <VideoOverlay preferredMode="fullwidth" />
       </div>
     );

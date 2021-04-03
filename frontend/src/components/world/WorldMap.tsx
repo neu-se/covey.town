@@ -487,7 +487,7 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players, nearbyPlayers
+    emitMovement, players
   } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
@@ -525,10 +525,10 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement, nearbyPlayers]);
+  }, [video, emitMovement]);
 
   const deepPlayers = JSON.stringify(players);
-  let boardCreated = true;
+  // let boardCreated = true;
   useEffect(() => {
     // triggered when players move 
     // keep track of whether board has been created or not bool
@@ -537,10 +537,10 @@ export default function WorldMap(): JSX.Element {
     // scene can be visible/invisible
     // coveygamescene could have method showGameBoard/hideGameBoard
     gameScene?.updatePlayersLocations(players);
-    if(nearbyPlayers.nearbyPlayers.length > 0 && gameScene && gameScene.scene && !boardCreated) {
-      gameScene?.scene.add('board', new GameBoard('gameBoard'), true);
-      boardCreated = true;
-    } 
+    // if(nearbyPlayers.nearbyPlayers.length > 0 && gameScene && gameScene.scene && !boardCreated) {
+    //   gameScene?.scene.add('board', new GameBoard('gameBoard'), true);
+    //   boardCreated = true;
+    // } 
     // else if (boardCreated) {
     //   gameScene?.scene.remove('board');
     // }
