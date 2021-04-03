@@ -17,16 +17,20 @@ import {
     Container,
   } from "@chakra-ui/react";
 import React, { useEffect, useState } from 'react';
+import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 
 // interface Props {
 //     showing : boolean;
 // }
 
 export default function Popup(): JSX.Element {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { nearbyPlayers } = useNearbyPlayers();
+  const hasNearbyPlayer = nearbyPlayers.length > 0;
+
   return (
     <>
-      <Button height="148px" width="300px" onClick={onOpen}>Play Checkers</Button>
+      <Button style={{ display: hasNearbyPlayer ? "block" : "none" }} height="148px" width="300px" onClick={onOpen}>Play Checkers</Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
