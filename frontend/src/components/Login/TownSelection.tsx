@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import assert from "assert";
 import {
   Box,
@@ -29,14 +30,23 @@ interface TownSelectionProps {
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+  const toast = useToast();
+  const { isAuthenticated, user } = useAuth0();
+
+  
+  let authUserName = '';
+  if (isAuthenticated) {
+    authUserName = user.name;
+  }
+
+  // const [userName, setUserName] = useState<string>(authUserName);
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
-  const toast = useToast();
+
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -57,7 +67,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
-      if (!userName || userName.length === 0) {
+      if (!authUserName || authUserName.length === 0) {
         toast({
           title: 'Unable to join town',
           description: 'Please select a username',
@@ -73,7 +83,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, coveyRoomID);
+      const initData = await Video.setup(authUserName, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -87,10 +97,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, userName, connect, toast]);
+  }, [doLogin, authUserName, connect, toast]);
 
   const handleCreate = async () => {
-    if (!userName || userName.length === 0) {
+    if (!authUserName || authUserName.length === 0) {
       toast({
         title: 'Unable to create town',
         description: 'Please select a username before creating a town',
@@ -136,6 +146,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  
+
   return (
     <>
       <form>
@@ -146,8 +158,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
+                     value={authUserName}
+                     // onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
           </Box>
