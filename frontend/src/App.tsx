@@ -9,7 +9,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
+import { CoveyAppState, NearbyPlayers, SocketState } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
@@ -30,6 +30,7 @@ import LoginPage from "./components/LoginPage/LoginPage";
 import AuthGuard from './components/Authentication/AuthGuard';
 import useAuthInfo from './hooks/useAuthInfo';
 import UserProfile from './components/Profile/UserProfile';
+import FriendRequestSocketContext from './contexts/FriendRequestSocketContext';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -206,7 +207,8 @@ async function GameController(initData: TownJoinResponse,
 
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
-
+  const [friendRequestSocket, setFriendRequestSocket] = useState<Socket>();
+  const friendRequestSocketState: SocketState = { friendRequestSocket, setFriendRequestSocket};
   const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate);
     return true;
@@ -265,7 +267,9 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   return (
     <BrowserRouter>
         <AuthGuard>
-          <Routes />
+          <FriendRequestSocketContext.Provider value={ friendRequestSocketState }>
+            <Routes />
+          </FriendRequestSocketContext.Provider>
         </AuthGuard>
     </BrowserRouter>
 
