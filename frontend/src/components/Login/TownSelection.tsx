@@ -31,15 +31,15 @@ interface TownSelectionProps {
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const toast = useToast();
-  const { isAuthenticated, user } = useAuth0();
+  // const { isAuthenticated, user } = useAuth0();
 
   
-  let authUserName = '';
-  if (isAuthenticated) {
-    authUserName = user.name;
-  }
+  // let authUserName = '';
+  // if (isAuthenticated) {
+  //   authUserName = user.name;
+  // }
 
-  // const [userName, setUserName] = useState<string>(authUserName);
+  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -67,7 +67,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
-      if (!authUserName || authUserName.length === 0) {
+      if (!userName || userName.length === 0) {
         toast({
           title: 'Unable to join town',
           description: 'Please select a username',
@@ -83,7 +83,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(authUserName, coveyRoomID);
+      const initData = await Video.setup(userName, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -97,10 +97,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, authUserName, connect, toast]);
+  }, [doLogin, userName, connect, toast]);
 
   const handleCreate = async () => {
-    if (!authUserName || authUserName.length === 0) {
+    if (!userName || userName.length === 0) {
       toast({
         title: 'Unable to create town',
         description: 'Please select a username before creating a town',
@@ -158,8 +158,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
-                     value={authUserName}
-                     // onChange={event => setUserName(event.target.value)}
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
           </Box>
