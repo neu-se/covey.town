@@ -23,6 +23,7 @@ export default function VideoListWidget(): JSX.Element {
   const [voteVideoURL, setVoteVideoURL] = useState<string>('')
   const [radioButtonState, setRadioButtonState] = useState(''); // Andrew - changed to ytVideos instead of global videoList
   const [votingButtonDisabled, setVotingButtonDisabled] = useState<boolean>(false);
+  const [showWidget, setShowWidget] = useState<boolean>(false);
 
   const listVideos = () => ytVideos.map(video => (
       <Tr key={video.url}>
@@ -53,13 +54,17 @@ export default function VideoListWidget(): JSX.Element {
     socket?.on('resetVideoOptions', () => {
         console.log('resetVideoOptions');
         setYTVideos([]);
+        setShowWidget(false);
     });
+    socket?.on('displayVotingWidget', () => {
+      setShowWidget(true);
+    })
   },[socket]); // handleAddNewURL, handleForceUpdate]);
 
   // Joe - for new url submission. Check if URL is valid. If not say not added, if yes add it. Need to get youtube title, channel, duration using youtube api
   // Andrew - Only display if showYTPlayer is true (when player is by TV)
   return (
-    <> { showYTPlayer ? 
+    <> { showYTPlayer && showWidget ? 
       <form>
         <Stack>
             <HStack spacing="500px">

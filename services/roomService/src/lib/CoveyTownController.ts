@@ -119,7 +119,7 @@ export default class CoveyTownController {
     this._defaultVideoList = getDefaultVideos();
     const randomFirstVideo = this._defaultVideoList[Math.floor(Math.random() * this._defaultVideoList.length)];
     this._defaultVideoInfo = { 
-      url: randomFirstVideo.url, // 'https://www.youtube.com/watch?v=COcc7SZsRyQ'
+      url: randomFirstVideo.url,
       timestamp: 0,
       isPlaying: true,
     };
@@ -128,8 +128,13 @@ export default class CoveyTownController {
       timestamp: this._defaultVideoInfo.timestamp,
       isPlaying: this._defaultVideoInfo.isPlaying,
     };
-    const videoMinutesSeconds = randomFirstVideo.duration.split(":");
-    const vidDurationSeconds: number = parseInt(videoMinutesSeconds[0]) * 60 + parseInt(videoMinutesSeconds[1]);
+    const videoHoursMinutesSeconds = randomFirstVideo.duration.split(":");
+    let vidDurationSeconds;
+    if (videoHoursMinutesSeconds.length === 3) {
+      vidDurationSeconds = parseInt(videoHoursMinutesSeconds[0]) * 3600 + parseInt(videoHoursMinutesSeconds[1]) * 60 + parseInt(videoHoursMinutesSeconds[2]);
+    } else {
+      vidDurationSeconds = parseInt(videoHoursMinutesSeconds[0]) * 60 + parseInt(videoHoursMinutesSeconds[1]);
+    }
     this._masterVideoLength = vidDurationSeconds;
   }
 
@@ -265,10 +270,11 @@ export default class CoveyTownController {
       // this.addTimerToMasterTimeElapsed();
       // this.destroyTimer();
       // this.playVideos()
+      const timeElapsed = this._currentTimer.getElapsedSeconds();
       this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
         url: this._currentVideoInfo.url,
-        timestamp: this._masterTimeElapsed,
-        isPlaying: false
+        timestamp: this._masterTimeElapsed + timeElapsed,
+        isPlaying: true
       }));
       
     }else{
@@ -320,6 +326,8 @@ export default class CoveyTownController {
 
     // Once we have the updated video info
     listenerToAdd.onVideoSyncing(upToDateVideoInfo);
+
+    listenerToAdd.onDisplayVotingWidget();
 
     listenerToAdd.onUpdatingNextVideoOptions(this._videoList);
   }

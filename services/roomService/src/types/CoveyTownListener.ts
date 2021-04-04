@@ -47,4 +47,6 @@ export default interface CoveyTownListener {
   onUpdatingNextVideoOptions(videoList: YTVideo[]): void;
 
   onResetVideoOptions(): void;
+
+  onDisplayVotingWidget(): void;
 }

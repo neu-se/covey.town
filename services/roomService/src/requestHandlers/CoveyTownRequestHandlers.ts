@@ -216,6 +216,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     onResetVideoOptions() {
       socket.emit('resetVideoOptions');
+    },
+    onDisplayVotingWidget() {
+      socket.emit('displayVotingWidget');
     }
   };
 }
