@@ -104,7 +104,7 @@ export default class CoveyTownController {
   // server can choose the next video URL and send it to each client to play. 
   private _videoURLVotes: Map<string, number> = new Map<string, number>();
 
-  private _videoList: YTVideo[]; //  = getDefaultVideos();
+  private _videoList: YTVideo[];
 
   private _defaultVideoList: YTVideo[];
 
@@ -124,7 +124,7 @@ export default class CoveyTownController {
       isPlaying: true,
     };
     this._currentVideoInfo = {
-      url: this._defaultVideoInfo.url, // mario video
+      url: this._defaultVideoInfo.url,
       timestamp: this._defaultVideoInfo.timestamp,
       isPlaying: this._defaultVideoInfo.isPlaying,
     };
@@ -251,11 +251,6 @@ export default class CoveyTownController {
   pauseVideos(): void {
 
     if(this._currentTimer){
-      //Spam Logic - The idea here is if someone presses sync too many times or too many people at once press pause we dont want anything to break
-      // if( this._currentTimer.getElapsedSeconds() < 1 ){
-      //   return;
-      // }
-      // Add this time to the master time elapsed for anyone joining
       this.addTimerToMasterTimeElapsed();
       // Stop the timer
       this.destroyTimer();
@@ -360,15 +355,6 @@ export default class CoveyTownController {
         this._masterVideoLength = vidDurationSeconds;
       }
     }
-
-    /* Adam - Logic to check if there is no longer anyone in the tv area
-       We need to clear the timer and time elapsed*/
-    // if (this._listenersInTVAreaMap.size === 0){
-    //   this.destroyTimer();
-    //   this._masterTimeElapsed = 0;
-    //   console.log(this._defaultVideoList.length);
-    //   this._videoList = this._defaultVideoList; // Andrew - this is so that the default list of videos to vote on pops up next time someone enters
-    // }
   }
 
   // Andrew - This is how the server chooses the video URL with the most votes. If ther eare no votes then a 

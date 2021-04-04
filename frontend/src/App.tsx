@@ -63,12 +63,7 @@ function defaultAppState(): CoveyAppState {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
-    videoPlaying: false, // Andrew - this might not be necessary but it is supposed to maintain state of if youtube player is playing
-    youtubeplayer: null, // Andrew - holds the current youtube player object since the youtube players re-render when you go near the TV
     showYTPlayer: false, // Andrew - boolean that controls whether youtube player react component renders or not
-    mostRecentVideoSync: null, // Andrew - most recent video info from server
-    youtubeplayers: [], // Andrew - this isn't necessary right now but this was used before when multiple youtube players were being rendered
-    syncInterval: null, // Andrew - the setInterval Timeout that sends video info
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -85,12 +80,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     socket: state.socket,
     emitMovement: state.emitMovement,
     apiClient: state.apiClient,
-    videoPlaying: state.videoPlaying,
-    youtubeplayer: state.youtubeplayer,
     showYTPlayer: state.showYTPlayer,
-    mostRecentVideoSync: state.mostRecentVideoSync,
-    youtubeplayers: state.youtubeplayers,
-    syncInterval: state.syncInterval,
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
@@ -177,32 +167,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       state.socket?.disconnect();
       return defaultAppState();
       break;
-    case 'playerPaused': // Andrew - pause youtube video 
-      // if (state.showYTPlayer) {
-      //   state.youtubeplayer?.pauseVideo();
-      // }
-      break;
-    case 'playerPlayed': // Andrew - play youtube video
-      // if (state.showYTPlayer) {
-      //   state.youtubeplayer?.playVideo();
-      // }
-      break;
-    case 'syncVideo': // Andrew - convert video URL to video ID and load video as given by videoInfo
-      // console.log(update.videoInfo.url);
-      // const vidID = update.videoInfo.url.split('=')[update.videoInfo.url.split('=').length - 1];
-      // nextState.mostRecentVideoSync = {
-      //   url: update.videoInfo.url,
-      //   timestamp: update.videoInfo.timestamp,
-      //   isPlaying: update.videoInfo.isPlaying,
-      // }
-      break;
-    case 'addYTplayer': // Andrew - add newly rendered youtube player to state and start a setInterval to send video info to server
-      // nextState.youtubeplayer = update.ytplayer;
-      break;
-    case 'nullifyYTplayer': // Andrew - set current youtube player to null to handle several renderings
-      // log('nullifyYTplayer call')
-      // nextState.youtubeplayer = null;
-      break;
     default:
       throw new Error('Unexpected state request');
   }
@@ -240,18 +204,6 @@ async function GameController(initData: TownJoinResponse,
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
   });
-  // Andrew - listens for server saying someone paused video
-  // socket.on('playerPaused', () => {
-  //   dispatchAppUpdate({ action: 'playerPaused' });
-  // });
-  // // Andrew - listens for server saying someone played video
-  // socket.on('playerPlayed', () => {
-  //   dispatchAppUpdate({ action: 'playerPlayed' });
-  // });
-  // // Andrew - listens for server telling client to load a certain video at certain timestamp
-  // socket.on('videoSynchronization', (currentVideoInfo: YoutubeVideoInfo) => {
-  //   dispatchAppUpdate({ action: 'syncVideo', videoInfo: currentVideoInfo });
-  // });
 
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
@@ -308,37 +260,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
-  
-  // const page2 = useMemo(() => {
-  //   return (<div>
-  //     { appState.showYTPlayer ? <YouTube
-  //       id={'myYTplayer'}
-  //       opts={{height: '200', width: '400', playerVars: {enablejsapi: 1, controls: 0}}}
-  //       onPause={(event) => {
-  //         appState.socket?.emit('clientPaused');
-  //       }}
-  //       onPlay={(event) => {
-  //         appState.socket?.emit('clientPlayed');
-  //       }} 
-  //       onReady={(event) => {
-  //         if (appState.mostRecentVideoSync?.url) {
-  //           const vidID = appState.mostRecentVideoSync?.url.split('=')[appState.mostRecentVideoSync?.url.split('=').length - 1];
-  //           event.target.loadVideoById(vidID, appState.mostRecentVideoSync?.timestamp);
-  //         }
-  //         dispatchAppUpdate({ action: 'addYTplayer', ytplayer: event.target })
-  //       }}
-  //       onError={(event) => {
-  //         console.log('Error:', event.data);
-  //       }}
-  //       onEnd={(event) => {
-  //         console.log('end');
-  //         appState.socket?.emit('clientVideoEnded');
-  //       }}
-  //       onStateChange={(event) => {
-  //           // Andrew - this might be useful to add something here in the future, but it's not doing anything now
-  //       }}/> : null}
-  //   </div>)
-  // }, [appState.showYTPlayer, appState.mostRecentVideoSync]);
   
   return (
 

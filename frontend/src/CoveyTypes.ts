@@ -29,13 +29,7 @@ export type CoveyAppState = {
   emitMovement: (location: UserLocation) => void,
   socket: Socket | null,
   apiClient: TownsServiceClient,
-  videoPlaying: boolean, // Andrew TODO
-  youtubeplayer: YouTubePlayer | null, // Andrew TODO
   showYTPlayer: boolean, // Andrew TODO
-  mostRecentVideoSync: YoutubeVideoInfo | null, // Andrew TODO
-  youtubeplayers: YouTubePlayer[],
-  syncInterval: NodeJS.Timeout | null,
-  // beforeTime: number, // Andrew TODO
 };
 export type YoutubeVideoInfo = {
   url: string;
