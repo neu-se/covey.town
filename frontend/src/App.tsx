@@ -34,6 +34,7 @@ import theme from './components/VideoCall/VideoFrontend/theme';
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
 import StarterPage from "./components/ProfileManagement/StarterPage";
+import FriendsPage from "./components/UserProfiles/FriendsPage";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -286,6 +287,9 @@ return (
             {!isAuthenticated && <StarterPage />}
             {isAuthenticated && (
               <Route path='/' exact component={ProfileComponent} />
+            )}
+            {isAuthenticated && (
+              <Route path = '/friendsPage' component={FriendsPage} />
             )}
 
             <Route path='/starterPage' exact component={StarterPage} />
