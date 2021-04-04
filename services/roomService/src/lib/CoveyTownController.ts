@@ -252,9 +252,9 @@ export default class CoveyTownController {
 
     if(this._currentTimer){
       //Spam Logic - The idea here is if someone presses sync too many times or too many people at once press pause we dont want anything to break
-      if( this._currentTimer.getElapsedSeconds() < 2 ){
-        return;
-      }
+      // if( this._currentTimer.getElapsedSeconds() < 1 ){
+      //   return;
+      // }
       // Add this time to the master time elapsed for anyone joining
       this.addTimerToMasterTimeElapsed();
       // Stop the timer
@@ -267,16 +267,9 @@ export default class CoveyTownController {
 
     // If video is playing, update master time
     if(this._currentTimer){
-      // this.addTimerToMasterTimeElapsed();
-      // this.destroyTimer();
-      // this.playVideos()
-      const timeElapsed = this._currentTimer.getElapsedSeconds();
-      this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
-        url: this._currentVideoInfo.url,
-        timestamp: this._masterTimeElapsed + timeElapsed,
-        isPlaying: true
-      }));
-      
+      this.pauseVideos();
+      this.playVideos();
+      return;
     }else{
       this._listenersInTVAreaMap.forEach((listener) => listener.onVideoSyncing({
         url: this._currentVideoInfo.url,
