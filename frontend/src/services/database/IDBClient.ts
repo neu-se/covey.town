@@ -1,4 +1,4 @@
-import { CoveyUser, CoveyUserProfile } from "../../CoveyTypes";
+import { CoveyUser, CoveyUserProfile, FriendRequest } from "../../CoveyTypes";
 
 /**
  * Interface for a database client
@@ -22,4 +22,17 @@ export default interface IDBClient {
      * @param coveyUser 
      */
     saveUser(coveyUser: CoveyUser): Promise<CoveyUser>;
+
+    /**
+     * Get the friend reqeuests data of a user
+     * @param userID 
+     */
+    getFriendRequests(userID: string): Promise<FriendRequest>;
+
+    /**
+     * Save the friend request data
+     * @param friendRequest 
+     */
+    saveFriendRequests(friendRequest: FriendRequest): Promise<FriendRequest>;
+
 }

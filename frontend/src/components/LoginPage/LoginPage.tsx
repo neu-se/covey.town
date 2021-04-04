@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-
+import React, { useCallback, useState } from 'react';
+import assert from 'assert';
 import {
   Flex,
   Box,
@@ -15,9 +15,11 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import useAuthInfo from '../../hooks/useAuthInfo';
 import IAuth from '../../services/authentication/IAuth';
 import RealmAuth from '../../services/authentication/RealmAuth';
+import useFriendRequestSocket from '../../hooks/useFriendRequestSocketContext';
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
@@ -25,14 +27,28 @@ export default function SimpleCard(): JSX.Element {
   const history = useHistory();
   const authInfo = useAuthInfo();
   const toast = useToast();
-  const auth : IAuth = RealmAuth.getInstance();
+  const auth: IAuth = RealmAuth.getInstance();
+  const friendRequestServerURL = process.env.REACT_APP_FRIEND_REQUEST_SERVICE_URL;
+  assert(friendRequestServerURL);
+  const { friendRequestSocket: friendRequestSocketState, setFriendRequestSocket } = useFriendRequestSocket();
 
-  const signInHandler = async () => {
+  const signInHandler = useCallback(async () => {
     const credential = { email, password };
     try {
-    await auth.loginWithEmailPassword(credential,authInfo.actions.setAuthState);
-    history.push('/');
-    } catch(err) {
+      const coveyUser = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
+
+      // If login is successful, establish connection with friend request socket server
+      if (coveyUser) {
+        if(friendRequestSocketState) {
+          friendRequestSocketState.disconnect();
+          setFriendRequestSocket(undefined);
+        }
+        const friendRequestSocket = io(friendRequestServerURL, { auth: { userID: coveyUser.userID } });
+        setFriendRequestSocket(friendRequestSocket);
+      }
+      
+      history.push('/');
+    } catch (err) {
       if (err.error && err.error !== undefined) {
         toast({
           title: 'Create Account Error',
@@ -45,7 +61,7 @@ export default function SimpleCard(): JSX.Element {
         })
       }
     }
-  }
+  }, [auth, authInfo.actions.setAuthState, email, friendRequestServerURL, history, password, setFriendRequestSocket, toast])
   return (
     <Flex
       minH='100vh'
@@ -68,7 +84,7 @@ export default function SimpleCard(): JSX.Element {
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)}/>
+              <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
             </FormControl>
             <Stack spacing={10}>
               <Stack

@@ -27,6 +27,7 @@ import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClie
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 import useAuthInfo from '../../hooks/useAuthInfo';
+import useFriendRequestSocket from '../../hooks/useFriendRequestSocketContext';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -44,6 +45,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { apiClient } = useCoveyAppState();
   const history = useHistory();
   const toast = useToast();
+  const { friendRequestSocket, setFriendRequestSocket } = useFriendRequestSocket();
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -54,6 +56,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
+
   useEffect(() => {
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
@@ -80,6 +83,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       authInfo.actions.setAuthState({
         currentUser: null
       })
+
+      friendRequestSocket?.disconnect();
+      setFriendRequestSocket(undefined);
       history.push('/login');
     } catch (err) {
       if (err.error) {

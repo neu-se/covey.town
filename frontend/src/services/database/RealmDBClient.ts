@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import { CoveyUser, CoveyUserProfile } from '../../CoveyTypes';
+import { CoveyUser, CoveyUserProfile, FriendRequest } from '../../CoveyTypes';
 import IDBClient from './IDBClient';
 
 import RealmApp from './RealmApp';
@@ -114,5 +114,38 @@ export default class RealmDBClient implements IDBClient {
     const mutationResult = await this._apolloClient.mutate({ mutation: mutationQuery });
     const coveyUserResult: CoveyUser = mutationResult.data.insertOneCoveyuser;
     return coveyUserResult;
+  }
+
+  async getFriendRequests(userID: string): Promise<FriendRequest> {
+    const gqlQuery = gql
+    `query {
+      friendrequest(query: {
+        userID: "${userID}"
+      }){
+        userID,
+        requests
+      }
+    }`;
+    const queryResult = await this._apolloClient.query({query: gqlQuery});
+    const friendRequestResult: FriendRequest = queryResult.data.friendrequest;
+    return friendRequestResult;
+  }
+
+  async saveFriendRequests(friendRequest: FriendRequest): Promise<FriendRequest> {
+    const mutationQuery = gql
+    `mutation {
+      upsertOneFriendrequest(query: {
+        userID: "${friendRequest.userID}"
+      }, data: {
+        userID: "${friendRequest.userID}",
+        requests: ${JSON.stringify(friendRequest.requests)}
+      }) {
+        userID,
+        requests
+      }
+    }`;
+    const mutationResult = await this._apolloClient.mutate({ mutation: mutationQuery });
+    const friendRequestResult: FriendRequest = mutationResult.data.upsertOneFriendrequest;
+    return friendRequestResult;
   }
 }
