@@ -220,6 +220,22 @@
                  "width":89.546875,
                  "x":1045.48494238827,
                  "y":871.339298184358
+                },
+                {
+                 "height":18.84375,
+                 "id":295,
+                 "name":"label",
+                 "rotation":0,
+                 "text":
+                     {
+                     "text":"TV Area",
+                     "wrap":true
+                     },
+                 "type":"",
+                 "visible":true,
+                 "width":89.546875,
+                 "x":270.656730097765,
+                 "y":870.339298184358
                 }],
          "opacity":1,
          "type":"objectgroup",
