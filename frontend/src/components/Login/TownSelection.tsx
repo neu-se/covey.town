@@ -10,7 +10,6 @@ import {
   Flex,
   FormControl,
   FormLabel,
-
   Heading,
   Input,
   Stack,
@@ -22,9 +21,6 @@ import {
   Thead,
   Tr,
   useToast,
-  Image,
-  List,
-  ListItem
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
@@ -32,10 +28,8 @@ import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClie
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 import useAuthInfo from '../../hooks/useAuthInfo';
-import { CoveyUser, CoveyUserProfile, CoveyUserActions } from '../../CoveyTypes';
+import { CoveyUser } from '../../CoveyTypes';
 import RealmDBClient from '../../services/database/RealmDBClient';
-
-const DEFAULT_PROFILE_PICTURE = 'https://w7.pngwing.com/pngs/752/876/png-transparent-yellow-emoji-illustration-emoji-sticker-text-messaging-iphone-emoticon-blushing-emoji-face-heart-smiley.png';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
