@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, ScoreList, UserLocation, TTTListener } from '../CoveyTypes';
+import { CoveyTownList, ScoreList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-
+import TTTListener from '../types/TTTListener';
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
@@ -413,7 +413,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
  *
  * @param socket the Socket object that we will use to communicate with the player
  */
-function tttSocketAdapter(socket: Socket): CoveyTownListener {
+function tttSocketAdapter(socket: Socket): TTTListener {
   return {
     joinGame(playerID: string) {
       socket.emit('player Joining TTT', playerID);
@@ -421,8 +421,8 @@ function tttSocketAdapter(socket: Socket): CoveyTownListener {
     updatedBoard(removedPlayer: Player) {
       socket.emit('playerDisconnect', removedPlayer);
     },
-    currentPlayer() {
-      socket.emit('It is _ turn', newPlayer);
+    currentPlayer(curPlayer: string) {
+      socket.emit('It is _ turn', curPlayer);
     },
     gameEnded() {
       socket.emit('Game is Over');
@@ -506,15 +506,15 @@ export function tttSubscriptionHandler(socket: Socket): void {
   // Register an event listener for the client socket: if the client updates their
   // location, inform the CoveyTownController
   socket.on('updateBoard', () => {
-    townController.updatedBoard(listener);
+    townController.getBoard();
   });
 
   socket.on('currentPlayer', () => {
-    townController.currentPlayer(listener);
+    townController.currentPlayer();
   });
 
   socket.on('endGame', () => {
-    townController.gameEnded(listener);
+    townController.endGame();
     townController.removeGameListener(listener);
 
 
