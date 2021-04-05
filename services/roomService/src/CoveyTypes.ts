@@ -12,9 +12,9 @@ export type YoutubeVideoInfo = {
   url: string;
   timestamp: number;
   isPlaying: boolean;
-}
+};
 
-export type videoActionTimeStamp = {
+export type VideoActionTimeStamp = {
   actionType: string;
   actionDate: Date;
-}
+};
