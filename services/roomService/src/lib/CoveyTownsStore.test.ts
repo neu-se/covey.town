@@ -53,6 +53,15 @@ function mockCoveyListener(): CoveyTownListener {
     onDisplayVotingWidget() {
       // mockCoveyListenerDisplayVotingWidget();
     },
+    onVideoAdded() {
+      // mock included here
+    },
+    onUnableToAddVideo() {
+      // mock included here
+    },
+    onUnableToUseURL() {
+      // mock included here
+    }
   };
 }
 
