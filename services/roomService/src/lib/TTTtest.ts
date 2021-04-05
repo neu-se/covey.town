@@ -37,9 +37,8 @@ console.log(game.isgameActive);
 console.log(game.getWinner());
 
 /**
-x o o
+//x o o
 - x -
 - - x
 
-**/
 **/
