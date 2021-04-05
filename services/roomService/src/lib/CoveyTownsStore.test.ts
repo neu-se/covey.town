@@ -61,7 +61,7 @@ function mockCoveyListener(): CoveyTownListener {
     },
     onUnableToUseURL() {
       // mock included here
-    }
+    },
   };
 }
 
