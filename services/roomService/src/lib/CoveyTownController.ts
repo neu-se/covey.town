@@ -1,6 +1,8 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { ScoreList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
+import TTTListener from '../types/TTTListener';
+
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
@@ -8,7 +10,6 @@ import IVideoClient from './IVideoClient';
 import Leaderboard from './Leaderboard';
 import TicTacToe from './TicTacToe';
 import ITicTacToe from './ITicTacToe';
-import TTTListener from '../types/TTTListener';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -150,7 +151,7 @@ export default class CoveyTownController {
    *
    * @param listener New listener
    */
-  addGamerListener(listener: TTTListener): void {
+  addGameListener(listener: TTTListener): void {
     this._TTTlisteners.push(listener);
   }
 
@@ -170,7 +171,7 @@ export default class CoveyTownController {
    * @param listener The listener to unsubscribe, must be a listener that was registered
    * with addTownListener, or otherwise will be a no-op
    */
-  removeGamerListener(listener: TTTListener): void {
+  removeGameListener(listener: TTTListener): void {
     this._TTTlisteners = this._TTTlisteners.filter((v) => v !== listener);
   }
 
@@ -200,7 +201,7 @@ export default class CoveyTownController {
   }
 
 //** TicTacToe calls **/
-  startGame(playerID: string): String {
+  startGame(playerID: string): string {
     if ( this._players.some(e => e.id === playerID)){
       try{
         const gameResponse = this._tictactoe.startGame(playerID);
@@ -210,7 +211,7 @@ export default class CoveyTownController {
         return gameResponse;
       }
       catch (e) {
-        return new Error("unable to startGame");
+        throw new Error("unable to startGame");
       }
     }
     else {

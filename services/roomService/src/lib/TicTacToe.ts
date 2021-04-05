@@ -61,7 +61,7 @@ startGame(playerID: string): string {
   }
 
   if (this._player1Id === this._player2Id) {
-    return new Error("Invalid Players");
+    throw new Error("Invalid Players");
   }
 
   if (this._gameActive) {
