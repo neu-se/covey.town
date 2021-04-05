@@ -40,7 +40,7 @@ function generateTestLocation(): UserLocation {
  * 
  * @returns a location in the TV area
  */
- function generateLocationInTVArea() {
+ function generateLocationInTVArea(): UserLocation {
   const xMin = Math.ceil(251);
   const xMax = Math.floor(359);
 
@@ -66,7 +66,7 @@ function generateTestLocation(): UserLocation {
  * 
  * @returns a location not in the TV area
  */
- function generateLocationNotInTVArea() {
+ function generateLocationNotInTVArea(): UserLocation {
   let x = Math.floor(Math.random() * 1000); // Generates a number 0-1000
   let y = Math.floor(Math.random() * 1000); // Generates a number 0-1000
 
