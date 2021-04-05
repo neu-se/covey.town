@@ -250,11 +250,9 @@ export function townSubscriptionHandler(socket: Socket): void {
 
 
   socket.on('sendPlayerMention', (message: ClientPlayerMention) => {
-    console.log('hey', message);
-
     townController.sendPlayerMention(PlayerMention.fromClientPlayerMention(message));
   });
 
-  
+
 
 }

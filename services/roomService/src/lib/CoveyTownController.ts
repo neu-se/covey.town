@@ -170,7 +170,7 @@ export default class CoveyTownController {
     }
     let recipientListener: CoveyTownListener | undefined;
     switch (typeof message.recipient) {
-      case 'object':
+      case 'object': // Object type indicates the message is private
         recipientListener = this._listeners.get(message.recipient.recipientId);
         if (!recipientListener) {
           throw new Error('Invalid recipient id');
@@ -178,7 +178,7 @@ export default class CoveyTownController {
         recipientListener.onPlayerMessage(message);
         this._listeners.get(message.senderProfileId)?.onPlayerMessage(message);
         break;
-      default:
+      default: // Default is for the whole town
         this._listeners.forEach(listener => listener.onPlayerMessage(message));
     }
   }
@@ -188,14 +188,14 @@ export default class CoveyTownController {
     if (!this._listeners.get(message.senderProfileId)) {
       throw new Error('Invalid sender profile id');
     }
-   
-   
-    const recipientListener:CoveyTownListener | undefined = this._listeners.get(message.recipient);
+
+
+    const recipientListener: CoveyTownListener | undefined = this._listeners.get(message.recipient);
     if (!recipientListener) {
       throw new Error('Invalid recipient id');
     }
-    recipientListener.onPlayerMention(message);      
-      
-    
+    recipientListener.onPlayerMention(message);
+
+
   }
 }
