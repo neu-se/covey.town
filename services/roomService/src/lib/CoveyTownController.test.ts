@@ -5,7 +5,6 @@ import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
-import {UserLocation} from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
 import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
@@ -20,73 +19,73 @@ TwilioVideo.getInstance = () => ({
   getTokenForTown: mockGetTokenForTown,
 });
 
-function generateTestLocation(): UserLocation {
-  return {
-    rotation: 'back',
-    moving: Math.random() < 0.5,
-    x: Math.floor(Math.random() * 100),
-    y: Math.floor(Math.random() * 100),
-  };
-}
+// function generateTestLocation(): UserLocation {
+//   return {
+//     rotation: 'back',
+//     moving: Math.random() < 0.5,
+//     x: Math.floor(Math.random() * 100),
+//     y: Math.floor(Math.random() * 100),
+//   };
+// }
 
-/**
- * WARNING: HARDCODED
- * 
- * Returns a location in the TV area.
- * 
- * TV area: 
- * X-coordinate: xLoc > 250 && xLoc < 360
- * Y-coordinate: yLoc > 770 && yLoc < 900
- * 
- * @returns a location in the TV area
- */
- function generateLocationInTVArea(): UserLocation {
-  const xMin = Math.ceil(251);
-  const xMax = Math.floor(359);
+// /**
+//  * WARNING: HARDCODED
+//  * 
+//  * Returns a location in the TV area.
+//  * 
+//  * TV area: 
+//  * X-coordinate: xLoc > 250 && xLoc < 360
+//  * Y-coordinate: yLoc > 770 && yLoc < 900
+//  * 
+//  * @returns a location in the TV area
+//  */
+//  function generateLocationInTVArea(): UserLocation {
+//   const xMin = Math.ceil(251);
+//   const xMax = Math.floor(359);
 
-  const yMin = Math.ceil(771);
-  const yMax = Math.floor(899);
+//   const yMin = Math.ceil(771);
+//   const yMax = Math.floor(899);
 
-  return {
-    rotation: 'back',
-    moving: Math.random() < 0.5,
-    x: Math.floor(Math.random() * (xMax - xMin + 1)) + xMin,
-    y: Math.floor(Math.random() * (yMax - yMin + 1)) + yMin
-  };
-}
+//   return {
+//     rotation: 'back',
+//     moving: Math.random() < 0.5,
+//     x: Math.floor(Math.random() * (xMax - xMin + 1)) + xMin,
+//     y: Math.floor(Math.random() * (yMax - yMin + 1)) + yMin
+//   };
+// }
 
-/**
- * WARNING: HARDCODED
- * 
- * Returns a location NOT in the TV area.
- * 
- * TV area:
- * X-coordinate: xLoc > 250 && xLoc < 360
- * Y-coordinate: yLoc > 770 && yLoc < 900
- * 
- * @returns a location not in the TV area
- */
- function generateLocationNotInTVArea(): UserLocation {
-  let x = Math.floor(Math.random() * 1000); // Generates a number 0-1000
-  let y = Math.floor(Math.random() * 1000); // Generates a number 0-1000
+// /**
+//  * WARNING: HARDCODED
+//  * 
+//  * Returns a location NOT in the TV area.
+//  * 
+//  * TV area:
+//  * X-coordinate: xLoc > 250 && xLoc < 360
+//  * Y-coordinate: yLoc > 770 && yLoc < 900
+//  * 
+//  * @returns a location not in the TV area
+//  */
+//  function generateLocationNotInTVArea(): UserLocation {
+//   let x = Math.floor(Math.random() * 1000); // Generates a number 0-1000
+//   let y = Math.floor(Math.random() * 1000); // Generates a number 0-1000
 
-  // if x is between 251-359, generate a new number 0-1000
-  while (x > 250 && x < 360) {
-    x = Math.floor(Math.random() * 1000);
-  }
+//   // if x is between 251-359, generate a new number 0-1000
+//   while (x > 250 && x < 360) {
+//     x = Math.floor(Math.random() * 1000);
+//   }
 
-  // if y is between 771-899, generate a new number 0-1000
-  while (y > 770 && y < 900) {
-    y = Math.floor(Math.random() * 1000);
-  }
+//   // if y is between 771-899, generate a new number 0-1000
+//   while (y > 770 && y < 900) {
+//     y = Math.floor(Math.random() * 1000);
+//   }
 
-  return {
-    rotation: 'back',
-    moving: Math.random() < 0.5,
-    x: x,
-    y: y
-  };
-}
+//   return {
+//     rotation: 'back',
+//     moving: Math.random() < 0.5,
+//     x: x,
+//     y: y
+//   };
+// }
 
 describe('CoveyTownController', () => {
   beforeEach(() => {
