@@ -49,4 +49,10 @@ export default interface CoveyTownListener {
   onResetVideoOptions(): void;
 
   onDisplayVotingWidget(): void;
+
+  onVideoAdded(): void;
+
+  onUnableToAddVideo(): void;
+
+  onUnableToUseURL(): void;
 }

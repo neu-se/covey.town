@@ -15,7 +15,7 @@ export default function VideoListWidget(): JSX.Element {
         showYTPlayer, socket
     } = useCoveyAppState();
 
-  // const toast = useToast();
+  const toast = useToast();
   const [newVideoURL, setNewVideoURL] = useState('');
   const [ytVideos, setYTVideos] = useState<YTVideo[]>([]);
   const [radioButtonState, setRadioButtonState] = useState(''); // Andrew - changed to ytVideos instead of global videoList
@@ -40,19 +40,45 @@ export default function VideoListWidget(): JSX.Element {
   // Andrew - set up sockets to receive messages from server
   useEffect(() => {
     socket?.on('nextVideoOptions', (nextVideoOptions: YTVideo[]) => {
-        setYTVideos(nextVideoOptions);
+      setYTVideos(nextVideoOptions);
     });
     socket?.on('enableVotingButton', () => {
-        setVotingButtonDisabled(false);
+      setVotingButtonDisabled(false);
     });
     socket?.on('resetVideoOptions', () => {
-        setYTVideos([]);
-        setShowWidget(false);
+      setYTVideos([]);
+      setShowWidget(false);
     });
     socket?.on('displayVotingWidget', () => {
       setShowWidget(true);
+    });
+    socket?.on('addedVideo', () => {
+      toast({
+        title: `Submitted Youtube video was added to the list`,
+        status: 'success',
+        isClosable: true,
+        duration: 5000,
+      });
+    });
+    socket?.on('unableToAddVideo', () => {
+      toast({
+        title: `Looks like something went wrong:`,
+        description: `Unable to add submitted Youtube video`,
+        status: 'error',
+        isClosable: true,
+        duration: 5000,
+      })
+    });
+    socket?.on('unableToUseURL', () => {
+      toast({
+        title: `Looks like something went wrong:`,
+        description: `Unable to use submitted URL to retrieve Youtube video`,
+        status: 'error',
+        isClosable: true,
+        duration: 5000,
+      })
     })
-  },[socket]);
+  },[socket, toast]);
 
   // Joe - for new url submission. Check if URL is valid. If not say not added, if yes add it. Need to get youtube title, channel, duration using youtube api
   // Andrew - Only display if showYTPlayer is true (when player is by TV)
@@ -61,7 +87,7 @@ export default function VideoListWidget(): JSX.Element {
       <form>
         <Stack>
             <HStack spacing="500px">
-            <Heading p="5" as="h5" size="md">Select a video to watch</Heading>
+            <Heading p="5" as="h5" size="md">Select A Video To Watch Next</Heading>
             <Button colorScheme="blue" disabled={votingButtonDisabled} onClick={() => {
                 socket?.emit('clientVoted', radioButtonState);
                 setVotingButtonDisabled(true);
@@ -69,7 +95,7 @@ export default function VideoListWidget(): JSX.Element {
             </HStack>
           <Box maxH="400px" overflowY="scroll" borderWidth="1px" borderRadius="lg">
             <Table>
-              <Thead><Tr><Th>Video Title</Th><Th>Creator</Th><Th>Duration</Th><Th>Vote on next video</Th></Tr></Thead>
+              <Thead><Tr><Th>Video Title</Th><Th>Channel</Th><Th>Duration</Th><Th>Vote For Next Video</Th></Tr></Thead>
                 <Tbody>
                   {listVideos()}
                 </Tbody>
@@ -77,7 +103,7 @@ export default function VideoListWidget(): JSX.Element {
           </Box>
 
           <FormControl id="email">
-            <FormLabel p="5" as="h5" size="md">Submit new video to you would like to watch</FormLabel>
+            <FormLabel p="5" as="h5" size="md">Submit New Video You Would Like To Watch</FormLabel>
             <Input name="newVideo" placeholder="Youtube URL" onChange={event => setNewVideoURL(event.target.value)}/>
             <FormHelperText>Please enter in the Youtube URL.</FormHelperText>
           </FormControl>

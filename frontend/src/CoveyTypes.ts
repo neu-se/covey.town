@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io-client';
-import { YouTubePlayer } from 'youtube-player/dist/types'; // TODO
 import Player, { UserLocation } from './classes/Player';
 import TownsServiceClient from './classes/TownsServiceClient';
 

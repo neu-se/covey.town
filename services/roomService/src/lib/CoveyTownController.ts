@@ -459,7 +459,7 @@ export default class CoveyTownController {
     }
   }
 
-  async addVideoToVideoList(inputURL: string): Promise<void> {
+  async addVideoToVideoList(inputURL: string, listenerSubmittedBy: CoveyTownListener): Promise<void> {
     const instance = axios.create({
       baseURL: 'https://youtube.googleapis.com/youtube/v3',
     });
@@ -479,19 +479,23 @@ export default class CoveyTownController {
           this._videoList.push(newVideo);
           this._listenersInTVAreaMap.forEach((listener) => {
             listener.onUpdatingNextVideoOptions(this._videoList);
+            listener.onVideoAdded();
           });
         } catch (error) {
+          listenerSubmittedBy.onUnableToAddVideo();
           // throw Error('Unable to added video'); // maybe have return -1, instead of throw errors. Then server can send -1, thus can mean certain toast shows error message
         }
       }).catch(() => {
+        listenerSubmittedBy.onUnableToAddVideo();
         // throw Error('Unable to added video');
       });
     } else {
+      listenerSubmittedBy.onUnableToUseURL();
       // throw Error('Unable to use given video url');
     } 
   }
 
-  checkNewURLValidity(videoURL: string): void {
+  checkNewURLValidity(videoURL: string, listenerSubmittedBy: CoveyTownListener): void {
     let unseenURLBefore = true;
     this._videoList.forEach((video) => {
       if (videoURL === video.url) {
@@ -499,7 +503,7 @@ export default class CoveyTownController {
       }
     });
     if (unseenURLBefore) {
-      this.addVideoToVideoList(videoURL);
+      this.addVideoToVideoList(videoURL, listenerSubmittedBy);
     }
   }
 }
