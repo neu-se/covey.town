@@ -91,18 +91,18 @@ export default class CoveyTownsStore {
 
   /**  related to tictactoe**/
 
-  startGame(coveyTownID:string, player1: string, player2: string): boolean {
+  startGame(coveyTownID:string, playerID: string): string {
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown) {
       try {
-      existingTown.startGame(player1, player2);
-      return true;
+      const response = existingTown.startGame(playerID);
+      return response;
     }
     catch(err){
-      return false;
+      return err;
     }
     }
-    return false;
+    return "Unable to find town";
   }
 
   isgameActive(coveyTownID:string): boolean |undefined {

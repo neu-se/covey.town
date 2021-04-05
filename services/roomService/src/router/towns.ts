@@ -161,12 +161,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
     Start the tictactoe game for a town
   **/
-  app.post('/tictactoe/:townID/:player1/:player2', BodyParser.json(), async (req, res) => {
+  app.post('/tictactoe/:townID/:playerID', BodyParser.json(), async (req, res) => {
     try {
       const result = await startGameHandler({
         coveyTownID: req.params.townID,
-        player1:req.params.player1,
-        player2:req.params.player2,
+        playerID:req.params.playerID,
 
       });
       res.status(StatusCodes.OK)
@@ -305,4 +304,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);
   return socketServer;
+}
+
+const tttSocketServer = new io.Server(http, { cors: { origin: '*' } });
+socketServer.on('connection', tttSubscriptionHandler);
+return socketServer;
 }

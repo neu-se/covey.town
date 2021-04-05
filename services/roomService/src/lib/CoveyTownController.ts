@@ -8,7 +8,7 @@ import IVideoClient from './IVideoClient';
 import Leaderboard from './Leaderboard';
 import TicTacToe from './TicTacToe';
 import ITicTacToe from './ITicTacToe';
-
+import TTTListener from '../types/TTTListener';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -63,6 +63,9 @@ export default class CoveyTownController {
 
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
   private _listeners: CoveyTownListener[] = [];
+
+  private _TTTlisteners: TTTListener[] = [];
+
 
   private readonly _coveyTownID: string;
 
@@ -129,6 +132,8 @@ export default class CoveyTownController {
     this._listeners.forEach((listener) => listener.onPlayerMoved(player));
   }
 
+
+
   /**
    * Subscribe to events from this town. Callers should make sure to
    * unsubscribe when they no longer want those events by calling removeTownListener
@@ -137,6 +142,16 @@ export default class CoveyTownController {
    */
   addTownListener(listener: CoveyTownListener): void {
     this._listeners.push(listener);
+  }
+
+  /**
+   * Subscribe to events from this town's TTT game. Callers should make sure to
+   * unsubscribe when they no longer want those events by calling removeTownListener
+   *
+   * @param listener New listener
+   */
+  addGamerListener(listener: TTTListener): void {
+    this._TTTlisteners.push(listener);
   }
 
   /**
@@ -150,6 +165,17 @@ export default class CoveyTownController {
   }
 
   /**
+   * Unsubscribe from events in this town.
+   *
+   * @param listener The listener to unsubscribe, must be a listener that was registered
+   * with addTownListener, or otherwise will be a no-op
+   */
+  removeGamerListener(listener: TTTListener): void {
+    this._TTTlisteners = this._TTTlisteners.filter((v) => v !== listener);
+  }
+
+
+  /**
    * Fetch a player's session based on the provided session token. Returns undefined if the
    * session token is not valid.
    *
@@ -161,6 +187,7 @@ export default class CoveyTownController {
 
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
+
   }
 
   getScores(): ScoreList {
@@ -173,11 +200,20 @@ export default class CoveyTownController {
   }
 
 //** TicTacToe calls **/
-  startGame(player1: string, player2: string): void {
-    if ( this._players.some(e => e.id === player1) && this._players.some(e => e.id === player2) ){
-      this._tictactoe.startGame(player1,player2);
+  startGame(playerID: string): String {
+    if ( this._players.some(e => e.id === playerID)){
+      try{
+        const gameResponse = this._tictactoe.startGame(playerID);
+
+        this._TTTlisteners.forEach((listener) => listener.joinGame(playerID));
+
+        return gameResponse;
+      }
+      catch (e) {
+        return new Error("unable to startGame");
+      }
     }
-    else{
+    else {
       throw new Error("Players are not part of the room");
     }
 
@@ -207,6 +243,15 @@ export default class CoveyTownController {
   makeMove(x:number, y:number): number[][] {
     try{
     this._tictactoe.makeMove(x,y);
+    this._TTTlisteners.forEach((listener) => listener.updatedBoard(this.getBoard()));
+
+    if (this.isgameActive() === false) {
+    this.endGame();
+      }
+    else{
+      this._TTTlisteners.forEach((listener) => listener.currentPlayer());
+    }
+
     return this._tictactoe.getBoard();
   }
   catch(err) {
@@ -215,7 +260,21 @@ export default class CoveyTownController {
   }
 
   endGame(): void{
+    this._TTTlisteners.forEach((listener) => listener.gameEnded());
+
+    const winner =  this.getWinner();
+    const allScores = this.getScores();
+    const leaderboardListing = allScores.find(e => e.userName === winner);
+
+    if (leaderboardListing === undefined) {
+      this.updateLeaderboard(winner, 1);
+    }
+    else{
+      this.updateLeaderboard(winner,leaderboardListing.score);
+    }
+
     this._tictactoe.endGame();
+    this._TTTlisteners.forEach((listener) => listener.gameEnded());
   }
 
 }

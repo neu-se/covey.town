@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, ScoreList, UserLocation } from '../CoveyTypes';
+import { CoveyTownList, ScoreList, UserLocation, TTTListener } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 
@@ -95,8 +95,11 @@ export interface UpdateLeaderboardRequest {
 
 export interface startGameRequest{
   coveyTownID: string;
-  player1: string;
-  player2: string;
+  playerID: string;
+}
+
+export interface startGameResponse {
+  gameStatus: string;
 }
 
 export interface infoRequest{
@@ -250,10 +253,9 @@ export async function updateLeaderboardHandler(requestData: UpdateLeaderboardReq
 }
 
 /**  related to tictactoe**/
-export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope<infoResponse>> {
+export async function startGameHandler(requestData: startGameRequest): Promise<ResponseEnvelope<startGameResponse>> {
     const townsStore = CoveyTownsStore.getInstance();
-    const game = townsStore.startGame(requestData.coveyTownID, requestData.player1,requestData.player2);
-    if (!game) {
+    const game = townsStore.startGame(requestData.coveyTownID, requestData.playerID);
       return {
         isOK: false,
         message: 'Unable to start game',
@@ -261,7 +263,9 @@ export async function startGameHandler(requestData: startGameRequest): Promise<R
     }
     return {
       isOK: true,
-      response: {},
+      response: {
+        gameStatus: game
+      },
       message: 'game has been started',
     }
   }
@@ -378,6 +382,7 @@ export async function endGameHandler(requestData: infoRequest): Promise<Response
 
 
 
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -401,6 +406,33 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
   };
 }
+
+/**
+ * An adapter between CoveyTownController's event interface (TTTListener)
+ * and the low-level network communication protocol
+ *
+ * @param socket the Socket object that we will use to communicate with the player
+ */
+function tttSocketAdapter(socket: Socket): CoveyTownListener {
+  return {
+    joinGame(playerID: string) {
+      socket.emit('player Joining TTT', playerID);
+    },
+    updatedBoard(removedPlayer: Player) {
+      socket.emit('playerDisconnect', removedPlayer);
+    },
+    currentPlayer() {
+      socket.emit('It is _ turn', newPlayer);
+    },
+    gameEnded() {
+      socket.emit('Game is Over');
+      socket.disconnect(true);
+    },
+  };
+}
+
+//updatedBoard(updatedBoard: Number[][]): void;
+
 
 /**
  * A handler to process a remote player's subscription to updates for a town
@@ -440,5 +472,51 @@ export function townSubscriptionHandler(socket: Socket): void {
   // location, inform the CoveyTownController
   socket.on('playerMovement', (movementData: UserLocation) => {
     townController.updatePlayerLocation(s.player, movementData);
+  });
+
+
+}
+
+/**
+ * A handler to process a remote player's subscription to updates for a town
+ *
+ * @param socket the Socket object that we will use to communicate with the player
+ */
+export function tttSubscriptionHandler(socket: Socket): void {
+  // Parse the client's session token from the connection
+  // For each player, the session token should be the same string returned by joinTownHandler
+  const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
+
+  const townController = CoveyTownsStore.getInstance()
+    .getControllerForTown(coveyTownID);
+
+  // Retrieve our metadata about this player from the TownController
+  const s = townController?.getSessionByToken(token);
+  if (!s || !townController) {
+    // No valid session exists for this token, hence this client's connection should be terminated
+    socket.disconnect(true);
+    return;
+  }
+
+  // Create an adapter that will translate events from the CoveyTownController into
+  // events that the socket protocol knows about
+  const listener = townSocketAdapter(socket);
+  townController.addGamerListener(listener);
+
+  // Register an event listener for the client socket: if the client updates their
+  // location, inform the CoveyTownController
+  socket.on('updateBoard', () => {
+    townController.updatedBoard(listener);
+  });
+
+  socket.on('currentPlayer', () => {
+    townController.currentPlayer(listener);
+  });
+
+  socket.on('endGame', () => {
+    townController.gameEnded(listener);
+    townController.removeGameListener(listener);
+
+
   });
 }

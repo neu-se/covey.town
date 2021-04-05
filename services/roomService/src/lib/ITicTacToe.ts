@@ -5,11 +5,9 @@ export default interface ITicTacToe {
 
   /**
   starts a tictactoe game,resetting board and accepting moves
-  @param player1: playerID of starting player; x
-  @param player2: playerID of second player; o
-
+  @param playerID: playerID of player making call to start game
   **/
-  startGame(player1: string, player2: string): void ;
+  startGame(playerID: string): string;
 
   /**
   returns tictactoe whether game is currently active. False if game has not started,

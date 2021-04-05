@@ -5,6 +5,8 @@ import ITicTacToe from './ITicTacToe';
 **/
 export default class TicTacToe implements ITicTacToe{
 
+
+
   private _player1Id: string = ""; //x
   private _player2Id: string = ""; //o
 
@@ -34,6 +36,10 @@ export default class TicTacToe implements ITicTacToe{
     }
   }
 
+
+
+
+
   private resetGameBoard(): void {
     this._gameBoard = [[0,0,0],
                 [0,0,0],
@@ -44,17 +50,33 @@ export default class TicTacToe implements ITicTacToe{
     this._winningPlayer = this.currentPlayer();
     }
 
-startGame(player1: string, player2: string): void {
-  if (player1 === '' || player2 === "" || player1 === player2) {
-    throw Error("invalid players");
+
+
+
+
+startGame(playerID: string): string {
+  if (this._player1Id == '') {
+    this._player1Id == playerID;
+    return "Waiting for player2";
   }
+
+  if (this._player1Id === this._player2Id) {
+    return new Error("Invalid Players");
+  }
+
   if (this._gameActive) {
-    throw Error("gameAlreadyActive");
+    throw new Error("gameAlreadyActive");
   }
-  this._player1Id = player1;
-  this._player2Id = player2;
+
+  this._player2Id = playerID;
   this._gameActive = true;
   this.resetGameBoard();
+  this._winningPlayer = "";
+
+
+
+  return `X:${this._player1Id}, Y: ${this._player2Id}`;
+
 }
 
 
@@ -128,24 +150,25 @@ makeMove(x:number, y:number): void {
 
   // check if move won game/ if we can keep playing
   if (this.isWin()) {
-    this._gameActive = false;
+    this.endGame;
 
-    // contact some listener
   }
   if (this.isFull()) {
-    this._gameActive = false;
-
-    // contact some listener
+    this.endGame;
   }
 
   //change to next player
   this._curPlayer = this._curPlayer%2;
   this._curPlayer++;
+
+
 }
 
 //makes game inactive
 endGame(): void{
   this._gameActive = false;
+  this._player1Id = '';
+  this._player2Id = '';
 
 }
 
