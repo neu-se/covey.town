@@ -219,7 +219,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     onDisplayVotingWidget() {
       socket.emit('displayVotingWidget');
-    }
+    },
   };
 }
 
@@ -267,14 +267,12 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Andrew - Register an event listener for the client socket: if client paused video then
   // have controller pause everyone's video
   socket.on('clientPaused', () => {
-    console.log('the player paused');
     townController.pauseVideos();
   });
 
   // Andrew - Register an event listener for the client socket: if client played video then
   // have controller play everyone's video
   socket.on('clientPlayed', () => {
-    console.log('the player played')
     townController.playVideos();
   });
 
@@ -288,11 +286,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   
   // Adam - Playing with the idea of syncing
   socket.on('clientSynced', () => {
-    //townController.addToTVArea(s.player, listener);
-    // townController.pauseVideos();
-    // townController.playVideos();
     townController.syncVideos();
-
   });
 
   // Andrew - Register an event listener for the client socket: remove player from appropriate maps

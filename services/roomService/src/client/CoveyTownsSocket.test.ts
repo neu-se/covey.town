@@ -47,7 +47,7 @@ describe('TownServiceApiSocket', () => {
   afterAll(async () => {
     server.close();
     TestUtils.cleanupSockets();
-    setTimeout(() => process.exit(), 1000)
+    setTimeout(() => process.exit(), 1000);
   });
   afterEach(() => {
     TestUtils.cleanupSockets();
