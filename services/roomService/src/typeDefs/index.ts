@@ -14,6 +14,12 @@ type User {
   id: ID!
   username: String
   email: String
+  bio: String
+  location: String
+  occupation: String
+  instagramLink: String
+  facebookLink: String
+  linkedInLink: String
   requests:[String!]
   friends:[String!]
   sentRequests:[String!]
@@ -45,6 +51,12 @@ input updateUserInput {
   id: ID!
   userName: String
   email: String
+  bio: String
+  location: String
+  occupation: String
+  instagramLink: String
+  facebookLink: String
+  linkedInLink: String
   password: String
 }
 
@@ -110,12 +122,8 @@ input townDeleteRequestInput {
   coveyTownPassword: String!
 }
 
-type TownDeleteResponse {
-  response: String
-}
 type TownDeleteResponseEnvelope {
   isOK: Boolean!
-  response: TownDeleteResponse
   message : String
 }
 
