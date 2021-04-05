@@ -84,6 +84,7 @@ function wrappedTownSelection() {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     myPlayerID: '',
+    character: 'misa-blond-hair',
     currentTownID: '',
     currentTownIsPubliclyListed: false,
     currentTownFriendlyName: '',

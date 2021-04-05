@@ -45,6 +45,7 @@ function defaultAppState(): CoveyAppState {
     currentTownIsPubliclyListed: false,
     sessionToken: '',
     userName: '',
+    character: 'misa-blond-hair',
     socket: null,
     currentLocation: {
       x: 0, y: 0, rotation: 'front', moving: false,
@@ -65,6 +66,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
+    character: state.character,
     socket: state.socket,
     emitMovement: state.emitMovement,
     apiClient: state.apiClient,

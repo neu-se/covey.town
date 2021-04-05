@@ -38,6 +38,7 @@ function wrappedTownSettings() {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     myPlayerID: '',
+    character: 'misa-blond-hair',
     currentTownID: '',
     currentTownFriendlyName: '',
     currentTownIsPubliclyListed: false,
