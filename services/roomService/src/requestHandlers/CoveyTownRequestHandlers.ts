@@ -260,7 +260,6 @@ export async function startGameHandler(requestData: startGameRequest): Promise<R
         isOK: false,
         message: 'Unable to start game',
       }
-    }
     return {
       isOK: true,
       response: {
@@ -418,8 +417,8 @@ function tttSocketAdapter(socket: Socket): TTTListener {
     joinGame(playerID: string) {
       socket.emit('player Joining TTT', playerID);
     },
-    updatedBoard(removedPlayer: Player) {
-      socket.emit('playerDisconnect', removedPlayer);
+    updatedBoard(gameBoard: Number[][]) {
+      socket.emit('updatedBoard', gameBoard);
     },
     currentPlayer(curPlayer: string) {
       socket.emit('It is _ turn', curPlayer);
@@ -500,8 +499,8 @@ export function tttSubscriptionHandler(socket: Socket): void {
 
   // Create an adapter that will translate events from the CoveyTownController into
   // events that the socket protocol knows about
-  const listener = townSocketAdapter(socket);
-  townController.addGamerListener(listener);
+  const listener = tttSocketAdapter(socket);
+  townController.addGameListener(listener);
 
   // Register an event listener for the client socket: if the client updates their
   // location, inform the CoveyTownController
@@ -516,7 +515,5 @@ export function tttSubscriptionHandler(socket: Socket): void {
   socket.on('endGame', () => {
     townController.endGame();
     townController.removeGameListener(listener);
-
-
   });
 }

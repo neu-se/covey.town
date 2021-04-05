@@ -13,7 +13,7 @@ export default interface TTTListener {
    * Called when a board is updated
    * @param updatedBoard the updated board
    */
-  updatedBoard(updatedBoard: Number[][]): void;
+  updatedBoard(gameBoard: Number[][]): void;
 
 
   /**

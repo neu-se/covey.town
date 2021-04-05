@@ -250,7 +250,7 @@ export default class CoveyTownController {
     this.endGame();
       }
     else{
-      this._TTTlisteners.forEach((listener) => listener.currentPlayer());
+      this._TTTlisteners.forEach((listener) => listener.currentPlayer(this.currentPlayer()));
     }
 
     return this._tictactoe.getBoard();
