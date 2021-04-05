@@ -19,41 +19,14 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
-import {ApolloClient, InMemoryCache, NormalizedCacheObject, HttpLink, gql } from '@apollo/client';
 
+import DbClient2, { UserStatus}   from './testingDB';
 import LoginHooks from './LoginHooks'
 import LogoutHooks from './LogoutHooks'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-
-// Determine where to put the DB client
-const createApolloClient = () => new ApolloClient({
-  link: new HttpLink({
-      uri: 'https://covey-town-db.hasura.app/v1/graphql',
-      // remember to update and hide admin secret
-      headers: {'x-hasura-admin-secret': 'nfAeMsAQniJefLE4p8C1DzOLaPwOZjHXueV2Q6G0a2M2zLYItLlDMf4Xv1H5Llxb'
-      }
-  }),
-  cache:  new InMemoryCache()
-})
-
-const apolloClient: ApolloClient<NormalizedCacheObject> = createApolloClient();
-
-apolloClient
-.query({
-query: gql`
-  query fetchUsers {
-  covey_town_Users {
-    EmailAddress
-    FirstName
-    LastName
-  }
-}
-`
-})
-.then(result => console.log(result));
 
 
 interface TownSelectionProps {
@@ -69,6 +42,40 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+
+
+  // const mongoDBClient = new DbClient2();
+  // console.log('mongoDBClient creation', mongoDBClient);
+
+  const [currentFriendList, setFriendList] = useState<UserStatus[]>();   
+
+  const updateFriendList = useCallback(async () => {
+
+
+      // let friendList = mongoDBClient.getAllFriends(email)
+      // const allUsers = mongoDBClient.getAllUserEmails()
+      // console.log('testing allUsers query', allUsers);
+
+      // Connection to DB not finalized - so below code creates the output from DB manually
+      const user1: UserStatus = ({email: 'testEmail', isOnline: true})
+      const user2: UserStatus = ({email: 'testEmail2', isOnline: false})
+      const allUsersTest = [user1, user2]
+
+      console.log('testing allUsers query', allUsersTest);
+
+      setFriendList(allUsersTest);
+
+    }, []);
+  
+  useEffect(() => {
+    updateFriendList();
+    const timer = setInterval(updateFriendList, 2000);
+    return () => {
+      clearInterval(timer)
+    };
+  }, [updateFriendList]);
+  
+  
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -189,6 +196,24 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <LogoutHooks/>
           </Box>
 
+
+          <Heading p="4" as="h4" size="md">Friend list</Heading>
+            <Box maxH="500px" overflowY="scroll">
+              <Table>
+                <TableCaption placement="bottom">Friends</TableCaption>
+                <Thead><Tr><Th>Username</Th><Th>Status</Th><Th>Remove</Th></Tr></Thead>
+                <Tbody>
+
+                {currentFriendList?.map((friends) => (
+                    <Tr key={friends.email}><Td role='cell'>{friends.email}</Td>
+                      <Td role='cell'>{friends.isOnline}</Td>
+                        <Td role='cell'> <Button> Delete Friend</Button></Td></Tr>
+                  ))}
+
+                </Tbody>
+              </Table>
+            </Box>
+
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
@@ -247,6 +272,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 </Tbody>
               </Table>
             </Box>
+
+
+
           </Box>
         </Stack>
       </form>

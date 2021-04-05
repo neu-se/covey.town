@@ -24,7 +24,6 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src", 
-    "src/components/Login/apollo.tsx"
+    "src"
   ]
 }
