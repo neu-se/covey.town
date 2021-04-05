@@ -21,6 +21,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import GameBoard from '../world/GameBoard';
+import * as board from "./checker-board.png";
 
 // interface Props {
 //     showing : boolean;
@@ -47,7 +48,7 @@ export default function Popup(): JSX.Element {
             <Button variant="ghost">Secondary Action</Button>
           </ModalFooter>
           <Box boxSize="sm">
-            <Image src="checker-board.png" alt="Checkerboard" />
+            <Image src="./checker-board.png" alt="Checkerboard" />
           </Box>
         </ModalContent>
       </Modal>
