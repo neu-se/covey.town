@@ -73,3 +73,14 @@ export type CoveyTownInfo = {
 export type CoveyUserActions = {
   logout: () => Promise<void>
 }
+
+export type SocketState = {
+  friendRequestSocket: Socket | undefined | null,
+  setFriendRequestSocket: React.Dispatch<React.SetStateAction<Socket | undefined>>
+}
+
+export type FriendRequest = {
+  userID: string,
+  // requesters' userID
+  requests: string[]
+}
