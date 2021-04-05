@@ -1,8 +1,10 @@
 
 import TicTacToe from './TicTacToe';
 
-/***
 const game  = new TicTacToe();
+
+
+/***
 console.log(game.isgameActive);
 
 game.startGame("france", "london");
