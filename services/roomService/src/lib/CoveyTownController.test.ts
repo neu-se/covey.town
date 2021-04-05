@@ -29,6 +29,65 @@ function generateTestLocation(): UserLocation {
   };
 }
 
+/**
+ * WARNING: HARDCODED
+ * 
+ * Returns a location in the TV area.
+ * 
+ * TV area: 
+ * X-coordinate: xLoc > 250 && xLoc < 360
+ * Y-coordinate: yLoc > 770 && yLoc < 900
+ * 
+ * @returns a location in the TV area
+ */
+ function generateLocationInTVArea() {
+  const xMin = Math.ceil(251);
+  const xMax = Math.floor(359);
+
+  const yMin = Math.ceil(771);
+  const yMax = Math.floor(899);
+
+  return {
+    rotation: 'back',
+    moving: Math.random() < 0.5,
+    x: Math.floor(Math.random() * (xMax - xMin + 1)) + xMin,
+    y: Math.floor(Math.random() * (yMax - yMin + 1)) + yMin
+  };
+}
+
+/**
+ * WARNING: HARDCODED
+ * 
+ * Returns a location NOT in the TV area.
+ * 
+ * TV area:
+ * X-coordinate: xLoc > 250 && xLoc < 360
+ * Y-coordinate: yLoc > 770 && yLoc < 900
+ * 
+ * @returns a location not in the TV area
+ */
+ function generateLocationNotInTVArea() {
+  let x = Math.floor(Math.random() * 1000); // Generates a number 0-1000
+  let y = Math.floor(Math.random() * 1000); // Generates a number 0-1000
+
+  // if x is between 251-359, generate a new number 0-1000
+  while (x > 250 && x < 360) {
+    x = Math.floor(Math.random() * 1000);
+  }
+
+  // if y is between 771-899, generate a new number 0-1000
+  while (y > 770 && y < 900) {
+    y = Math.floor(Math.random() * 1000);
+  }
+
+  return {
+    rotation: 'back',
+    moving: Math.random() < 0.5,
+    x: x,
+    y: y
+  };
+}
+
 describe('CoveyTownController', () => {
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
@@ -220,6 +279,7 @@ describe('CoveyTownController', () => {
 
         });
       });
+
       it('should forward playerMovement events from the socket to subscribed listeners', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
