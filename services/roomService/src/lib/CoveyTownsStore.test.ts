@@ -2,9 +2,18 @@ import { nanoid } from 'nanoid';
 import CoveyTownsStore from './CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import { YoutubeVideoInfo } from '../CoveyTypes';
+import { YTVideo } from '../types/YTVideo';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
+// const mockCoveyListenerPlayerPaused = jest.fn();
+// const mockCoveyListenerPlayerPlayed = jest.fn();
+// const mockCoveyListenerEnableVoting = jest.fn();
+// const mockCoveyListenerDisablePlayPause = jest.fn();
+// const mockCoveyListenerResetVideoOptions = jest.fn();
+// const mockCoveyListenerDisplayVotingWidget = jest.fn();
+
 
 function mockCoveyListener(): CoveyTownListener {
   return {
@@ -19,6 +28,30 @@ function mockCoveyListener(): CoveyTownListener {
     },
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
+    },
+    onPlayerPaused() {
+      // mockCoveyListenerPlayerPaused();
+    },
+    onPlayerPlayed() {
+      // mockCoveyListenerPlayerPlayed();
+    },
+    onVideoSyncing(videoInfo: YoutubeVideoInfo) {
+      mockCoveyListenerOtherFns(videoInfo);
+    },
+    onEnableVoting() {
+      // mockCoveyListenerEnableVoting();
+    },
+    onDisablePlayPause() {
+      // mockCoveyListenerDisablePlayPause();
+    },
+    onUpdatingNextVideoOptions(videoList: YTVideo[]) {
+      mockCoveyListenerOtherFns(videoList);
+    },
+    onResetVideoOptions() {
+      // mockCoveyListenerResetVideoOptions();
+    },
+    onDisplayVotingWidget() {
+      // mockCoveyListenerDisplayVotingWidget();
     },
   };
 }

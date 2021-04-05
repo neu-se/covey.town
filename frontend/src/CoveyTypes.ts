@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io-client';
+import { YouTubePlayer } from 'youtube-player/dist/types'; // TODO
 import Player, { UserLocation } from './classes/Player';
 import TownsServiceClient from './classes/TownsServiceClient';
 
@@ -28,4 +29,10 @@ export type CoveyAppState = {
   emitMovement: (location: UserLocation) => void,
   socket: Socket | null,
   apiClient: TownsServiceClient,
+  showYTPlayer: boolean, // Andrew TODO
 };
+export type YoutubeVideoInfo = {
+  url: string;
+  timestamp: number;
+  isPlaying: boolean;
+}

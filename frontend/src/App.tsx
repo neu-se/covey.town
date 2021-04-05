@@ -7,14 +7,19 @@ import { io, Socket } from 'socket.io-client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
+// import YouTube from 'react-youtube'; // Andrew - this is the package that we use as a light wrapper around the iframe component
+import { YouTubePlayer } from 'youtube-player/dist/types'; // Andrew - This is the interface for the youtube player from the react-youtube package
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
+import VideoPlayer from './components/VideoPlayer/VideoPlayer'; // Andrew - separate component for youtube
+import VideoListWidget from './components/VideoListWidget/VideoListWidget'; // Andrew - separate component for youtube
+import { CoveyAppState, NearbyPlayers, YoutubeVideoInfo } from './CoveyTypes';
+// import useCoveyAppState from './hooks/useCoveyAppState';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
 import NearbyPlayersContext from './contexts/NearbyPlayersContext';
-import AppStateProvider, { useAppState } from './components/VideoCall/VideoFrontend/state';
+import AppStateProvider, { useAppState } from './components/VideoCall/VideoFrontend/state'; // StateContext removed
 import useConnectionOptions from './components/VideoCall/VideoFrontend/utils/useConnectionOptions/useConnectionOptions';
 import UnsupportedBrowserWarning
   from './components/VideoCall/VideoFrontend/components/UnsupportedBrowserWarning/UnsupportedBrowserWarning';
@@ -25,6 +30,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+// import { Apps } from '@material-ui/icons';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -33,6 +39,11 @@ type CoveyAppUpdate =
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
+  | { action: 'playerPaused'; } // Andrew - action is set off when server tells client that another client's youtube player paused
+  | { action: 'playerPlayed'; } // Andrew - action is set off when server tells client that another client's youtube player played
+  | { action: 'addYTplayer'; ytplayer: YouTubePlayer } // Andrew - when the youtube react component renders, this ytplayer variable is set to the rendered youtube player
+  | { action: 'syncVideo'; videoInfo: YoutubeVideoInfo } // Andrew - tells the youtube player to load given video URL, timestamp, and playing/paused
+  | { action: 'nullifyYTplayer' } // Andrew - sets youtube player to null so that accidental emits from "ghost" youtube player renders do not occur
   ;
 
 function defaultAppState(): CoveyAppState {
@@ -52,6 +63,7 @@ function defaultAppState(): CoveyAppState {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
+    showYTPlayer: false, // Andrew - boolean that controls whether youtube player react component renders or not
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -68,6 +80,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     socket: state.socket,
     emitMovement: state.emitMovement,
     apiClient: state.apiClient,
+    showYTPlayer: state.showYTPlayer,
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
@@ -119,15 +132,28 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
       break;
-    case 'weMoved':
+    case 'weMoved': {
       nextState.currentLocation = update.location;
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
         nextState.currentLocation);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
-      }
+      } 
 
+      // Andrew - when player is near TV, show the youtube react component, and when it is not then take it away
+      const xLoc = update.location.x;
+      const yLoc = update.location.y;
+      if (xLoc > 250 && xLoc < 360 && yLoc > 770 && yLoc < 900) { // this is the area around the tv
+        if (!state.showYTPlayer) {
+          nextState.showYTPlayer = true;
+          // state.socket?.emit('clientEnteredTVArea');
+        }
+      } else if (state.showYTPlayer) {
+        nextState.showYTPlayer = false;
+          state.socket?.emit('clientLeftTVArea');
+      }
       break;
+    }
     case 'playerDisconnect':
       nextState.players = nextState.players.filter((player) => player.id !== update.player.id);
 
@@ -140,6 +166,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     case 'disconnect':
       state.socket?.disconnect();
       return defaultAppState();
+      break;
     default:
       throw new Error('Unexpected state request');
   }
@@ -177,6 +204,7 @@ async function GameController(initData: TownJoinResponse,
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
   });
+
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
     dispatchAppUpdate({ action: 'weMoved', location });
@@ -214,7 +242,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       dispatchAppUpdate({ action: 'disconnect' });
       return Video.teardown();
     });
-  }, [dispatchAppUpdate, setOnDisconnect]);
+  }, [dispatchAppUpdate, setOnDisconnect]); 
 
   const page = useMemo(() => {
     if (!appState.sessionToken) {
@@ -222,13 +250,17 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     } if (!videoInstance) {
       return <div>Loading...</div>;
     }
+
     return (
       <div>
-        <WorldMap />
+        <WorldMap /> 
         <VideoOverlay preferredMode="fullwidth" />
+        <VideoPlayer />
+        <VideoListWidget />
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
+  
   return (
 
     <CoveyAppContext.Provider value={appState}>
