@@ -394,7 +394,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Help text that has a "fixed" position on the screen
     this.add
-      .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
+      .text(16, 16, `Arrow keys to move, space to transport\nWalk into TV Area to watch videos\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
         font: '18px monospace',
         color: '#000000',
         padding: {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import YouTube from 'react-youtube';
 // import { YouTubePlayer } from 'youtube-player/dist/types'; 
-import { Button, HStack } from '@chakra-ui/react';
+import { Button, HStack, useToast } from '@chakra-ui/react';
 import { YoutubeVideoInfo } from '../../CoveyTypes';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
@@ -15,6 +15,7 @@ export default function VideoPlayer(): JSX.Element {
   /* eslint-enable */
 
   const [arePlayPauseDisabled, setArePlayPausedDisabled] = useState<boolean>(true);
+  const toast = useToast();
 
   useEffect(() => {
     // socket?.emit('clientEnteredTVArea');
@@ -39,6 +40,18 @@ export default function VideoPlayer(): JSX.Element {
         setArePlayPausedDisabled(true);
     });
   },[socket]);
+
+  useEffect(() => {
+    if (showYTPlayer) {
+      toast({
+        title: `You've entered the TV Area!`,
+        description: `Please scroll down to view the Youtube Player. Click 'Join Stream' to start watching! Leave anytime by walking out of the TV Area`,
+        status: 'info',
+        isClosable: true,
+        duration: 10000,
+      });
+    }
+  }, [toast, showYTPlayer]);
   
   return (<div>
     { showYTPlayer ? <div> <div style={{position: 'absolute', zIndex: 300000, height: '200px', width: '400px'}}> </div> <div> <YouTube

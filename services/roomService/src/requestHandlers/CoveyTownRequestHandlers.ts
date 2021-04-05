@@ -220,6 +220,15 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onDisplayVotingWidget() {
       socket.emit('displayVotingWidget');
     },
+    onVideoAdded() {
+      socket.emit('addedVideo');
+    },
+    onUnableToAddVideo() {
+      socket.emit('unableToAddVideo');
+    },
+    onUnableToUseURL() {
+      socket.emit('unableToUseURL');
+    },
   };
 }
 
@@ -304,6 +313,6 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Andrew - Register an event listener for the client socket: if a client submits a new URL, then controller
   // should check if it is a valid URL before having all clients add it to their list of videos they can vote for
   socket.on('clientProposedNewURL', (videoURL: string) => {
-    townController.checkNewURLValidity(videoURL);
+    townController.checkNewURLValidity(videoURL, listener);
   });
 }
