@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import assert from "assert";
 import {
   Box,
   Button,
+  ButtonGroup,
   Checkbox,
   Flex,
   FormControl,
@@ -23,6 +26,10 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import app1 from './1.png';
+import app2 from './2.png';
+import app3 from './3.png';
+import app4 from './4.png';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -34,6 +41,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
+  const [appearance, setAppearance] = useState<integer>(0);
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
@@ -136,6 +144,16 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const handleAppearance = async(event: React.MouseEvent<HTMLElement>, newAppearance: integer) => {
+    setAppearance(newAppearance);
+  }
+
+  const randomAppearance = async() => {
+    setAppearance(Math.floor(Math.random() * (4)));
+ }
+
+  const appearances: string[] = [app1, app2, app3, app4]
+
   return (
     <>
       <form>
@@ -150,6 +168,54 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
+
+            <Heading p="2" as="h2" size="lg">Select an appearance</Heading>
+
+            <div
+              style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+              }}
+            >
+              <ToggleButtonGroup
+                  value={appearance}
+                  exclusive
+                  onChange={handleAppearance}
+                  size='large'
+                >
+                  <ToggleButton value={0}>
+                    Look 1
+                  </ToggleButton>
+                  <ToggleButton value={1}>
+                    Look 2
+                  </ToggleButton>
+                  <ToggleButton value={2}>
+                    Look 3
+                  </ToggleButton>
+                  <ToggleButton value={3}>
+                    Look 4
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </div>
+              <div
+                style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+                }}
+            >
+              <Button variant="primary" onClick={randomAppearance} size="large">[Randomize]</Button>
+              </div>
+              <div
+                style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              >
+                <img src={appearances[appearance]} alt="Appearance"/>
+              </div>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
