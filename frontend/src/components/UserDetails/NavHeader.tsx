@@ -1,4 +1,3 @@
-import "./UserDetails.css";
 import { RedirectLoginOptions, useAuth0 } from '@auth0/auth0-react';
 import React, { ReactNode } from 'react';
 import {
@@ -35,7 +34,7 @@ const NavLink = ({ children, url }: { children: ReactNode, url: (options?: Redir
   </Link>
 );
 
-const UserDetails = () => {
+const NavHeader = () => {
   const { user, isAuthenticated, logout, loginWithRedirect } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -53,7 +52,7 @@ const UserDetails = () => {
           <HStack spacing={8} alignItems='center'>
             <Box>Covey.Town</Box>
           </HStack>
-          
+
           { isAuthenticated &&
           <Flex alignItems='center'>
             <Menu>
@@ -106,4 +105,4 @@ const UserDetails = () => {
       );
 };
 
-export default UserDetails;
+export default NavHeader;
