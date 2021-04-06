@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
-import { AuthState, CoveyUser, EmailPasswordCredential } from "../../CoveyTypes";
+import axios from "axios";
+import { AuthState, CoveyUser, EmailPasswordCredential, GoogleAuthInfo, GoogleUserInfo } from "../../CoveyTypes";
 import RealmApp from "../database/RealmApp";
 import IAuth from "./IAuth";
 import IDBClient from "../database/IDBClient";
@@ -96,32 +97,53 @@ export default class RealmAuth implements IAuth {
         return null;
     }
 
-    async loginWithGoogle(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<void> {
-        const realmUser = await this._realmApp.loginWithGoogle();
+    async loginWithGoogle(googleAuthInfo: GoogleAuthInfo, setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<CoveyUser> {
+        const { idToken } = googleAuthInfo;
+        const realmUser = await this._realmApp.loginWithGoogle(idToken);
+        const dbCoveyUser = await this._realmDBClient.getUser(realmUser.id);
 
+        if(!dbCoveyUser) {
+            const axiosClient = axios.create();
+            const userInfo: GoogleUserInfo = (await axiosClient.get('https://openidconnect.googleapis.com/v1/userinfo',{headers:{'Authorization':`Bearer ${googleAuthInfo.token}`}})).data;
+            
+            const starterCoveyUser: CoveyUser = {
+                userID: realmUser.id,
+                isLoggedIn: realmUser.isLoggedIn,
+                profile: {
+                    username: userInfo.name,
+                    email: userInfo.email,
+                    pfpURL: userInfo.picture
+                },
+                friendIDs: [],
+                actions: {
+                    logout: async () => {
+                        await realmUser.logOut();
+                    }
+                }
+            }
+            setAuthState({
+                currentUser: starterCoveyUser
+            });
+            return starterCoveyUser;
+        }
         const coveyUser: CoveyUser = {
             userID: realmUser.id,
             isLoggedIn: realmUser.isLoggedIn,
-            profile: {
-                username: realmUser.customData.user_name,
-                email: realmUser.customData.email,
-                pfpURL: realmUser.customData.pfpURL,
-                bio: realmUser.customData.bio,
-            },
-            friendIDs: [],
+            profile: dbCoveyUser.profile,
+            currentTown: dbCoveyUser.currentTown,
+            friendIDs: dbCoveyUser.friendIDs,
             actions: {
                 logout: async () => {
                     await realmUser.logOut();
                 }
             }
         }
-
         setAuthState({
             currentUser: coveyUser
         });
-
+        return coveyUser;
     }
-
+    
     async sendPasswordResetEmail(email: string): Promise<void> {
         this._realmApp.sendPasswordResetEmail(email);
     }

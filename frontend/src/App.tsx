@@ -31,6 +31,7 @@ import AuthGuard from './components/Authentication/AuthGuard';
 import useAuthInfo from './hooks/useAuthInfo';
 import UserProfile from './components/Profile/UserProfile';
 import FriendRequestSocketContext from './contexts/FriendRequestSocketContext';
+import RedirectPage from './components/LoginPage/RedirectPage';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -246,6 +247,9 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         </Route>
         <Route path='/signup'>
           <SignUp />
+        </Route>
+        <Route path='/redirect'>
+          <RedirectPage />
         </Route>
         {!user.currentUser && <Redirect push to="/login" />}
         <Route path='/profile'>
