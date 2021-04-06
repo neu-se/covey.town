@@ -11,21 +11,23 @@ import {
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
+import GameController from "../../../../services/roomService/src/games/GameController";
+import GameContainer from "./GameContainer";
 
 interface GameModalDialogProps {
   dialogType: string;
+  gameId: string;
   gameType: string;
   player1Username: string;
 }
 
-export default function GameModalDialog({dialogType, gameType, player1Username}: GameModalDialogProps): JSX.Element {
+export default function GameModalDialog({dialogType, gameId, gameType, player1Username}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-
+  const controller = GameController.getInstance()
   return (
-    // TODO: delete menu item button
     <>
       <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
-        <Typography variant="body1">Game Modal</Typography>
+        <Typography variant="body1">Join Game</Typography>
       </MenuItem>
 
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -54,8 +56,11 @@ export default function GameModalDialog({dialogType, gameType, player1Username}:
         }
         <ModalFooter>
           {dialogType === "joining" &&
-          //  TODO: add onClick to this button that joins Player2 to the game and starts the game
-          <Button className="games-padded-asset" colorScheme="green">Join Game</Button>
+          //  TODO: figure out how to get player2's id
+          <GameContainer gameType={gameType}
+                         gameId={gameId}
+                         player1Username={player1Username}
+                         player2Username=""/>
           }
           <Button className="games-padded-asset" colorScheme="blue" mr={3} onClick={onClose}>
             Close
