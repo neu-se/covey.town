@@ -71,6 +71,40 @@ export default class CoveyTownsStore {
     return false;
   }
 
+  mergeTowns(requestingCoveyTownID: string, destinationCoveyTownID: string, 
+    coveyTownPassword: string, newTownFriendlyName: string, 
+    newTownIsPubliclyListed: boolean, newTownIsMergeable: boolean): CoveyTownController | undefined {
+  
+    const existingRequestingTown = this.getControllerForTown(requestingCoveyTownID);
+    const existingDestinationTown = this.getControllerForTown(destinationCoveyTownID);
+    if (existingRequestingTown && passwordMatches(coveyTownPassword, existingRequestingTown.townUpdatePassword)
+      && existingDestinationTown) {
+        // TODO: FIX THIS
+        const newTown = new CoveyTownController(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
+        // for each player of each room, emit a warning that they're being moved
+
+        existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
+        existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
+
+        existingRequestingTown.getListeners().forEach((l) => console.log(l));
+        existingRequestingTown.getListeners().forEach((l) => newTown.addTownListener(l));
+
+        console.log("SECOND");
+        existingDestinationTown.getListeners().forEach((l) => console.log(l));
+        existingDestinationTown.getListeners().forEach((l) => newTown.addTownListener(l));
+        // this._towns.push(newTown);
+
+        // need to add all listeners?? or ??? townSubscriptionHandler???
+        // existingRequestingTown.disconnectAllPlayers();
+        // existingDestinationTown.disconnectAllPlayers();
+
+        console.log("in merge TOWNS")
+
+        return newTown;
+      }
+      return undefined;
+  }
+
   deleteTown(coveyTownID: string, coveyTownPassword: string): boolean {
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown && passwordMatches(coveyTownPassword, existingTown.townUpdatePassword)) {

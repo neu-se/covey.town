@@ -44,6 +44,15 @@ export interface TownCreateRequest {
   isMergeable: boolean;
 }
 
+export interface TownMergeRequest {
+  requestingCoveyTownID: string;
+  destinationCoveyTownID: string;
+  coveyTownPassword: string, 
+  newTownFriendlyName: string, 
+  newTownIsPubliclyListed: boolean, 
+  newTownIsMergeable: boolean
+}
+
 /**
  * Response from the server for a Town create request
  */
@@ -123,6 +132,11 @@ export default class TownsServiceClient {
 
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<TownCreateResponse>>('/towns', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async mergeTowns(requestData: TownMergeRequest): Promise<void> {
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

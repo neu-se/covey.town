@@ -158,6 +158,10 @@ export default class CoveyTownController {
     this._listeners = this._listeners.filter((v) => v !== listener);
   }
 
+  getListeners(): CoveyTownListener[] {
+    return this._listeners;
+  }
+
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the
    * session token is not valid.

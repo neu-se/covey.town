@@ -84,6 +84,18 @@ export interface TownUpdateRequest {
 }
 
 /**
+ * TODO: documentation here
+ */
+ export interface TownMergeRequest {
+  requestingCoveyTownID: string;
+  destinationCoveyTownID: string;
+  coveyTownPassword: string, 
+  newTownFriendlyName: string, 
+  newTownIsPubliclyListed: boolean, 
+  newTownIsMergeable: boolean
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -162,6 +174,25 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   };
 }
 
+export async function townMergeRequestHandler(requestData: TownMergeRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const mergedTown = townsStore.mergeTowns(requestData.requestingCoveyTownID, 
+    requestData.destinationCoveyTownID, requestData.coveyTownPassword, 
+    requestData.newTownFriendlyName, requestData.newTownIsPubliclyListed, 
+    requestData.newTownIsMergeable);
+  if (mergedTown) {
+    return {
+      isOK: true,
+      // TODO: need to pass the controller here
+      response: {},
+    };
+  }
+  return {
+    isOK: false,
+    message: 'could not merge',
+  };
+}
+
 export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
@@ -204,6 +235,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    // TODO: sending notice that town is about to be mergeds here
   };
 }
 
