@@ -8,6 +8,7 @@ import {
   Input,
   Checkbox,
   Stack,
+  Image,
   Link,
   Button,
   Heading,
@@ -52,7 +53,7 @@ export default function SimpleCard(): JSX.Element {
     }
   }, [auth, authInfo.actions.setAuthState, history]);
 
-  const openSignIn = useCallback((url: string, name: string) => {
+  const openSignIn = useCallback((url: string) => {
 
 
     let previousUrl: string | null = null;
@@ -124,20 +125,19 @@ export default function SimpleCard(): JSX.Element {
   const signInHandler = useCallback(async () => {
     const credential = { email, password };
     try {
-      // const coveyUser = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
-      // await auth.loginWithGoogle(authInfo.actions.setAuthState);
-      openSignIn("http://localhost:3000/test", 'test');
+      const coveyUser = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
+      
       // If login is successful, establish connection with friend request socket server
-      // if (coveyUser) {
-      //   if(friendRequestSocketState) {
-      //     friendRequestSocketState.disconnect();
-      //     setFriendRequestSocket(undefined);
-      //   }
-      //   const friendRequestSocket = io(friendRequestServerURL, { auth: { userID: coveyUser.userID } });
-      //   setFriendRequestSocket(friendRequestSocket);
-      // }
+      if (coveyUser) {
+        if(friendRequestSocketState) {
+          friendRequestSocketState.disconnect();
+          setFriendRequestSocket(undefined);
+        }
+        const friendRequestSocket = io(friendRequestServerURL, { auth: { userID: coveyUser.userID } });
+        setFriendRequestSocket(friendRequestSocket);
+      }
 
-      // history.push('/');
+      history.push('/');
     } catch (err) {
       if (err.error && err.error !== undefined) {
         toast({
@@ -152,6 +152,11 @@ export default function SimpleCard(): JSX.Element {
       }
     }
   }, [auth, authInfo.actions.setAuthState, email, friendRequestServerURL, friendRequestSocketState, history, password, setFriendRequestSocket, toast])
+  
+  const signInGoogleHandler = useCallback(()=> {
+    openSignIn("http://localhost:3000/login");
+  },[openSignIn]);
+  
   return (
     <Flex
       minH='100vh'
@@ -191,6 +196,15 @@ export default function SimpleCard(): JSX.Element {
                   bg: 'blue.500',
                 }} onClick={signInHandler}>
                 Sign in
+              </Button>
+              <Button
+                bg='red.400'
+                color='white'
+                _hover={{
+                  bg: 'red.500',
+                }} onClick={signInGoogleHandler}>
+                Sign in with Google
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="" maxHeight="20px" maxWidth="20px" marginLeft="5px"/>
               </Button>
             </Stack>
           </Stack>

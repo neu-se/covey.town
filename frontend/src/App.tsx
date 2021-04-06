@@ -238,9 +238,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   }, [setupGameController, appState.sessionToken, videoInstance]);
 
   const Routes: React.FC = () => {
-    useEffect(()=> {
-      console.log('lmaop')
-    },[])
     // need to define user after AuthGuard
     const user = useAuthInfo();
     return (
