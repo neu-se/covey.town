@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 
-const NavLink = ({ children, url }: { children: ReactNode, url: (options?: RedirectLoginOptions | undefined) => Promise<void> }) => (
+const NavLink = ({ children, onClick: url }: { children: ReactNode, onClick: (options?: RedirectLoginOptions | undefined) => Promise<void> }) => (
   <Link
     px={2}
     py={1}
@@ -69,7 +69,7 @@ const NavHeader = () => {
                 />
               </MenuButton>
               <MenuList>
-                <MenuItem>View Profile</MenuItem>
+                <MenuItem>Profile</MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
               </MenuList>
@@ -84,7 +84,7 @@ const NavHeader = () => {
               as='nav'
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
-                <NavLink url={loginWithRedirect}>Login</NavLink>              
+                <NavLink onClick={loginWithRedirect}>Login</NavLink>              
             </HStack>
             </Menu>
           </Flex>
