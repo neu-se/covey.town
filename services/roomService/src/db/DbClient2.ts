@@ -25,13 +25,18 @@ export default class DbClient2{
   
   private client:MongoClient = new MongoClient(this.uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  constructor(){
-    this.connectToMongoDb();
+  async init():Promise<void>{
+    await this.connectToMongoDb();
+  }
+
+  closeConnection():void{
+    this.client.close();
   }
 
   async connectToMongoDb():Promise<void>{
     await this.client.connect();
   }
+
 
   async getAllUserEmails(): Promise<string[]>{
     const userEmails =  await this.client.db(DB_NAME).collection(COLLECTION_NAME).distinct('email');
