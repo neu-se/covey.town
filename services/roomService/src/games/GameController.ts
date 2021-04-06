@@ -19,6 +19,8 @@ import TTLGame from './TTLGame';
 
 export default class GameController {
 
+  private static _instance: GameController;
+
   private _gamesList: (TTLGame | HangmanGame | TicTacToeGame)[] = [];
 
   get gamesList(): (TTLGame | HangmanGame | TicTacToeGame)[] {
@@ -27,6 +29,13 @@ export default class GameController {
 
   set gamesList(value: (TTLGame | HangmanGame | TicTacToeGame)[]) {
     this._gamesList = value;
+  }
+
+  static getInstance(): GameController {
+    if (GameController._instance === undefined) {
+      GameController._instance = new GameController();
+    }
+    return GameController._instance;
   }
 
   /**
@@ -136,7 +145,7 @@ export default class GameController {
    * Returns an instance of a game found by its ID
    *
    */
-  findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
+  public findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
     try {
       return this.gamesList.find(game => game.id === gameId);
     } catch (e) {
@@ -164,7 +173,5 @@ export default class GameController {
       message: !success ? 'Game to delete not found. Game ID may be invalid.' : undefined,
     };
   }
-
 }
-
 
