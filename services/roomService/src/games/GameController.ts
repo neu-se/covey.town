@@ -127,8 +127,7 @@ export default class GameController {
    * Returns list of all games on the server
    *
    */
-
-  async findAllGames(): Promise<ResponseEnvelope<GameListResponse>> {
+  async findAllGames(): Promise<ResponseEnvelope<GameListResponse>>  {
     const games = this.gamesList.map(game => ({
       gameID: game.id,
       gameState: game.gameState,
@@ -147,20 +146,6 @@ export default class GameController {
    *
    */
   findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
-    try {
-      return this.gamesList.find(game => game.id === gameId);
-    } catch (e) {
-      throw new Error(e);
-    }
-
-  }
-
-  /**
-   * Returns an instance of a game found by its ID
-   *
-
-   */
-  public findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
     try {
       return this.gamesList.find(game => game.id === gameId);
     } catch (e) {
@@ -188,4 +173,7 @@ export default class GameController {
       message: !success ? 'Game to delete not found. Game ID may be invalid.' : undefined,
     };
   }
+
 }
+
+
