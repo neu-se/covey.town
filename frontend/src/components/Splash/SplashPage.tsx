@@ -45,7 +45,7 @@ export default function SplashPage() {
         history.push('/home');
     }
     return (
-        <div style={{ backgroundColor: 'blue', height: '900px' }}>
+        <div style={{ backgroundColor: 'blue', height: '100vh' }}>
             <div className="container">
                 <div id="cloud-intro">
                     <div className={headerContainer}>
