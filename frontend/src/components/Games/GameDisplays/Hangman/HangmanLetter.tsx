@@ -1,11 +1,13 @@
 import React, {useState} from "react";
 import {Button} from "@chakra-ui/react";
+import HangmanGame from "../../../../../../services/roomService/src/games/HangmanGame";
 
 interface HangmanLetterProps {
+  game: HangmanGame;
   letter: string
 }
 
-export default function HangmanLetter({letter} : HangmanLetterProps) : JSX.Element {
+export default function HangmanLetter({game, letter} : HangmanLetterProps) : JSX.Element {
   const [disabled, setDisabled] = useState(false);
 
   return (
@@ -14,7 +16,10 @@ export default function HangmanLetter({letter} : HangmanLetterProps) : JSX.Eleme
       <Button classname="games-padded-asset"
               isDisabled={disabled}
               value={letter}
-              onClick={() => setDisabled(true)}>
+              onClick={() => {
+                setDisabled(true);
+                game.move({letter: letter.toLowerCase()})
+              }}>
         {letter}
       </Button>
     </>
