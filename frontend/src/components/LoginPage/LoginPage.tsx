@@ -21,6 +21,8 @@ import useAuthInfo from '../../hooks/useAuthInfo';
 import IAuth from '../../services/authentication/IAuth';
 import RealmAuth from '../../services/authentication/RealmAuth';
 import useFriendRequestSocket from '../../hooks/useFriendRequestSocketContext';
+import RealmDBClient from '../../services/database/RealmDBClient';
+import IDBClient from '../../services/database/IDBClient';
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
@@ -29,6 +31,7 @@ export default function SimpleCard(): JSX.Element {
   const authInfo = useAuthInfo();
   const toast = useToast();
   const auth: IAuth = RealmAuth.getInstance();
+  const dbClient: IDBClient = RealmDBClient.getInstance();
   const friendRequestServerURL = process.env.REACT_APP_FRIEND_REQUEST_SERVICE_URL;
   assert(friendRequestServerURL);
   const { friendRequestSocket: friendRequestSocketState, setFriendRequestSocket } = useFriendRequestSocket();
@@ -48,10 +51,11 @@ export default function SimpleCard(): JSX.Element {
       const { payload } = data;
       // const redirectUrl = `/auth/google/login${payload}`;
       // window.location.pathname = redirectUrl;
-      await auth.loginWithGoogle(payload, authInfo.actions.setAuthState);
+      const coveyUser = await auth.loginWithGoogle(payload, authInfo.actions.setAuthState);
+      await dbClient.saveUser(coveyUser);
       history.push('/');
     }
-  }, [auth, authInfo.actions.setAuthState, history]);
+  }, [auth, authInfo.actions.setAuthState, dbClient, history]);
 
   const openSignIn = useCallback((url: string) => {
 
@@ -156,7 +160,7 @@ export default function SimpleCard(): JSX.Element {
   const signInGoogleHandler = useCallback(()=> {
     openSignIn("http://localhost:3000/login");
   },[openSignIn]);
-  
+
   return (
     <Flex
       minH='100vh'
