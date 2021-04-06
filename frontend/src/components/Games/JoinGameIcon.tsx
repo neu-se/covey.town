@@ -1,5 +1,5 @@
 import React from 'react'
-import GameController from "./gamesService/GameController";
+import GameController from "../../../../services/roomService/src/games/GameController";
 import GameModalDialog from "./GameModalDialog";
 
 interface JoinGameIconProps {

@@ -1,12 +1,14 @@
 import React from 'react'
-import { Button, Modal, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure} from "@chakra-ui/react";
+import { Modal, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure} from "@chakra-ui/react";
+import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@material-ui/core/Typography";
 import TicTacToeDisplay from "./GameDisplays/TicTacToe/TicTacToeDisplay";
 import TTLDisplay from "./GameDisplays/TTLDisplay";
 import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
-import GameController from "./gamesService/GameController";
-import TTLGame from "./gamesService/TTLGame";
-import TicTacToeGame from "./gamesService/TicTacToeGame";
-import HangmanGame from "./gamesService/HangmanGame";
+import GameController from "../../../../services/roomService/src/games/GameController";
+import TTLGame from "../../../../services/roomService/src/games/TTLGame";
+import TicTacToeGame from "../../../../services/roomService/src/games/TicTacToeGame";
+import HangmanGame from "../../../../services/roomService/src/games/HangmanGame";
 
 interface GameContainerProps {
   gameType: string;

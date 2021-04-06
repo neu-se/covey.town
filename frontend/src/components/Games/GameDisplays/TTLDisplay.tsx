@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Button} from "@chakra-ui/react";
-import TTLGame from "../gamesService/TTLGame";
+import TTLGame from "../../../../../services/roomService/src/games/TTLGame";
 
 
 interface TTLProps {
