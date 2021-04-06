@@ -1,7 +1,11 @@
 import React from 'react'
 import HangmanLetter from "./HangmanLetter";
+import HangmanGame from "../../../../../../services/roomService/src/games/HangmanGame";
+interface HangmanDisplayProps {
+  game: HangmanGame
+}
 
-export default function HangmanDisplay(): JSX.Element {
+export default function HangmanDisplay({game} : HangmanDisplayProps): JSX.Element {
   return(
     <>
       {/* TODO: Hangman graphics go here */}

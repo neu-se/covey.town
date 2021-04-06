@@ -1,15 +1,13 @@
 import React, {useState} from 'react'
 import {Button} from "@chakra-ui/react";
+import TTLGame from "../../../../../services/roomService/src/games/TTLGame";
 
 
 interface TTLProps {
-  choice1: string;
-  choice2: string;
-  choice3: string;
-  correctChoice: number;
+  game: TTLGame
 }
 
-export default function TTLDisplay({choice1, choice2, choice3, correctChoice}: TTLProps): JSX.Element {
+export default function TTLDisplay({game}: TTLProps): JSX.Element {
   const [guessing, setGuessing] = useState(true);
   const [selection, setSelection] = useState(0);
   // TODO: assign two truths and lie to choices 1-3 in random order
@@ -30,7 +28,7 @@ export default function TTLDisplay({choice1, choice2, choice3, correctChoice}: T
                        setSelection(
                          1
                        )}/>
-              1. {choice1}
+              1. {game.option1}
             </label>
           </div>
           <div className="row">
@@ -42,7 +40,7 @@ export default function TTLDisplay({choice1, choice2, choice3, correctChoice}: T
                        setSelection(
                          2
                        )}/>
-              2. {choice2}
+              2. {game.option2}
             </label>
           </div>
           <div className="row">
@@ -54,7 +52,7 @@ export default function TTLDisplay({choice1, choice2, choice3, correctChoice}: T
                        setSelection(
                          3
                        )}/>
-              3. {choice3}
+              3. {game.option3}
             </label>
           </div>
         </form>
@@ -67,12 +65,12 @@ export default function TTLDisplay({choice1, choice2, choice3, correctChoice}: T
       </>
       }
 
-      {!guessing && selection === correctChoice &&
+      {!guessing && selection === game.correctOption &&
       <h1>You guessed correctly!</h1>
       }
 
-      {!guessing && selection !== correctChoice &&
-      <h1>{`Oops, that wasn't right. The real lie was #${correctChoice}.`}</h1>
+      {!guessing && selection !== game.correctOption &&
+      <h1>{`Oops, that wasn't right. The real lie was #${game.correctOption}.`}</h1>
       }
     </div>
   )

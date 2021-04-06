@@ -5,22 +5,28 @@ import Typography from "@material-ui/core/Typography";
 import TicTacToeDisplay from "./GameDisplays/TicTacToe/TicTacToeDisplay";
 import TTLDisplay from "./GameDisplays/TTLDisplay";
 import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
+import GameController from "../../../../services/roomService/src/games/GameController";
+import TTLGame from "../../../../services/roomService/src/games/TTLGame";
+import TicTacToeGame from "../../../../services/roomService/src/games/TicTacToeGame";
+import HangmanGame from "../../../../services/roomService/src/games/HangmanGame";
 
 interface GameContainerProps {
   gameType: string;
+  gameId: string;
   player1Username: string;
-  player2Username: string;
+  player2Username: string
 }
 
-export default function GameContainer({gameType, player1Username, player2Username} : GameContainerProps): JSX.Element {
+export default function GameContainer({gameType, gameId, player1Username, player2Username} : GameContainerProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const controller = GameController.getInstance()
+  const game = controller.findGameById(gameId)
 
   return(
     // TODO: delete menu item button
     <>
-      <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
-        <Typography variant="body1">Game Container</Typography>
-      </MenuItem>
+      <Button onClick={onOpen} className="games-padded-asset"
+              colorScheme="green">Play</Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
@@ -37,14 +43,14 @@ export default function GameContainer({gameType, player1Username, player2Usernam
 
           <div className="games-border games-extra-padded">
             {gameType === "TicTacToe" &&
-            <TicTacToeDisplay/>
+            <TicTacToeDisplay game={game as TicTacToeGame}/>
             }
             {gameType === "TTL" &&
             //  TODO: Fill game data programmatically
-            <TTLDisplay choice1="I am in graduate school" choice2="I love sports" choice3="I live in New York" correctChoice={2}/>
+            <TTLDisplay game = {game as TTLGame}/>
             }
             {gameType === "Hangman" &&
-            <HangmanDisplay/>
+            <HangmanDisplay game={game as HangmanGame}/>
             }
           </div>
           <br/>
