@@ -136,18 +136,12 @@ export default class GameController {
    * Returns an instance of a game found by its ID
    *
    */
-  async findGameById(gameId: string): GameL  {
-    const games = this.gamesList.map(game => ({
-        gameID: game.id,
-        gameState: game.gameState,
-      }),
-    );
-    return {
-      isOK: true,
-      response: {
-        games,
-      },
-    };
+  findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
+    try {
+      return this.gamesList.find(game => game.id === gameId);
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
   /**
