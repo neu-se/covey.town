@@ -180,7 +180,7 @@ class CoveyGameScene extends Phaser.Scene {
             this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-right`);
           } else if (prevVelocity.y < 0) {
             this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-back`);
-          } else if (prevVelocity.y > 0) this.player.sprite.setTexture(`${this.video.avatarID}`, 'misa-front');
+          } else if (prevVelocity.y > 0) this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-front`);
           break;
       }
 
