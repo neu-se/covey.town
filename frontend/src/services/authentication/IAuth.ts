@@ -1,4 +1,4 @@
-import { AuthState, CoveyUser, EmailPasswordCredential } from "../../CoveyTypes";
+import { AuthState, CoveyUser, EmailPasswordCredential, GoogleAuthInfo } from "../../CoveyTypes";
 
 /**
  * Authentication interface to perform user authentication operations.
@@ -27,7 +27,7 @@ export default interface IAuth {
      * Login the user using Google OAuth2.0
      * @param setAuthState callback method to update the authentication state of authentication
      */
-    loginWithGoogle(setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<void>;
+    loginWithGoogle(googleAuthInfo: GoogleAuthInfo, setAuthState: React.Dispatch<React.SetStateAction<AuthState>>): Promise<CoveyUser>;
 
     /**
      * Send a password reset email
