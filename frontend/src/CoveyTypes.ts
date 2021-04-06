@@ -29,3 +29,9 @@ export type CoveyAppState = {
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };
+
+export type Message = {
+  author: string,
+  dateCreated: Date,
+  body: string
+}
