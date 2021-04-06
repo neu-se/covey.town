@@ -1,7 +1,12 @@
 import React from 'react'
 import TicTacToeBox from "./TicTacToeBox";
+import TicTacToeGame from "../../../../../../services/roomService/src/games/TicTacToeGame";
 
-export default function TicTacToeDisplay(): JSX.Element {
+interface TicTacToeDisplayProps {
+  game: TicTacToeGame
+}
+
+export default function TicTacToeDisplay({game} : TicTacToeDisplayProps): JSX.Element {
   return(
     <>
       <br/>
