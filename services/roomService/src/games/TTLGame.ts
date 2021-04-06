@@ -1,4 +1,4 @@
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 import { TTLPlayer2Move, TTLChoices } from '../client/Types';
 import IGame from './IGame';
 

@@ -10,7 +10,7 @@ import {
   TTLChoices,
   HangmanWord,
   HangmanPlayer2Move,
-  TicMove, TTLPlayer2Move
+  TicMove, TTLPlayer2Move,
 } from '../client/Types';
 import TicTacToeGame from './TicTacToeGame';
 import HangmanGame from './HangmanGame';
@@ -35,7 +35,7 @@ export default class GameController {
    */
   async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse>> {
     let newGame;
-    const {player1} = requestData;
+    const { player1 } = requestData;
     const initialState = requestData.initialGameState;
     if (requestData.gameType === 'Hangman') {
       newGame = new HangmanGame(player1, <HangmanWord>(initialState));
@@ -65,7 +65,7 @@ export default class GameController {
    *
    */
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
-    const {player2} = requestData;
+    const { player2 } = requestData;
     const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
     if (targetGame === undefined) {
       return {
@@ -88,7 +88,7 @@ export default class GameController {
    * @param requestData
    */
   async updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
-    const {move} = requestData;
+    const { move } = requestData;
     const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
     if (targetGame === undefined) {
       return {
@@ -123,6 +123,24 @@ export default class GameController {
       gameID: game.id,
       gameState: game.gameState,
     }),
+    );
+    return {
+      isOK: true,
+      response: {
+        games,
+      },
+    };
+  }
+
+  /**
+   * Returns an instance of a game found by its ID
+   *
+   */
+  async findGameById(gameId: string): GameL  {
+    const games = this.gamesList.map(game => ({
+        gameID: game.id,
+        gameState: game.gameState,
+      }),
     );
     return {
       isOK: true,
