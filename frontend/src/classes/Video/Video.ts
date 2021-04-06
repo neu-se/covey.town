@@ -1,5 +1,6 @@
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
+import { joinTown } from '../../graphql/queries';
 
 export default class Video {
   private static video: Video | null = null;
@@ -56,7 +57,7 @@ export default class Video {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
         // Request our token to join the town
-        this.townsServiceClient.joinTown({
+        joinTown({
           coveyTownID: this._coveyTownID,
           userName: this._userName,
         })
