@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { TownCreateRequest } from '../classes/TownsServiceClient';
+import { TownCreateRequest, TownDeleteRequest } from '../classes/TownsServiceClient';
 import client from './client';
 
 const findAllUsers = gql`
@@ -24,6 +24,14 @@ const createTownMutation = gql`
   }
 `;
 
+const deleteTownMutation = gql`
+  mutation townDelete($input: townDeleteRequestInput!) {
+    townDeleteRequest(input: $input) {
+      status
+    }
+  }
+`;
+
 export const findAllUserProfiles = async (): Promise<any> => {
   const { data } = await client.query({ query: findAllUsers });
   return data.users;
@@ -38,4 +46,12 @@ export const createTown = async (payload: TownCreateRequest): Promise<any> => {
     return data.townCreateRequest.response;
   }
   return null;
+};
+
+
+export const deleteTown = async (payload: TownDeleteRequest): Promise<any> => {
+  await client.mutate({
+    mutation: deleteTownMutation,
+    variables: { input: payload },
+  });
 };
