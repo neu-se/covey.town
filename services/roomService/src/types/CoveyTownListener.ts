@@ -27,6 +27,14 @@ export default interface CoveyTownListener {
    */
   onTownDestroyed(): void;
 
+  onjoinGame(PlayerID: string): void;
+
+  onUpdateBoard(board: Number[][]): void;
+
+  onTurn(PlayerID: string): void;
+
+  onGameEnd(winner: string): void;
+
 
 
 
