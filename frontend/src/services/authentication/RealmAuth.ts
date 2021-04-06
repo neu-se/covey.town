@@ -111,7 +111,8 @@ export default class RealmAuth implements IAuth {
                 isLoggedIn: realmUser.isLoggedIn,
                 profile: {
                     username: userInfo.name,
-                    email: userInfo.email
+                    email: userInfo.email,
+                    pfpURL: userInfo.picture
                 },
                 friendIDs: [],
                 actions: {
