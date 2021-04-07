@@ -168,9 +168,6 @@ export default class CoveyTownController {
 
   sendGlobalPlayerMessage(message: GlobalChatMessage): void {
     this._messages.push(message);
-
-    message.sender.sendGlobal(message);
-
     this._listeners.forEach((listener) => listener.onGlobalMessage(message));
   }
 }
