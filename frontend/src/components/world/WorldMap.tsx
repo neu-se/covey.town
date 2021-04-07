@@ -44,7 +44,8 @@ class CoveyGameScene extends Phaser.Scene {
     // this.load.image("logo", logoImg);
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
-    this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
+    this.load.atlas('misa', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
+    this.load.atlas('john', '/assets/sprites/john.png', '/assets/sprites/john.json');
   }
 
   updatePlayersLocations(players: Player[]) {
@@ -88,14 +89,14 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location, player.avatarID);
       this.players.push(myPlayer);
     }
-    console.log(myPlayer.avatarID)
+    
     if (this.id !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore - JB todo
-          .sprite(0, 0, 'atlas', 'misa-front')
+          .sprite(0, 0, `${myPlayer.avatarID}`, `${ myPlayer.avatarID }-front`)
           .setSize(30, 40)
           .setOffset(0, 24);
         const label = this.add.text(0, 0, `${myPlayer.userName} (${myPlayer.avatarID})`, {
@@ -115,10 +116,10 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer.label?.setY(player.location.y - 20);
 
       if (player.location.moving) {
-        sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
+        sprite.anims.play(`${player.avatarID}-${player.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
-        sprite.setTexture('atlas', `misa-${player.location.rotation}`);
+        sprite.setTexture(`${player.avatarID}`, `${player.avatarID}-${player.location.rotation}`);
       }
     }
   }
@@ -155,31 +156,31 @@ class CoveyGameScene extends Phaser.Scene {
       switch (primaryDirection) {
         case 'left':
           body.setVelocityX(-speed);
-          this.player.sprite.anims.play('misa-left-walk', true);
+          this.player.sprite.anims.play(`${this.video.avatarID}-left-walk`, true);
           break;
         case 'right':
           body.setVelocityX(speed);
-          this.player.sprite.anims.play('misa-right-walk', true);
+          this.player.sprite.anims.play(`${this.video.avatarID}-right-walk`, true);
           break;
         case 'front':
           body.setVelocityY(speed);
-          this.player.sprite.anims.play('misa-front-walk', true);
+          this.player.sprite.anims.play(`${this.video.avatarID}-front-walk`, true);
           break;
         case 'back':
           body.setVelocityY(-speed);
-          this.player.sprite.anims.play('misa-back-walk', true);
+          this.player.sprite.anims.play(`${this.video.avatarID}-back-walk`, true);
           break;
         default:
           // Not moving
           this.player.sprite.anims.stop();
           // If we were moving, pick and idle frame to use
           if (prevVelocity.x < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-left');
+            this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-left`);
           } else if (prevVelocity.x > 0) {
-            this.player.sprite.setTexture('atlas', 'misa-right');
+            this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-right`);
           } else if (prevVelocity.y < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-back');
-          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
+            this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-back`);
+          } else if (prevVelocity.y > 0) this.player.sprite.setTexture(`${this.video.avatarID}`, `${this.video.avatarID}-front`);
           break;
       }
 
@@ -295,7 +296,7 @@ class CoveyGameScene extends Phaser.Scene {
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
     // player's body.
     const sprite = this.physics.add
-      .sprite(spawnPoint.x, spawnPoint.y, 'atlas', 'misa-front')
+      .sprite(spawnPoint.x, spawnPoint.y, `${this.video.avatarID}`, `${this.video.avatarID}-front`)
       .setSize(30, 40)
       .setOffset(0, 24);
     const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, `(You) (${this.video.avatarID})`, {
@@ -355,7 +356,7 @@ class CoveyGameScene extends Phaser.Scene {
     const { anims } = this;
     anims.create({
       key: 'misa-left-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-left-walk.',
         start: 0,
         end: 3,
@@ -366,7 +367,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'misa-right-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-right-walk.',
         start: 0,
         end: 3,
@@ -377,7 +378,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'misa-front-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-front-walk.',
         start: 0,
         end: 3,
@@ -388,7 +389,7 @@ class CoveyGameScene extends Phaser.Scene {
     });
     anims.create({
       key: 'misa-back-walk',
-      frames: anims.generateFrameNames('atlas', {
+      frames: anims.generateFrameNames('misa', {
         prefix: 'misa-back-walk.',
         start: 0,
         end: 3,
@@ -398,6 +399,50 @@ class CoveyGameScene extends Phaser.Scene {
       repeat: -1,
     });
 
+    anims.create({
+      key: 'john-left-walk',
+      frames: anims.generateFrameNames('john', {
+        prefix: 'john-left-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    anims.create({
+      key: 'john-right-walk',
+      frames: anims.generateFrameNames('john', {
+        prefix: 'john-right-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    anims.create({
+      key: 'john-front-walk',
+      frames: anims.generateFrameNames('john', {
+        prefix: 'john-front-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    anims.create({
+      key: 'john-back-walk',
+      frames: anims.generateFrameNames('john', {
+        prefix: 'john-back-walk.',
+        start: 0,
+        end: 3,
+        zeroPad: 3,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
     const camera = this.cameras.main;
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
