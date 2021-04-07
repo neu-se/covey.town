@@ -27,7 +27,23 @@ export default class HangmanGame implements IGame {
 
   splitWord : string[];
 
+  gameStartMessage : string;
+
+  head : string;
+
+  back : string;
+
+  leftArm : string;
+
+  rightArm : string;
+
+  leftLeg : string;
+
+  rightLeg : string;
+
+
   constructor(player1ID:string, initialGameData: HangmanWord ) {
+    this.gameStartMessage = 'Choose a letter!';
     this.gameState = this.initializeGame();
     this.player1ID = player1ID;
     this.finalWord = initialGameData.word;
@@ -35,38 +51,34 @@ export default class HangmanGame implements IGame {
     this.alreadyGuessed = [];
     this.limbList = [Limb.RightLeg, Limb.LeftLeg, Limb.RightArm, Limb.LeftArm, Limb.Back, Limb.Head];
     this.splitWord = this.finalWord.split('');
-  }
+    this.head = 'Head';
+    this.back = 'Back';
+    this.leftArm = 'LeftArm';
+    this.rightArm = 'RightArm';
+    this.leftLeg = 'LeftLeg';
+    this.rightLeg = 'RightLeg';
 
-  checkLists(list1 : any[], list2 : any[]) : boolean {
-    let twoContainsOne = true;
-    list1.forEach(element => {
-      twoContainsOne = twoContainsOne && list2.find(e => {e === element;});
-    });
-    let oneContainsTwo = true;
-    list2.forEach(element => {
-      oneContainsTwo = oneContainsTwo && list1.find(e => {e === element;});
-    });
-    return twoContainsOne && oneContainsTwo;
   }
 
 
-  initializeGame(_initialGameData?: string): string {
-    return 'Choose a letter!';
+  initializeGame(): string {
+    return this.gameStartMessage;
   }
-
-  // splitFinalWord(splitWord:string[]) : string[] {
-  //     let splitStringNoDupes = []
-  //     this.splitWord.forEach((item, index) => { if (splitWord.indexOf(item) == index) splitStringNoDupes.push(item) });
-  //     return splitStringNoDupes;
-  // }
 
   limbToString(limb : Limb): string {
-    if (limb === Limb.Head) { return 'Head';}
-    if (limb === Limb.Back) {return 'Back';}
-    if (limb === Limb.LeftArm) {return 'LeftArm';}
-    if (limb === Limb.RightArm) {return 'RightArm';}
-    if (limb === Limb.LeftLeg) {return 'LeftLeg';}
-    if (limb === Limb.RightLeg) {return 'RightLeg';}
+    if (limb === Limb.Head) {
+      return this.head;
+    } if (limb === Limb.Back) {
+      return this.back;
+    } if (limb === Limb.LeftArm) {
+      return this.leftArm;
+    } if (limb === Limb.RightArm) {
+      return this.rightArm;
+    } if (limb === Limb.LeftLeg) {
+      return this.leftLeg;
+    } if (limb === Limb.RightLeg) {
+      return this.rightLeg;
+    }
     return '';
   }
 
@@ -76,16 +88,17 @@ export default class HangmanGame implements IGame {
     }
     if (this.alreadyGuessed.find(e => e === this.finalWord)) {
       this.alreadyGuessed.push(move.letter);
-      // this.splitWord.forEach((letter, index) => { if (letter === move.letter) this.splitWord.splice(index, 1)});
-      this.splitWord.filter(letter => {letter !== move.letter;});
+      this.splitWord.filter(letter => letter !== move.letter);
       this.isGameOver();
       return 'Good job - you got a letter!';
     }
     this.alreadyGuessed.push(move.letter);
-    const limb = <Limb> this.limbList.pop();
-    this.isGameOver;
-    return this.limbToString(limb);
-
+    const limb = this.limbList.pop();
+    this.isGameOver();
+    if (limb !== undefined) {
+      return this.limbToString(limb);
+    }
+    return '';
   }
 
 
@@ -97,7 +110,8 @@ export default class HangmanGame implements IGame {
     if (this.splitWord.length === 0) {
       this.finishGame(this.player2ID);
       return true;
-    } return false;
+    }
+    return false;
 
   }
 
