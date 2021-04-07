@@ -20,7 +20,6 @@ import {
   } from "@chakra-ui/react";
 import React, { useEffect, useState } from 'react';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
-import GameBoard from '../world/GameBoard';
 
 // interface Props {
 //     showing : boolean;
@@ -47,7 +46,7 @@ export default function Popup(): JSX.Element {
             <Button variant="ghost">Secondary Action</Button>
           </ModalFooter>
           <Box boxSize="sm">
-            <Image src="checker-board.png" alt="Checkerboard" />
+            <Image src="https://github.com/madelinehulse/covey.town/blob/master/frontend/src/components/Popup/checker-board.png" alt="Checkerboard" boxSize="300px" />
           </Box>
         </ModalContent>
       </Modal>
