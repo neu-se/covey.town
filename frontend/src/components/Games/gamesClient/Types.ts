@@ -5,7 +5,6 @@ export interface ResponseEnvelope<T> {
 }
 
 export interface GameCreateRequest {
-  gameType: string;
   player1: string;
   gameType: string;
   initialGameState?: HangmanWord | TTLChoices;
@@ -26,7 +25,7 @@ export interface GameUpdateRequest {
 
 export type TicMove = { x: number, y: number, player: string};
 export type TTLPlayer2Move = { guess: number };
-export type TTLPlayer1Move = { guessCorrect: boolean };
+export type TTLPlayer1Move = { guessCorrect: boolean, correctAnswer?: string };
 export type HangmanPlayer2Move = { letter: string };
 export type HangmanPlayer1Move = { correct: boolean, finalWord?: string, limbLost: Limb };
 
