@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Modal, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure} from "@chakra-ui/react";
+import { Modal, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure} from "@chakra-ui/react";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import TicTacToeDisplay from "./GameDisplays/TicTacToe/TicTacToeDisplay";

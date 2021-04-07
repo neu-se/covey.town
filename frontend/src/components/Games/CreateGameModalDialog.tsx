@@ -116,7 +116,7 @@ export default function CreateGameModalDialog(): JSX.Element {
           <ModalFooter>
             { /* TODO: create new game in onClick, add player1username programmatically */ }
             <Button className="games-padded-asset" colorScheme="green"
-                    onClick={(o) => {
+                    onClick={() => {
                       onClose();
                     //   <GameContainer
                     //     gameType={gameSelection}
