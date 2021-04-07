@@ -30,10 +30,10 @@ class Avatar {
 const avatars: Avatar[] = [
   new Avatar('JANE', 'john', 'http://www.avatarsinpixels.com/Public/images/previews/minipix1.png'),
   new Avatar('FLURRY', 'misa', 'http://www.avatarsinpixels.com/Public/images/previews/minipix2.png'),
-  new Avatar('LILA', 'L3', 'http://www.avatarsinpixels.com/Public/images/previews/minipix3.png'),
-  new Avatar('CATMAN', 'C4', 'http://www.avatarsinpixels.com/Public/images/previews/minipix4.png'),
-  new Avatar('DIANA', 'D5', 'http://www.avatarsinpixels.com/Public/images/previews/minipix5.png'),
-  new Avatar('SARAH', 'S6', 'http://www.avatarsinpixels.com/Public/images/previews/minipix6.png'),
+  new Avatar('LILA', 'adam', 'http://www.avatarsinpixels.com/Public/images/previews/minipix3.png'),
+  new Avatar('CATMAN', 'bella', 'http://www.avatarsinpixels.com/Public/images/previews/minipix4.png'),
+  new Avatar('DIANA', 'claire', 'http://www.avatarsinpixels.com/Public/images/previews/minipix5.png'),
+  new Avatar('SARAH', 'devon', 'http://www.avatarsinpixels.com/Public/images/previews/minipix6.png'),
 ];
 
 interface AvatarSelectionProps {
