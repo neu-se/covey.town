@@ -35,5 +35,5 @@ export default function Redirect(): JSX.Element {
         }
     }, []);
 
-    return (<p>redirecting</p>);
+    return (<p>redirecting...</p>);
 }

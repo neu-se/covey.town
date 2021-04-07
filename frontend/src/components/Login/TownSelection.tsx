@@ -86,13 +86,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   async function handleLogout(): Promise<void> {
     try {
       await authInfo.actions.handleLogout();
-      authInfo.actions.setAuthState({
-        currentUser: null
-      })
 
       friendRequestSocket?.disconnect();
       setFriendRequestSocket(undefined);
-      history.push('/login');
+      // history.push('/login');
     } catch (err) {
       if (err.error) {
         toast({

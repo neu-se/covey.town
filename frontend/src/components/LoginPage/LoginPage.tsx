@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import assert from 'assert';
 import {
   Flex,
@@ -21,8 +21,6 @@ import useAuthInfo from '../../hooks/useAuthInfo';
 import IAuth from '../../services/authentication/IAuth';
 import RealmAuth from '../../services/authentication/RealmAuth';
 import useFriendRequestSocket from '../../hooks/useFriendRequestSocketContext';
-import RealmDBClient from '../../services/database/RealmDBClient';
-import IDBClient from '../../services/database/IDBClient';
 
 export default function SimpleCard(): JSX.Element {
   const [email, setEmail] = useState<string>('');
@@ -31,7 +29,6 @@ export default function SimpleCard(): JSX.Element {
   const authInfo = useAuthInfo();
   const toast = useToast();
   const auth: IAuth = RealmAuth.getInstance();
-  const dbClient: IDBClient = RealmDBClient.getInstance();
   const friendRequestServerURL = process.env.REACT_APP_FRIEND_REQUEST_SERVICE_URL;
   assert(friendRequestServerURL);
   const { friendRequestSocket: friendRequestSocketState, setFriendRequestSocket } = useFriendRequestSocket();
@@ -51,15 +48,20 @@ export default function SimpleCard(): JSX.Element {
       const { payload } = data;
       // const redirectUrl = `/auth/google/login${payload}`;
       // window.location.pathname = redirectUrl;
+      try{
       const coveyUser = await auth.loginWithGoogle(payload, authInfo.actions.setAuthState);
-      await dbClient.saveUser(coveyUser);
+      authInfo.actions.setAuthState({currentUser:coveyUser});
+      } catch (err) {
+        toast({
+          title: 'Create Account Error',
+          description: err.toString()
+        })
+      }
       history.push('/');
-    }
-  }, [auth, authInfo.actions.setAuthState, dbClient, history]);
+    } 
+  }, [auth, authInfo.actions, history, toast]);
 
   const openSignIn = useCallback((url: string) => {
-
-
     let previousUrl: string | null = null;
     // remove any existing event listeners
     window.removeEventListener('message', receiveMessage);
@@ -80,7 +82,9 @@ export default function SimpleCard(): JSX.Element {
       redirect_uri: 'http://localhost:3000/redirect',
       response_type: 'id_token token',
       nonce: '0394852-3190485-2490358',
-      scope: 'openid profile email'
+      scope: 'openid profile email',
+      access_type: 'online',
+      include_granted_scopes: 'true'
     };
 
     Object.entries(oparams).forEach((param) => {
@@ -96,11 +100,7 @@ export default function SimpleCard(): JSX.Element {
       /* if the pointer to the window object in memory does not exist
        or if such pointer exists but the window was closed */
       setWindowObjectReference(window.open('', 'Map', strWindowFeatures));
-      // if (windowObjectReference) {
       mapForm.submit();
-      // } else {
-      //   alert('You must allow popups for this map to work.');
-      // }
     } else if (previousUrl !== url) {
       /* if the resource to load is different,
        then we load it in the already opened secondary window and then
@@ -118,13 +118,6 @@ export default function SimpleCard(): JSX.Element {
     // assign the previous URL
     previousUrl = url;
   }, [receiveMessage, windowObjectReference]);
-
-  useEffect(() => {
-    // get the URL parameters which will include the auth token
-    // add the listener for receiving a message from the popup
-
-  }, []);
-
 
   const signInHandler = useCallback(async () => {
     const credential = { email, password };
@@ -158,8 +151,15 @@ export default function SimpleCard(): JSX.Element {
   }, [auth, authInfo.actions.setAuthState, email, friendRequestServerURL, friendRequestSocketState, history, password, setFriendRequestSocket, toast])
   
   const signInGoogleHandler = useCallback(()=> {
+    try{
     openSignIn("http://localhost:3000/login");
-  },[openSignIn]);
+    } catch (err) {
+      toast({
+        title: 'Create Account Error',
+        description: err.toString()
+      })
+    }
+  },[openSignIn, toast]);
 
   return (
     <Flex
