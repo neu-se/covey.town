@@ -20,7 +20,7 @@ function HeaderComponent(): JSX.Element {
           justifyContent='space-between'
         >
           <HStack spacing={1000} alignItems='center'>
-            <Box boxShadow='base' paddingLeft='100px'>
+            <Box boxShadow='base' paddingLeft='70px'>
               <Heading size='md' fontSize='29px'>
                 Covey Town
               </Heading>
@@ -31,6 +31,15 @@ function HeaderComponent(): JSX.Element {
                   {" "}
                   <Button size='md' color='blue.500'>
                     Enter Town
+                  </Button>
+                </Link>
+              )}
+
+              {isAuthenticated && (
+                <Link to='/'>
+                  {" "}
+                  <Button size='md' color='blue.500'>
+                    Profile
                   </Button>
                 </Link>
               )}
