@@ -25,7 +25,7 @@ const createTownMutation = gql`
 `;
 
 const joinTownMutation = gql`
-  mutation joinTown($input: townJoinJoinRequestInput!){
+  mutation joinTown($input: townJoinRequestInput!){
     townJoinRequest(input: $input) {
       isOK
       response {
@@ -34,6 +34,13 @@ const joinTownMutation = gql`
         providerVideoToken
         currentPlayers {
           _id
+          _userName
+          location {
+            x
+            y
+            rotation
+            moving
+          }
         }
         friendlyName
         isPubliclyListed 
@@ -66,8 +73,9 @@ const { data } = await client.mutate({
   variables: { input: payload }
 });
   
-  if (data.townJoinJoinRequest.isOK) {
-    return data.townJoinJoinRequest.response;
+  if (data.townJoinRequest.isOK) {
+    console.log("res:", data.townJoinRequest.response);
+    return data.townJoinRequest.response;
   }
   return null;
   
