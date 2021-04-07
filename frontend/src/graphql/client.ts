@@ -4,7 +4,7 @@
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost';
 
 /** Corresponds to http URL */
-const httpUrl = 'http://localhost:4000/graphql';
+const httpUrl = process.env.NODE_ENV === 'development'?'http://localhost:8081/graphql':`${process.env.REACT_APP_TOWNS_SERVICE_URL}/graphql`;
 
 const httpLink = ApolloLink.from([new HttpLink({ uri: httpUrl })]);
 
