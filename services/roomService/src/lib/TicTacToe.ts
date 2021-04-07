@@ -83,7 +83,7 @@ startGame(playerID: string): string {
 getWinner(): string {
   if (this._winningPlayer == "") {
     // gameboard was completed
-    if (this._gameBoard.isFull()) {
+    if (this.isFull()) {
       return "Draw"
     }
     else{

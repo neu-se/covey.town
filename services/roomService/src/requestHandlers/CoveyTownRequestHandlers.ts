@@ -417,7 +417,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
 
     onGameEnd(winner:string){
-      socket.emit('Game is Over');
+      socket.emit('Game is Over', winner);
     },
   };
 }
