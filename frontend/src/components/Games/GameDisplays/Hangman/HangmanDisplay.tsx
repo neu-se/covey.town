@@ -1,9 +1,9 @@
 import React from 'react'
 import HangmanLetter from "./HangmanLetter";
-import HangmanGame from "../../../../../../services/roomService/src/games/HangmanGame";
+import HangmanGame from "../../gamesService/HangmanGame";
 
 interface HangmanDisplayProps {
-  game: HangmanGame
+  game: HangmanGame;
 }
 
 export default function HangmanDisplay({game} : HangmanDisplayProps): JSX.Element {
