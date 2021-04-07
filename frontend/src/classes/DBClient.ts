@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
+import { UserStatus } from '../components/Login/testingDB';
 
 /**
  * The format of a request to add a friend in Covey.Town, as dispatched by the server middleware
@@ -24,6 +25,23 @@ export interface AddFriendResponse {
 
     /** Is this friend currently online?* */
     friendIsOnline: boolean;
+  }
+
+/**
+ * The format of a request to add a friend in Covey.Town, as dispatched by the server middleware
+ */
+ export interface GetUsersFriendRequest {
+    /** userName of the player whos friend list is being queried* */
+    userName: string;
+  }
+
+/**
+ * The format of a response to get all of a users' friends in Covey.Town, as dispatched by the server middleware
+ */
+ export interface GetUsersFriendResponse {
+
+    /** usernames of the friends that the player has in their their friend list * */
+    friendsUserNames: UserStatus[];
   }
 
 /**
@@ -101,7 +119,7 @@ export interface ResponseEnvelope<T> {
     }
   
     async searchForFriend(requestData: SearchForFriendRequest): Promise<SearchForFriendResponse> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<SearchForFriendResponse>>(`/users/${requestData.firstName}/${requestData.lastName}`, );
+        const responseWrapper = await this._axios.get<ResponseEnvelope<SearchForFriendResponse>>(`/users/${requestData.firstName}/${requestData.lastName}`, );
         return DBClient.unwrapOrThrowError(responseWrapper);
       }
   
