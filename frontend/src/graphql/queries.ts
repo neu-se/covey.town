@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { TownCreateRequest } from '../classes/TownsServiceClient';
+import { TownCreateRequest, TownJoinRequest } from '../classes/TownsServiceClient';
 import client from './client';
 
 /**
@@ -96,6 +96,32 @@ const createTownMutation = gql`
   }
 `;
 
+const joinTownMutation = gql`
+  mutation joinTown($input: townJoinRequestInput!){
+    townJoinRequest(input: $input) {
+      isOK
+      response {
+        coveyUserID
+        coveySessionToken
+        providerVideoToken
+        currentPlayers {
+          _id
+          _userName
+          location {
+            x
+            y
+            rotation
+            moving
+          }
+        }
+        friendlyName
+        isPubliclyListed 
+      }
+      message
+    } 
+  }
+`;
+
 const addFriendMutation = gql`
   mutation addFriend($input: addFriendInput!) {
     addFriend(input: $input) 
@@ -131,6 +157,18 @@ export const createTown = async (payload: TownCreateRequest): Promise<any> => {
   });
   if (data.townCreateRequest.isOK) {
     return data.townCreateRequest.response;
+  }
+  return null;
+};
+
+export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
+  const { data } = await client.mutate({
+    mutation: joinTownMutation,
+    variables: { input: payload }
+  });
+  
+  if (data.townJoinRequest.isOK) {
+    return data.townJoinRequest.response;
   }
   return null;
 };
