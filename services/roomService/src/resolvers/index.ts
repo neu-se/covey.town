@@ -80,12 +80,25 @@ export const resolvers = {
         var user = await User.findOne({ id: args.input.id});
         if (user !== undefined) {
 
-          if (args.input.userName !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, { username: args.input.userName  });
+          if (args.input.bio !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, { bio: args.input.bio  });
           }
 
-          if (args.input.email !== undefined) {
-            user = await User.findByIdAndUpdate(args.input.id, { email: args.input.email  });
+          if (args.input.location !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, { location: args.input.location  });
+          }
+
+          if (args.input.occupation !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, { occupation: args.input.occupation  });
+          }
+          if (args.input.instagramLink !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, { instagramLink: args.input.instagramLink  });
+          }
+          if (args.input.facebookLink !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, { facebookLink: args.input.facebookLink  });
+          }
+          if (args.input.linkedInLink !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, { linkedInLink: args.input.linkedInLink  });
           }
 
           if (args.input.password !== undefined) {
