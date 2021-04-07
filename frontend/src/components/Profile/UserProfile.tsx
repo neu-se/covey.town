@@ -100,10 +100,10 @@ export default function UserProfile(): JSX.Element {
         changes.pfpURL = state.pfpURL
       }
       try {
-        await db.saveUserProfile(authInfo.currentUser.userID, changes);
         assert(authInfo.currentUser);
         if(authInfo.currentUser) {
           authInfo.currentUser.profile = changes;
+          await db.saveUser(authInfo.currentUser);
           authInfo.actions.setAuthState({
             currentUser: authInfo.currentUser
           })

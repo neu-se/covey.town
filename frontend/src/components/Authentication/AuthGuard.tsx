@@ -4,7 +4,6 @@ import { AuthInfo, AuthState } from "../../CoveyTypes";
 import IDBClient from "../../services/database/IDBClient";
 import RealmDBClient from "../../services/database/RealmDBClient";
 
-
 interface AuthGuardProps {
   children: React.ReactNode
 }
@@ -34,9 +33,13 @@ export default function AuthGuard({ children }: AuthGuardProps): JSX.Element {
     if (!authState.currentUser) {
       return;
     }
-    await dbClient.saveUser(authState.currentUser);
+    const mutatedUser = authState.currentUser;
+    mutatedUser.isLoggedIn = false;
+    mutatedUser.currentTown = null;
+    await dbClient.saveUser(mutatedUser);
     await authState.currentUser.actions.logout();
-    setAuthState({ currentUser: null });
+    setAuthState({currentUser: null});
+    window.location.reload();
   }, [authState.currentUser, dbClient]);
 
   const authInfo = React.useMemo(() => {

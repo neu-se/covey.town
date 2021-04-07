@@ -206,6 +206,43 @@ async function GameController(initData: TownJoinResponse,
   return true;
 }
 
+type RoutesProps = {
+  appState: CoveyAppState,
+  page: JSX.Element
+}
+function Routes(props: RoutesProps) {
+  const { appState, page } = props;
+  // need to define user after AuthGuard
+  const user = useAuthInfo();
+  return (
+    <Switch>
+      <Route path="/login">
+        <LoginPage />
+      </Route>
+      <Route path='/signup'>
+        <SignUp />
+      </Route>
+      <Route path='/redirect'>
+        <RedirectPage />
+      </Route>
+      {!user.currentUser && <Redirect push to="/login" />}
+      <Route path='/profile'>
+        <UserProfile/>
+      </Route>
+      <Route exact path="/">
+        <CoveyAppContext.Provider value={appState}>
+          <VideoContext.Provider value={Video.instance()}>
+            <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
+              {page}
+            </NearbyPlayersContext.Provider>
+          </VideoContext.Provider>
+        </CoveyAppContext.Provider>
+      </Route>
+
+    </Switch>
+  );
+};
+
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
   const [friendRequestSocket, setFriendRequestSocket] = useState<Socket>();
@@ -237,42 +274,12 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
 
-  const Routes: React.FC = () => {
-    // need to define user after AuthGuard
-    const user = useAuthInfo();
-    return (
-      <Switch>
-        <Route path="/login">
-          <LoginPage />
-        </Route>
-        <Route path='/signup'>
-          <SignUp />
-        </Route>
-        <Route path='/redirect'>
-          <RedirectPage />
-        </Route>
-        {!user.currentUser && <Redirect push to="/login" />}
-        <Route path='/profile'>
-          <UserProfile/>
-        </Route>
-        <Route exact path="/">
-          <CoveyAppContext.Provider value={appState}>
-            <VideoContext.Provider value={Video.instance()}>
-              <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
-                {page}
-              </NearbyPlayersContext.Provider>
-            </VideoContext.Provider>
-          </CoveyAppContext.Provider>
-        </Route>
 
-      </Switch>
-    );
-  };
   return (
     <BrowserRouter>
         <AuthGuard>
           <FriendRequestSocketContext.Provider value={ friendRequestSocketState }>
-            <Routes />
+            <Routes appState={appState} page={page} />
           </FriendRequestSocketContext.Provider>
         </AuthGuard>
     </BrowserRouter>
@@ -280,6 +287,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
 
   );
 }
+
 
 function EmbeddedTwilioAppWrapper() {
   const { error, setError } = useAppState();

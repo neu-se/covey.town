@@ -101,8 +101,9 @@ export default class RealmAuth implements IAuth {
         const { idToken } = googleAuthInfo;
         const realmUser = await this._realmApp.loginWithGoogle(idToken);
         const dbCoveyUser = await this._realmDBClient.getUser(realmUser.id);
-
+        console.log(dbCoveyUser);
         if(!dbCoveyUser) {
+            console.log("you retard");
             const axiosClient = axios.create();
             const userInfo: GoogleUserInfo = (await axiosClient.get('https://openidconnect.googleapis.com/v1/userinfo',{headers:{'Authorization':`Bearer ${googleAuthInfo.token}`}})).data;
             
@@ -124,6 +125,7 @@ export default class RealmAuth implements IAuth {
             setAuthState({
                 currentUser: starterCoveyUser
             });
+            await this._realmDBClient.saveUser(starterCoveyUser);
             return starterCoveyUser;
         }
         const coveyUser: CoveyUser = {

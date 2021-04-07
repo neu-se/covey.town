@@ -5,6 +5,8 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import MongoDBClient from '../services/MongoDBClient';
+import IDBClient from '../services/IDBClient';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -16,6 +18,7 @@ export default class CoveyTownController {
   get capacity(): number {
     return this._capacity;
   }
+
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
@@ -70,12 +73,15 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
+  private _dbClient;
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    this._dbClient = MongoDBClient.getInstance();
   }
 
   /**
@@ -95,6 +101,15 @@ export default class CoveyTownController {
 
     // Notify other players that this player has joined
     this._listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
+
+    // (await this._dbClient).saveTown({
+    //   coveyTownID: this._coveyTownID,
+    //   capacity: this._capacity,
+    //   occupancy: this.occupancy,
+    //   friendlyName: this._friendlyName,
+    //   players: [],
+    //   isPubliclyListed: this._isPubliclyListed,
+    // });
 
     return theSession;
   }
