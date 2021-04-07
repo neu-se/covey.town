@@ -112,7 +112,7 @@ export const searchUserByUserName = async (userName: string): Promise<any> => {
     query: searchUserByUserNameQuery,
     variables: { userName },
   });
-  return data.searchUser;
+  return data.searchUserByUserName;
 } 
 
 export const searchUserByEmail = async (email: string): Promise<any> => {
