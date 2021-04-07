@@ -1,6 +1,6 @@
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 import IGame from './IGame';
-import {HangmanPlayer1Move, HangmanPlayer2Move, TicMove, TTLPlayer1Move, TTLPlayer2Move} from '../client/Types';
+import { HangmanPlayer1Move, HangmanPlayer2Move, TicMove, TTLPlayer1Move, TTLPlayer2Move } from '../client/Types';
 
 export default class TicTacToeGame implements IGame {
   private _id: string;
