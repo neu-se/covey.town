@@ -49,16 +49,15 @@ export default class HangmanGame implements IGame {
     return twoContainsOne && oneContainsTwo;
   }
 
-
-  initializeGame(_initialGameData?: string): string {
+  initializeGame(initialGameData?: string): string {
     return 'Choose a letter!';
   }
 
-  // splitFinalWord(splitWord:string[]) : string[] {
-  //     let splitStringNoDupes = []
-  //     this.splitWord.forEach((item, index) => { if (splitWord.indexOf(item) == index) splitStringNoDupes.push(item) });
-  //     return splitStringNoDupes;
-  // }
+  splitFinalWord(splitWord:string[]) : string[] {
+    const splitStringNoDupes: string[] = [];
+    this.splitWord.forEach((item, index) => { if (splitWord.indexOf(item) === index) splitStringNoDupes.push(item); });
+    return splitStringNoDupes;
+  }
 
   limbToString(limb : Limb): string {
     if (limb === Limb.Head) { return 'Head';}
@@ -77,7 +76,7 @@ export default class HangmanGame implements IGame {
     if (this.alreadyGuessed.find(e => e === this.finalWord)) {
       this.alreadyGuessed.push(move.letter);
       // this.splitWord.forEach((letter, index) => { if (letter === move.letter) this.splitWord.splice(index, 1)});
-      this.splitWord.filter(letter => {letter !== move.letter;});
+      this.splitWord = this.splitWord.filter(letter => letter !== move.letter);
       this.isGameOver();
       return 'Good job - you got a letter!';
     }
@@ -114,5 +113,4 @@ export default class HangmanGame implements IGame {
       throw new Error('Game is already full');
     }
   }
-
 }

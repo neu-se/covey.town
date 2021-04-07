@@ -3,7 +3,7 @@ import {io, Socket} from 'socket.io-client';
 import {Socket as ServerSocket} from 'socket.io';
 
 import {AddressInfo} from 'net';
-import http from 'http';
+import * as http from 'http';
 import { UserLocation } from '../CoveyTypes';
 
 export type RemoteServerPlayer = {
