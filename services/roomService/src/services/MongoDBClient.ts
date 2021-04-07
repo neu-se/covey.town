@@ -1,6 +1,10 @@
 import MongoPackage from 'mongodb';
+import dotenv from 'dotenv';
+import assert from 'assert';
 import { CoveyTown } from '../CoveyTypes';
 import IDBClient from './IDBClient';
+
+dotenv.config();
 
 export default class MongoDBClient implements IDBClient {
   private static _instance: MongoDBClient;
@@ -11,7 +15,7 @@ export default class MongoDBClient implements IDBClient {
 
   private static _dbClient: MongoPackage.MongoClient;
 
-  private static _uri = 'mongodb+srv://bl2pro:<password>@cluster0.bdlne.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+  private static _uri = MongoDBClient.getURI();
 
   private constructor() {
     
@@ -19,8 +23,14 @@ export default class MongoDBClient implements IDBClient {
     this._coveyTownCollectionName = 'coveytowns';
   }
 
+  private static getURI(): string {
+    const pass = process.env.MONGODB_ATLAS_PASSWORD;
+    assert(pass);
+    const uri = `mongodb+srv://bl2pro:${pass}@cluster0.bdlne.mongodb.net/coveytowndb?retryWrites=true&w=majority`;
+    return uri;
+  }
+
   static async getInstance(): Promise<MongoDBClient> {
-    
     if (this._instance === undefined) {
       MongoDBClient._instance = new MongoDBClient(); 
       MongoDBClient._dbClient = await MongoPackage.MongoClient.connect(this._uri, { useNewUrlParser: true, useUnifiedTopology: true });
