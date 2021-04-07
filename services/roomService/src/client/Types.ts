@@ -25,7 +25,7 @@ export interface GameUpdateRequest {
 
 export type TicMove = { x: number, y: number, player: string};
 export type TTLPlayer2Move = { guess: number };
-export type TTLPlayer1Move = { guessCorrect: boolean, correctAnswer?: string };
+export type TTLPlayer1Move = { guessCorrect: boolean };
 export type HangmanPlayer2Move = { letter: string };
 export type HangmanPlayer1Move = { correct: boolean, finalWord?: string, limbLost: Limb };
 

@@ -85,13 +85,44 @@ export default class HangmanGame implements IGame {
     this.isGameOver;
     return this.limbToString(limb);
 
-  }
+    initializeGame(_initialGameData?: string): string {
+        return `Choose a letter!`;
+    }
 
+    // splitFinalWord(splitWord:string[]) : string[] {
+    //     let splitStringNoDupes = []
+    //     this.splitWord.forEach((item, index) => { if (splitWord.indexOf(item) == index) splitStringNoDupes.push(item) });
+    //     return splitStringNoDupes;
+    // }
 
-  isGameOver(): boolean {
-    if (this.limbList.length === 0) {
-      this.finishGame(this.player1ID);
-      return true;
+    limbToString(limb : Limb): string {
+        if (limb == Limb.Head) { return 'Head';} 
+        else if (limb == Limb.Back) {return 'Back';}
+        else if (limb == Limb.LeftArm) {return 'LeftArm';}
+        else if (limb == Limb.RightArm) {return 'RightArm';}
+        else if (limb == Limb.LeftLeg) {return 'LeftLeg';}
+        else if (limb == Limb.RightLeg) {return 'RightLeg';}
+        return '';
+    }
+
+    move(move : HangmanPlayer2Move): string {
+        if (this.alreadyGuessed.find(e => e === move.letter)) {
+            return `You already guessed that letter - make another guess!`;
+        }
+        if (this.alreadyGuessed.find(e => e === this.finalWord)) {
+            this.alreadyGuessed.push(move.letter);
+            // this.splitWord.forEach((letter, index) => { if (letter === move.letter) this.splitWord.splice(index, 1)});
+            this.splitWord.filter(letter => {letter !== move.letter});
+            this.isGameOver();
+            return `Good job - you got a letter!`;
+        } else {
+            this.alreadyGuessed.push(move.letter);
+            let limb = this.limbList.pop();
+            this.isGameOver;
+            if (limb != undefined) {
+                return this.limbToString(limb);
+            } else {return '';}
+        }
     }
     if (this.splitWord.length === 0) {
       this.finishGame(this.player2ID);

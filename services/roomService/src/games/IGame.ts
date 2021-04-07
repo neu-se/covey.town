@@ -10,11 +10,14 @@ export default interface IGame {
 
   player2ID : string;
 
-  initializeGame(): void;
+
+  initializeGame(initialGameData?:string): string;
 
   move(move: TicMove | TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move) : void;
 
   isGameOver() : boolean;
 
-  finishGame(gameState : string, player1ID: string, player2ID: string): void;
+  finishGame(winningPlayerID: string): string;
+
+  playerJoin(player2ID: string) : void;
 }
