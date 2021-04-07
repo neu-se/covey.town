@@ -1,4 +1,5 @@
-import React from "react";
+import React , {useState, useEffect} from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import "../Styles/Profile.css";
 import { withRouter, Link } from "react-router-dom";
 import {
@@ -9,15 +10,49 @@ import {
   Text,
   Stack,
   Divider,
-  Grid,
-  GridItem,
+  Spacer,
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
+import { findAllUserProfiles, searchUserByEmail, User } from '../../graphql/queries';
 
 
 function ProfileComponent(): JSX.Element {
+  const { user, isLoading } = useAuth0();
+  const [userName, setUserName] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [facebookLink,setFacebookLink] = useState<string>("");
+  const [instagramLink, setInstagramLink] = useState<string>("");
+  const [linkedInLink, setLinkedInLink] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [occupation, setOccupation] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    const findUser = async () => {
+      const userInfo = await searchUserByEmail(user.email);
+      setUserName(userInfo.username);
+      setBio(userInfo.bio);
+      setFacebookLink(userInfo.facebookLink);
+      setInstagramLink(userInfo.instagramLink);
+      setLinkedInLink(userInfo.linkedInLink);
+      setLocation(userInfo.location);
+      setOccupation(userInfo.occupation);
+    }
+    const findAllUsers = async () => {
+      const userProfiles = await findAllUserProfiles();
+      setUsers([...userProfiles]);
+    }
+    findUser();
+    findAllUsers();
+  });
+
+
+  if (isLoading) {
+    return <div> Loading... </div>
+  }
+
   return (
-    <Flex width='full' align='center' justifyContent='center'>
+   <Flex width='full' align='center' justifyContent='center'>
       <Box
         p={2}
         maxWidth='2000px'
@@ -30,13 +65,18 @@ function ProfileComponent(): JSX.Element {
           <Box w='35%' h='60vh' bg='blue.500' boxShadow='lg'>
             <Heading size='md' paddingTop='20px'>
               {" "}
-              <Text color='white'>Hello User</Text>
+              <Text color='white'>HELLO {userName.toUpperCase()}</Text>
             </Heading>
             <Flex width='full' align='center' justifyContent='center'>
               <Box mt={90}>
-                <Text color='white'>John Doe</Text>
-                <Text color='white'>username: john_doe</Text>
-                <Text color='white'>DOB: December 18th</Text>
+                <Text color='white'>{userName.toUpperCase()}</Text>
+                <Text color='white'>email: {user.email}</Text>
+                <Text color='white'>BIO: {bio}</Text>
+                <Text color='white'>LinkedIn link: {linkedInLink}</Text>
+                <Text color='white'>Instagram link: {instagramLink}</Text>
+                <Text color='white'>facebook link: {facebookLink}</Text>
+                <Text color='white'>Location: {location}</Text>
+                <Text color='white'>Occupation: {occupation}</Text>
                 <Link to='/friendsPage'>
                   {" "}
                   <Button
@@ -66,49 +106,27 @@ function ProfileComponent(): JSX.Element {
           <Box w='65%' h='60vh' bg='white'>
             <Flex width='full' align='center' justifyContent='center'>
               <Box mt={5}>
-                <FriendSearch />
-                <Text className='bold-text'> Information</Text>
-                <Divider orientation='horizontal' w='50vw' />
-                <Grid templateColumns='repeat(5, 1fr)' gap={4}>
-                  <GridItem colSpan={2} h='10' bg='white'>
-                    <Text className='bold-text'> Email</Text>
-                    <Text> jdoe@gmail.com</Text>
-                  </GridItem>
-                  <GridItem colStart={4} colEnd={6} h='10' bg='white'>
-                    <Text className='bold-text'> First Name</Text>
-                    <Text> John</Text>
-                  </GridItem>
-                </Grid>
-                <GridItem templateColumns='repeat(5, 1fr)' gap={4} mt={10}>
-                  <GridItem colSpan={2} h='10' bg='white'>
-                    <Text className='bold-text'> Username</Text>
-                    <Text> jdoe-username</Text>
-                  </GridItem>
-                  <GridItem colStart={4} colEnd={6} h='10' bg='white'>
-                    <Text className='bold-text'> Last Name</Text>
-                    <Text> Doe</Text>
-                  </GridItem>
-                </GridItem>
-                <Text mt={15} className='bold-text'>
-                  {" "}
-                  Friend List
-                </Text>
-                <Divider orientation='horizontal' w='50vw' />
-                <Grid templateColumns='repeat(5, 1fr)' gap={4}>
-                  <GridItem colSpan={2} h='10' bg='white'>
-                    <Text className='bold-text'> Friendlist</Text>
-
-                    <Text>Billie James</Text>
-                    <Text>Haley Scott</Text>
-                    <Text>Luke Millers</Text>
-                    <Text>Roger Smith</Text>
-                  </GridItem>
-
-                  <GridItem colStart={4} colEnd={6} h='10' bg='white'>
-                    <Text className='bold-text'> Recently added</Text>
-                    <Text> John Smith</Text>
-                  </GridItem>
-                </Grid>
+              <FriendSearch />
+              <Divider orientation='horizontal' w='50vw' />
+              <Box w='100%'>
+              <Text className='bold-text' color='blue.500' fontSize="lg"> Covey Town Users </Text>
+              <Box h='50vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
+                <Flex align='center' justifyContent='center'>
+                  <Box mt={5} w='90%'>
+                      {users.map((userProfile) => (
+                        <Box bg="white" p={5} color="black" key={userProfile.id} borderWidth="1px" borderRadius="lg" alignItems="center">
+                          <Flex>
+                          <Button size='md'alignItems="center">
+                          <Text textAlign='center'>{userProfile.username}</Text>
+                          </Button>
+                          <Spacer/>
+                          </Flex>
+                        </Box>
+                      ))}
+                  </Box>
+                </Flex> 
+              </Box>
+              </Box>
               </Box>
             </Flex>
           </Box>
