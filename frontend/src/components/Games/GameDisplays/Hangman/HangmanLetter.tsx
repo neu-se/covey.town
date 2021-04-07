@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Button} from "@chakra-ui/react";
-import HangmanGame from "../../../../../../services/roomService/src/games/HangmanGame";
+import HangmanGame from "../../gamesService/HangmanGame";
 
 interface HangmanLetterProps {
   game: HangmanGame;
