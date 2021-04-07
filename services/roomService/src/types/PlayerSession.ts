@@ -15,6 +15,8 @@ export default class PlayerSession {
   /** The secret token that allows this client to access our video resources for this town * */
   private _videoToken?: string;
 
+  /** The list of all messages received by this player */
+
   constructor(player: Player) {
     this._player = player;
     // Session tokens are randomly generated strings

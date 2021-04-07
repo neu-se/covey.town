@@ -1,5 +1,7 @@
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
+import PrivateChatMessage from '../types/PrivateChatMessage';
+import GlobalChatMessage from '../types/GlobalChatMessage';
 
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
@@ -65,6 +67,24 @@ export default class CoveyTownsStore {
     if (existingTown && passwordMatches(coveyTownPassword, existingTown.townUpdatePassword)) {
       this._towns = this._towns.filter(town => town !== existingTown);
       existingTown.disconnectAllPlayers();
+      return true;
+    }
+    return false;
+  }
+
+  sendPrivateMessage(coveyTownID: string, coveyTownPassword: string, message: PrivateChatMessage): boolean {
+    const currentTown = this.getControllerForTown(coveyTownID);
+    if (currentTown && passwordMatches(coveyTownPassword, currentTown.townUpdatePassword)) {
+      currentTown.sendPrivatePlayerMessage(message);
+      return true;
+    }
+    return false;
+  }
+
+  sendGlobalMessage(coveyTownID: string, coveyTownPassword: string, message: GlobalChatMessage): boolean {
+    const currentTown = this.getControllerForTown(coveyTownID);
+    if (currentTown && passwordMatches(coveyTownPassword, currentTown.townUpdatePassword)) {
+      currentTown.sendGlobalPlayerMessage(message);
       return true;
     }
     return false;
