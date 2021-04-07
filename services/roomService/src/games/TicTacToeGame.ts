@@ -23,16 +23,23 @@ export default class TicTacToeGame implements IGame {
 
   player2ID: string;
 
-  finishGame(gameState: string, player1ID: string, player2ID: string): void {
+
+  finishGame(winningPlayerID: string): string {
+    return '';
   }
 
-  initializeGame(): void {
+  initializeGame(initialGameData?: string): string {
+    return '';
   }
 
   isGameOver(): boolean {
     return false;
   }
 
-  move(move: TicMove | TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move): void {
+
+  move(move: TicMove ): void {
+  }
+
+  playerJoin(player2ID: string): void {
   }
 }
