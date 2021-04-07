@@ -48,6 +48,11 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
     this.load.atlas('misa', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
     this.load.atlas('john', '/assets/sprites/john.png', '/assets/sprites/john.json');
+    this.load.atlas('adam', '/assets/sprites/adam.png', '/assets/sprites/adam.json');
+    this.load.atlas('bella', '/assets/sprites/bella.png', '/assets/sprites/bella.json');
+    this.load.atlas('claire', '/assets/sprites/claire.png', '/assets/sprites/claire.json');
+    this.load.atlas('devon', '/assets/sprites/devon.png', '/assets/sprites/devon.json');
+    this.load.atlas('ed', '/assets/sprites/ed.png', '/assets/sprites/ed.json');
   }
 
   updatePlayersLocations(players: Player[]) {
@@ -357,6 +362,8 @@ class CoveyGameScene extends Phaser.Scene {
     // animation manager so any sprite can access them.
     const { anims } = this;
 
+
+    // Iterates over all the available avatars and creates their animations from their respective sprite
     this.avatars.forEach( value => {
 
       anims.create({
