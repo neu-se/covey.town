@@ -119,17 +119,16 @@ function ProfileComponent(): JSX.Element {
                         <Box bg="white" p={5} color="black" key={userProfile.id} borderWidth="1px" borderRadius="lg" alignItems="center">
                           <Flex>
                           <Button size='md'alignItems="center">
-                    <Text textAlign='center'>{userProfile.username}</Text>
-                  </Button>
-                        
-                              <Spacer/>
+                          <Text textAlign='center'>{userProfile.username}</Text>
+                          </Button>
+                          <Spacer/>
                           </Flex>
                         </Box>
                       ))}
                   </Box>
                 </Flex> 
               </Box>
-            </Box>
+              </Box>
               </Box>
             </Flex>
           </Box>
