@@ -7,6 +7,7 @@ import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
 import PrivateChatMessage from '../types/PrivateChatMessage';
 import GlobalChatMessage from '../types/GlobalChatMessage';
+import AChatMessage from '../types/AChatMessage';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -72,6 +73,9 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
+
+  /** The list of AChatMessages that are sent between players in this town * */
+  private _messages: AChatMessage[] = [];
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
@@ -157,11 +161,16 @@ export default class CoveyTownController {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
   }
 
-  sendPrivatePlayerMessage(sendingPlayer: Player, receivingPlayer: Player, message: PrivateChatMessage): void {
-    this._listeners.forEach((listener) => listener.onPrivateMessage(sendingPlayer, receivingPlayer, message));
+  sendPrivatePlayerMessage(message: PrivateChatMessage): void {
+    this._messages.push(message);
+    this._listeners.forEach((listener) => listener.onPrivateMessage(message));
   }
 
-  sendGlobalPlayerMessage(player: Player, message: GlobalChatMessage): void {
-    this._listeners.forEach((listener) => listener.onGlobalMessage(player, message));
+  sendGlobalPlayerMessage(message: GlobalChatMessage): void {
+    this._messages.push(message);
+
+    message.sender.sendGlobal(message);
+
+    this._listeners.forEach((listener) => listener.onGlobalMessage(message));
   }
 }

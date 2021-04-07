@@ -22,12 +22,12 @@ function mockCoveyListener(): CoveyTownListener {
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
     },
-    onGlobalMessage(sender: Player, message: GlobalChatMessage) {
-      mockCoveyListenerOtherFns(sender, message);
+    onGlobalMessage(message: GlobalChatMessage) {
+      mockCoveyListenerOtherFns(message);
 
     },
-    onPrivateMessage(sender: Player, receiver: Player, message: PrivateChatMessage) {
-      mockCoveyListenerOtherFns(sender, receiver, message);
+    onPrivateMessage(message: PrivateChatMessage) {
+      mockCoveyListenerOtherFns(message);
 
     },
   };

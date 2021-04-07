@@ -1,38 +1,31 @@
 /* eslint-disable */
-import Player from "./Player";
+import PlayerSession from "./PlayerSession";
 /**
  * TODO:
  */
 export default abstract class AChatMessage{
 
     private _message: string
-    private readonly _sender: Player
-    private readonly _townID: string
+    private readonly _sender: PlayerSession
 
-    constructor(message: string, sender: Player, townID: string){
+    constructor(message: string, sender: PlayerSession){
         this._message = message;
         this._sender = sender;
-        this._townID = townID;
+
     }
-/*
-    get _message(): string {
+
+    
+
+    public get message(): string {
         return this._message;
       }
 
-    set _message(message: string): void {
+    public set message(message: string) {
         this._message = message;
     }
 
-    get _userName(): string {
-        return this._userName;
-      }
-
-    get _senderID(): string {
-        return this._senderID;
+    public get sender(): PlayerSession {
+        return this._sender;
     }
-
-    get _townID(): string {
-        return this._townID;
-    }
-    */
+    
 }
