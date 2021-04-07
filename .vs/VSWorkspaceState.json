@@ -7,10 +7,11 @@
     "\\frontend\\public\\assets\\atlas",
     "\\frontend\\public\\assets\\atlas\\tuxemon-misa",
     "\\frontend\\src",
+    "\\frontend\\src\\classes",
     "\\frontend\\src\\components",
     "\\frontend\\src\\components\\world",
     "\\frontend\\src\\contexts"
   ],
-  "SelectedNode": "\\frontend\\public\\assets\\atlas\\atlas.json",
+  "SelectedNode": "\\frontend\\src\\classes\\Player.ts",
   "PreviewInSolutionExplorer": false
 }
