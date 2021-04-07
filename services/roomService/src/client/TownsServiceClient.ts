@@ -14,7 +14,7 @@ export interface TownJoinRequest {
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }
-
+   
 /**
  * The format of a response to join a Town in Covey.Town, as returned by the handler to the server
  * middleware
