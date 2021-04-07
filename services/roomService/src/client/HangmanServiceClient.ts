@@ -2,11 +2,11 @@ import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import assert from 'assert';
 import {
   ResponseEnvelope,
-  HangmanGameCreateRequest,
-  HangmanGameCreateResponse,
-  HangmanGameDeleteRequest, HangmanGameJoinRequest, HangmanGameJoinResponse, HangmanGameListResponse,
-  HangmanGameUpdateRequest,
-} from './HangmanTypes';
+  GameCreateRequest,
+  GameCreateResponse,
+  GameDeleteRequest, GameJoinRequest, GameJoinResponse, GameListResponse,
+  GameUpdateRequest,
+} from './Types';
 
 
 export default class HangmanServiceClient {
@@ -28,30 +28,30 @@ export default class HangmanServiceClient {
   }
 
 
-  async createHangmanGame(requestData: HangmanGameCreateRequest): Promise<HangmanGameCreateResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<HangmanGameCreateResponse>>('/hangman', requestData);
+  async createHangmanGame(requestData: GameCreateRequest): Promise<GameCreateResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<GameCreateResponse>>('/hangman', requestData);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
 
-  async updateHangmanGame(requestData: HangmanGameUpdateRequest): Promise<void> {
+  async updateHangmanGame(requestData: GameUpdateRequest): Promise<void> {
     const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/hangman-games/${requestData.gameID}`, requestData);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
 
-  async deleteHangmanGame(requestData: HangmanGameDeleteRequest): Promise<void> {
+  async deleteHangmanGame(requestData: GameDeleteRequest): Promise<void> {
     const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/hangman-games/${requestData.gameID}`);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
 
-  async listHangmanGames(): Promise<HangmanGameListResponse> {
-    const responseWrapper = await this._axios.get<ResponseEnvelope<HangmanGameListResponse>>('/hangman-games');
+  async listHangmanGames(): Promise<GameListResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/hangman-games');
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async joinHangmanGame(requestData: HangmanGameJoinRequest): Promise<HangmanGameJoinResponse> {
+  async joinHangmanGame(requestData: GameJoinRequest): Promise<GameJoinResponse> {
     const responseWrapper = await this._axios.patch(`/hangman-games/${requestData.gameID}`, requestData);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper);
   }
