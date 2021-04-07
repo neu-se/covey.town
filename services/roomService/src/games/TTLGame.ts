@@ -1,5 +1,4 @@
-import TTLGameServiceClient from "../client/TTLGameServiceClient";
-import { TicMove, TTLPlayer1Move, TTLPlayer2Move, HangmanPlayer1Move, HangmanPlayer2Move, TTLChoices } from "../client/Types";
+import { TTLPlayer2Move, TTLChoices } from "../client/Types";
 import IGame from "./IGame";
 
 export default class TTLGame implements IGame {
