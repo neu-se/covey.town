@@ -127,16 +127,16 @@ const ChatBox = (): JSX.Element => {
   useEffect(() => {
     socket?.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
       toast({
-        title: `${serverMessage._senderName} mentioned you !`,     
+        title: `${serverMessage._senderName} mentioned you !`,
         status: 'success',
       });
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-  
 
-  
+
+
 const getDisplayTextFromMention = (text:string) => {
   let displayText:string = _clone(text)
   // eslint-disable-next-line no-useless-escape
@@ -183,7 +183,7 @@ const getDisplayTextFromMention = (text:string) => {
     });
 
     const displayText = getDisplayTextFromMention(text);
-    
+
 
     emitMessage(new PlayerMessage(
       '',
@@ -247,7 +247,7 @@ const getDisplayTextFromMention = (text:string) => {
                          onChange={(e) => setNewText(e.target.value)}
                          onFocus={onFocus}
                          onBlur={onBlur}
-                      
+
           >
             <Mention
 
