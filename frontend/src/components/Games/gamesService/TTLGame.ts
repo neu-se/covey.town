@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { TTLPlayer2Move, TTLChoices } from '../client/Types';
+import { TTLPlayer2Move, TTLChoices } from '../gamesClient/Types';
 import IGame from './IGame';
 
 export default class TTLGame implements IGame {
