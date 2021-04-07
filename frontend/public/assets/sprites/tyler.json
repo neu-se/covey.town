@@ -1,6 +1,6 @@
 {"frames": {
 
-"adam-back-walk.000":
+"tyler-back-walk.000":
 {
 	"frame": {"x":0,"y":96,"w":32,"h":32},
 	"rotated": false,
@@ -8,7 +8,7 @@
 	"spriteSourceSize": {"x":0,"y":23,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-back-walk.001":
+"tyler-back-walk.001":
 {
 	"frame": {"x":32,"y":96,"w":32,"h":32},
 	"rotated": false,
@@ -16,7 +16,7 @@
 	"spriteSourceSize": {"x":0,"y":23,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-back-walk.002":
+"tyler-back-walk.002":
 {
 	"frame": {"x":64,"y":96,"w":32,"h":32},
 	"rotated": false,
@@ -24,7 +24,7 @@
 	"spriteSourceSize": {"x":0,"y":23,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-back-walk.003":
+"tyler-back-walk.003":
 {
 	"frame": {"x":32,"y":96,"w":32,"h":32},
 	"rotated": false,
@@ -32,7 +32,7 @@
 	"spriteSourceSize": {"x":0,"y":23,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-back":
+"tyler-back":
 {
 	"frame": {"x":32,"y":96,"w":32,"h":32},
 	"rotated": false,
@@ -40,7 +40,7 @@
 	"spriteSourceSize": {"x":0,"y":23,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-front-walk.000":
+"tyler-front-walk.000":
 {
 	"frame": {"x":0,"y":0,"w":32,"h":32},
 	"rotated": false,
@@ -48,7 +48,7 @@
 	"spriteSourceSize": {"x":1,"y":21,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-front-walk.001":
+"tyler-front-walk.001":
 {
 	"frame": {"x":32,"y":0,"w":32,"h":32},
 	"rotated": false,
@@ -56,7 +56,7 @@
 	"spriteSourceSize": {"x":1,"y":21,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-front-walk.002":
+"tyler-front-walk.002":
 {
 	"frame": {"x":64,"y":0,"w":32,"h":32},
 	"rotated": false,
@@ -64,7 +64,7 @@
 	"spriteSourceSize": {"x":1,"y":21,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-front-walk.003":
+"tyler-front-walk.003":
 	{
 		"frame": {"x": 32,"y": 0,"w": 32,"h": 32},
 		"rotated": false,
@@ -72,7 +72,7 @@
 		"spriteSourceSize": {"x": 1,"y": 21,"w": 32,"h": 32},
 		"sourceSize": {"w": 32,"h": 32}
 	},
-"adam-front":
+"tyler-front":
 {
 	"frame": {"x":32,"y":0,"w":32,"h":32},
 	"rotated": false,
@@ -80,7 +80,7 @@
 	"spriteSourceSize": {"x":1,"y":21,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-left-walk.000":
+"tyler-left-walk.000":
 {
 	"frame": {"x":0,"y":32,"w":32,"h":32},
 	"rotated": false,
@@ -88,7 +88,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-left-walk.001":
+"tyler-left-walk.001":
 {
 	"frame": {"x":32,"y":32,"w":32,"h":32},
 	"rotated": false,
@@ -96,7 +96,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-left-walk.002":
+"tyler-left-walk.002":
 {
 	"frame": {"x":64,"y":32,"w":32,"h":32},
 	"rotated": false,
@@ -104,7 +104,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-left-walk.003":
+"tyler-left-walk.003":
 {
 	"frame": {"x":32,"y":32,"w":32,"h":32},
 	"rotated": false,
@@ -112,7 +112,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-left":
+"tyler-left":
 {
 	"frame": {"x":32,"y":32,"w":32,"h":32},
 	"rotated": false,
@@ -120,7 +120,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-right-walk.000":
+"tyler-right-walk.000":
 {
 	"frame": {"x":0,"y":64,"w":32,"h":32},
 	"rotated": false,
@@ -128,7 +128,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-right-walk.001":
+"tyler-right-walk.001":
 {
 	"frame": {"x":32,"y":64,"w":32,"h":32},
 	"rotated": false,
@@ -136,7 +136,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-right-walk.002":
+"tyler-right-walk.002":
 {
 	"frame": {"x":64,"y":64,"w":32,"h":32},
 	"rotated": false,
@@ -144,7 +144,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-right-walk.003":
+"tyler-right-walk.003":
 {
 	"frame": {"x":32,"y":64,"w":32,"h":32},
 	"rotated": false,
@@ -152,7 +152,7 @@
 	"spriteSourceSize": {"x":1,"y":25,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32}
 },
-"adam-right":
+"tyler-right":
 {
 	"frame": {"x":32,"y":64,"w":32,"h":32},
 	"rotated": false,
@@ -163,7 +163,7 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "adam.png",
+	"image": "tyler.png",
 	"format": "RGBA8888",
 	"size": {"w":96,"h":128},
 	"scale": "1",

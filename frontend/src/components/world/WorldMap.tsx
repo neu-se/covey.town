@@ -34,7 +34,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  private avatars = ['adam','bella','claire','devon','ed','john','misa']
+  private avatars = ['tyler','bella','claire','devon','ed','john','misa']
 
   constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
     super('PlayGame');
@@ -48,11 +48,12 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
     this.load.atlas('misa', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
     this.load.atlas('john', '/assets/sprites/john.png', '/assets/sprites/john.json');
-    this.load.atlas('adam', '/assets/sprites/adam.png', '/assets/sprites/adam.json');
+    
     this.load.atlas('bella', '/assets/sprites/bella.png', '/assets/sprites/bella.json');
     this.load.atlas('claire', '/assets/sprites/claire.png', '/assets/sprites/claire.json');
     this.load.atlas('devon', '/assets/sprites/devon.png', '/assets/sprites/devon.json');
     this.load.atlas('ed', '/assets/sprites/ed.png', '/assets/sprites/ed.json');
+    this.load.atlas('tyler', '/assets/sprites/tyler.png', '/assets/sprites/tyler.json');
   }
 
   updatePlayersLocations(players: Player[]) {
