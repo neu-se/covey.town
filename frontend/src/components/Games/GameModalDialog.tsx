@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import GameController from "../../../../services/roomService/src/games/GameController";
+import GameController from "./gamesService/GameController";
 import GameContainer from "./GameContainer";
 
 interface GameModalDialogProps {

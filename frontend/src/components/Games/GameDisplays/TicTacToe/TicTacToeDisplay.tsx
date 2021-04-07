@@ -1,6 +1,6 @@
 import React from 'react'
 import TicTacToeBox from "./TicTacToeBox";
-import TicTacToeGame from "../../../../../../services/roomService/src/games/TicTacToeGame";
+import TicTacToeGame from "../../gamesService/TicTacToeGame";
 
 interface TicTacToeDisplayProps {
   game: TicTacToeGame
