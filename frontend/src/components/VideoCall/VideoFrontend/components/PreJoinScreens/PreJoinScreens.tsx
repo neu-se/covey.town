@@ -2,7 +2,6 @@ import { Heading, Text } from '@chakra-ui/react';
 import React from 'react';
 import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import TownSelection from '../../../../Login/TownSelection';
-import UserProfiles from '../../../../UserProfiles/UserProfiles';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen';
 
@@ -15,7 +14,6 @@ export default function PreJoinScreens(props: {
       <Heading as='h2' size='xl'>
         Welcome to Covey.Town!
       </Heading>
-      <UserProfiles />
       <Text p='4'>
         Covey.Town is a social platform that integrates a 2D game-like metaphor with video chat. To
         get started, setup your camera and microphone, choose a username, and then create a new town
