@@ -46,7 +46,7 @@ const findAllUsers = gql`
 `;
 
 const searchUserByUserNameQuery = gql`
-  query searchUserByUserName ($username: userName) {
+  query searchUserByUserName ($username: String!) {
     searchUserByUserName (username: $username){
       id
       username
@@ -107,20 +107,19 @@ export const findAllUserProfiles = async (): Promise<any> => {
   return data.users;
 };
 
-/* export const searchUserByUserName = async (userName: string): Promise<any> => {
+export const searchUserByUserName = async (userName: string): Promise<any> => {
   const { data } = await client.query({
     query: searchUserByUserNameQuery,
     variables: { userName },
   });
   return data.searchUser;
-} */
+} 
 
 export const searchUserByEmail = async (email: string): Promise<any> => {
   const { data } = await client.query({
     query: searchUserByEmailQuery,
     variables: { email },
   });
-  console.log(data);
   return data.searchUserByEmail;
 }
 

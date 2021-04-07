@@ -10,8 +10,6 @@ import {
   Text,
   Stack,
   Divider,
-  Grid,
-  GridItem,
   Spacer,
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
