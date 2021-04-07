@@ -3,11 +3,12 @@ import { gql } from 'apollo-server-express';
 /**
  * Represents the schema : All the queries , mutations are defined here.
  */
-export const typeDefs = gql`
+const typeDefs = gql`
 type Query {
   users: [User!]
-  user(id: ID!): User
-  searchUser(input: searchUserInput): [User!]
+  searchUserById(id: ID!): User!
+  searchUserByUserName(username: String!): [User!]
+  searchUserByEmail(email: String!) : User!
 }
 
 type User {
@@ -60,10 +61,6 @@ input updateUserInput {
   password: String
 }
 
-input searchUserInput {
-  username: String
-}
-
 input deleteUserInput {
   email: String
 }
@@ -112,7 +109,7 @@ type TownCreateResponseEnevelope {
   message : String
 }
 
-input addFriendInput{
+input addFriendInput {
   userNameTo: String
   userNameFrom: String
 }
@@ -139,3 +136,5 @@ type Mutation {
   rejectFriend(input: addFriendInput): Boolean
 }
 `;
+
+export default typeDefs;
