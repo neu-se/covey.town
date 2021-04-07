@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import {
   ResponseEnvelope,
@@ -11,11 +11,13 @@ import {
 
 export default class HangmanServiceClient {
   private _axios: AxiosInstance;
+
   constructor(serviceURL: string) {
     this._axios = axios.create({
       baseURL: serviceURL,
     });
   }
+
   static unwrapOrThrowError<T>(response: AxiosResponse<ResponseEnvelope<T>>, ignoreResponse = false): T {
     if (response.data.isOK) {
       if (ignoreResponse) {
