@@ -6,8 +6,8 @@ import PlayerSession from './PlayerSession';
 export default class PrivateChatMessage extends AChatMessage {
   private _receiver: PlayerSession;
 
-  constructor(message: string, sender: PlayerSession, townID: string, receiver: PlayerSession) {
-    super(message, sender, townID);
+  constructor(message: string, sender: PlayerSession, receiver: PlayerSession) {
+    super(message, sender);
     this._receiver = receiver;
   }
 }
