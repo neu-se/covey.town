@@ -116,7 +116,7 @@ export default class DatabaseServiceClient {
 
 
     async userExistence(requestData: UserExistenceRequest): Promise<UserExistenceResponse> {
-      const responseWrapper = await this._axios.post<ResponseEnvelope<UserExistenceResponse>>(`/users?email=${requestData.emailID}`);
+      const responseWrapper = await this._axios.post<ResponseEnvelope<UserExistenceResponse>>(`/users/${requestData.emailID}`);
       return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
   
