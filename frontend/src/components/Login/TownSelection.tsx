@@ -41,8 +41,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [addFriendEmail, setAddFriendEmail] = useState<string>('');
   const authInfo = useAuthInfo();
   const loggedInUser = authInfo.currentUser;
+  assert(loggedInUser);
   const db = RealmDBClient.getInstance();
-  const [userName, setUserName] = useState<string>(loggedInUser?.profile.username || '');
+  const [userName, setUserName] = useState<string>(loggedInUser.profile.username || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -125,7 +126,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, coveyRoomID);
+      const initData = await Video.setup(userName, loggedInUser.userID, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -139,7 +140,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, userName, connect, toast]);
+  }, [userName, loggedInUser.userID, doLogin, toast, connect]);
 
   const fetchFriend = () => {
     if (loggedInUser) {

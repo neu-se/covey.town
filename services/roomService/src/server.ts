@@ -11,12 +11,12 @@ const server = http.createServer(app);
 
 addTownRoutes(server, app);
 
-server.listen(process.env.PORT || 8081, () => {
+server.listen(process.env.PORT || 8081, async () => {
   const address = server.address() as AddressInfo;
   // eslint-disable-next-line no-console
   console.log(`Listening on ${address.port}`);
-  if (process.env.DEMO_TOWN_ID) {
-    const newTown = CoveyTownsStore.getInstance()
-      .createTown(process.env.DEMO_TOWN_ID, false);
-  }
+  // if (process.env.DEMO_TOWN_ID) {
+  //   const newTown = (await CoveyTownsStore.getInstance())
+  //     .createTown(process.env.DEMO_TOWN_ID, false);
+  // }
 });
