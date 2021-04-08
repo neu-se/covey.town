@@ -108,7 +108,7 @@ describe('TownsServiceAPIREST', () => {
 
   describe('CoveyTownDeleteAPI', () => {
     it('Throws an error if the password is invalid', async () => {
-      const { coveyTownID } = await createTownForTesting(undefined, true);
+      const {coveyTownID} = await createTownForTesting(undefined, true);
       try {
         await apiClient.deleteTown({
           coveyTownID,
@@ -120,7 +120,7 @@ describe('TownsServiceAPIREST', () => {
       }
     });
     it('Throws an error if the townID is invalid', async () => {
-      const { townUpdatePassword } = await createTownForTesting(undefined, true);
+      const {townUpdatePassword} = await createTownForTesting(undefined, true);
       try {
         await apiClient.deleteTown({
           coveyTownID: nanoid(),
@@ -132,7 +132,7 @@ describe('TownsServiceAPIREST', () => {
       }
     });
     it('Deletes a town if given a valid password and town, no longer allowing it to be joined or listed', async () => {
-      const { coveyTownID, townUpdatePassword } = await createTownForTesting(undefined, true);
+      const {coveyTownID, townUpdatePassword} = await createTownForTesting(undefined, true);
       await apiClient.deleteTown({
         coveyTownID,
         coveyTownPassword: townUpdatePassword,

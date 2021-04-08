@@ -1,11 +1,11 @@
 import assert from 'assert';
-import {Socket} from 'socket.io';
+import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import {CoveyTownList, UserLocation} from '../CoveyTypes';
+import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import PlayerMessage, {ClientPlayerMessage} from '../types/PlayerMessage';
-import PlayerMention, {ClientPlayerMention} from '../types/PlayerMention';
+import PlayerMessage, { ClientPlayerMessage } from '../types/PlayerMessage';
+import PlayerMention, { ClientPlayerMention } from '../types/PlayerMention';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -252,7 +252,6 @@ export function townSubscriptionHandler(socket: Socket): void {
   socket.on('sendPlayerMention', (message: ClientPlayerMention) => {
     townController.sendPlayerMention(PlayerMention.fromClientPlayerMention(message));
   });
-
 
 
 }

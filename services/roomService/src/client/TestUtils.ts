@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {io, Socket} from 'socket.io-client';
-import {Socket as ServerSocket} from 'socket.io';
+import { io, Socket } from 'socket.io-client';
+import { Socket as ServerSocket } from 'socket.io';
 
-import {AddressInfo} from 'net';
+import { AddressInfo } from 'net';
 import http from 'http';
 import { UserLocation } from '../CoveyTypes';
 
@@ -17,7 +17,7 @@ const createdSocketClients: Socket[] = [];
  * be called in the afterEach() handler in any test suite that calls createSocketClient (this should already be in place
  * in the handout code))
  */
-export function cleanupSockets() : void {
+export function cleanupSockets(): void {
   while (createdSocketClients.length) {
     const socket = createdSocketClients.pop();
     if (socket && socket.connected) {
@@ -86,7 +86,8 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
     playerDisconnected: playerDisconnectPromise,
   };
 }
-export function setSessionTokenAndTownID(coveyTownID: string, sessionToken: string, socket: ServerSocket):void {
+
+export function setSessionTokenAndTownID(coveyTownID: string, sessionToken: string, socket: ServerSocket): void {
   // eslint-disable-next-line
   socket.handshake.auth = {token: sessionToken, coveyTownID};
 }
