@@ -53,6 +53,10 @@ export default class CoveyTownController {
     return this._coveyTownID;
   }
 
+  get leaderboard(): Leaderboard {
+    return this._leaderboard;
+  }
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -102,6 +106,9 @@ export default class CoveyTownController {
 
     this._sessions.push(theSession);
     this._players.push(newPlayer);
+
+    // add player to the leaderboard 
+    this._leaderboard.addPlayerToLeaderboard(newPlayer);
 
     // Create a video token for this user to join this town
     theSession.videoToken = await this._videoClient.getTokenForTown(this._coveyTownID, newPlayer.id);
