@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Text,
   InputGroup,
@@ -16,27 +16,40 @@ import {
   Box,
   Flex,
   Spacer,
+  useToast
 } from "@chakra-ui/react";
   
-import { searchUserByUserName, searchUserByEmail, findAllUsersByUserName, findAllUserProfiles, User } from "../../graphql/queries";
+import { findAllUsersByUserName, User } from "../../graphql/queries";
 
 export default function FriendSearch(): JSX.Element {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [username, setUsername] = useState("");
-  // const [userName, setUserName] = useState<string>("");
-  const [userEmail, setUserEmail] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
-  
-  const handleClick = async () => {
-    onOpen();
-    // console.log(username);
+  const toast = useToast();
+
+  const handleSearch = async () => {
+    let userList;
     const findUserByName = async (userName: string) => {
-      // console.log(userName);
-      const userList = await findAllUsersByUserName(userName);
-      // console.log(userList);
+      if (!userName || userName.length === 0) {
+        toast({
+          title: 'Please enter a username',
+          status: 'error',
+          isClosable: true,
+        });
+        return;
+      }
+      userList = await findAllUsersByUserName(userName);
+      if (userList.length === 0) {
+        toast({
+          title: `No user found with username ${userName}`,
+          status: 'error',
+          isClosable: true,
+        });
+        return;
+      }
       setUsers(userList);
-      
+      onOpen();
     }
     findUserByName(username);
   };
@@ -46,13 +59,13 @@ export default function FriendSearch(): JSX.Element {
       <InputGroup size='md'>
         <Input pr='4.5rem' onChange={(e) => setUsername(e.target.value)} placeholder='Search for Covey Users' />
         <InputRightElement width='4.5rem'>
-          <Button h='1.75rem' colorScheme='blue' size='sm' onClick={handleClick}>
+          <Button h='1.75rem' colorScheme='blue' size='sm' onClick={handleSearch}>
             Search{" "}
           </Button>
           <Modal onClose={onClose} isOpen={isOpen} isCentered  scrollBehavior="inside">
           <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Modal Title</ModalHeader>
+              <ModalHeader>Users</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                 <Box mt={5} w='90%'>
