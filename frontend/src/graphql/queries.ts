@@ -82,11 +82,14 @@ const findAllUsers = gql`
 
 const townList = gql`
   query townList {
-    towns {
-      friendlyName
-      currentOccupancy
-      coveyTownId
-      maximumOccupancy
+    townList {
+      isOK
+      towns {
+        friendlyName
+        coveyTownID
+        currentOccupancy
+        maximumOccupancy
+      }
     }
   }
 `;
@@ -236,6 +239,15 @@ export const findAllUserProfiles = async (): Promise<any> => {
   return data.users;
 };
 
+export const listTown = async (): Promise<any> => {
+  const { data } = await client.query({ query: townList });
+  if (data.townList.isOK) {
+    console.log(data);
+    return data.townList.towns;
+  }
+  return null;
+};
+
 export const findAllUsersByUserName = async (username: string): Promise<any> => {
   const { data } = await client.query({ query: findAllUsersByUserNameQuery, variables: { username } });
   return data.searchUserByUserName;
@@ -264,7 +276,6 @@ export const searchUserByName = async (username: string): Promise<any> => {
   });
   return data.searchUserByName;
 }
-
 
 export const createTown = async (payload: TownCreateRequest): Promise<any> => {
   const { data } = await client.mutate({
@@ -321,12 +332,4 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
   });
   return data.updateUser;
 }
-
-export const listTown = async (): Promise<any> => {
-  const { data } = await client.query({ query: townList });
-  if (data.townList.isOK) {
-    return data.townList.response;
-  }
-  return null;
-};
 
