@@ -203,7 +203,7 @@ export default class CoveyTownController {
       try{
         const gameResponse = this._tictactoe.startGame(playerID);
 
-        this._TTTlisteners.forEach((listener) => listener.joinGame(playerID));
+        this._TTTlisteners.forEach((listener) => listener.onjoinGame(playerID));
 
         return gameResponse;
       }
