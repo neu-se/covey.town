@@ -17,12 +17,7 @@ const useStyles = makeStyles({
 const ChatView = (): JSX.Element => {
 
   const classes = useStyles();
-
-
-
-  const showModal = () => {
-
-  }
+  const [view, setView] = useState<boolean>(false)
 
   return (
     <>
@@ -30,10 +25,13 @@ const ChatView = (): JSX.Element => {
         <ChatBox/>
       </Hidden>
       <Hidden only={['lg', 'xl']}>
+        {
+          view ? <ChatBox/> : null
+        }
         <Fab>
           <ForumIcon
             className={classes.chatToggle}
-            onClick={() => showModal()}/>
+            onClick={() => setView(!view)}/>
           </Fab>
       </Hidden>
 
