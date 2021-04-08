@@ -10,7 +10,7 @@ import {
   Stack
 } from '@chakra-ui/react';
 import {useAuth0} from "@auth0/auth0-react";
-import {searchUserByName, searchUserByEmail} from "../../graphql/queries";
+import {searchUserByName, searchUserByEmail, addFriend} from "../../graphql/queries";
 
 
 interface ParamTypes {
@@ -30,11 +30,15 @@ function InviteFriendComponent() : JSX.Element {
   const [location, setLocation] = useState<string>("");
   const [occupation, setOccupation] = useState<string>("");
   const [showInvite, setShowInvite] = useState<boolean>(false)
+  const [showFriendRequestSent, setShowFriendRequestSent] = useState<boolean>(false);
+  const [currentUserName, setCurrentUserName] = useState<string>("");
+  const [showNone, setShowNone] = useState<boolean>(false);
 
   useEffect(() => {
     const findUser = async () => {
       const userInfo = await searchUserByName(users);
       const currentUser = await searchUserByEmail(user.email);
+      setCurrentUserName(currentUser.username);
       setUserName(userInfo.username)
       setBio(userInfo.bio)
       setFacebookLink(userInfo.facebookLink)
@@ -43,13 +47,21 @@ function InviteFriendComponent() : JSX.Element {
       setOccupation(userInfo.occupation)
       setLinkedInLink(userInfo.linkedInLink)
       if( userInfo.friends.includes(currentUser.username) ){
-        setShowInvite(true)
+        setShowInvite(true);
+      }
+      if (currentUser.sentRequests.includes(userInfo.username)) {
+        setShowFriendRequestSent(true);
+      }
+      if (currentUser.username === userInfo.username) {
+        setShowNone(true);
       }
     }
     findUser();
   });
 
-
+  const addFriendRequest = () => {
+    addFriend({ userNameTo: userName, userNameFrom: currentUserName});
+  }
 
 
   return (
@@ -79,7 +91,20 @@ function InviteFriendComponent() : JSX.Element {
               <Text color='white'>Location: {location}</Text>
               <Text color='white'>Occupation: {occupation}</Text>
               <Link to='/friendsPage'>
-                { showInvite &&
+                {showNone && 
+                  <Button
+                    variantColor='teal'
+                    variant='outline'
+                    disabled
+                    type='submit'
+                    width='full'
+                    mt={4}
+                    color='white'
+                  >
+                    Your profile
+                  </Button>
+                }
+                { showInvite && !showNone && 
                   <Button
                     variantColor='teal'
                     variant='outline'
@@ -91,17 +116,31 @@ function InviteFriendComponent() : JSX.Element {
                     Invite
                   </Button>
                 }
-                { !showInvite &&
+                { !showInvite && !showFriendRequestSent && !showNone &&
                 <Button
                   variantColor='teal'
                   variant='outline'
                   type='submit'
+                  onClick = { addFriendRequest }
                   width='full'
                   mt={4}
                   color='white'
                 >
                   Add Friend
                 </Button>
+                }
+                {showFriendRequestSent && !showNone &&
+                <Button
+                  variantColor='teal'
+                  variant='outline'
+                  disabled
+                  width='full'
+                  mt={4}
+                  color='white'
+                >
+                  Friend Request sent
+                </Button>
+
                 }
               </Link>
 
