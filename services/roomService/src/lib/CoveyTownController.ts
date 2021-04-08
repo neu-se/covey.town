@@ -173,7 +173,6 @@ export default class CoveyTownController {
     if (!this._listeners.get(message.senderProfileId)) {
       throw new Error('Invalid sender profile id');
     }
-    let recipientListener: CoveyTownListener | undefined;
     switch (typeof message.recipient) {
       case 'object': // Object type indicates the message is private
         this.sendPrivateMessage(message);

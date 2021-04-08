@@ -125,7 +125,7 @@ const ChatBox = (): JSX.Element => {
   useEffect(() => {
     setUsers(players.filter(p => p.id !== myPlayerID)
       .map(player => new MentionUser(player.id, player.userName)));
-  }, [players])
+  }, [myPlayerID, players])
 
   useEffect(() => {
     socket?.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {

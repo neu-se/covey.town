@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
-import PlayerMessage, { ServerMessage } from './PlayerMessage';
+import { ServerMessage } from './PlayerMessage';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
