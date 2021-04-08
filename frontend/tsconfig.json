@@ -25,6 +25,6 @@
   },
   "include": [
     "src",
-    "src/classes/DBClient.ts"
+    "src/classes/DatabaseServiceClient.ts"
   ]
 }
