@@ -13,6 +13,23 @@ export interface AddFriendRequest {
 /**
  * Envelope that wraps any response from the server
  */
+export interface AcceptFriendRequest {
+  userNameTo: string;
+  userNameFrom: string;
+}
+
+/**
+ * Envelope that wraps any response from the server
+ */
+export interface RejectFriendRequest {
+  userNameTo: string;
+  userNameFrom: string;
+}
+
+
+/**
+ * Envelope that wraps any response from the server
+ */
 export interface SearchUserRequest {
   username: string;
 }
@@ -115,16 +132,28 @@ const joinTownMutation = gql`
           }
         }
         friendlyName
-        isPubliclyListed 
+        isPubliclyListed
       }
       message
-    } 
+    }
   }
 `;
 
 const addFriendMutation = gql`
   mutation addFriend($input: addFriendInput!) {
-    addFriend(input: $input) 
+    addFriend(input: $input)
+  }
+`;
+
+const acceptFriendMutation = gql`
+  mutation acceptFriend($input: addFriendInput!) {
+    acceptFriend(input: $input)
+  }
+`;
+
+const rejectFriendMutation = gql`
+  mutation rejectFriend($input: addFriendInput!) {
+    rejectFriend(input: $input)
   }
 `;
 
@@ -139,7 +168,7 @@ export const searchUserByUserName = async (userName: string): Promise<any> => {
     variables: { userName },
   });
   return data.searchUserByUserName;
-} 
+}
 
 export const searchUserByEmail = async (email: string): Promise<any> => {
   const { data } = await client.query({
@@ -166,7 +195,7 @@ export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
     mutation: joinTownMutation,
     variables: { input: payload }
   });
-  
+
   if (data.townJoinRequest.isOK) {
     return data.townJoinRequest.response;
   }
@@ -179,5 +208,21 @@ export const addFriend = async (payload: AddFriendRequest): Promise<any> => {
     variables: {input: payload},
   });
   return data.addFriend;
+}
+
+export const acceptFriend = async (payload: AcceptFriendRequest): Promise<any> => {
+  const { data } = await client.mutate({
+    mutation: acceptFriendMutation,
+    variables: {input: payload},
+  });
+  return data.acceptFriend;
+}
+
+export const rejectFriend = async (payload: RejectFriendRequest): Promise<any> => {
+  const { data } = await client.mutate({
+    mutation: rejectFriendMutation,
+    variables: {input: payload},
+  });
+  return data.rejectFriend;
 }
 
