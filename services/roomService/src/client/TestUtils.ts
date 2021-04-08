@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { io, Socket } from 'socket.io-client';
 import { Socket as ServerSocket } from 'socket.io';
-
 import { AddressInfo } from 'net';
 import http from 'http';
 import { UserLocation } from '../CoveyTypes';
@@ -9,6 +8,24 @@ import { UserLocation } from '../CoveyTypes';
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
 };
+
+export type RemoteServerPlayerMessage = {
+
+  senderProfileId: string,
+  senderName: string,
+  content: string,
+  recipient: 'town' | { recipientId: string },
+  
+};
+
+export type RemoteServerPlayerMention = {
+  
+  senderProfileId: string,
+  senderName: string,
+  recipient: string,
+
+};
+
 const createdSocketClients: Socket[] = [];
 
 /**
@@ -45,10 +62,12 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
   playerMoved: Promise<RemoteServerPlayer>,
   newPlayerJoined: Promise<RemoteServerPlayer>,
   playerDisconnected: Promise<RemoteServerPlayer>,
+  playerMessage:Promise<RemoteServerPlayerMessage>,
+  playerMention:Promise<RemoteServerPlayerMention>,
 } {
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
-    auth: {token: sessionToken, coveyTownID},
+    auth: { token: sessionToken, coveyTownID },
     reconnection: false, timeout: 5000,
   });
   const connectPromise = new Promise<void>((resolve) => {
@@ -76,6 +95,19 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
       resolve(player);
     });
   });
+
+
+  const playerMessagePromise = new Promise<RemoteServerPlayerMessage>((resolve) => {
+    socket.on('receivePlayerMessage', (playerMessage: RemoteServerPlayerMessage) => {
+      resolve(playerMessage);
+    });
+  });
+
+  const playerMentionPromise = new Promise<RemoteServerPlayerMention>((resolve) => {
+    socket.on('receivePlayerMention', (playerMention: RemoteServerPlayerMention) => {
+      resolve(playerMention);
+    });
+  });
   createdSocketClients.push(socket);
   return {
     socket,
@@ -84,6 +116,9 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
     playerMoved: playerMovedPromise,
     newPlayerJoined: newPlayerPromise,
     playerDisconnected: playerDisconnectPromise,
+
+    playerMessage: playerMessagePromise,
+    playerMention: playerMentionPromise,
   };
 }
 

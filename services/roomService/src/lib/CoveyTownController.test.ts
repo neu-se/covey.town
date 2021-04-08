@@ -10,6 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import PlayerMessage from '../types/PlayerMessage';
 
 jest.mock('./TwilioVideo');
 
@@ -137,6 +138,20 @@ describe('CoveyTownController', () => {
       expect(listenerRemoved.onTownDestroyed).not.toBeCalled();
 
     });
+
+    // new feature test
+    it('should send messages to all listeners', async () => {
+
+      const message : PlayerMessage = new PlayerMessage('senderId', 'senderName', 'newTestMessage', 'town');  
+    
+      testingTown.addTownListener(mockListeners[0], nanoid());
+      testingTown.addTownListener(mockListeners[1], nanoid());
+      testingTown.addTownListener(mockListeners[2], 'senderId');     
+      testingTown.sendMessage(message);
+      mockListeners.forEach(listener => expect(listener.onPlayerMessage).toBeCalledWith(message)); 
+
+    });
+
   });
   describe('townSubscriptionHandler', () => {
     const mockSocket = mock<Socket>();
