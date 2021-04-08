@@ -19,9 +19,8 @@ import {
     useDisclosure,
     Tbody,
   } from '@chakra-ui/react';
-import MenuItem from '@material-ui/core/MenuItem';
 import { Typography } from '@material-ui/core';
-import {ListNeighborsResponse, ListRequestsResponse} from '../../classes/TownsServiceClient';
+import {AcceptNeighborRequest, ListNeighborsResponse, ListRequestsResponse, RemoveNeighborRequest} from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 
@@ -54,6 +53,14 @@ export default function Profile (props : {userName : string, id : string, handle
         onClose();
     }, [onClose])
 
+    const acceptRequest = async (request : AcceptNeighborRequest) => {
+        await apiClient.acceptNeigborRequest(request)
+    }
+
+    const removeRequest = async (request : RemoveNeighborRequest) => {
+        await apiClient.removeNeighborRequest(request);
+    }
+
     return (
         <>
         <Button mt='5' colorScheme='cyan' data-testid='openMenuButton' onClick={openProfile}>
@@ -82,7 +89,10 @@ export default function Profile (props : {userName : string, id : string, handle
                                     {
                                         neighbors.users.map((user) => (
                                             <Tr key={user._id}><Td>{user.username}</Td><Td>{user.isOnline}</Td>
-                                            <Td><Button onClick={() => handleJoin(user._id)}>Join</Button></Td></Tr>
+                                            <Td>
+                                                {user.coveyTownID && 
+                                                <Button onClick={() => handleJoin(user._id)}>Join</Button>
+                                                }</Td></Tr>
                                         ))
                                     }
                                 </Tbody>
@@ -90,11 +100,31 @@ export default function Profile (props : {userName : string, id : string, handle
                         </FormControl>
                         <FormControl>
                             <Table>
-                                <Thead><Tr><Th>Requests Sent</Th><Th>Status</Th></Tr></Thead>
+                                <Thead><Tr><Th>Requests Sent</Th><Th>Delete Request</Th></Tr></Thead>
                                 <Tbody>
                                     {
                                         sentRequests.users.map((user) => (
-                                            <Tr key={user._id}><Td>{user.username}</Td><Td>Pending</Td></Tr>
+                                            <Tr key={user._id}><Td>{user.username}</Td><Td><Button onClick={() => removeRequest({
+                                                user: id,
+                                                requestedUser: user._id,
+                                            })}>Delete</Button></Td></Tr>
+                                        ))
+                                    }
+                                </Tbody>
+                            </Table>
+                        </FormControl>
+                        <FormControl>
+                            <Table>
+                                <Thead><Tr><Th>Requests Received</Th><Th>Accept</Th><Th>Reject</Th></Tr></Thead>
+                                <Tbody>
+                                    {
+                                        receivedRequests.users.map((user) => (
+                                            <Tr key={user._id}><Td>{user.username}</Td><Td>
+                                                <Button onClick={() => acceptRequest({
+                                                    userAccepting: id,
+                                                    userSent: user._id,
+                                                })}>Accept</Button>
+                                                </Td></Tr>
                                         ))
                                     }
                                 </Tbody>
