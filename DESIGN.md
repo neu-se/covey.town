@@ -18,7 +18,7 @@ There were many new interfaces added to structure the inputs and outputs for all
 
 To see how all of our work integrates into Covey Town, here is the overall architecture of the system:
 
-![Architecture][docs/architecture.jpg]
+![Architecture](docs/architecture.jpg)
 
 As seen above, the persistence we added to Covey Town was enabled through MongoDB. We instantiated a Mongo Cluster, in which we created a database specifically to store our covey town data. Inside this database, we had 3 collections, which each enable the 3 user stories we wished to implement:
 1. user
