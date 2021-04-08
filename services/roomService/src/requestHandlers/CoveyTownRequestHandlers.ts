@@ -36,6 +36,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** The message back log from the town * */
+  messages: PlayerMessage[];
 }
 
 /**
@@ -120,6 +122,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
+      messages: coveyTownController.townChat,
     },
   };
 }

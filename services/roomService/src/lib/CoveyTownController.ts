@@ -1,5 +1,5 @@
-import {customAlphabet, nanoid} from 'nanoid';
-import {UserLocation} from '../CoveyTypes';
+import { customAlphabet, nanoid } from 'nanoid';
+import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -51,6 +51,11 @@ export default class CoveyTownController {
     return this._coveyTownID;
   }
 
+  get townChat(): PlayerMessage[] {
+    return this._townChat;
+  }
+
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -73,9 +78,9 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
-  private readonly townChat: PlayerMessage[];
+  private readonly _townChat: PlayerMessage[];
 
-  private readonly privateChats: Map<string, Array<{ recipientId: string, messages: PlayerMessage[] }>>;
+  private readonly privateChats: Map<Set<string>, Array<PlayerMessage>>;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
@@ -84,7 +89,7 @@ export default class CoveyTownController {
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
     this.privateChats = new Map();
-    this.townChat = [];
+    this._townChat = [];
   }
 
   /**
@@ -171,14 +176,10 @@ export default class CoveyTownController {
     let recipientListener: CoveyTownListener | undefined;
     switch (typeof message.recipient) {
       case 'object': // Object type indicates the message is private
-        recipientListener = this._listeners.get(message.recipient.recipientId);
-        if (!recipientListener) {
-          throw new Error('Invalid recipient id');
-        }
-        recipientListener.onPlayerMessage(message);
-        this._listeners.get(message.senderProfileId)?.onPlayerMessage(message);
+        this.sendPrivateMessage(message);
         break;
       default: // Default is for the whole town
+        this._townChat.push(message);
         this._listeners.forEach(listener => listener.onPlayerMessage(message));
     }
   }
@@ -197,5 +198,32 @@ export default class CoveyTownController {
     recipientListener.onPlayerMention(message);
 
 
+  }
+
+  private sendPrivateMessage(message: PlayerMessage) {
+    let player1Listener: CoveyTownListener | undefined;
+    let player2Listener: CoveyTownListener | undefined;
+    if (typeof message.recipient === 'object') {
+      player1Listener = this._listeners.get(message.recipient.recipientId);
+      player2Listener = this._listeners.get(message.senderProfileId);
+      if (!player1Listener || !player2Listener) {
+        throw new Error('Invalid recipient id');
+      }
+
+      const privateMessageSet = new Set<string>();
+      privateMessageSet.add(message.recipient.recipientId);
+      privateMessageSet.add(message.senderProfileId);
+      let privateMessages = this.privateChats.get(privateMessageSet);
+      if (!privateMessages) {
+        this.privateChats.set(privateMessageSet, []);
+        privateMessages = this.privateChats.get(privateMessageSet);
+      }
+      if (privateMessages) {
+        privateMessages.push(message);
+      }
+      player1Listener.onPlayerMessage(message);
+      player2Listener.onPlayerMessage(message);
+      this._listeners.get(message.senderProfileId)?.onPlayerMessage(message);
+    }
   }
 }

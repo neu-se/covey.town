@@ -1,31 +1,37 @@
 import React, {
-  Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
 } from 'react';
 import './App.css';
-import {BrowserRouter} from 'react-router-dom';
-import {io, Socket} from 'socket.io-client';
-import {ChakraProvider} from '@chakra-ui/react';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import { BrowserRouter } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client';
+import { ChakraProvider } from '@chakra-ui/react';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import {CoveyAppState, NearbyPlayers} from './CoveyTypes';
+import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
 import NearbyPlayersContext from './contexts/NearbyPlayersContext';
-import AppStateProvider, {useAppState} from './components/VideoCall/VideoFrontend/state';
+import AppStateProvider, { useAppState } from './components/VideoCall/VideoFrontend/state';
 import useConnectionOptions
   from './components/VideoCall/VideoFrontend/utils/useConnectionOptions/useConnectionOptions';
 import UnsupportedBrowserWarning
   from './components/VideoCall/VideoFrontend/components/UnsupportedBrowserWarning/UnsupportedBrowserWarning';
-import {VideoProvider} from './components/VideoCall/VideoFrontend/components/VideoProvider';
+import { VideoProvider } from './components/VideoCall/VideoFrontend/components/VideoProvider';
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
 import theme from './components/VideoCall/VideoFrontend/theme';
-import {Callback} from './components/VideoCall/VideoFrontend/types';
-import Player, {ServerPlayer, UserLocation} from './classes/Player';
-import PlayerMessage, {ServerMessage} from "./classes/PlayerMessage";
-import TownsServiceClient, {TownJoinResponse} from './classes/TownsServiceClient';
+import { Callback } from './components/VideoCall/VideoFrontend/types';
+import Player, { ServerPlayer, UserLocation } from './classes/Player';
+import PlayerMessage, { ServerMessage } from "./classes/PlayerMessage";
+import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatView from "./components/Chat/ChatView";
 
@@ -39,6 +45,7 @@ type CoveyAppUpdate =
     sessionToken: string,
     myPlayerID: string, socket: Socket,
     players: Player[],
+    messages: PlayerMessage[],
     emitMovement: (location: UserLocation) => void,
     emitMessage: (message: PlayerMessage) => void,
   }
@@ -80,9 +87,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     currentTownFriendlyName: state.currentTownFriendlyName,
     currentTownID: state.currentTownID,
     currentTownIsPubliclyListed: state.currentTownIsPubliclyListed,
-    messages: state.messages,
     myPlayerID: state.myPlayerID,
     players: state.players,
+    messages: state.messages,
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
@@ -124,6 +131,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.emitMessage = update.data.emitMessage;
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
+      nextState.messages = update.data.messages;
       break;
     case 'addPlayer':
       nextState.players = nextState.players.concat([update.player]);
@@ -199,8 +207,6 @@ async function GameController(initData: TownJoinResponse,
   });
 
 
-
-
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
       dispatchAppUpdate({action: 'playerMoved', player: Player.fromServerPlayer(player)});
@@ -233,6 +239,7 @@ async function GameController(initData: TownJoinResponse,
       emitMessage,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
+      messages: initData.messages.map(message => PlayerMessage.fromServerMessage(message)),
     },
   });
   return true;

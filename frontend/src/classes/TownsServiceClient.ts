@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
+import PlayerMessage, { ServerMessage } from './PlayerMessage';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -31,6 +32,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** The message back log from the town * */
+  messages: ServerMessage[];
 }
 
 /**
@@ -103,7 +106,7 @@ export default class TownsServiceClient {
   constructor(serviceURL?: string) {
     const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
     assert(baseURL);
-    this._axios = axios.create({ baseURL });
+    this._axios = axios.create({baseURL});
   }
 
   static unwrapOrThrowError<T>(response: AxiosResponse<ResponseEnvelope<T>>, ignoreResponse = false): T {

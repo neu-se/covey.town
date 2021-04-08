@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useEffect, useState } from "react";
 
 import _escapeRegExp from 'lodash/escapeRegExp'
 import _uniqBy from 'lodash/uniqBy'
@@ -8,19 +8,22 @@ import _clone from 'lodash/clone'
 import {
   Box,
   Fab,
+  FormGroup,
   Grid,
+  InputLabel,
   ListItem,
-  Tooltip,
+  MenuItem,
+  Select,
   Typography,
 } from "@material-ui/core";
-import {MentionsInput, Mention} from 'react-mentions'
-import {useToast} from '@chakra-ui/react';
+import { Mention, MentionsInput } from 'react-mentions'
+import { useToast } from '@chakra-ui/react';
 import '../../App.css';
-import {makeStyles} from "@material-ui/styles";
+import { makeStyles } from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
-import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
+import PlayerMention, { ServerMentionMessage } from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
@@ -111,6 +114,7 @@ const ChatBox = (): JSX.Element => {
     socket
   } = useCoveyAppState();
   const [newText, setNewText] = useState<string>('')
+  const [newRecipient, setNewRecipient] = useState<'town' | { recipientId: string }>('town');
   const classes = useStyles();
   const [users, setUsers] = useState<MentionUser []>([]);
   const video = useMaybeVideo();
@@ -119,7 +123,8 @@ const ChatBox = (): JSX.Element => {
   const toast = useToast();
 
   useEffect(() => {
-    setUsers(players.map(player => new MentionUser(player.id, player.userName)));
+    setUsers(players.filter(p => p.id !== myPlayerID)
+      .map(player => new MentionUser(player.id, player.userName)));
   }, [players])
 
   useEffect(() => {
@@ -129,25 +134,23 @@ const ChatBox = (): JSX.Element => {
         status: 'success',
       });
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
 
-
-
-const getDisplayTextFromMention = (text:string) => {
-  let displayText:string = _clone(text)
-  // eslint-disable-next-line no-useless-escape
-  const tags:string[] = text.match(/@\{\{[^\}]+\}\}/gi) || []
-  // eslint-disable-next-line array-callback-return
-  tags.map(myTag => {
-    const tagData = myTag.slice(3, -2)
-    const tagDataArray = tagData.split('||')
-    const tagDisplayValue = tagDataArray[1]
-    displayText = displayText.replace(new RegExp(_escapeRegExp(myTag), 'gi'), `${tagDisplayValue} `)
-  })
-  return displayText;
-}
+  const getDisplayTextFromMention = (text: string) => {
+    let displayText: string = _clone(text)
+    // eslint-disable-next-line no-useless-escape
+    const tags: string[] = text.match(/@\{\{[^\}]+\}\}/gi) || []
+    // eslint-disable-next-line array-callback-return
+    tags.map(myTag => {
+      const tagData = myTag.slice(3, -2)
+      const tagDataArray = tagData.split('||')
+      const tagDisplayValue = tagDataArray[1]
+      displayText = displayText.replace(new RegExp(_escapeRegExp(myTag), 'gi'), `${tagDisplayValue} `)
+    })
+    return displayText;
+  }
 
   const getIdsFromMention = (text: string) => {
 
@@ -188,7 +191,7 @@ const getDisplayTextFromMention = (text:string) => {
       myPlayerID,
       userName,
       displayText,
-      'town',
+      newRecipient,
       new Date(),
     ));
     setNewText('')
@@ -196,26 +199,39 @@ const getDisplayTextFromMention = (text:string) => {
   const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
   const checkSenderName = (profileId: string) => (profileId === myPlayerID ? classes.playerMessageName : classes.otherPlayerMessageName)
 
+  const handleRecipientSelect = (e: React.ChangeEvent<{ value: unknown }>) => {
+    const {value} = e.target;
+    if (value === 'town') {
+      setNewRecipient('town');
+    } else {
+      setNewRecipient({recipientId: value as string});
+    }
+  }
+
   return (
     <Box border={1}>
       <Grid className={classes.chatbox}>
         <Typography
           variant='h4'
           className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
-        {/* <FormGroup */}
-        {/*  row */}
-        {/*  className={classes.formControl} */}
-        {/*  > */}
-        {/*  <InputLabel */}
-        {/*    id="playerChatSelection">Select A Player</InputLabel> */}
-        {/*  <Select */}
-        {/*    labelId="playerChatSelection"> */}
-        {/*    /!* Will map players in room here *!/ */}
-        {/*    {players.map((player) => */}
-        {/*      <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem> */}
-        {/*    )} */}
-        {/*  </Select> */}
-        {/* </FormGroup> */}
+        <FormGroup
+          row
+          className={classes.formControl}
+        >
+          <InputLabel
+            id="playerChatSelection">Select A Player</InputLabel>
+          <Select
+            labelId="playerChatSelection"
+            defaultValue='town'
+            onChange={e => handleRecipientSelect(e)}
+          >
+            {/* Will map players in room here */}
+            {players.filter(p => p.id !== myPlayerID).map((player) =>
+              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
+            )}
+            <MenuItem key='town' value='town'>Town</MenuItem>
+          </Select>
+        </FormGroup>
 
 
         <Grid className={classes.messageWindow} direction="column" container>
@@ -229,9 +245,10 @@ const getDisplayTextFromMention = (text:string) => {
               key={message.messageId}
               className={checkSender(message.senderProfileId)}>
               <ListItem
-                className={checkSenderName(message.senderProfileId)}>{message.senderName}</ListItem>
-              <Typography
-                className={classes.messageBorder}>{message.content}</Typography>
+                className={checkSenderName(message.senderProfileId)}>{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}</ListItem>
+              <Typography className={classes.messageBorder}>
+                {message.content}
+              </Typography>
             </Grid>)
           )
           }
