@@ -21,7 +21,7 @@ import {
   } from '@chakra-ui/react';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Typography } from '@material-ui/core';
-import {ListNeighborsResponse} from '../../classes/TownsServiceClient';
+import {ListNeighborsResponse, ListRequestsResponse} from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 
@@ -29,6 +29,8 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 export default function Profile (props : {userName : string, id : string, handleJoin : (coveyRoomID : string) => Promise<void> }) : JSX.Element {
     const {userName, id, handleJoin} = props;
     const [neighbors, setNeighbors] = useState<ListNeighborsResponse>({users: []})
+    const [sentRequests, setSentRequests] = useState<ListRequestsResponse>({users: []})
+    const [receivedRequests, setReceivedRequests] = useState<ListRequestsResponse>({users: []})
     const {isOpen, onOpen, onClose} = useDisclosure()
     const { apiClient } = useCoveyAppState();
     
@@ -37,6 +39,14 @@ export default function Profile (props : {userName : string, id : string, handle
         apiClient.listNeighbors(id)
             .then((users) => {
                 setNeighbors(users);
+            })
+        apiClient.listRequestsReceived(id)
+            .then((users) => {
+                setReceivedRequests(users);
+            })
+        apiClient.listRequestsSent(id)
+            .then((users) => {
+                setSentRequests(users);
             })
     }, [onOpen, apiClient, id]);
 
@@ -73,6 +83,18 @@ export default function Profile (props : {userName : string, id : string, handle
                                         neighbors.users.map((user) => (
                                             <Tr key={user._id}><Td>{user.username}</Td><Td>{user.isOnline}</Td>
                                             <Td><Button onClick={() => handleJoin(user._id)}>Join</Button></Td></Tr>
+                                        ))
+                                    }
+                                </Tbody>
+                            </Table>
+                        </FormControl>
+                        <FormControl>
+                            <Table>
+                                <Thead><Tr><Th>Requests Sent</Th><Th>Status</Th></Tr></Thead>
+                                <Tbody>
+                                    {
+                                        sentRequests.users.map((user) => (
+                                            <Tr key={user._id}><Td>{user.username}</Td><Td>Pending</Td></Tr>
                                         ))
                                     }
                                 </Tbody>
