@@ -12,7 +12,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
-import Board from './Board'
+import Game from './Board'
 // import Game from './Game'
 
 
@@ -44,13 +44,10 @@ const GameModal: React.FunctionComponent = () => {
       <ModalHeader>TIC TAC TOE</ModalHeader>
     <div className="game">
               <div className="board">
-                <Board
-                    squares={9}
-                    // onClick={index => null}
+                <Game
                   />  
                   </div>
                   </div>
-        
         <Button onClick={closeGame}>Close</Button>
           <ModalBody pb={6}/>
       </ModalContent>

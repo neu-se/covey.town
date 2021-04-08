@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Square = props => (
-  <button type="button" className='square' onClick={console.log('click')}>
-    X
-  </button>
-);
+function Square({ value, onClick }) {
 
-export default Square;
+  return (
+    <button className="square" onClick={onClick}>
+      {value}
+    </button>
+  );
+}

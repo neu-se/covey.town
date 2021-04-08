@@ -1,35 +1,114 @@
-import React from 'react';
-import Square from './Square';
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
 
-class Board extends React.Component {
-  // Create the 3 x 3 board
-  createBoard(row, col) {
-    const board = [];
-    let cellCounter = 0;
+function Square({ value, onClick }) {
 
-    for (let i = 0; i < row; i +=1) {
-      const columns = [];
-      for (let j = 0; j < col; j +=1) {
-        columns.push(this.renderSquare(cellCounter+=1));
-      }
-      board.push(
-        <div key={i} className='board-row'>
-          {columns}
-        </div>,
-      );
-    }
-
-    return board;
-  }
-
-  renderSquare(i) {
-    const squares = this.props;
-    return <Square key={i} value={squares[i]} onClick={console.log("ah")} />;
-  }
-
-  render() {
-    return <div>{this.createBoard(3, 3)}</div>;
-  }
+  return (
+    <button type="button" className="square" onClick={onClick}>
+      {value}
+    </button>
+  );
 }
 
-export default Board;
+Square.propTypes = {
+  value: String,
+  onClick: null
+}
+
+Square.defaultProps = {
+  value: null, 
+  onClick: () => {}
+}
+
+function Restart({onClick}) {
+
+  return (
+    <button type="button" className="restart" onClick={onClick}>
+      Play again
+    </button>
+  );
+}
+
+Restart.propTypes = {
+  onClick: null
+}
+
+Restart.defaultProps = {
+  onClick: () => {}
+}
+
+function Game() {
+  const [ squares, setSquares ] = useState(Array(9).fill(null));
+  const [ isXNext, setIsXNext ] = useState(true);
+  const nextSymbol = isXNext ? "X" : "O";
+  const winner = null;
+
+  function getStatus() {
+    return "return status here"
+    // change this
+    // if (nextSymbol) {
+    //   return "Winner: " + "add winner here";
+    // } else if (isBoardFull(squares)) {
+    //   return "Draw!";
+    // } else { 
+    //   return `Next player: ${nextSymbol}`;
+    // }
+  }
+
+  function renderSquare(i) {
+    return (
+      <Square
+        value={squares[i]}
+        onClick={() => {
+          if (squares[i] != null || winner != null) {
+            return;
+          }
+          const nextSquares = squares.slice();
+          nextSquares[i] = nextSymbol;
+          setSquares(nextSquares);
+
+          setIsXNext(!isXNext); // toggle turns
+        }}
+      />
+    );
+  }
+
+  function renderRestartButton() {
+    return (
+      <Restart
+        onClick={() => {
+          setSquares(Array(9).fill(null));
+          setIsXNext(true);
+        }}
+      />
+    );
+  }
+
+  return (
+    <div className="container">
+      <div className="game">
+        <div className="game-board">
+          <div className="board-row">
+            {renderSquare(0)}
+            {renderSquare(1)}
+            {renderSquare(2)}
+          </div>
+          <div className="board-row">
+            {renderSquare(3)}
+            {renderSquare(4)}
+            {renderSquare(5)}
+          </div>
+          <div className="board-row">
+            {renderSquare(6)}
+            {renderSquare(7)}
+            {renderSquare(8)}
+          </div>
+        </div>
+        <div className="game-info">{getStatus()}</div>
+        <div className="restart-button">{renderRestartButton()}</div>
+      </div>
+    </div>
+  );
+}
+
+export default Game;
