@@ -1,8 +1,8 @@
-import Express from 'express';
-import * as http from 'http';
-import CORS from 'cors';
-import { AddressInfo } from 'net';
-import addDBRoutes from './router/database';
+import CORS from "cors";
+import Express from "express";
+import * as http from "http";
+import { AddressInfo } from "net";
+import addDBRoutes from "./router/database";
 
 const app = Express();
 app.use(CORS());
