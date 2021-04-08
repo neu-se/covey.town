@@ -64,7 +64,7 @@ export default class CoveyTownController {
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
   private _listeners: CoveyTownListener[] = [];
 
-
+  private _TTTlisteners: CoveyTownListener[] = [];
   private readonly _coveyTownID: string;
 
   private _friendlyName: string;
