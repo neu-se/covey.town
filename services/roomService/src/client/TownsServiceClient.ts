@@ -1,7 +1,10 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ScoreList, UserLocation } from '../CoveyTypes';
-import { LeaderboardRequest, LeaderboardResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+import { LeaderboardRequest, LeaderboardResponse, StartGameRequest,
+  StartGameResponse,InfoRequest, InfoResponse, PlayerResponse, GetBoardResponse
+} from '../requestHandlers/CoveyTownRequestHandlers';
+
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
@@ -150,5 +153,32 @@ export default class TownsServiceClient {
     const responseWrapper = await this._axios.get(`/leaderboard/${requestData.coveyTownID}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
+
+  async startGame(requestData: StartGameRequest): Promise<StartGameResponse> {
+    const responseWrapper = await this._axios.get(`/tictactoe/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async isgameActive(requestData: InfoRequest): Promise<InfoResponse> {
+    const responseWrapper = await this._axios.get(`/tictactoe/active/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async currentPlayer(requestData: InfoRequest): Promise<PlayerResponse> {
+    const responseWrapper = await this._axios.get(`/tictactoe/curplayer/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async getWinner(requestData: InfoRequest): Promise<PlayerResponse> {
+    const responseWrapper = await this._axios.get(`/tictactoe/winner/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async getBoard(requestData: InfoRequest): Promise<GetBoardResponse> {
+    const responseWrapper = await this._axios.get(`/tictactoe/board/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+
 
 }
