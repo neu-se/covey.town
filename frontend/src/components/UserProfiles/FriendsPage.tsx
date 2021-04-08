@@ -28,30 +28,21 @@ function FriendsPage(): JSX.Element {
   const { user } = useAuth0();
   const [friends, setFriends] = useState<User[]>([]);
   const [requests, setRequests] = useState<User[]>([]);
-  const [friendListUser, setFriendListUser] = useState<User[]>([]);
-  const [requestListUser, setRequestListUser] = useState<User[]>([]);
 
   useEffect(() => {
     const findUser = async () => {
       const userInfo = await searchUserByEmail(user.email);
       setFriends(userInfo.friends);
       setRequests(userInfo.requests);
-      // when we want to click on friend and go to their profile
-      setFriendListUser([...friendListUser]);
-      setRequestListUser([...requestListUser]);
     };
     findUser();
-  },[]);
+  },[user.email]);
 
   const handleGoToFriendPage = async (friendUser: any) => {
-    // console.log(typeof (friendUser));
     const userProfile = await searchUserByUserName(friendUser);
     console.log(userProfile);
-
-    
   };
  
-
 
   return (
     <>
