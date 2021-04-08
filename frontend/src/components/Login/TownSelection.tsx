@@ -29,16 +29,28 @@ interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
+enum RelationshipStatus {
+  Single = "single",
+  Taken = "taken",
+}
+
+interface CoveyUser {
+  userID: string,
+  username: string,
+  password: string,
+  isPublic: boolean,
+  email?: string,
+  bio?: string,
+  hobbies?: string,
+  firstName?: string,
+  lastName?: string,
+  dob?: string,
+  relationshipStatus?: RelationshipStatus
+}
+
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const toast = useToast();
-  // const { isAuthenticated, user } = useAuth0();
-
-  
-  // let authUserName = '';
-  // if (isAuthenticated) {
-  //   authUserName = user.name;
-  // }
-
+  const { isAuthenticated, user } = useAuth0();
   const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
@@ -46,6 +58,41 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
+  const [coveyUser, setCoveyUser] = useState<CoveyUser>({
+    userID: "",
+    username: "",
+    password: "",
+    isPublic: false,
+  });
+
+  const fetchUserInformation = () => {
+    const url = ""; // getUsersByID Rest endpoint
+    const data = {
+      userId: "someID" // the user id we want to use
+    }
+    fetch(url, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then((res) => res.json())
+      .then((obj) => {
+        if (obj.status === "isOK") {
+          setCoveyUser(obj.data);
+        }
+        else {
+          // error message
+        }
+      })
+      .catch((err) => console.log(err))
+  }
+
+  useEffect(() => {
+    fetchUserInformation();
+  }, user)
+
 
 
   const updateTownListings = useCallback(() => {
@@ -130,7 +177,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       toast({
         title: `Town ${newTownName} is ready to go!`,
         description: <>{privateMessage}Please record these values in case you need to change the
-          room:<br/>Town ID: {newTownInfo.coveyTownID}<br/>Town Editing
+          room:<br />Town ID: {newTownInfo.coveyTownID}<br />Town Editing
           Password: {newTownInfo.coveyTownPassword}</>,
         status: 'success',
         isClosable: true,
@@ -146,21 +193,52 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
-  
+  const renderPopulatedFields = (currentUser: CoveyUser) => {
+    const fields: never[] = [];
+    // type CoveyUser = typeof currentUser;
+    Object.keys(currentUser).map(key =>
+      console.log({ text: key, value: key }),
+      console.log(currentUser.userID)
+    );
+
+    return fields
+  }
 
   return (
     <>
       <form>
         <Stack>
-          <Box p="4" borderWidth="1px" borderRadius="lg">
+          {/* <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Select a username</Heading>
-
+            <Button onClick={() => console.log(isAuthenticated, user)}>
+              Click me
+            </Button>
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
+                value={userName}
+                onChange={event => setUserName(event.target.value)}
               />
+            </FormControl>
+            interface CoveyUser {
+  userID: string,
+  username: string,
+  password: string,
+  isPublic: boolean,
+  email?: string,
+  bio?: string,
+  hobbies?: string,
+  firstName?: string,
+  lastName?: string,
+  dob?: string,
+  relationshipStatus?: RelationshipStatus
+}
+
+          </Box> */}
+          <Box borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg">Your User Profile</Heading>
+            <FormControl>
+              {renderPopulatedFields(coveyUser)}
             </FormControl>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
@@ -170,19 +248,19 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <FormControl>
                   <FormLabel htmlFor="townName">New Town Name</FormLabel>
                   <Input name="townName" placeholder="New Town Name"
-                         value={newTownName}
-                         onChange={event => setNewTownName(event.target.value)}
+                    value={newTownName}
+                    onChange={event => setNewTownName(event.target.value)}
                   />
                 </FormControl>
               </Box><Box>
-              <FormControl>
-                <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
-                          onChange={(e) => {
-                            setNewTownIsPublic(e.target.checked)
-                          }}/>
-              </FormControl>
-            </Box>
+                <FormControl>
+                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                  <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
+                    onChange={(e) => {
+                      setNewTownIsPublic(e.target.checked)
+                    }} />
+                </FormControl>
+              </Box>
               <Box>
                 <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
               </Box>
@@ -196,11 +274,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               <Flex p="4"><FormControl>
                 <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
                 <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                       value={townIDToJoin}
-                       onChange={event => setTownIDToJoin(event.target.value)}/>
+                  value={townIDToJoin}
+                  onChange={event => setTownIDToJoin(event.target.value)} />
               </FormControl>
                 <Button data-testid='joinTownByIDButton'
-                        onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
+                  onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
               </Flex>
 
             </Box>
@@ -216,7 +294,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                       role='cell'>{town.coveyTownID}</Td>
                       <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
                         <Button onClick={() => handleJoin(town.coveyTownID)}
-                                disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
+                          disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
                   ))}
                 </Tbody>
               </Table>
