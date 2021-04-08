@@ -4,6 +4,7 @@ import {
   townCreateHandler,
   townJoinHandler,
   townDeleteHandler,
+  townListHandler
 } from '../requestHandlers/CoveyTownRequestHandlers';
 /**
  * All the resolvers are defined here.
@@ -38,6 +39,10 @@ const resolvers = {
     searchUserByName: async (_: any, args: any) => {
       const user = await User.findOne({ username: args.username });
       return user;
+    },
+    townList: async () => {
+      const response = await townListHandler();
+      return response;
     },
     /**
      * Resolver to find a user by email
