@@ -12,17 +12,21 @@ import {
   useToast,
   Link
 } from "@chakra-ui/react"
+import { useHistory, withRouter } from "react-router-dom";
 import {
   acceptFriend,
   AcceptFriendRequest, rejectFriend,
   RejectFriendRequest,
   searchUserByEmail,
   searchUserByUserName,
-  User
 } from '../../graphql/queries';
 
 
+
 function FriendsPage(): JSX.Element {
+
+  const history = useHistory();
+
   const toast = useToast();
   const toastWindow = () => {
     toast({
@@ -96,7 +100,7 @@ function FriendsPage(): JSX.Element {
                     {friends.map((friend) => (
                       <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg" >
                         <Flex>
-                          <Button textAlign='left' onClick={() => handleGoToFriendPage(friend)}>{friend}</Button>
+                          <Button textAlign='left' onClick={()=>{history.push(`/users/${friend}`);}}>{friend}</Button>
                           <Spacer/>
                           <Button onClick={toastWindow} textAlign='right' >Invite</Button>
                         </Flex>
@@ -117,7 +121,7 @@ function FriendsPage(): JSX.Element {
                       {requests.map((request) => (
                         <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
                           <Flex>
-                            <Text textAlign='left'>{request}</Text>
+                            <Text textAlign='left' onClick={()=>{history.push(`/users/${request}`);}}>{request}</Text>
                             <Spacer />
                             <HStack spacing="24px">
                               <Button size='md' color='blue.500' onClick={()=>{acceptFriendRequest(request).then(r=>r)}}> <span>&#10003;</span> </Button>
@@ -138,4 +142,4 @@ function FriendsPage(): JSX.Element {
   );
 };
 
-export default FriendsPage;
+export default withRouter(FriendsPage);
