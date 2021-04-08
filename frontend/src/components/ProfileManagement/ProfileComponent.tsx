@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
 import { findAllUserProfiles, searchUserByEmail, User } from '../../graphql/queries';
+import changePassword from "../services/auth0Services";
 
 
 function ProfileComponent(): JSX.Element {
@@ -97,6 +98,7 @@ function ProfileComponent(): JSX.Element {
                   width='full'
                   mt={4}
                   color='white'
+                  onClick={()=>{changePassword().then(r=>r)}}
                 >
                   Edit Profile
                 </Button>
@@ -124,7 +126,7 @@ function ProfileComponent(): JSX.Element {
                         </Box>
                       ))}
                   </Box>
-                </Flex> 
+                </Flex>
               </Box>
               </Box>
               </Box>

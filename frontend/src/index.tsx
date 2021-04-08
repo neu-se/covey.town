@@ -5,11 +5,10 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-
 ReactDOM.render(
   <Auth0Provider
-    domain="dev-fse.us.auth0.com"
-    clientId="jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh"
+    domain = "dev-fse.us.auth0.com"
+    clientId = "jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh"
     redirectUri={window.location.origin}
   >
   <React.StrictMode>
