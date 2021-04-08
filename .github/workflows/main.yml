@@ -25,6 +25,7 @@ jobs:
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
+          MONGO_URL: ${{ secrets.MONGO_URL }}
         run: cd services/roomService; npm install && npm test
 
       - name: Build and test frontend components

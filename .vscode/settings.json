@@ -1,0 +1,5 @@
+{
+    "eslint.workingDirectories": [
+        "services/roomService", "frontend"
+    ]
+  }

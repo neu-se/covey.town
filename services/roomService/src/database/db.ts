@@ -1,23 +1,68 @@
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority";
-import { ResponseEnvelope, AccountCreateResponse, SearchUsersResponse, LoginResponse } from '../requestHandlers/CoveyTownRequestHandlers';
+import assert from 'assert';
+import dotenv from 'dotenv';
+import { MongoClient, ObjectID } from 'mongodb';
+import { mongo } from 'mongoose';
 
-export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
+dotenv.config();
+
+export type NeighborStatus = { status: 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor' };
+
+export interface AccountCreateResponse {
+  _id: string,
+  username: string,
+}
+
+export interface UserWithRelationship {
+  _id: string,
+  username: string,
+  relationship: NeighborStatus,
+}
+
+export interface UsersList {
+  _id: string,
+  username: string,
+}
+
+export interface ListUsersResponse<T> {
+  users: T[]
+}
+
+export interface LoginResponse {
+  _id: string,
+  username: string,
+}
+
+export interface NeighborMappingSchema {
+  _id: string,
+  neighbor1: string, // will be user id
+  neighbor2: string, // will be user id
+}
+
+export interface NeighborRequestSchema {
+  _id: string, 
+  requestTo: string, // will be user id
+  requestFrom: string, // will be user id
+}
 
 export default class DatabaseController {
-    private client;
+    private client: MongoClient;
+    private userCollection: any;
+    private neighborRequests: any;
+    private neighborMappings: any;
 
     constructor() {
-        this.client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        // assert(process.env.MONGO_URL, 'Must have Mongo URL to connect to database');
+        this.client = new MongoClient(process.env.MONGO_URL || 'mongodb+srv://dev-user:cs4530COVEY@cluster-dev.vpr5c.mongodb.net/coveytown?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
-    async connect() {
-        await this.client.connect();
-        console.log('connected to server');
-    }
+  async connect(): Promise<void> {
+    await this.client.connect();
+    this.userCollection = this.client.db('coveytown').collection('user');
+    this.neighborRequests = this.client.db('coveytown').collection('neighbor_request');
+    this.neighborMappings = this.client.db('coveytown').collection('neighbor_mappings');
+  }
 
     close() {
-
         this.client.close();
     }
 
@@ -26,459 +71,433 @@ export default class DatabaseController {
      * @param collection name of the collection to open
      * @returns
      */
-    private getCollection(collection: string) {
-        return this.client.db('coveytown').collection(collection);
-    }
+  private getCollection(collection: string) {
+    return this.client.db('coveytown').collection(collection);
+  }
 
-    /**
+  /**
+     * Works to remove a user from the user collection in the coveytown db
+     * @param userID name of the collection to remove user from
+     * @returns a string with the deletion status
+     */
+  async removeUserFromCollection(userID: string): Promise<string> {
+    try {
+      const deleteUser = new mongo.ObjectId(userID);
+      await this.userCollection.deleteOne({'_id': deleteUser});
+      return 'deletedUser';
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  /**
+     * Works to remove a request from the neighbor_request collection in the coveytown db
+     * @param requestFrom name of the user sending the request to be removed
+     * @param requestTo name of the user receiving the request to be removed
+     * @returns a string with the deletion status
+     */
+  async removeRequestFromCollection(requestFrom: string, requestTo: string): Promise<string> {
+    try {
+      await this.neighborRequests.deleteOne({'requestFrom': requestFrom, 'requestTo': requestTo});
+      return 'deletedRequest';
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  /**
+     * Works to remove a mapping from the neighbor_mappings collection in the coveytown db
+     * @param neighbor1 name of the user whose friend request was accepted
+     * @param neighbor2 name of the user who accepted the friend request
+     * @returns a string with the deletion status
+     */
+   async removeMappingFromCollection(neighbor1: string, neighbor2: string): Promise<string> {
+    try {
+      await this.neighborMappings.deleteOne({'neighbor1': neighbor1, 'neighbor2': neighbor2});
+      return 'deletedRequest';
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  /**
      * Creates an account using the passed username and password.
      * @param username the username of the new user
      * @param password the password of the new user
      * @returns a ResponseEnvelope with an AccountCreateResponse
      */
-    async insertUser(username: string, password: string) : Promise<ResponseEnvelope<AccountCreateResponse>> {
-        try {
-            if (password.length === 0 || password === '') {
-                return {
-                    isOK: false,
-                    message: 'invalid password',
-                }
-            }
+  async insertUser(username: string, password: string) : Promise<AccountCreateResponse> {
+    try {
+      const accountCreateResponse = await this.userCollection.insertOne({'username':username, 'password':password});
 
-            const user = this.getCollection('user');
-            const findUsername = await user.find({'username':username}).limit(1).toArray();
-            if (findUsername.length > 0) {
-                return {
-                    isOK: false,
-                    message: 'Username Taken',
-                }
-            }
-
-            const accountCreateResponse = await user.insertOne({'username':username, 'password':password});
-
-            return {
-                isOK: true,
-                response: {
-                    _id: String(accountCreateResponse.ops[0]._id),
-                    username: String(accountCreateResponse.ops[0].username),
-                }
-            }
-        } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
-        }
-
+      return  {
+        _id: String(accountCreateResponse.ops[0]._id),
+        username: String(accountCreateResponse.ops[0].username),
+      };
+    } catch (err) {
+      return err.toString();
     }
 
-    /**
+  }
+
+  /**
      * Attempt to log in with this username and password
      * @param username the username of the returning user
      * @param password the password of the returning user
      * @returns a ResponseEnvelope with a LoginResponse
      */
-     async login(username: string, password: string) : Promise<ResponseEnvelope<LoginResponse>> {
-        try {
-            // get the user collection
-            // find on both username and login
-            // if nothing found, return no user found with that username or passowrd
-            // else, there should be ONLY 1 match, and we should return the given id back in the response
+  async login(username: string, password: string) : Promise<LoginResponse | string> {
+    try {
 
-            const allUsers = this.getCollection('user');
-            const findUser = await allUsers.find({'username': username, 'password': password}).limit(1).toArray();
+      const findUser = await this.userCollection.find({'username': username, 'password': password}).limit(1).toArray();
 
-            if (findUser.length === 0) {
-                return {
-                    isOK: false,
-                    message: 'No user with that username and password',
-                }
-            }
-            console.log(String(findUser[0]._id));
-            return {
-                isOK: true,
-                response: {
-                    _id: String(findUser[0]._id),
-                    username: String(findUser[0].username),
-                }
-            }
-        } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
-        }
+      if (findUser.length === 0) {
+        return 'Invalid Username and Password';
+      } 
 
+      return  {
+        _id: String(findUser[0]._id),
+        username: String(findUser[0].username),
+      };
+    } catch (err) {
+      return err.toString();
     }
+}
 
-    async searchUsersByUsername(username: string) : Promise<SearchUsersResponse> {
-        try {
-            const user = await this.findUserId(username);
+    async searchUsersByUsername(currentUserId: string, username: string) : Promise<ListUsersResponse<UserWithRelationship>> {
 
-            if (user !== 'user_not_found') {
-                return {
-                    users: [{
-                        _id: user,
-                        username
-                    }]
-                }
-            }
+      //need to also take in username of player searching to get neighborStatus
+      try {
+          const userId = await this.findUserIdByUsername(username) as string;
+          const status = await this.neighborStatus(currentUserId, userId);
+          if (userId !== 'user_not_found') {
+              return {
+                  users: [{
+                      _id: userId,
+                      username,
+                      relationship: status,
+                  }]
+              }
+          }
 
-            // else do partial match search
-            const userCollection = this.getCollection('user');
-            const searchPartialMatch = await userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}, {'password': 0}).toArray();
+          // else do partial match search
 
-            console.log(searchPartialMatch);
+          const searchPartialMatch = await this.userCollection.find({'username': {'$regex': `^${username}`, '$options': 'i'}}).project({'username': 1}).toArray();
 
-            return {
-                users: searchPartialMatch
-            }
-        } catch (err) {
-            return err.toString();
-        }
-    }
+          const matchesWithStatus = await Promise.all<UserWithRelationship>(searchPartialMatch.map(async (match: any) => {
+            assert(match._id);
+            assert(match.username);
+            const status: NeighborStatus = await this.neighborStatus(currentUserId, match._id.toString());
+            assert(status.status);
+            return {_id: match._id, username: match.username, relationship: status};
+          }));
 
-    /**
+          // // get neighbor status for each user returned
+          // //return {id, username, neighborStatus}
+          // // do same thing for listing requests sent and requests received
+
+          return {
+            users: matchesWithStatus,
+          }
+      } catch (err) {
+          return err.toString();
+      }
+  }
+  
+
+  /**
      * Find a user's ID given their username
      * @param username: the string username of the user to search for
      * @returns a string containing the user's ID
      */
-    async findUserId(username: string) : Promise<string> {
-        try {
-            const user = this.getCollection('user');
+  async findUserIdByUsername(username: string) : Promise<string> {
+    try {
 
-            const findUser = await user.find({ 'username': username }).limit(1).toArray();
-            if (findUser.length === 1) {
-                return findUser[0]._id
-            }
-            return 'user_not_found';
+      const findUser = await this.userCollection.find({ 'username': username }).limit(1).toArray();
+      if (findUser.length === 1) {
 
-        } catch (err) {
-            return err.toString();
-        }
+        return findUser[0]._id.toString();
+      }
+      return 'user_not_found';
+
+    } catch (err) {
+      return err.toString();
     }
+  }
 
-    /**
+  /**
+   * Find a user's ID given their username
+   * @param id: the string id of the user to search for
+   * @returns a string containing the username
+   */
+  async findUserById(id: string) : Promise<string> {
+    try {
+
+      const findUser = await this.userCollection.find({ '_id': new ObjectID(id) }).limit(1).toArray();
+      if (findUser.length === 1) {
+        return findUser[0].username as string;
+      }
+      return 'user_not_found';
+
+    } catch (err) {
+      return err.toString();
+    }
+  }
+  
+
+  async validateUser(userID: string) : Promise<string> { 
+    try {
+      const findUser = await this.userCollection.find({ '_id': new ObjectID(userID)}).limit(1).toArray();
+      if (findUser.length === 1) {
+        return 'existing user';
+      }
+      return 'user_not_found';
+
+    } catch (err) {
+      return err.toString();
+    }
+  }
+
+  /**
      * Sending a neighbor request. Attempts to send a neighbor_request from requestFrom to requestTo
      * @param requestFrom the string _id of the user sending the request
      * @param requestTo the string _id of the player receiving a request
      * @returns a ResponseEnvelope with a NeighborStatus
      */
-    async sendRequest(requestFrom: string, requestTo: string) : Promise<ResponseEnvelope<NeighborStatus>> {
-        try {
-            const neighborRequest = this.getCollection('neighbor_request');
+  async sendRequest(requestFrom: string, requestTo: string) : Promise<NeighborStatus> {
+    try {
+      // Determine if this request has already been sent
+      const neighborStatus = await this.neighborStatus(requestFrom, requestTo);
 
-            // Determine if this request has already been sent
-            const neighborStatus = await this.neighborStatus(requestFrom, requestTo);
+      if (neighborStatus.status === 'neighbor' || neighborStatus.status === 'requestReceived' || neighborStatus.status === 'requestSent') {
+        return neighborStatus;
+      }
 
-            if (neighborStatus === 'neighbor' || neighborStatus === 'requestReceived' || neighborStatus === 'requestSent') {
-                return {
-                    isOK: true,
-                    response: neighborStatus,
-                }
-            }
+      await this.neighborRequests.insertOne({'requestFrom': requestFrom, 'requestTo': requestTo});
 
-            await neighborRequest.insertOne({'requestFrom': requestFrom, 'requestTo': requestTo});
+      return { status: 'requestSent' };
 
-            return {
-                isOK: true,
-                response: 'requestSent',
-            }
-
-        } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
-        }
+    } catch (err) {
+      return err.toString();
     }
+  }
 
-    /**
+  /**
      *  Function to determine the status of the relationship between the current user and the user being viewed
      *
      * @param user the string_id of current user
      * @param otherUser the string_id of other user
      * @returns a NeighborStatus
      */
-    async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus | undefined> {
-        try {
-            const checkIfNeighbors = await this.checkIfNeighbors(user, otherUser);
-            if (checkIfNeighbors) {
-                return 'neighbor';
-            }
+  async neighborStatus(user: string, otherUser: string): Promise<NeighborStatus> {
+    try {
+      const checkIfNeighbors = await this.checkIfNeighbors(user, otherUser);
+      if (checkIfNeighbors) {
+        return { status: 'neighbor' };
+      }
 
-            const neighborRequest = this.getCollection('neighbor_request');
-            const requestSent = await neighborRequest.find({'requestFrom': user, 'requestTo': otherUser}).limit(1).toArray();
-            if (requestSent.length === 1) {
-                return 'requestSent';
-            }
+      const requestSent = await this.neighborRequests.find({requestFrom: user, requestTo: otherUser}).toArray();
+      if (requestSent.length === 1) {
+        return { status: 'requestSent'};
+      }
 
-            const requestReceived = await neighborRequest.find({'requestFrom': otherUser, 'requestTo': user}).limit(1).toArray();
-            if (requestReceived.length === 1) {
-                return 'requestReceived';
-            }
+      const requestReceived = await this.neighborRequests.find({requestFrom: otherUser, requestTo: user}).limit(1).toArray();
+      if (requestReceived.length === 1) {
+        return { status: 'requestReceived' };
+      }
 
-            return 'unknown';
+      return { status: 'unknown' };
 
-        } catch (err) {
-            console.log(err);
-            return;
-        }
+    } catch (err) {
+      return err.toString();
     }
+  }
 
 
-    // /**
-    //  * List all users that have sent a request to the current user
-    //  * @param user the string_id of the current user
-    //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-    //  */
-    // async listRequestsReceived(user: string): Promise<ResponseEnvelope<Array<String>>> {
-    //     try {
-    //         const requests = this.getCollection('neighbor_request');
+  /**
+   * List all users that have sent a request to the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsReceived(currentUserId: string): Promise<ListUsersResponse<UsersList>> {
+    try {
+        const requestReceived = await this.neighborRequests.find({'requestTo': currentUserId}).toArray();
 
-    //         const requestReceived = await requests.find({'requestTo': user}).toArray();
+        const listUsers = await Promise.all<UsersList>(requestReceived.map(async (requester: NeighborRequestSchema) => {
+          const username = await this.findUserById(requester.requestFrom);
+          return { _id: requester.requestFrom, username };
+        }));
 
-    //         const users = requestReceived.map(request => [request.requestTo, 'requestReceived']);
-    //         // const users = requestReceived.forEach(request => console.log(request));
+        return {
+          users: listUsers
+        }
 
-    //         return {
-    //             isOK: true,
-    //             response: users,
-    //         }
+    } catch (err) {
+        return err.toString();
+    }
+  } 
 
-    //     } catch (err) {
-    //         return {
-    //             isOK: false,
-    //             message: err.toString(),
-    //         }
-    //     }
-    // }
+  /**
+   * List all users who have been sent a request by the current user
+   * @param currentUserId the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listRequestsSent(currentUserId: string): Promise<ListUsersResponse<UsersList>> {
+      try {
+        const requestSent = await this.neighborRequests.find({'requestFrom': currentUserId}).toArray();
 
-    // /**
-    //  * List all users who have been sent a request by the current user
-    //  * @param user the string_id of the current user
-    //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-    //  */
-    // async listRequestsSent(user: string): Promise<ResponseEnvelope<Array<String>>> {
-    //     try {
-    //         const requests = this.getCollection('neighbor_request');
+        const listUsers = await Promise.all<UsersList>(requestSent.map(async (requestee: NeighborRequestSchema) => {
+          const username = await this.findUserById(requestee.requestTo);
+          return { _id: requestee.requestTo, username };
+        }));
 
-    //         const requestFrom = await requests.find({'requestFrom': user}).toArray();
+        return {
+          users: listUsers
+        }
 
-    //         const users = requestFrom.map(request => [request.requestFrom, 'requestSent']);
+      } catch (err) {
+        return err.toString();
+      }
+  }
 
-    //         return {
-    //             isOK: true,
-    //             response: users,
-    //         }
+  /**
+   * List all the neighbors of the current user
+   * @param user the string_id of the current user
+   * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
+   */
+  async listNeighbors(currentUserId: string): Promise<ListUsersResponse<UsersList>> {
+      try {
+          const neighborsList1 = await this.neighborMappings.find({'neighbor1': currentUserId}).toArray();
 
-    //     } catch (err) {
-    //         return {
-    //             isOK: false,
-    //             message: err.toString(),
-    //         }
-    //     }
-    // }
+          const listUsers1 = await Promise.all<UsersList>(neighborsList1.map(async (neighbor: NeighborMappingSchema) => {
+            const username = await this.findUserById(neighbor.neighbor2);
+            return { _id: neighbor.neighbor2, username };
+          }));
 
-    // /**
-    //  * List all the neighbors of the current user
-    //  * @param user the string_id of the current user
-    //  * @returns a ResponseEnvelope with an Array listing user string_id's and NeighborStatus
-    //  */
-    // async listNeighbors(user: string): Promise<ResponseEnvelope<Array<String>>> {
-    //     try {
-    //         const neighbors = this.getCollection('neighbor_mappings');
 
-    //         const neighborsList1 = await neighbors.find({'neighbor1': user}).toArray();
+          const neighborsList2 = await this.neighborMappings.find({'neighbor2': currentUserId}).toArray();
 
-    //         const users1 = neighborsList1.map(neighbors => [neighbors.neighbor2, 'neighbor']);
+          const listUsers2 = await Promise.all<UsersList>(neighborsList2.map(async (neighbor: NeighborMappingSchema) => {
+            const username = await this.findUserById(neighbor.neighbor1);
+            return { _id: neighbor.neighbor1, username };
+          }));
 
-    //         const neighborsList2 = await neighbors.find({'neighbor2': user}).toArray();
+          return {
+            users: listUsers1.concat(listUsers2),
+          }
 
-    //         const users2 = neighborsList2.map(neighbors => [neighbors.neighbor1, 'neighbor']);
+      } catch (err) {
+          return err.toString();
+      }
+  }
 
-    //         return {
-    //             isOK: true,
-    //             response: users1.concat(users2),
-    //         }
-
-    //     } catch (err) {
-    //         return {
-    //             isOK: false,
-    //             message: err.toString(),
-    //         }
-    //     }
-    // }
-
-    /**
+  /**
      * Check if the two users passed are currently neighbors
      * @param user1 the string_id of one user
      * @param user2 the string_id of the other user
      * @returns true if neighbors, false if not
      */
-    async checkIfNeighbors(user1: string, user2: string): Promise<boolean | undefined> {
-        try {
-            const neighborMappings = this.getCollection('neighbor_mappings');
+  async checkIfNeighbors(user1: string, user2: string): Promise<boolean | undefined> {
+    try {
+      // const neighborMappings = this.getCollection('neighbor_mappings');
 
-            const neighbors1 = await neighborMappings.find({'neighbor1': user1, 'neighbor2': user2}).limit(1).toArray();
+      const neighbors1 = await this.neighborMappings.find({'neighbor1': user1, 'neighbor2': user2}).limit(1).toArray();
 
-            if (neighbors1.length === 1) {
-                return true;
-            }
+      if (neighbors1.length === 1) {
+        return true;
+      }
 
-            const neighbors2 = await neighborMappings.find({'neighbor1': user2, 'neighbor2': user1}).limit(1).toArray();
+      const neighbors2 = await this.neighborMappings.find({'neighbor1': user2, 'neighbor2': user1}).limit(1).toArray();
 
-            if (neighbors2.length === 1) {
-                return true;
-            }
+      if (neighbors2.length === 1) {
+        return true;
+      }
 
-            return false;
+      return false;
 
-        } catch (err) {
-            console.log(err);
-            return;
-        }
+    } catch (err) {
+      return err;
     }
+  }
 
-    /**
+  /**
      * Accepts the request for the user who received one
      * @param userAccepting the string_id of the user who received the request and is accepting it
      * @param userSent the string_id of the user who sent the request
      * @returns a response evnelope with the NeighborStatus of the two users
      */
-    async acceptRequest(userAccepting: string, userSent: string): Promise<ResponseEnvelope<NeighborStatus>> {
-        try {
-            const checkIfNeighbors = await this.checkIfNeighbors(userAccepting, userSent);
-            if (checkIfNeighbors) {
-                return {
-                    isOK: false,
-                    message: 'neighbor',
-                }
-            }
+  async acceptRequest(userAccepting: string, userSent: string): Promise<NeighborStatus> {
+    try {
+      const neighborStatus = await this.neighborStatus(userAccepting, userSent);
 
-            const requests = this.getCollection('neighbor_request');
-            const findRequest = await requests.find({'requestFrom': userSent, 'requestTo': userAccepting}).limit(1).toArray();
+      if (neighborStatus.status !== 'requestReceived') {
+        return neighborStatus;
+      }
 
-            if (findRequest.length !== 1) {
-                return {
-                    isOK: false,
-                    message: 'Request not found',
-                }
-            }
+      await this.neighborRequests.deleteOne({'requestFrom': userSent, 'requestTo': userAccepting});
 
-            await requests.delete({'requestFrom': userSent, 'requestTo': userAccepting});
+      await this.neighborMappings.insertOne({'neighbor1': userSent, 'neighbor2': userAccepting});
 
-            const neighborMappings = this.getCollection('neighbor_mappings');
+      return {
+        status: 'neighbor',
+      };
 
-            await neighborMappings.insert({'neighbor1': userSent, 'neighbor2': userAccepting});
-
-            return {
-                isOK: true,
-                response: 'neighbor',
-            }
-
-        } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
-        }
+    } catch (err) {
+      return err.toString();
     }
+  }
 
-    /**
+  /**
      * Removes the neighbor request sent from user to requestedUser
      * @param user the string_id of the current user
      * @param requestedUser the string_id of the requestedUser
      * @returns a ResponseEnvelope with a Neighbor Status
      */
-    async removeNeighborRequest(user: string, requestedUser: string): Promise<ResponseEnvelope<NeighborStatus>> {
-        try {
-            const requests = this.getCollection('neighbor_request');
+  async removeNeighborRequest(user: string, requestedUser: string): Promise<NeighborStatus> {
+    try {
 
-            const findRequest = await requests.find({'requestFrom': user, 'requestTo': requestedUser}).limit(1).toArray();
+      const findRequest = await this.neighborStatus(user, requestedUser);
 
-            if (findRequest === 0) {
-                // Means no record of them being neighbors, not sure what to respond here
-                return {
-                    isOK: false,
-                    message: 'Not Requested',
-                }
-            }
+      if (findRequest.status !== 'requestSent') {
+        return findRequest;
+      }
 
-            await requests.delete({'requestFrom': user, 'requestTo': requestedUser});
+      await this.neighborRequests.deleteOne({'requestFrom': user, 'requestTo': requestedUser});
 
-            return {
-                isOK: true,
-                response: 'unknown',
-            }
+      return { status: 'unknown' };
 
-        } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
-        }
+    } catch (err) {
+      return err.toString();
     }
+  }
 
-    /**
+  /**
      * Removes the neighbor relationship between the user and neighbor
      * @param user the string_id of the current user
      * @param neighbor the string_id of the neighbor to remove
      * @returns a ResponseEnvelope with a NeighborStatus
      */
-    async removeNeighbor(user: string, neighbor: string): Promise<ResponseEnvelope<NeighborStatus>> {
-        try {
-            const neighbors = this.getCollection('neighbor_mappings');
-            const checkIfNeighbors = await this.checkIfNeighbors(user, neighbor);
-            if (!checkIfNeighbors) {
-                // Same as above, unsure of proper response here
-                return {
-                    isOK: false,
-                    message: 'Not Neighbors',
-                }
-            }
+  async removeNeighbor(user: string, neighbor: string): Promise<NeighborStatus> {
+    try {
+      const neighborStatus = await this.neighborStatus(user, neighbor);
 
-            const neighbor1 = await neighbors.find({'neighbor1': user, 'neighbor2': neighbor}).limit(1).toArray();
+      if (neighborStatus.status !== 'neighbor') {
+        return neighborStatus;
+      }
 
-            if (neighbor1.length === 1) {
-                await neighbors.delete({'neighbor1': user, 'neighbor2': neighbor});
+      const neighbor1 = await this.neighborMappings.find({'neighbor1': user, 'neighbor2': neighbor}).limit(1).toArray();
 
-                return {
-                    isOK: true,
-                    response: 'unknown',
-                }
-            }
+      if (neighbor1.length === 1) {
+        await this.neighborMappings.deleteOne({'neighbor1': user, 'neighbor2': neighbor});
+        return { status: 'unknown' };
+      }
 
-            const neighbor2 = await neighbors.find({'neighbor1': neighbor, 'neighbor2': user}).limit(1).toArray();
+      await this.neighborMappings.deleteOne({'neighbor1': neighbor, 'neighbor2': user});
+      return { status: 'unknown' };
+            
 
-            if (neighbor2.length === 1) {
-                await neighbors.delete({'neighbor1': neighbor, 'neighbor2': user});
-
-                return {
-                    isOK: true,
-                    response: 'unknown',
-                }
-            }
-
-            return {
-                isOK: false,
-                message: 'unknown error',
-            }
-
-        } catch (err) {
-            return {
-                isOK: false,
-                message: err.toString(),
-            }
-        }
+    } catch (err) {
+      return err.toString();
     }
+  }
 }
-
-
-
-
-
-
-
-
-

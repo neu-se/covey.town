@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import DatabaseController from '../database/db';
+import DatabaseController, { AccountCreateResponse, LoginResponse, NeighborStatus, ListUsersResponse, UserWithRelationship, UsersList } from '../database/db';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -85,39 +85,38 @@ export interface AccountCreateRequest {
   password: string,
 }
 
-export interface AccountCreateResponse {
-  _id: string,
-  username: string,
-}
-
 export interface LoginRequest {
   username: string,
   password: string,
 }
 
-export interface LoginResponse {
-  _id: string,
-  username: string,
-}
-
 export interface SearchUsersRequest {
+  currentUserId: string,
   username: string,
-}
-
-export interface SearchUsersResponse {
-  users: {
-    _id: string,
-    username: string,
-  }[]
 }
 
 export interface AddNeighborRequest {
-  currenUserId: string,
+  currentUserId: string,
   UserIdToRequest: string,
 }
 
 export interface AddNeighborResponse {
   status: string,
+}
+
+export interface AcceptNeighborRequestRequest {
+  userAccepting: string,
+  userSent: string,
+}
+
+export interface RemoveNeighborRequestRequest {
+  currentUser: string,
+  requestedUser: string,
+}
+
+export interface RemoveNeighborMappingRequest {
+  currentUser: string,
+  neighbor: string,
 }
 
 /**
@@ -212,49 +211,93 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 export async function accountCreateHandler(requestData: AccountCreateRequest): Promise<ResponseEnvelope<AccountCreateResponse>> {
   try {
+    if (requestData.password.length === 0 || requestData.password === '') {
+      return {
+        isOK: false,
+        message: 'Invalid Password',
+      };
+    }
+
     const db = new DatabaseController();
     await db.connect();
+    const checkUsernameExists = await db.findUserIdByUsername(requestData.username);
+    if (checkUsernameExists !== 'user_not_found') {
+      return {
+        isOK: false,
+        message: 'Username Taken',
+      };
+    }
     const result = await db.insertUser(requestData.username, requestData.password);
-    db.close();
-    return result;
-  } catch (err) {
-    return {
-      isOK: false,
-      message: err.toString()
-    }
-  }
-}
-
-export async function loginHandler(requestData: LoginRequest): Promise<ResponseEnvelope<LoginResponse>> {
-  try {
-    const db = new DatabaseController();
-    await db.connect();
-    const result = await db.login(requestData.username, requestData.password);
-    db.close();
-    return result;
-  } catch (err) {
-    return {
-      isOK: false,
-      message: err.toString()
-    }
-  }
-}
-
-export async function searchUsersByUsername(requestData: SearchUsersRequest) : Promise<ResponseEnvelope<SearchUsersResponse>> {
-  try {
-    const db = new DatabaseController();
-    await db.connect();
-    const result = await db.searchUsersByUsername(requestData.username);
     db.close();
     return {
       isOK: true,
       response: result,
-    }
+    };
   } catch (err) {
     return {
       isOK: false,
       message: err.toString(),
+    };
+  }
+}
+
+export async function loginHandler(requestData: LoginRequest): Promise<ResponseEnvelope<LoginResponse | string>> {
+  try {
+    if (requestData.password.length === 0 || requestData.password === '') {
+      return {
+        isOK: false,
+        message: 'Invalid Password',
+      };
     }
+
+    const db = new DatabaseController();
+    await db.connect();
+    const findUser = await db.findUserIdByUsername(requestData.username);
+    if (findUser === 'user_not_found') {
+      return {
+        isOK: false,
+        message: 'Invalid Username',
+      };
+    }
+
+    const result = await db.login(requestData.username, requestData.password);
+    db.close();
+
+    if (typeof result === 'string') {
+      return {
+        isOK: false,
+        message: result,
+      };
+    }
+
+    return {
+      isOK: true,
+      response: result,
+    };
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString(),
+    };
+  }
+}
+
+export async function searchUsersByUsername(requestData: SearchUsersRequest) : Promise<ResponseEnvelope<ListUsersResponse<UserWithRelationship>>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+    const result = await db.searchUsersByUsername(requestData.currentUserId, requestData.username);
+
+    db.close();
+    return {
+      isOK: true,
+      response: result,
+    };
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString(),
+    };
   }
 }
 
@@ -262,21 +305,239 @@ export async function sendAddNeighborRequest(requestData: AddNeighborRequest) : 
   try {
     const db = new DatabaseController();
     await db.connect();
-    const result = await db.sendRequest(requestData.currenUserId, requestData.UserIdToRequest);
-    db.close();
+    const findUser1 = await db.validateUser(requestData.currentUserId);
+    if (findUser1 === 'user_not_found') {
+      db.close();
       return {
-        isOK: true,
-        response: {
-          status: 'requestSent',
-        },
-      }
+        isOK: false,
+        message: 'Sending User Not Found',
+      };
+    }
+    const findUser2 = await db.validateUser(requestData.UserIdToRequest);
+    if (findUser2 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Receiving User Not Found',
+      };
+    }
+
+    const result = await db.sendRequest(requestData.currentUserId, requestData.UserIdToRequest);
+    db.close();
+
+    return {
+      isOK: true,
+      response: result,
+    };
   } catch (err) {
     return {
       isOK: false,
       message: err.toString(),
+    };
+  }
+}
+
+export async function acceptRequestHandler(requestData: AcceptNeighborRequestRequest) : Promise<ResponseEnvelope<NeighborStatus>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const findUser1 = await db.validateUser(requestData.userAccepting);
+    if (findUser1 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Sending User Not Found',
+      };
+    }
+    const findUser2 = await db.validateUser(requestData.userSent);
+    if (findUser2 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Receiving User Not Found',
+      };
+    }
+
+    const result: NeighborStatus = await db.acceptRequest(requestData.userAccepting, requestData. userSent);
+    db.close();
+
+    if (result.status !== 'neighbor') {
+      return {
+        isOK: false,
+        response: result,
+      };
+    }
+    return {
+      isOK: true,
+      response: result,
+    };
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString(),
+    };
+  }
+}
+
+  export async function listNeighbors(currentUserId: string) : Promise<ResponseEnvelope<ListUsersResponse<UsersList>>> {
+    try {
+      const db = new DatabaseController();
+      await db.connect();
+      const neighborsList = await db.listNeighbors(currentUserId);
+
+    db.close();
+    return {
+      isOK: true,
+      response: neighborsList,
+    }
+
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
     }
   }
 }
+
+export async function listRequestsReceived(currentUserId: string) : Promise<ResponseEnvelope<ListUsersResponse<UsersList>>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const requestsReceivedList = await db.listRequestsReceived(currentUserId);
+
+    db.close();
+    return {
+      isOK: true,
+      response: requestsReceivedList,
+    }
+
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
+export async function listRequestsSent(currentUserId: string) : Promise<ResponseEnvelope<ListUsersResponse<UsersList>>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const requestsSentList = await db.listRequestsSent(currentUserId);
+
+    db.close();
+    return {
+      isOK: true,
+      response: requestsSentList,
+    }
+
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString()
+    }
+  }
+}
+
+
+
+export async function removeNeighborRequestHandler(requestData: RemoveNeighborRequestRequest) : Promise<ResponseEnvelope<NeighborStatus>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const findUser1 = await db.validateUser(requestData.currentUser);
+    if (findUser1 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Sending User Not Found',
+      };
+    }
+    const findUser2 = await db.validateUser(requestData.requestedUser);
+    if (findUser2 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Receiving User Not Found',
+      };
+    }
+
+    const result: NeighborStatus = await db.removeNeighborRequest(requestData.currentUser, requestData.requestedUser);
+    db.close();
+
+    if (result.status !== 'unknown') {
+      return {
+        isOK: false,
+        response: result,
+      };
+    }
+    return {
+      isOK: true,
+      response: result,
+    };
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString(),
+    };
+  }
+}
+
+export async function removeNeighborMappingHandler(requestData: RemoveNeighborMappingRequest) : Promise<ResponseEnvelope<NeighborStatus>> {
+  try {
+    const db = new DatabaseController();
+    await db.connect();
+
+    const findUser1 = await db.validateUser(requestData.currentUser);
+    if (findUser1 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Current User Not Found',
+      };
+    }
+    const findUser2 = await db.validateUser(requestData.neighbor);
+    if (findUser2 === 'user_not_found') {
+      db.close();
+      return {
+        isOK: false,
+        message: 'Neighbor Not Found',
+      };
+    }
+
+    const result: NeighborStatus = await db.removeNeighbor(requestData.currentUser, requestData.neighbor);
+    db.close();
+
+    if (result.status !== 'unknown') {
+      return {
+        isOK: false,
+        response: result,
+      };
+    }
+    return {
+      isOK: true,
+      response: result,
+    };
+  } catch (err) {
+    return {
+      isOK: false,
+      message: err.toString(),
+    };
+  }
+}
+
+
+// TODO
+// add javaDoc
+// listNeighbors handler 
+// + check who is online with coveytownstore
+// listRequestsSent handler 
+// listRequestsReceived handler 
+
 
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
@@ -342,3 +603,4 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(s.player, movementData);
   });
 }
+

@@ -112,7 +112,9 @@ export interface LoginResponse {
   _id: string,
   username: string,
 }
+
 export interface SearchUsersRequest {
+  userIdSearching: string,
   username: string,
 }
 
@@ -126,7 +128,7 @@ export interface SearchUsersResponse {
 export type NeighborStatus = 'unknown' | 'requestSent' | 'requestReceived' | 'neighbor';
 
 export interface AddNeighborRequest {
-  currenUserId: string,
+  currentUserId: string,
   UserIdToRequest: string,
 }
 

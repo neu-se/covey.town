@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/neu-se/covey.town#readme",
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit",
     "start": "npm run build:live",
     "production": "npm run build && node build/server.js",
     "build": "tsc -p .",
@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@types/express": "^4.17.9",
+    "@types/mongodb": "^3.6.10",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
