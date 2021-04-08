@@ -35,6 +35,7 @@ import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
 import StarterPage from "./components/ProfileManagement/StarterPage";
 import FriendsPage from "./components/UserProfiles/FriendsPage";
+import InviteFriendComponent from "./components/ProfileManagement/InviteFriendComponent";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -293,6 +294,7 @@ return (
             )}
 
             <Route path='/starterPage' exact component={StarterPage} />
+            <Route path='/users/:users' exact component={InviteFriendComponent} />
           </div>
         </AppStateProvider>
       </MuiThemeProvider>

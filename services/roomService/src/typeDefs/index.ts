@@ -9,6 +9,7 @@ type Query {
   searchUserById(id: ID!): User!
   searchUserByUserName(username: String!): [User!]
   searchUserByEmail(email: String!) : User!
+  searchUserByName(username: String!) : User!
 }
 
 type User {

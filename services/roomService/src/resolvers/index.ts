@@ -35,7 +35,10 @@ const resolvers = {
       });
       return response;
     },
-
+    searchUserByName: async (_: any, args: any) => {
+      const user = await User.findOne({ username: args.username });
+      return user;
+    },
     /**
      * Resolver to find a user by email
      * @param _ parent is not used here
