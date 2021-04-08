@@ -125,12 +125,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, coveyRoomID);
-
-      const loggedIn = await doLogin(initData);
-      if (loggedIn) {
-        assert(initData.providerVideoToken);
-        await connect(initData.providerVideoToken);
+      if (loggedInUser) {
+        const initData = await Video.setup(userName, loggedInUser?.userID, coveyRoomID);
+        const loggedIn = await doLogin(initData);
+        if (loggedIn) {
+          assert(initData.providerVideoToken);
+          await connect(initData.providerVideoToken);
+        }
       }
     } catch (err) {
       toast({
@@ -343,7 +344,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                     </Tbody>
                   </Table>
                 </Box> :
-                <Heading p="4" as="h6" size="sm">You have no friend</Heading>
+                <Heading p="4" as="h6" size="sm">You have no friends <span aria-label="a very sad face" role="img">😔</span></Heading>
             }
 
             <Box marginTop="2">
