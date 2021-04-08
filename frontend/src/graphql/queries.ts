@@ -26,6 +26,24 @@ export interface RejectFriendRequest {
   userNameFrom: string;
 }
 
+/**
+ * Envelope that wraps any response from the server
+ */
+export interface UpdateUserRequest {
+  id: string
+  userName: string
+  email: string
+  bio: string
+  location: string
+  occupation: string
+  instagramLink: string
+  facebookLink: string
+  linkedInLink: string
+  password: string
+}
+
+
+
 
 /**
  * Envelope that wraps any response from the server
@@ -100,6 +118,25 @@ const searchUserByEmailQuery = gql`
   }
 `;
 
+const searchUserByNameQuery = gql`
+  query searchUserByName ($username: String!) {
+    searchUserByName (username: $username){
+      id
+      username
+      email
+      bio
+      location
+      occupation
+      instagramLink
+      facebookLink
+      linkedInLink
+      requests
+      friends
+      sentRequests
+    }
+  }
+`;
+
 const createTownMutation = gql`
   mutation townCreate($input: townCreateRequestInput!) {
     townCreateRequest(input: $input) {
@@ -145,6 +182,22 @@ const addFriendMutation = gql`
   }
 `;
 
+const updateUserMutation = gql`
+  mutation updateUser($input: updateUserInput) {
+    updateUser(input: $input){
+        id,
+        username,
+        email,
+        bio,
+        location,
+        occupation,
+        instagramLink,
+        facebookLink,
+        linkedInLink,
+    }
+  }
+`;
+
 const acceptFriendMutation = gql`
   mutation acceptFriend($input: addFriendInput!) {
     acceptFriend(input: $input)
@@ -176,6 +229,14 @@ export const searchUserByEmail = async (email: string): Promise<any> => {
     variables: { email },
   });
   return data.searchUserByEmail;
+}
+
+export const searchUserByName = async (username: string): Promise<any> => {
+  const { data } = await client.query({
+    query: searchUserByNameQuery,
+    variables: { username },
+  });
+  return data.searchUserByName;
 }
 
 
@@ -224,5 +285,14 @@ export const rejectFriend = async (payload: RejectFriendRequest): Promise<any> =
     variables: {input: payload},
   });
   return data.rejectFriend;
+}
+
+export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
+  console.log(payload)
+  const { data } = await client.mutate({
+    mutation: updateUserMutation,
+    variables: {input: payload},
+  });
+  return data.updateUser;
 }
 
