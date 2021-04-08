@@ -222,7 +222,6 @@ export default class CoveyTownController {
       }
       player1Listener.onPlayerMessage(message);
       player2Listener.onPlayerMessage(message);
-      this._listeners.get(message.senderProfileId)?.onPlayerMessage(message);
     }
   }
 }
