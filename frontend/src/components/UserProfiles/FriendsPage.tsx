@@ -10,9 +10,8 @@ import {
     HStack,
     Spacer,
     useToast,
-    Link 
   } from "@chakra-ui/react"
-import { searchUserByEmail, searchUserByUserName, User } from '../../graphql/queries';
+import { searchUserByEmail, searchUserByUserName } from '../../graphql/queries';
 
 
 function FriendsPage(): JSX.Element {
@@ -26,8 +25,8 @@ function FriendsPage(): JSX.Element {
   }
  
   const { user } = useAuth0();
-  const [friends, setFriends] = useState<User[]>([]);
-  const [requests, setRequests] = useState<User[]>([]);
+  const [friends, setFriends] = useState<string[]>([]);
+  const [requests, setRequests] = useState<string[]>([]);
 
   useEffect(() => {
     const findUser = async () => {
