@@ -5,6 +5,7 @@ import * as TestUtils from '../client/TestUtils';
 import { UserLocation } from '../CoveyTypes';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownListener from '../types/CoveyTownListener';
+import GlobalChatMessage from '../types/GlobalChatMessage';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import PrivateChatMessage from '../types/PrivateChatMessage';
@@ -149,12 +150,53 @@ describe('CoveyTownController', () => {
       const session2 = await testingTown.addPlayer(player2);
       const message = new PrivateChatMessage('hello', session1, session2);
       mockListeners.forEach(listener => listener.onPrivateMessage(message));
-      expect(mockListeners[0].onPrivateMessage).toBeCalled();
-      expect(mockListeners[1].onPrivateMessage).toBeCalled();
-      expect(mockListeners[2].onPrivateMessage).toBeCalled();
-      // TODO how do update specific listeners?
-      // Our wierd error with imports in test files
-      // How do we actually display the message?
+      expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
+      expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
+      expect(mockListeners[2].onPrivateMessage).toBeCalledWith(message);
+    });
+
+    it("should send private message and other players can't see it", async () => {
+      const player1 = new Player('player 1');
+      const player2 = new Player('player 2');
+      const player3 = new Player('player 3');
+
+      const session1 = await testingTown.addPlayer(player1);
+      const session2 = await testingTown.addPlayer(player2);
+      const session3 = await testingTown.addPlayer(player3);
+      const message = new PrivateChatMessage('hello', session1, session2);
+      mockListeners.forEach(listener => listener.onPrivateMessage(message));
+      expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
+      expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
+      expect(mockListeners[2].onPrivateMessage).toBeCalledWith(message);
+      // TODO check that player 2 got the message but player 3 did not
+    });
+
+    it('should send global message', async () => {
+      const player1 = new Player('player 1');
+      const player2 = new Player('player 2');
+      const player3 = new Player('player 3');
+
+      const session1 = await testingTown.addPlayer(player1);
+      const message = new GlobalChatMessage('hello', session1);
+      mockListeners.forEach(listener => listener.onGlobalMessage(message));
+      expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
+      // TODO player 2 and player 3 should have gotten the message
+    });
+
+    it('players in other rooms do not get a from the current room', async () => {
+      const player1 = new Player('player 1');
+      const player2 = new Player('player 2');
+      const player3 = new Player('player 3');
+
+      const session1 = await testingTown.addPlayer(player1);
+      const message = new GlobalChatMessage('hello', session1);
+      mockListeners.forEach(listener => listener.onGlobalMessage(message));
+      expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
+      // TODO player 2 and player 3 should have gotten the message
     });
   });
 
