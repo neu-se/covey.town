@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  Text,
   InputGroup,
   Input,
   InputRightElement,
@@ -17,26 +18,27 @@ import {
   Spacer,
 } from "@chakra-ui/react";
   
-import { searchUserByUserName, User } from "../../graphql/queries";
+import { searchUserByUserName, searchUserByEmail, findAllUsersByUserName, findAllUserProfiles, User } from "../../graphql/queries";
 
 export default function FriendSearch(): JSX.Element {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [username, setUsername] = useState("");
-  const [userName, setUserName] = useState<string>("");
+  // const [userName, setUserName] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   
   const handleClick = async () => {
     onOpen();
-    console.log(username);
-    const findUserByName = async () => {
-      const userInfo = await searchUserByUserName(username);
-      setUserName(userInfo.username);
-      setUserEmail(userInfo.bio);
+    // console.log(username);
+    const findUserByName = async (userName: string) => {
+      // console.log(userName);
+      const userList = await findAllUsersByUserName(userName);
+      // console.log(userList);
+      setUsers(userList);
+      
     }
-    findUserByName();
-    // console.log('done');
+    findUserByName(username);
   };
 
   return (
@@ -54,26 +56,14 @@ export default function FriendSearch(): JSX.Element {
               <ModalCloseButton />
               <ModalBody>
                 <Box mt={5} w='90%'>
-                        <Box bg="white" p={5} color="black"  borderWidth="1px" borderRadius="lg" alignItems="center">
+                      {users.map((user) => (
+                        <Box bg="white" p={5} color="black" key={user.id} borderWidth="1px" borderRadius="lg" >
                           <Flex>
-                          {/* <Button size='md'alignItems="center"> */}
-                          <Box><p>hello</p> </Box>
-                          {/* </Button> */}
-                          <Spacer/>
-                          </Flex>
-                          <Flex>
-                          {/* <Button size='md'alignItems="center"> */}
-                          <Box><p>hello</p> </Box>
-                          {/* </Button> */}
-                          <Spacer/>
-                          </Flex>
-                          <Flex>
-                          {/* <Button size='md'alignItems="center"> */}
-                          <Box><p>hello</p> </Box>
-                          {/* </Button> */}
-                          <Spacer/>
+                            <Text textAlign="left">{user.username}</Text>
+                              <Spacer/>
                           </Flex>
                         </Box>
+                      ))}
                   </Box>
               </ModalBody>
               <ModalFooter>
