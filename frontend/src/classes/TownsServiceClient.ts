@@ -8,6 +8,8 @@ import { ServerPlayer } from './Player';
 export interface TownJoinRequest {
   /** userName of the player that would like to join * */
   userName: string;
+  /** coveyUserID of the player */
+  coveyUserID: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }

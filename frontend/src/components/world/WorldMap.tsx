@@ -1,8 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import Phaser from 'phaser';
+import {
+  Avatar,
+  AvatarBadge,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from '@chakra-ui/react';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { CoveyUser } from '../../CoveyTypes';
+import RealmDBClient from '../../services/database/RealmDBClient';
+import useAuthInfo from '../../hooks/useAuthInfo';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
@@ -86,7 +108,7 @@ class CoveyGameScene extends Phaser.Scene {
           y: 0,
         };
       }
-      myPlayer = new Player(player.id, player.userName, location);
+      myPlayer = new Player(player.id, player.coveyUserId, player.userName, location);
       this.players.push(myPlayer);
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
@@ -427,7 +449,11 @@ class CoveyGameScene extends Phaser.Scene {
 }
 
 export default function WorldMap(): JSX.Element {
+  const db = RealmDBClient.getInstance();
+  const [townUsers, setTownUsers] = useState<CoveyUser[]>([]);
   const video = Video.instance();
+  const authInfo = useAuthInfo();
+  const loggedInUser = authInfo.currentUser;
   const {
     emitMovement, players,
   } = useCoveyAppState();
@@ -468,5 +494,69 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  return <div id="map-container"/>;
+  useEffect(() => {
+    const townUsersList: CoveyUser[] = [];
+    console.log(players.length);
+    players
+    .filter(player => player.coveyUserId !== loggedInUser?.userID)
+    .map(async (player) => {
+      await db.getUser(player.coveyUserId)
+        .then(response => {
+          if (response != null) {
+            if (townUsersList.indexOf(response) === -1) {
+              townUsersList.push(response);
+            }
+          }
+          return response;
+        });
+      })
+    setTownUsers(townUsersList);
+    console.log(townUsers.length);
+  }, [players])
+
+  const handleAddFriend = (townUserID: string) => {
+    // TODO
+  }
+
+  function areAlreadyFriends(townUserID: string) : boolean {
+    if (loggedInUser) {
+      return loggedInUser.friendIDs.filter((friendID: string) => friendID === townUserID).length > 0;
+    }
+    return false;
+  }
+
+  return <div id="map-container">
+    <Box p="4" borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg">Town Users:</Heading>
+            {
+              townUsers.length > 0 ?
+                <Box maxH="500px" overflowY="scroll">
+                  <Table>
+                    <Thead><Tr><Th>User Name</Th><Th>Friend user</Th></Tr></Thead>
+                    <Tbody>
+                      {
+                        townUsers.map(townUser => 
+                          <Tr key={townUser.profile.username}>
+                            <Td role='cell'>
+                              <Flex>
+                                <Avatar size="2xs" src={townUser.profile.pfpURL} marginRight="5px">
+                                  <AvatarBadge boxSize="1.25em" bg="green.500" />
+                                </Avatar>
+                                {townUser.profile.username}
+                              </Flex>
+                            </Td>
+                            <Td role='cell'>
+                              <Button onClick={() => handleAddFriend(townUser.userID)}
+                              disabled={areAlreadyFriends(townUser.userID)}>Add Friend</Button>
+                            </Td>
+                          </Tr>)
+                      }
+                    </Tbody>
+                  </Table>
+                </Box> :
+                <Heading p="4" as="h6" size="sm">You are alone in the town <span aria-label="a very sad face" role="img">😔</span>
+                </Heading>
+            }
+          </Box>
+    </div>;
 }

@@ -16,6 +16,8 @@ export default class Video {
 
   private _userName: string;
 
+  private _coveyUserID: string;
+
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
 
   private _coveyTownID: string;
@@ -28,8 +30,9 @@ export default class Video {
 
   unPauseGame: () => void = ()=>{};
 
-  constructor(userName: string, coveyTownID: string) {
+  constructor(userName: string, coveyUserID: string, coveyTownID: string) {
     this._userName = userName;
+    this._coveyUserID = coveyUserID;
     this._coveyTownID = coveyTownID;
   }
 
@@ -52,12 +55,17 @@ export default class Video {
     return this._coveyTownID;
   }
 
+  get coveyUserId(): string {
+    return this._coveyUserID;
+  }
+
   private async setup(): Promise<TownJoinResponse> {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
         // Request our token to join the town
         this.townsServiceClient.joinTown({
           coveyTownID: this._coveyTownID,
+          coveyUserID: this._coveyUserID, 
           userName: this._userName,
         })
           .then((result) => {
@@ -98,11 +106,11 @@ export default class Video {
     return this.teardownPromise ?? Promise.resolve();
   }
 
-  public static async setup(username: string, coveyTownID: string): Promise<TownJoinResponse> {
+  public static async setup(username: string, coveyUserID: string, coveyTownID: string): Promise<TownJoinResponse> {
     let result = null;
 
     if (!Video.video) {
-      Video.video = new Video(username, coveyTownID);
+      Video.video = new Video(username, coveyUserID, coveyTownID);
     }
 
     try {
