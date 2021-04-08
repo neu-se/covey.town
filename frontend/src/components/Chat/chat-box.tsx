@@ -10,6 +10,7 @@ import {
   Fab,
   Grid,
   ListItem,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import {MentionsInput, Mention} from 'react-mentions'
@@ -54,6 +55,9 @@ const useStyles = makeStyles({
     justifyContent: 'between',
     float: 'right',
     top: 'flex-end'
+  },
+  mentionText: {
+    color: '#1d2bff'
   },
   messageWindow: {
     height: '55vh',
@@ -243,12 +247,14 @@ const getDisplayTextFromMention = (text:string) => {
                          onBlur={onBlur}
 
           >
+            {/* <Tooltip title="User mentioned you"> */}
             <Mention
-
+              // style={{color: '#1d2bff'}}
               trigger="@"
               data={users}
               markup="@{{__id__||__display__}}"
             />
+            {/* </Tooltip> */}
 
 
           </MentionsInput>
