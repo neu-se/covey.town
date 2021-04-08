@@ -10,6 +10,7 @@ type Query {
   searchUserByUserName(username: String!): [User!]
   searchUserByEmail(email: String!) : User!
   searchUserByName(username: String!) : User!
+  townList: TownListResponseEnvelope!
 }
 
 type User {
@@ -77,6 +78,18 @@ type Player {
   _id: String!
   _userName: String!
   location: UserLocation!
+}
+
+type CoveyTownList {
+  friendlyName: String!
+  coveyTownID: String!
+  currentOccupancy: Int!
+  maximumOccupancy: Int!
+}
+
+type TownListResponseEnvelope {
+  isOK: Boolean!
+  towns: [CoveyTownList!]
 }
 
 type Town {
