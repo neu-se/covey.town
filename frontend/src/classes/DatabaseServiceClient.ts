@@ -2,53 +2,17 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { User, UserStatus } from '../components/Login/testingDB';
 
-/**
- * Payload sent by client to check if a user exists 
- */
- export interface UserExistenceRequest {
-    emailID: string;
-  }
-/**
- * Response from the server for if a user exists
- */
-  export interface UserExistenceResponse {
-    exists: boolean;
+
+export interface UserEmailRequest {
+  email: string;
   }
 
-
-/**
- * Payload sent by client to get a user's friends 
- */
- export interface GetUsersFriendsRequest {
-    emailID: string;
-  }
-/**
- * Response from the server to get a user's friends 
- */
- export interface GetUsersFriendsResponse {
-    friendList: UserStatus[];
-  }
-
-
-/**
- * Payload sent by client to get a user's status
- */
- export interface GetUsersStatusRequest {
-    emailID: string;
-  }
-
-/**
- * Response from the server to for user's status
- */
- export interface GetUsersStatusResponse {
-    status: boolean;
-  }
 
 /**
  * Payload sent by client to set a user's status
  */
- export interface SetUsersStatusRequest {
-    emailID: string;
+ export interface StatusChangeRequest {
+    email: string;
     status: boolean;
   }
 
@@ -64,16 +28,16 @@ import { User, UserStatus } from '../components/Login/testingDB';
  * Payload sent by client to add a friend to friendlist
  */
  export interface AddFriendRequest {
-    emailID: string
-    friendEmailID: string
+    email: string
+    friendEmail: string
   }
 
 /**
  * Payload sent by client to delete a friend from friendlist
  */
- export interface DeleteFriendRequest {
-    emailID: string
-    friendEmailID: string
+ export interface RemoveFriendRequest {
+    email: string
+    friendEmail: string
   }
 
 
@@ -115,24 +79,24 @@ export default class DatabaseServiceClient {
     }
 
 
-    async userExistence(requestData: UserExistenceRequest): Promise<UserExistenceResponse> {
-      const responseWrapper = await this._axios.post<ResponseEnvelope<UserExistenceResponse>>(`/users/${requestData.emailID}`);
+    async userExistence(requestData: UserEmailRequest): Promise<void> {
+      const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}`);
       return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
   
-    async getFriends(requestData: GetUsersFriendsRequest): Promise<GetUsersFriendsResponse> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<GetUsersFriendsResponse>>(`/users/${requestData.emailID}/friends`);
+    async getFriends(requestData: UserEmailRequest): Promise<UserStatus[]> {
+        const responseWrapper = await this._axios.post<ResponseEnvelope<UserStatus[]>>(`/users/${requestData.email}/friends`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 
 
-    async getOnlineStatus(requestData: GetUsersStatusRequest): Promise<GetUsersStatusResponse> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<GetUsersStatusResponse>>(`/users/${requestData.emailID}/status`);
+    async getOnlineStatus(requestData: UserEmailRequest): Promise<void> {
+        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}/status`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 
-    async setOnlineStatus(requestData: SetUsersStatusRequest): Promise<void> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.emailID}/status/${requestData.status}`);
+    async setOnlineStatus(requestData: StatusChangeRequest): Promise<void> {
+        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}/status/${requestData.status}`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 
@@ -142,12 +106,12 @@ export default class DatabaseServiceClient {
     }
 
     async addFriend(requestData: AddFriendRequest): Promise<void> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.emailID}/friends/${requestData.friendEmailID}`);
+        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}/friends/${requestData.friendEmail}`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 
-    async deleteFriend(requestData: DeleteFriendRequest): Promise<void> {
-        const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/users/${requestData.emailID}/friends/${requestData.friendEmailID}`);
+    async deleteFriend(requestData: RemoveFriendRequest): Promise<void> {
+        const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/users/${requestData.email}/friends/${requestData.friendEmail}`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper, true);
       }
   }
