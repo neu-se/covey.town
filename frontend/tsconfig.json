@@ -24,6 +24,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "src/classes/DatabaseServiceClient.ts"
   ]
 }
