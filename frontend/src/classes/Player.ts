@@ -40,6 +40,8 @@ export type Direction = 'front'|'back'|'left'|'right';
 
 export type Character = 'misa-blond-hair'|'misa-red-hair'|'misa-green-hair'|'misa-blue-hair';
 
+export const characterTypes: Character[] = ['misa-blond-hair', 'misa-red-hair', 'misa-green-hair', 'misa-blue-hair'];
+
 export type UserLocation = {
   x: number,
   y: number,

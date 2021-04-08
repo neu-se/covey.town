@@ -141,6 +141,7 @@ describe('TownsServiceAPIREST', () => {
         await apiClient.joinTown({
           userName: nanoid(),
           coveyTownID,
+          character: 'misa-blond-hair',
         });
         fail('Expected joinTown to throw an error');
       } catch (e) {
@@ -206,6 +207,7 @@ describe('TownsServiceAPIREST', () => {
         await apiClient.joinTown({
           userName: nanoid(),
           coveyTownID: nanoid(),
+          character: 'misa-blond-hair',
         });
         fail('Expected an error to be thrown by joinTown but none thrown');
       } catch (err) {
@@ -220,6 +222,7 @@ describe('TownsServiceAPIREST', () => {
       const res = await apiClient.joinTown({
         userName: nanoid(),
         coveyTownID: pubTown1.coveyTownID,
+        character: 'misa-blond-hair',
       });
       expect(res.coveySessionToken)
         .toBeDefined();
@@ -229,6 +232,7 @@ describe('TownsServiceAPIREST', () => {
       const res2 = await apiClient.joinTown({
         userName: nanoid(),
         coveyTownID: privTown1.coveyTownID,
+        character: 'misa-blond-hair',
       });
       expect(res2.coveySessionToken)
         .toBeDefined();

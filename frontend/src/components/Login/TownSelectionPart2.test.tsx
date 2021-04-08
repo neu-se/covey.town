@@ -164,7 +164,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
 
         // Check for call sequence
         await waitFor(() => expect(mockVideoSetup)
-          .toBeCalledWith(userName, coveyTownID));
+          .toBeCalledWith(userName, coveyTownID, 'misa-blond-hair'));
         await waitFor(() => expect(doLoginMock)
           .toBeCalledWith({ providerVideoToken: videoToken }));
         await waitFor(() => expect(mockConnect)
@@ -219,7 +219,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
 
         // Check for call sequence
         await waitFor(() => expect(mockVideoSetup)
-          .toBeCalledWith(userName, coveyTownID));
+          .toBeCalledWith(userName, coveyTownID, 'misa-blond-hair'));
         await waitFor(() => expect(doLoginMock)
           .not
           .toBeCalledWith({ providerVideoToken: videoToken }));
@@ -249,7 +249,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
 
         // Check for call sequence
         await waitFor(() => expect(mockVideoSetup)
-          .toBeCalledWith(userName, coveyTownID));
+          .toBeCalledWith(userName, coveyTownID, 'misa-blond-hair'));
         await waitFor(() => expect(doLoginMock)
           .toBeCalledWith({ providerVideoToken: videoToken }));
         await waitFor(() => expect(mockConnect)
@@ -279,7 +279,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
 
         // Check for call sequence
         await waitFor(() => expect(mockVideoSetup)
-          .toBeCalledWith(userName, coveyTownID));
+          .toBeCalledWith(userName, coveyTownID, 'misa-blond-hair'));
         await waitFor(() => expect(doLoginMock)
           .toBeCalledWith({ providerVideoToken: videoToken }));
         await waitFor(() => expect(mockConnect)
@@ -318,7 +318,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               });
               userEvent.click(button);
               await waitFor(() => expect(mockVideoSetup)
-                .toBeCalledWith(username, town.coveyTownID));
+                .toBeCalledWith(username, town.coveyTownID, 'misa-blond-hair'));
               await waitFor(() => expect(doLoginMock)
                 .toBeCalledWith({ providerVideoToken: videoToken }));
               await waitFor(() => expect(mockConnect)
@@ -432,7 +432,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               });
               userEvent.click(button);
               await waitFor(() => expect(mockVideoSetup)
-                .toBeCalledWith(username, town.coveyTownID));
+                .toBeCalledWith(username, town.coveyTownID, 'misa-blond-hair'));
               await waitFor(() => expect(doLoginMock)
                 .toBeCalledWith({ providerVideoToken: videoToken }));
               await waitFor(() => expect(mockToast)
@@ -457,7 +457,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               });
               userEvent.click(button);
               await waitFor(() => expect(mockVideoSetup)
-                .toBeCalledWith(username, town.coveyTownID));
+                .toBeCalledWith(username, town.coveyTownID, 'misa-blond-hair'));
               await waitFor(() => expect(doLoginMock)
                 .toBeCalledWith({ providerVideoToken: videoToken }));
               await waitFor(() => expect(mockConnect)

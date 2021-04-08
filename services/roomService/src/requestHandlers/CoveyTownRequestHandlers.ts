@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { CoveyTownList, Character, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 
@@ -11,6 +11,10 @@ import CoveyTownsStore from '../lib/CoveyTownsStore';
 export interface TownJoinRequest {
   /** userName of the player that would like to join * */
   userName: string;
+
+  /** The Character type of the player that would like to join * */
+  character: Character;
+
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }
@@ -106,7 +110,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
-  const newPlayer = new Player(requestData.userName);
+  const newPlayer = new Player(requestData.userName, requestData.character);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
   return {

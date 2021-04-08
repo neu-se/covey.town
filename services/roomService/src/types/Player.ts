@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { Character, UserLocation } from '../CoveyTypes';
 
 /**
  * Each user who is connected to a town is represented by a Player object
@@ -11,10 +11,13 @@ export default class Player {
   /** The unique identifier for this player * */
   private readonly _id: string;
 
+  /** The Character type for this player * */
+  private readonly _character: Character;
+
   /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
 
-  constructor(userName: string) {
+  constructor(userName: string, character: Character) {
     this.location = {
       x: 0,
       y: 0,
@@ -22,6 +25,7 @@ export default class Player {
       rotation: 'front',
     };
     this._userName = userName;
+    this._character = character;
     this._id = nanoid();
   }
 
