@@ -1,28 +1,81 @@
-import React from 'react';
+import React , {useState, useEffect} from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 import {
-    Box,
-    Text,
-    Flex,
-    Button,
-    Divider,
-    Stack,
-    HStack,
-    Spacer,
-    useToast
-  } from "@chakra-ui/react"
-  
-const friendList = ['friend one', 'friend two', 'friend three','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20'];
-const friendRequestList = ['request one', 'request two', 'request three','4','5','6','7','8','9','10','11','12'];
+  Box,
+  Text,
+  Flex,
+  Button,
+  Divider,
+  Stack,
+  HStack,
+  Spacer,
+  useToast,
+  Link
+} from "@chakra-ui/react"
+import { useHistory, withRouter } from "react-router-dom";
+import {
+  acceptFriend,
+  AcceptFriendRequest, rejectFriend,
+  RejectFriendRequest,
+  searchUserByEmail,
+  searchUserByUserName,
+} from '../../graphql/queries';
+
+
 
 function FriendsPage(): JSX.Element {
+
+  const history = useHistory();
+
   const toast = useToast();
   const toastWindow = () => {
     toast({
-            title: "Coming soon!",
-            isClosable: true,
-            
-          })  
+      title: "Coming soon!",
+      isClosable: true,
+
+    })
   }
+
+  const { user } = useAuth0();
+  const [friends, setFriends] = useState<string[]>([]);
+  const [requests, setRequests] = useState<string[]>([]);
+  const [userName, setUserName] =  useState<string>("");
+
+  const acceptFriendRequest = async (userFrom : string) => {
+    const acceptPayload : AcceptFriendRequest = { userNameFrom: userFrom, userNameTo: userName };
+    await acceptFriend(acceptPayload);
+    const findUser = async () => {
+      const userInfo = await searchUserByEmail(user.email);
+      setFriends(userInfo.friends);
+      setRequests(userInfo.requests);
+      setUserName(userInfo.username);
+    };
+    findUser()
+  }
+
+  const rejectFriendRequest = async (userFrom : string) => {
+    const acceptPayload : RejectFriendRequest = { userNameFrom: userFrom, userNameTo: userName };
+    await rejectFriend(acceptPayload);
+    const findUser = async () => {
+      const userInfo = await searchUserByEmail(user.email);
+      setFriends(userInfo.friends);
+      setRequests(userInfo.requests);
+      setUserName(userInfo.username);
+    };
+    findUser()
+  }
+
+  useEffect(() => {
+    const findUser = async () => {
+      const userInfo = await searchUserByEmail(user.email);
+      setFriends(userInfo.friends);
+      setRequests(userInfo.requests);
+      setUserName(userInfo.username);
+    };
+    findUser();
+  },[user.email]);
+
+
   return (
     <>
       <Flex width='full' align='center' justifyContent='center'>
@@ -39,17 +92,22 @@ function FriendsPage(): JSX.Element {
               <Box h='60vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
                 <Flex align='center' justifyContent='center'>
                   <Box mt={5} w='90%'>
-                      {friendList.map((friend) => (
-                        <Box bg="white" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg" >
-                          <Flex>
-                            <Text textAlign='left'>{friend}</Text>
-                              <Spacer/>
-                            <Button onClick={toastWindow} textAlign='right' >Invite</Button> 
-                          </Flex>
-                        </Box>
-                      ))}
+                    {friends.length !== 0 && friends.map((friend) => (
+                      <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg" >
+                        <Flex>
+                          <Button textAlign='left' onClick={()=>{history.push(`/users/${friend}`);}}>{friend}</Button>
+                          <Spacer/>
+                          <Button onClick={toastWindow} textAlign='right' >Invite</Button>
+                        </Flex>
+                      </Box>
+                    ))}
+                      { friends.length === 0 &&
+                          <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
+                            <Text>You have no friends.</Text>
+                          </Box>
+                      }
                   </Box>
-                </Flex> 
+                </Flex>
               </Box>
             </Box>
 
@@ -60,23 +118,28 @@ function FriendsPage(): JSX.Element {
                   <Box mt={5} w='90%'>
                     <Divider orientation='horizontal'/>
                     <Stack>
-                    {friendRequestList.map((friend) => (
-                      <Box bg="white" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg">
-                        <Flex>
-                          <Text textAlign='left'>{friend}</Text>
-                           <Spacer />
-                          <HStack spacing="24px">
-                            <Button size='md' color='blue.500'> <span>&#10003;</span> </Button>
-                            <Button size='md' color='blue.500'> <span>&#10005;</span> </Button>
-                          </HStack>
-                        </Flex>                          
-                      </Box>
+                      {requests.length !== 0 && requests.map((request) => (
+                        <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
+                          <Flex>
+                            <Text textAlign='left' onClick={()=>{history.push(`/users/${request}`);}}>{request}</Text>
+                            <Spacer />
+                            <HStack spacing="24px">
+                              <Button size='md' color='blue.500' onClick={()=>{acceptFriendRequest(request).then(r=>r)}}> <span>&#10003;</span> </Button>
+                              <Button size='md' color='blue.500' onClick={()=>{rejectFriendRequest(request).then(r=>r)}}> <span>&#10005;</span> </Button>
+                            </HStack>
+                          </Flex>
+                        </Box>
                       ))}
+                      { requests.length === 0 &&
+                      <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
+                        <Text>You have no friend requests</Text>
+                      </Box>
+                      }
                     </Stack>
                   </Box>
                 </Flex>
-                </Box>
               </Box>
+            </Box>
           </Stack>
         </Box>
       </Flex>
@@ -84,8 +147,4 @@ function FriendsPage(): JSX.Element {
   );
 };
 
-export default FriendsPage;
-
-
-
-
+export default withRouter(FriendsPage);

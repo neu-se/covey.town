@@ -4,6 +4,12 @@ export const userSchema = new Schema({
   username: String,
   email: String,
   password: String,
+  bio: String,
+  location: String,
+  occupation: String,
+  instagramLink: String,
+  facebookLink: String,
+  linkedInLink: String,
   requests:[String],
   sentRequests:[String],
   friends:[String]

@@ -1,11 +1,12 @@
 import Express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
 import { connection } from './data/Utils/index';
-import { typeDefs } from './typeDefs/index';
-import { resolvers } from './resolvers/index';
+import typeDefs from './typeDefs/index';
+import resolvers from './resolvers/index';
+
+const cors = require('cors');
 
 const app = Express();
-const cors = require('cors');
 app.use(Express.json());
 app.use(cors());
 
@@ -14,7 +15,7 @@ app.use(cors());
  */
 const apolloServer = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
 });
 
 
@@ -23,4 +24,4 @@ apolloServer.applyMiddleware({ app, path: '/graphql' });
 // Represents the database connection
 connection();
 
-app.listen(4000, () => console.log('Now browse to localhost:4000/graphql'));
+app.listen(process.env.PORT || 8081, () => console.log('Listening'));

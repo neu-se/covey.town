@@ -3,17 +3,26 @@ import { gql } from 'apollo-server-express';
 /**
  * Represents the schema : All the queries , mutations are defined here.
  */
-export const typeDefs = gql`
+const typeDefs = gql`
 type Query {
   users: [User!]
-  user(id: ID!): User
-  searchUser(input: searchUserInput): [User!]
+  searchUserById(id: ID!): User!
+  searchUserByUserName(username: String!): [User!]
+  searchUserByEmail(email: String!) : User!
+  searchUserByName(username: String!) : User!
+  townList: TownListResponseEnvelope!
 }
 
 type User {
   id: ID!
   username: String
   email: String
+  bio: String
+  location: String
+  occupation: String
+  instagramLink: String
+  facebookLink: String
+  linkedInLink: String
   requests:[String!]
   friends:[String!]
   sentRequests:[String!]
@@ -45,11 +54,13 @@ input updateUserInput {
   id: ID!
   userName: String
   email: String
+  bio: String
+  location: String
+  occupation: String
+  instagramLink: String
+  facebookLink: String
+  linkedInLink: String
   password: String
-}
-
-input searchUserInput {
-  username: String
 }
 
 input deleteUserInput {
@@ -67,6 +78,22 @@ type Player {
   _id: String!
   _userName: String!
   location: UserLocation!
+}
+
+type CoveyTownList {
+  friendlyName: String!
+  coveyTownID: String!
+  currentOccupancy: Int!
+  maximumOccupancy: Int!
+}
+
+type TownListResponseEnvelope {
+  isOK: Boolean!
+  response: Towns
+}
+
+type Towns {
+  towns : [CoveyTownList!]
 }
 
 type Town {
@@ -100,7 +127,7 @@ type TownCreateResponseEnevelope {
   message : String
 }
 
-input addFriendInput{
+input addFriendInput {
   userNameTo: String
   userNameFrom: String
 }
@@ -110,12 +137,8 @@ input townDeleteRequestInput {
   coveyTownPassword: String!
 }
 
-type TownDeleteResponse {
-  response: String
-}
 type TownDeleteResponseEnvelope {
   isOK: Boolean!
-  response: TownDeleteResponse
   message : String
 }
 
@@ -131,3 +154,5 @@ type Mutation {
   rejectFriend(input: addFriendInput): Boolean
 }
 `;
+
+export default typeDefs;
