@@ -1,6 +1,3 @@
-import {nanoid} from "nanoid";
-import {ServerPlayer} from "./Player";
-
 export default class PlayerMessage {
   set content(value: string) {
     this._content = value;

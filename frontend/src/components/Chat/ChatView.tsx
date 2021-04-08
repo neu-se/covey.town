@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import {Fab, Hidden} from "@material-ui/core";
 import ForumIcon from '@material-ui/icons/Forum';
 import {makeStyles} from "@material-ui/styles";

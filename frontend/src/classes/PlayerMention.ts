@@ -1,8 +1,5 @@
-import {nanoid} from "nanoid";
-import {ServerPlayer} from "./Player";
-
 export default class PlayerMention {
-  
+
 
   get recipient(): string  {
     return this._recipient;
@@ -20,9 +17,9 @@ export default class PlayerMention {
     return this._senderName;
   }
 
-  
 
-  
+
+
   private readonly _senderProfileId: string;
 
   private readonly _senderName: string;
@@ -34,13 +31,13 @@ export default class PlayerMention {
 
 
 
-  constructor(    
+  constructor(
     senderProfileId: string,
-    senderName: string,    
+    senderName: string,
     recipient: string,
     date: Date,
   ) {
-    
+
     this._senderProfileId = senderProfileId;
     this._senderName = senderName;
     this._recipient = recipient;
@@ -49,7 +46,7 @@ export default class PlayerMention {
 
 
   static fromServerMentionMessage(messageFromServer: ServerMentionMessage): PlayerMention {
-    return new  PlayerMention(      
+    return new  PlayerMention(
       messageFromServer._senderProfileId,
       messageFromServer._senderName,
       messageFromServer._recipient,
@@ -58,9 +55,9 @@ export default class PlayerMention {
   }
 }
 
-export type ServerMentionMessage = { 
+export type ServerMentionMessage = {
   _senderProfileId: string,
-  _senderName: string, 
+  _senderName: string,
   _recipient: string,
   _date: Date,
 }

@@ -8,7 +8,6 @@ import TownsServiceClient from '../../classes/TownsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
-import PlayerMessage from "../../classes/PlayerMessage";
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -95,12 +94,9 @@ function wrappedTownSelection() {
     currentLocation: {
       x: 0, y: 0, rotation: 'front', moving: false,
     },
-    isWorldMapFocused: true,
     emitMovement: () => {
     },
     emitMessage: () => {
-    },
-    setWorldMapFocus: () => {
     },
     apiClient: new TownsServiceClient(),
   }}>

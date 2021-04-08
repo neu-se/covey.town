@@ -25,7 +25,6 @@ import theme from './components/VideoCall/VideoFrontend/theme';
 import {Callback} from './components/VideoCall/VideoFrontend/types';
 import Player, {ServerPlayer, UserLocation} from './classes/Player';
 import PlayerMessage, {ServerMessage} from "./classes/PlayerMessage";
-import PlayerMention, {ServerMentionMessage} from "./classes/PlayerMention";
 import TownsServiceClient, {TownJoinResponse} from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatView from "./components/Chat/ChatView";
@@ -199,7 +198,7 @@ async function GameController(initData: TownJoinResponse,
     });
   });
 
-  
+
 
 
   socket.on('playerMoved', (player: ServerPlayer) => {

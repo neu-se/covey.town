@@ -95,12 +95,9 @@ function wrappedTownSelection() {
     currentLocation: {
       x: 0, y: 0, rotation: 'front', moving: false,
     },
-    isWorldMapFocused: true,
     emitMovement: () => {
     },
     emitMessage: () => {
-    },
-    setWorldMapFocus: () => {
     },
     apiClient: new TownsServiceClient(),
   }}>
