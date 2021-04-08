@@ -81,7 +81,7 @@ export async function userExistsHandler(
     .collection(COLLECTION_NAME)
     .distinct("email");
   client.close();
-  const result = requestData.email in userEmails;
+  const result = userEmails.includes(requestData.email);
   return {
     isOK: true,
     response: result,
@@ -166,7 +166,7 @@ export async function addFriendHandler(
     .db(DB_NAME)
     .collection(COLLECTION_NAME)
     .distinct("email");
-  const friendExists = requestData.friendEmail in userEmails;
+  const friendExists = userEmails.includes(requestData.friendEmail);
 
   // check if the friend has already been added
   const shouldInsert =
@@ -205,7 +205,7 @@ export async function addUserHandler(
     .db(DB_NAME)
     .collection(COLLECTION_NAME)
     .distinct("email");
-  const shouldInsert = !(requestData.user.email in userEmails);
+  const shouldInsert = !userEmails.includes(requestData.user.email);
   if (shouldInsert) {
     await client
       .db(DB_NAME)

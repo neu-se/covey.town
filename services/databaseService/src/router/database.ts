@@ -15,9 +15,12 @@ import {
 import { logError } from "../Utils";
 
 export default function addDBRoutes(http: Server, app: Express): io.Server {
-  app.get("/users?email=emailID", BodyParser.json(), async (req, res) => {
+  app.get("/users/:emailID", BodyParser.json(), async (req, res) => {
     try {
-      const result = await userExistsHandler({ email: req.params.email });
+      // const em:string = req.query.email || '';
+      // console.log(req.query.email);
+      const result = await userExistsHandler({ email: req.params.emailID });
+      // const result = "result dummyy";
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
@@ -31,7 +34,6 @@ export default function addDBRoutes(http: Server, app: Express): io.Server {
   app.get("/users", BodyParser.json(), async (_req, res) => {
     try {
       const result = await getAllUsersHandler();
-      console.log("result:" + result);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
