@@ -89,7 +89,11 @@ type CoveyTownList {
 
 type TownListResponseEnvelope {
   isOK: Boolean!
-  towns: [CoveyTownList!]
+  response: Towns
+}
+
+type Towns {
+  towns : [CoveyTownList!]
 }
 
 type Town {
