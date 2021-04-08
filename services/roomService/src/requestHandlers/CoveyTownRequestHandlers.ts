@@ -157,7 +157,6 @@ export async function townMergeableListHandler(): Promise<ResponseEnvelope<TownL
 
 export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
-  console.log('got into town create')
   if (requestData.friendlyName.length === 0) {
     return {
       isOK: false,
@@ -174,8 +173,12 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   };
 }
 
+// move all this logic into timeout
 export async function townMergeRequestHandler(requestData: TownMergeRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
+  // townsStore.getControllerForTown(requestData.requestingCoveyTownID)?.getListeners()[0].onTownMerged(requestData.requestingCoveyTownID, requestData.destinationCoveyTownID)
+  //onTownMerged
+  // townsStore.(requestData.requestingCoveyTownID, requestData.destinationCoveyTownID)
   const mergedTown = townsStore.mergeTowns(requestData.requestingCoveyTownID, 
     requestData.destinationCoveyTownID, requestData.coveyTownPassword, 
     requestData.newTownFriendlyName, requestData.newTownIsPubliclyListed, 
@@ -235,7 +238,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
-    // TODO: sending notice that town is about to be mergeds here
+    onTownMerged(coveyTownID: string) {
+      socket.emit('roomsMerged', coveyTownID)
+    }
   };
 }
 

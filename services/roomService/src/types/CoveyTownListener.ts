@@ -1,3 +1,4 @@
+import { StringifyOptions } from 'querystring';
 import Player from './Player';
 
 /**
@@ -26,4 +27,7 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+  //TODO: add doc
+  onTownMerged(newTownID: string): void;
 }

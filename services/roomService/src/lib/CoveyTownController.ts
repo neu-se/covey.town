@@ -175,4 +175,10 @@ export default class CoveyTownController {
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
   }
+
+  
+  townsMerged(newTownID: string): void {
+    console.log("townsMerged in controller")
+    this._listeners.forEach((listener) => listener.onTownMerged(newTownID));
+  }
 }

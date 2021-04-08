@@ -55,10 +55,13 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
   /**
-   * Update a town
+   * Merges two towns
    */
   app.patch('/towns', BodyParser.json(), async (req, res) => {
     try {
+
+      
+
       const result = await townMergeRequestHandler({
         requestingCoveyTownID: req.body.requestingCoveyTownID,
         destinationCoveyTownID: req.body.destinationCoveyTownID,

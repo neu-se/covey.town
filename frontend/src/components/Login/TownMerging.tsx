@@ -106,6 +106,44 @@ const TownMerging: React.FunctionComponent = () => {
       }); 
     }
   };
+  
+
+  /**
+   * call playerDisconnect
+   */
+  // const handleJoin = useCallback(async (coveyRoomID: string) => {
+  //   try {
+  //     if (!userName || userName.length === 0) {
+  //       toast({
+  //         title: 'Unable to join town',
+  //         description: 'Please select a username',
+  //         status: 'error',
+  //       });
+  //       return;
+  //     }
+  //     if (!coveyRoomID || coveyRoomID.length === 0) {
+  //       toast({
+  //         title: 'Unable to join town',
+  //         description: 'Please enter a town ID',
+  //         status: 'error',
+  //       });
+  //       return;
+  //     }
+  //     const initData = await Video.setup(userName, coveyRoomID);
+
+  //     const loggedIn = await doLogin(initData);
+  //     if (loggedIn) {
+  //       assert(initData.providerVideoToken);
+  //       await connect(initData.providerVideoToken);
+  //     }
+  //   } catch (err) {
+  //     toast({
+  //       title: 'Unable to connect to Towns Service',
+  //       description: err.toString(),
+  //       status: 'error'
+  //     })
+  //   }
+  // }, [doLogin, userName, connect, toast]);
 
   return <>
     <MenuItem data-testid='openMerging' onClick={openMerging} disabled={!currentTownIsMergeable}>

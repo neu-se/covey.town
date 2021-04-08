@@ -83,22 +83,28 @@ export default class CoveyTownsStore {
         const newTown = new CoveyTownController(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
         // for each player of each room, emit a warning that they're being moved
 
-        existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
-        existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
+        existingRequestingTown.townsMerged(newTown.coveyTownID)
+        existingDestinationTown.townsMerged(newTown.coveyTownID)
 
-        existingRequestingTown.getListeners().forEach((l) => console.log(l));
-        existingRequestingTown.getListeners().forEach((l) => newTown.addTownListener(l));
+        setTimeout(() => {
+          // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
+          // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
 
-        console.log("SECOND");
-        existingDestinationTown.getListeners().forEach((l) => console.log(l));
-        existingDestinationTown.getListeners().forEach((l) => newTown.addTownListener(l));
-        // this._towns.push(newTown);
+          existingRequestingTown.disconnectAllPlayers()
+          existingDestinationTown.disconnectAllPlayers();
+
+          
+        }, 10000)
+        
+        // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
+        // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
+        
+        this._towns.push(newTown);
+
 
         // need to add all listeners?? or ??? townSubscriptionHandler???
         // existingRequestingTown.disconnectAllPlayers();
         // existingDestinationTown.disconnectAllPlayers();
-
-        console.log("in merge TOWNS")
 
         return newTown;
       }
