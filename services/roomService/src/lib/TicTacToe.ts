@@ -82,13 +82,7 @@ startGame(playerID: string): string {
 
 getWinner(): string {
   if (this._winningPlayer == "") {
-    // gameboard was completed
-    if (this.isFull()) {
-      return "Draw"
-    }
-    else{
-      return("Game Unfinished, No Winner")
-    }
+    throw  Error('no winner');
   }
   return this._winningPlayer;
 }

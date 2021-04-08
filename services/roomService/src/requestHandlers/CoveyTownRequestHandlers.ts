@@ -4,6 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, ScoreList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import TTTListener from '../types/TTTListener';
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
@@ -402,27 +403,34 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+  };
+}
 
-    ///TTT-specific events
-    onjoinGame(playerId: string) {
-      socket.emit('playerJoinedTTT', playerId);
+/**
+ * An adapter between CoveyTownController's event interface (TTTListener)
+ * and the low-level network communication protocol
+ *
+ * @param socket the Socket object that we will use to communicate with the player
+ */
+function tttSocketAdapter(socket: Socket): TTTListener {
+  return {
+    joinGame(playerID: string) {
+      socket.emit('player Joining TTT', playerID);
     },
-
-    onUpdateBoard(board: Number[][]) {
-      socket.emit("updateBoard", board);
+    updatedBoard(gameBoard: Number[][]) {
+      socket.emit('updatedBoard', gameBoard);
     },
-
-    onTurn(playerId: string) {
-      socket.emit("playersTurn", playerId);
+    currentPlayer(curPlayer: string) {
+      socket.emit('It is _ turn', curPlayer);
     },
-
-    onGameEnd(winner:string){
-      socket.emit('Game is Over', winner);
+    gameEnded() {
+      socket.emit('Game is Over');
+      socket.disconnect(true);
     },
   };
 }
 
-
+//updatedBoard(updatedBoard: Number[][]): void;
 
 
 /**
@@ -456,7 +464,6 @@ export function townSubscriptionHandler(socket: Socket): void {
   // player's session is disconnected
   socket.on('disconnect', () => {
     townController.removeTownListener(listener);
-    townController.removeGameListener(listener);
     townController.destroySession(s);
   });
 
@@ -466,17 +473,48 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(s.player, movementData);
   });
 
-// Register an event listener for the client socket: if a player starts a game of
-// TTT, add a listener
-  socket.on('startTTT', () => {
-    townController.addGameListener(listener);
+
+
+}
+
+/**
+ * A handler to process a remote player's subscription to updates for a town
+ *
+ * @param socket the Socket object that we will use to communicate with the player
+ */
+export function tttSubscriptionHandler(socket: Socket): void {
+  // Parse the client's session token from the connection
+  // For each player, the session token should be the same string returned by joinTownHandler
+  const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
+
+  const townController = CoveyTownsStore.getInstance()
+    .getControllerForTown(coveyTownID);
+
+  // Retrieve our metadata about this player from the TownController
+  const s = townController?.getSessionByToken(token);
+  if (!s || !townController) {
+    // No valid session exists for this token, hence this client's connection should be terminated
+    socket.disconnect(true);
+    return;
+  }
+
+  // Create an adapter that will translate events from the CoveyTownController into
+  // events that the socket protocol knows about
+  const listener = tttSocketAdapter(socket);
+  townController.addGameListener(listener);
+
+  // Register an event listener for the client socket: if the client updates their
+  // location, inform the CoveyTownController
+  socket.on('updateBoard', () => {
+    townController.getBoard();
   });
 
-  // Register an event listener for the client socket: if a player starts a game of
-  // TTT, clean up listener
+  socket.on('currentPlayer', () => {
+    townController.currentPlayer();
+  });
+
   socket.on('endGame', () => {
     townController.endGame();
     townController.removeGameListener(listener);
   });
-
 }
