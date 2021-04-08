@@ -3,6 +3,7 @@ import {
     Button,
     FormControl,
     FormLabel,
+    Heading,
     Input,
     Modal,
     ModalBody,
@@ -10,6 +11,11 @@ import {
     ModalContent,
     ModalHeader,
     ModalOverlay,
+    Table,
+    Thead,
+    Th,
+    Td,
+    Tr,
     useDisclosure,
   } from '@chakra-ui/react';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -47,6 +53,12 @@ export default function Profile (props : {userName : string}) : JSX.Element {
                         <FormControl>
                             <FormLabel htmlFor='password'>Password</FormLabel>
                             <Input placeholder='Password' isDisabled/>
+                        </FormControl>
+                        <Heading p="4" as="h4" size="md">Neighbors</Heading>
+                        <FormControl>
+                            <Table>
+                                <Thead><Tr><Th>Neighbor</Th><Th>Status</Th><Th>Join Room</Th></Tr></Thead>
+                            </Table>
                         </FormControl>
                     </ModalBody>
                 </form>
