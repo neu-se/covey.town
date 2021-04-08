@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { MongoClient } from 'mongodb';
 
 const DB_NAME = 'coveyTown';
