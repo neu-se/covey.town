@@ -137,6 +137,16 @@ export interface AddNeighborResponse {
 }
 
 
+export interface ListNeighborsResponse {
+  users: {
+    _id: string,
+    username: string,
+    isOnline: boolean,
+    coveyTownID?: string,
+  }[]
+}
+
+
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
 
@@ -204,6 +214,11 @@ export default class TownsServiceClient {
 
   async sendAddNeighborRequest(requestData: AddNeighborRequest): Promise<AddNeighborResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<AddNeighborResponse>>(`/users/request_neighbor`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async listNeighbors(requestData: string): Promise<ListNeighborsResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<ListNeighborsResponse>>(`/neighbors/${requestData}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

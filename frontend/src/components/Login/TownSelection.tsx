@@ -203,6 +203,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   const handleSearchClick = async () => {
     const searchResults = await apiClient.searchForUsersByUsername({
+      userIdSearching: loginResponse._id,
       username: searchInput
     })
     setSearchOutput(searchResults);
@@ -250,7 +251,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 You are logged in as
                 <Text fontSize='32px' color='green'>{loginResponse.username}</Text>
                 {
-                  isLoggedIn && <Profile userName={loginResponse.username}/>
+                  isLoggedIn && <Profile userName={loginResponse.username} id={loginResponse._id}/>
                   }
                 <Button mt='5' onClick={() => setIsLoggedIn(false)}>Sign into a different account</Button>
               </Box>
