@@ -7,7 +7,7 @@ module.exports = {
     'prettier',
   ],
   parserOptions: {
-    project: './tsconfig.json',
+    project: './tsconfig.eslint.json',
     warnOnUnsupportedTypeScriptVersion: false,
   },
   settings: {
