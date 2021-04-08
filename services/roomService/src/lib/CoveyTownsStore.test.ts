@@ -20,6 +20,22 @@ function mockCoveyListener(): CoveyTownListener {
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
     },
+
+    onjoinGame(playerID: string): void {
+      mockCoveyListenerOtherFns(playerID);
+    },
+
+    onUpdateBoard(board: Number[][]): void {
+      mockCoveyListenerOtherFns(board);
+    },
+
+    onTurn(playerID: string): void {
+      mockCoveyListenerOtherFns(playerID);
+    },
+
+    onGameEnd(winner: string): void {
+      mockCoveyListenerOtherFns(winner);
+    },
   };
 }
 
