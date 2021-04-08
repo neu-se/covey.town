@@ -1,4 +1,5 @@
-import React from 'react';
+import React , {useState, useEffect} from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 import {
     Box,
     Text,
@@ -8,11 +9,11 @@ import {
     Stack,
     HStack,
     Spacer,
-    useToast
+    useToast,
+    Link 
   } from "@chakra-ui/react"
-  
-const friendList = ['friend one', 'friend two', 'friend three','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20'];
-const friendRequestList = ['request one', 'request two', 'request three','4','5','6','7','8','9','10','11','12'];
+import { searchUserByEmail, searchUserByUserName, User } from '../../graphql/queries';
+
 
 function FriendsPage(): JSX.Element {
   const toast = useToast();
@@ -23,6 +24,35 @@ function FriendsPage(): JSX.Element {
             
           })  
   }
+ 
+  const { user } = useAuth0();
+  const [friends, setFriends] = useState<User[]>([]);
+  const [requests, setRequests] = useState<User[]>([]);
+  const [friendListUser, setFriendListUser] = useState<User[]>([]);
+  const [requestListUser, setRequestListUser] = useState<User[]>([]);
+
+  useEffect(() => {
+    const findUser = async () => {
+      const userInfo = await searchUserByEmail(user.email);
+      setFriends(userInfo.friends);
+      setRequests(userInfo.requests);
+      // when we want to click on friend and go to their profile
+      setFriendListUser([...friendListUser]);
+      setRequestListUser([...requestListUser]);
+    };
+    findUser();
+  },[]);
+
+  const handleGoToFriendPage = async (friendUser: any) => {
+    // console.log(typeof (friendUser));
+    const userProfile = await searchUserByUserName(friendUser);
+    console.log(userProfile);
+
+    
+  };
+ 
+
+
   return (
     <>
       <Flex width='full' align='center' justifyContent='center'>
@@ -39,10 +69,10 @@ function FriendsPage(): JSX.Element {
               <Box h='60vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
                 <Flex align='center' justifyContent='center'>
                   <Box mt={5} w='90%'>
-                      {friendList.map((friend) => (
-                        <Box bg="white" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg" >
+                      {friends.map((friend) => (
+                        <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg" >
                           <Flex>
-                            <Text textAlign='left'>{friend}</Text>
+                            <Button textAlign='left' onClick={() => handleGoToFriendPage(friend)}>{friend}</Button>
                               <Spacer/>
                             <Button onClick={toastWindow} textAlign='right' >Invite</Button> 
                           </Flex>
@@ -60,10 +90,10 @@ function FriendsPage(): JSX.Element {
                   <Box mt={5} w='90%'>
                     <Divider orientation='horizontal'/>
                     <Stack>
-                    {friendRequestList.map((friend) => (
-                      <Box bg="white" p={5} color="black" key={friend} borderWidth="1px" borderRadius="lg">
+                    {requests.map((request) => (
+                      <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
                         <Flex>
-                          <Text textAlign='left'>{friend}</Text>
+                          <Text textAlign='left'>{request}</Text>
                            <Spacer />
                           <HStack spacing="24px">
                             <Button size='md' color='blue.500'> <span>&#10003;</span> </Button>
