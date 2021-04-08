@@ -295,6 +295,7 @@ return (
 
             <Route path='/starterPage' exact component={StarterPage} />
             <Route path='/users/:users' exact component={InviteFriendComponent} />
+            <Route path='/friendsPage/users/:users' exact component={InviteFriendComponent} />
           </div>
         </AppStateProvider>
       </MuiThemeProvider>
