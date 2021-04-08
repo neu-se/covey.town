@@ -10,20 +10,25 @@ import {
   FormLabel,
   Heading,
   Input,
+  InputGroup,
+  InputLeftAddon,
+  InputLeftElement,
   Stack,
   Table,
   TableCaption,
   Tbody,
+  Text,
   Td,
   Th,
   Thead,
   Tr,
-  useToast
+  useToast,
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -59,11 +64,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const [coveyUser, setCoveyUser] = useState<CoveyUser>({
-    userID: "",
-    username: "",
-    password: "",
+    userID: "123",
+    username: "Scott",
+    password: "Pass123$",
     isPublic: false,
   });
+  const [editting, setEditting] = useState<boolean>(false);
 
   const fetchUserInformation = () => {
     const url = ""; // getUsersByID Rest endpoint
@@ -194,11 +200,158 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   };
 
   const renderPopulatedFields = (currentUser: CoveyUser) => {
-    const fields: never[] = [];
+    const fields: JSX.Element[] = [];
     // type CoveyUser = typeof currentUser;
-    Object.keys(currentUser).map(key =>
-      console.log({ text: key, value: key }),
-      console.log(currentUser.userID)
+    Object.keys(currentUser).forEach(key => {
+      switch (key) {
+        case "userID":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.userID}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "username":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.username}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "password":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.password}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "isPublic":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>Public</FormLabel>
+                <Input name={key}
+                  value={currentUser.isPublic ? "Yes" : "No"}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "email":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.email}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "bio":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.bio}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "hobbies":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.hobbies}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "firstName":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.firstName}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "lastName":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.lastName}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "dob":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.dob}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        case "relationshipStatus":
+          fields.push(
+            <Flex pl="4" pr="4" pt="1" pb="1">
+              <FormControl>
+                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
+                <Input name={key}
+                  value={currentUser.relationshipStatus === RelationshipStatus.Single
+                    ? "Single"
+                    : "Taken"}
+                  isReadOnly={!editting}
+                  variant="filled" />
+              </FormControl>
+            </Flex>
+          )
+          break;
+        default: throw new Error("Unsupported Key in CoveyUser")
+      }
+    }
     );
 
     return fields
@@ -206,102 +359,95 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   return (
     <>
-      <form>
-        <Stack>
-          {/* <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Select a username</Heading>
-            <Button onClick={() => console.log(isAuthenticated, user)}>
-              Click me
-            </Button>
-            <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
-                value={userName}
-                onChange={event => setUserName(event.target.value)}
-              />
-            </FormControl>
-            interface CoveyUser {
-  userID: string,
-  username: string,
-  password: string,
-  isPublic: boolean,
-  email?: string,
-  bio?: string,
-  hobbies?: string,
-  firstName?: string,
-  lastName?: string,
-  dob?: string,
-  relationshipStatus?: RelationshipStatus
-}
+      {
+        !isAuthenticated ?
+          (
+            <form>
+              <Stack>
+                <Box borderWidth="1px" borderRadius="lg">
+                  <Heading p="4" as="h2" size="lg">Please log in to use Covey.Town</Heading>
+                  <Heading p="4" as="h6" size="md">
+                    By clicking on the Login button in the top right of the page,
+                    you will become a part of the most interactive community on
+                    the entire internet!
+                  </Heading>
+                </Box>
+              </Stack>
+            </form>
+          )
+          :
+          (
+            <form>
+              <Stack>
+                <Box borderWidth="1px" borderRadius="lg">
+                  <Heading p="4" as="h2" size="lg">Your User Profile</Heading>
+                  <FormControl spacing={4}>
+                    {renderPopulatedFields(coveyUser)}
+                  </FormControl>
+                </Box>
+                <Box borderWidth="1px" borderRadius="lg">
+                  <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
+                  <Flex p="4">
+                    <Box flex="1">
+                      <FormControl>
+                        <FormLabel htmlFor="townName">New Town Name</FormLabel>
+                        <Input name="townName" placeholder="New Town Name"
+                          value={newTownName}
+                          onChange={event => setNewTownName(event.target.value)}
+                        />
+                      </FormControl>
+                    </Box><Box>
+                      <FormControl>
+                        <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                        <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
+                          onChange={(e) => {
+                            setNewTownIsPublic(e.target.checked)
+                          }} />
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
+                    </Box>
+                  </Flex>
+                </Box>
+                <Heading p="4" as="h2" size="lg">-or-</Heading>
 
-          </Box> */}
-          <Box borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Your User Profile</Heading>
-            <FormControl>
-              {renderPopulatedFields(coveyUser)}
-            </FormControl>
-          </Box>
-          <Box borderWidth="1px" borderRadius="lg">
-            <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
-            <Flex p="4">
-              <Box flex="1">
-                <FormControl>
-                  <FormLabel htmlFor="townName">New Town Name</FormLabel>
-                  <Input name="townName" placeholder="New Town Name"
-                    value={newTownName}
-                    onChange={event => setNewTownName(event.target.value)}
-                  />
-                </FormControl>
-              </Box><Box>
-                <FormControl>
-                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                  <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
-                    onChange={(e) => {
-                      setNewTownIsPublic(e.target.checked)
-                    }} />
-                </FormControl>
-              </Box>
-              <Box>
-                <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
-              </Box>
-            </Flex>
-          </Box>
-          <Heading p="4" as="h2" size="lg">-or-</Heading>
+                <Box borderWidth="1px" borderRadius="lg">
+                  <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
+                  <Box borderWidth="1px" borderRadius="lg">
+                    <Flex p="4"><FormControl>
+                      <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
+                      <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
+                        value={townIDToJoin}
+                        onChange={event => setTownIDToJoin(event.target.value)} />
+                    </FormControl>
+                      <Button data-testid='joinTownByIDButton'
+                        onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
+                    </Flex>
 
-          <Box borderWidth="1px" borderRadius="lg">
-            <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
-            <Box borderWidth="1px" borderRadius="lg">
-              <Flex p="4"><FormControl>
-                <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
-                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                  value={townIDToJoin}
-                  onChange={event => setTownIDToJoin(event.target.value)} />
-              </FormControl>
-                <Button data-testid='joinTownByIDButton'
-                  onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
-              </Flex>
+                  </Box>
 
-            </Box>
-
-            <Heading p="4" as="h4" size="md">Select a public town to join</Heading>
-            <Box maxH="500px" overflowY="scroll">
-              <Table>
-                <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
-                <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
-                <Tbody>
-                  {currentPublicTowns?.map((town) => (
-                    <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
-                      role='cell'>{town.coveyTownID}</Td>
-                      <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
-                        <Button onClick={() => handleJoin(town.coveyTownID)}
-                          disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
-          </Box>
-        </Stack>
-      </form>
+                  <Heading p="4" as="h4" size="md">Select a public town to join</Heading>
+                  <Box maxH="500px" overflowY="scroll">
+                    <Table>
+                      <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
+                      <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
+                      <Tbody>
+                        {currentPublicTowns?.map((town) => (
+                          <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
+                            role='cell'>{town.coveyTownID}</Td>
+                            <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
+                              <Button onClick={() => handleJoin(town.coveyTownID)}
+                                disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
+                </Box>
+              </Stack>
+            </form>
+          )
+      }
     </>
   );
 }
