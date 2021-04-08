@@ -24,7 +24,7 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import { createTown, searchUserByEmail} from '../../graphql/queries';
+import { createTown, searchUserByEmail, listTown} from '../../graphql/queries';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -43,10 +43,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
-    apiClient.listTowns()
+    listTown()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
-          .sort((a, b) => b.currentOccupancy - a.currentOccupancy)
+          .sort((a: { currentOccupancy: number; }, b: { currentOccupancy: number; }) => b.currentOccupancy - a.currentOccupancy)
         );
       })
   }, [setCurrentPublicTowns, apiClient]);

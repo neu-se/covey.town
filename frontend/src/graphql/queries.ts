@@ -80,6 +80,17 @@ const findAllUsers = gql`
   }
 `;
 
+const townList = gql`
+  query townList {
+    towns {
+      friendlyName
+      currentOccupancy
+      coveyTownId
+      maximumOccupancy
+    }
+  }
+`;
+
 const findAllUsersByUserNameQuery = gql`
   query findAllUsersByUserName($username: String!) {
     searchUserByUserName(username: $username) {
@@ -310,4 +321,12 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
   });
   return data.updateUser;
 }
+
+export const listTown = async (): Promise<any> => {
+  const { data } = await client.query({ query: townList });
+  if (data.townList.isOK) {
+    return data.townList.response;
+  }
+  return null;
+};
 
