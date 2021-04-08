@@ -1,10 +1,10 @@
-export default async function changePassword() {
+export default async function changePassword(email: string) {
   const requestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       "client_id": "jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh",
-      "email": "vaidehihshah2503@gmail.com",
+      "email": email,
       "connection": "MongoDB",
     })
   };

@@ -21,13 +21,24 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
+  useDisclosure, useToast,
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
 import {findAllUserProfiles, searchUserByEmail, updateUser, UpdateUserRequest, User} from '../../graphql/queries';
+import changePassword from "../services/auth0Services";
 
 
 function ProfileComponent(): JSX.Element {
+
+  const toast = useToast();
+  const toastWindow = () => {
+    toast({
+      title: "Reset Password Email Sent!",
+      isClosable: true,
+
+    })
+  }
+
   const history = useHistory();
   const { user, isLoading } = useAuth0();
   const [userName, setUserName] = useState<string>("");
@@ -116,7 +127,7 @@ function ProfileComponent(): JSX.Element {
         class='box-profile'
       >
         <Stack direction={["column", "row"]} spacing='0px'>
-          <Box w='35%' h='60vh' bg='blue.500' boxShadow='lg'>
+          <Box w='35%' h='69vh' bg='blue.500' boxShadow='lg'>
             <Heading size='md' paddingTop='20px'>
               {" "}
               <Text color='white'>HELLO {userName.toUpperCase()}</Text>
@@ -155,6 +166,20 @@ function ProfileComponent(): JSX.Element {
                 >
                   Edit Profile
 
+                </Button>
+                <Button
+                  variantColor='teal'
+                  variant='outline'
+                  type='submit'
+                  width='full'
+                  mt={4}
+                  color='white'
+                  onClick={()=>{
+                    changePassword(user.email).then(r=>{
+                        toastWindow();
+                      })}}
+                >
+                  Change Password
                 </Button>
                 <Modal
                   isOpen={isOpen}

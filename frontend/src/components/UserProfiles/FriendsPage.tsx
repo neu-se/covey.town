@@ -75,11 +75,6 @@ function FriendsPage(): JSX.Element {
     findUser();
   },[user.email]);
 
-  const handleGoToFriendPage = async (friendUser: any) => {
-    const userProfile = await searchUserByUserName(friendUser);
-    console.log(userProfile);
-  };
-
 
   return (
     <>
@@ -97,7 +92,7 @@ function FriendsPage(): JSX.Element {
               <Box h='60vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
                 <Flex align='center' justifyContent='center'>
                   <Box mt={5} w='90%'>
-                    {friends.map((friend) => (
+                    {friends.length !== 0 && friends.map((friend) => (
                       <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg" >
                         <Flex>
                           <Button textAlign='left' onClick={()=>{history.push(`/users/${friend}`);}}>{friend}</Button>
@@ -106,6 +101,11 @@ function FriendsPage(): JSX.Element {
                         </Flex>
                       </Box>
                     ))}
+                      { friends.length === 0 &&
+                          <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
+                            <Text>You have no friends.</Text>
+                          </Box>
+                      }
                   </Box>
                 </Flex>
               </Box>
@@ -118,7 +118,7 @@ function FriendsPage(): JSX.Element {
                   <Box mt={5} w='90%'>
                     <Divider orientation='horizontal'/>
                     <Stack>
-                      {requests.map((request) => (
+                      {requests.length !== 0 && requests.map((request) => (
                         <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
                           <Flex>
                             <Text textAlign='left' onClick={()=>{history.push(`/users/${request}`);}}>{request}</Text>
@@ -130,6 +130,11 @@ function FriendsPage(): JSX.Element {
                           </Flex>
                         </Box>
                       ))}
+                      { requests.length === 0 &&
+                      <Box bg="white" p={5} color="black" key={user._id} borderWidth="1px" borderRadius="lg">
+                        <Text>You have no friend requests</Text>
+                      </Box>
+                      }
                     </Stack>
                   </Box>
                 </Flex>

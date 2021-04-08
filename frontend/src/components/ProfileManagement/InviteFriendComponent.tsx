@@ -20,7 +20,7 @@ interface ParamTypes {
 
 function InviteFriendComponent() : JSX.Element {
 
-  const { user , isLoading } = useAuth0();
+  const { user } = useAuth0();
   const { users } = useParams<ParamTypes>()
   const [userName, setUserName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
