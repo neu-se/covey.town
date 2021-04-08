@@ -80,6 +80,16 @@ const findAllUsers = gql`
   }
 `;
 
+const findAllUsersByUserNameQuery = gql`
+  query findAllUsersByUserName($username: String!) {
+    searchUserByUserName(username: $username) {
+      id
+      username
+      email
+    }
+  }
+`;
+
 const searchUserByUserNameQuery = gql`
   query searchUserByUserName ($username: String!) {
     searchUserByUserName (username: $username){
@@ -213,6 +223,11 @@ const rejectFriendMutation = gql`
 export const findAllUserProfiles = async (): Promise<any> => {
   const { data } = await client.query({ query: findAllUsers });
   return data.users;
+};
+
+export const findAllUsersByUserName = async (username: string): Promise<any> => {
+  const { data } = await client.query({ query: findAllUsersByUserNameQuery, variables: { username } });
+  return data.searchUserByUserName;
 };
 
 export const searchUserByUserName = async (userName: string): Promise<any> => {
