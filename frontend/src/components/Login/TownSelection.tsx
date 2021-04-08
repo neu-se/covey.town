@@ -45,7 +45,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     // console.log(apiClient);
     listTown()
       .then((towns) => {
-        setCurrentPublicTowns(towns
+        setCurrentPublicTowns(towns.towns
           .sort((a: { currentOccupancy: number; }, b: { currentOccupancy: number; }) => b.currentOccupancy - a.currentOccupancy)
         );
       })

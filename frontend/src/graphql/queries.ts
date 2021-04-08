@@ -84,11 +84,13 @@ const townList = gql`
   query townList {
     townList {
       isOK
-      towns {
-        friendlyName
-        coveyTownID
-        currentOccupancy
-        maximumOccupancy
+      response {
+        towns {
+          friendlyName
+          coveyTownID
+          currentOccupancy
+          maximumOccupancy
+        }
       }
     }
   }
@@ -243,7 +245,7 @@ export const listTown = async (): Promise<any> => {
   const { data } = await client.query({ query: townList });
   if (data.townList.isOK) {
     console.log(data);
-    return data.townList.towns;
+    return data.townList.response;
   }
   return null;
 };
