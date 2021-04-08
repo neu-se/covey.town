@@ -1,4 +1,5 @@
 import { ScoreList } from "../CoveyTypes";
+import Player from "../types/Player";
 
 /* 
     An object representing the leaderboard, which shows the top scores in each town.
@@ -26,11 +27,21 @@ export default class Leaderboard {
         ];
     }
 
+    addPlayerToLeaderboard(player: Player) {
+        const players = this._allScores.filter((userinfo) => userinfo.userID == player.id);
+
+        if (players.length > 0) {
+            return;
+        }
+
+        this._allScores.push({ userID: player.id, userName: player.userName, score: 0 });
+    }
+
     updateScore(userID: string, points: number) {
-        const user = this._allScores.map((userInfo) => {
-            if (userInfo.userID == userID) {
-                userInfo.score += points;
-            }
+        this._allScores.map((userInfo) => {
+                if (userInfo.userID == userID) {
+                    userInfo.score += points;
+                }
         });
     }
 
