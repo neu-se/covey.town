@@ -1,12 +1,22 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { User, UserStatus } from '../components/Login/testingDB';
-
 
 export interface UserEmailRequest {
   email: string;
   }
 
+  export type User = {
+  firstName: string,
+  lastName: string,
+  email: string,
+  friends: string [],
+  isOnline: boolean
+};
+  
+export type UserStatus = {
+  email: string,
+  isOnline: boolean
+};
 
 /**
  * Payload sent by client to set a user's status
@@ -62,7 +72,8 @@ export default class DatabaseServiceClient {
 
     constructor(serviceURL?: string) {
     
-      const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
+      // const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
+      const baseURL = serviceURL ;
       assert(baseURL);
       this._axios = axios.create({ baseURL });
     }
@@ -80,18 +91,18 @@ export default class DatabaseServiceClient {
 
 
     async userExistence(requestData: UserEmailRequest): Promise<void> {
-      const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}`);
+      const responseWrapper = await this._axios.get<ResponseEnvelope<void>>(`/users/${requestData.email}`);
       return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
   
     async getFriends(requestData: UserEmailRequest): Promise<UserStatus[]> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<UserStatus[]>>(`/users/${requestData.email}/friends`);
+        const responseWrapper = await this._axios.get<ResponseEnvelope<UserStatus[]>>(`/users/${requestData.email}/friends`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 
 
     async getOnlineStatus(requestData: UserEmailRequest): Promise<void> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}/status`);
+        const responseWrapper = await this._axios.get<ResponseEnvelope<void>>(`/users/${requestData.email}/status`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 

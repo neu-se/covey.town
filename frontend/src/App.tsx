@@ -24,6 +24,7 @@ import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
+import DatabaseServiceClient from './classes/DatabaseServiceClient'
 import Video from './classes/Video/Video';
 
 type CoveyAppUpdate =
@@ -51,7 +52,8 @@ function defaultAppState(): CoveyAppState {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    apiClient: new TownsServiceClient('http://localhost:8082/'),
+    dbClient: new DatabaseServiceClient('http://localhost:8081/'),
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -68,6 +70,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     socket: state.socket,
     emitMovement: state.emitMovement,
     apiClient: state.apiClient,
+    dbClient: state.dbClient,
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
