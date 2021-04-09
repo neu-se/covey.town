@@ -3,10 +3,14 @@ import { Button } from '@chakra-ui/react';
 import { FcGoogle } from 'react-icons/fc';
 import { useGoogleLogin } from 'react-google-login';
 
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+
+
 const clientId =
   '147790869304-31si4r0ejgmklrphlis0eehdgk0qo9qo.apps.googleusercontent.com';
 
 function LoginHooks(): JSX.Element {
+  const { dbClient } = useCoveyAppState();
 
   const refreshTokenSetup = (res: any) => {
     let refreshTiming = (res.tokenObj.expires_in || 3600 - 5 * 60) * 1000;
@@ -23,9 +27,15 @@ function LoginHooks(): JSX.Element {
   
     setTimeout(refreshToken, refreshTiming);
   };
+
+  async function userIsOnline(userEmail: string) {
+    await dbClient.setOnlineStatus({ email: userEmail, isOnline: true });
+  }
     
   const onSuccess = (res: any) => {
     console.log('Login successful: currentUser:', res.profileObj);
+    const userEmail: string = res.profileObj.email;
+    userIsOnline(userEmail);
     refreshTokenSetup(res);
   };
 
