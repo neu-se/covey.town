@@ -87,8 +87,8 @@ export default class DatabaseServiceClient {
     }
 
 
-    async userExistence(requestData: UserEmailRequest): Promise<void> {
-      const responseWrapper = await this._axios.get<ResponseEnvelope<void>>(`/users/${requestData.email}`);
+    async userExistence(requestData: UserEmailRequest): Promise<boolean> {
+      const responseWrapper = await this._axios.get<ResponseEnvelope<boolean>>(`/users/${requestData.email}`);
       return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
   

@@ -11,8 +11,6 @@ function LogoutHooks() {
   const { dbClient } = useCoveyAppState();
 
   async function setOffline() {
-
-    // HOW TO GET USERNAME ????
     const userProfile = CoveyTownUser.getInstance();
     const userEmail = userProfile.getUserEmail();
     await dbClient.setOnlineStatus({ email: userEmail, isOnline: false });

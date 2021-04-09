@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button } from '@chakra-ui/react';
+import React from 'react';
+import { Button, useToast } from '@chakra-ui/react';
 import { FcGoogle } from 'react-icons/fc';
 import { useGoogleLogin } from 'react-google-login';
 import CoveyTownUser from './User';
@@ -10,8 +10,8 @@ const clientId =
   '147790869304-31si4r0ejgmklrphlis0eehdgk0qo9qo.apps.googleusercontent.com';
 
 function LoginHooks(): JSX.Element {
-  const [newUserEmail, setNewUserEmail] = useState<string>('');
   const { dbClient } = useCoveyAppState();
+  const toast = useToast();
 
   const refreshTokenSetup = (res: any) => {
     let refreshTiming = (res.tokenObj.expires_in || 3600 - 5 * 60) * 1000;
@@ -19,7 +19,6 @@ function LoginHooks(): JSX.Element {
     const refreshToken = async () => {
       const newAuthRes = await res.reloadAuthResponse();
       refreshTiming = (newAuthRes.expires_in || 3600 - 5 * 60) * 1000;
-      console.log('newAuthRes:', newAuthRes);
 
       localStorage.setItem('authToken', newAuthRes.id_token);
   
@@ -30,37 +29,39 @@ function LoginHooks(): JSX.Element {
   };
 
   async function checkUserExistsInDB(userInfo: any) {
-    // TODO
-    // 1. check if user exists
-    // await dbClient.userExistence({ email: userEmail });
-    // 2. if user does not exist: this piece of code creates a new user if is does not exist and sets online = true
-    await dbClient.addUser({ user: { firstName: userInfo.givenName, lastName: userInfo.familyName, email: userInfo.email, friends: [], isOnline: true }});
-    // 3. if use exists: set isOnline = true
-    // await dbClient.userExistence({ email: userInfo.email });
+    const userExists = await dbClient.userExistence({ email: userInfo.email });
+
+    if (userExists) {
+      await dbClient.setOnlineStatus({ email: userInfo.email, isOnline: true });
+    } else {
+      await dbClient.addUser({ user: { firstName: userInfo.givenName, lastName: userInfo.familyName, email: userInfo.email, friends: [], isOnline: true }});
+    }
   }
     
   const onSuccess = (res: any) => {
     console.log('Login successful: currentUser:', res.profileObj);
-    // setNewUserEmail(res.profileObj); // TODO: how to pass the email around to LogoutHooks and TownSelection?
+    
+    // Save the user data in CoveyTownUser singleton
     const userProfile = CoveyTownUser.getInstance();
     userProfile.setUserEmail(res.profileObj.email);
-    userProfile.setUserName(res.profileObj.givenName)
+    userProfile.setUserName(res.profileObj.givenName);
+
+    // Checking if user exists in database
     checkUserExistsInDB(res.profileObj);
 
-
-    // TODO
-    // Create a toast onSuccess
+    toast({
+      title: `Login Successful! Welcome to Covey.Town ${res.profileObj.givenName}`,
+      status: 'success',
+    })
+    
     refreshTokenSetup(res);
   };
 
   const onFailure = (res: any) => {
-    console.log('Login failed: res:', res);
-    alert(
-      `Failed to login.`
-    );
-
-    // TODO
-    // Create a toast onFailure
+    toast({
+      title: 'Google Login failed',
+      status: 'error',
+    });
   };
 
   const { signIn } =  useGoogleLogin({
