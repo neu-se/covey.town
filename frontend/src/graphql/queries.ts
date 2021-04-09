@@ -222,11 +222,13 @@ const updateUserMutation = gql`
 `;
 
 const deleteTownMutation = gql`
-  mutation townDelete($input: townDeleteRequestInput!) {
+  mutation deleteTown($input: townDeleteRequestInput!) {
     townDeleteRequest(input: $input) {
-      status
-	  }
-};`
+      isOK
+      message
+    }
+  }
+`;
 
 const acceptFriendMutation = gql`
   mutation acceptFriend($input: addFriendInput!) {
@@ -340,8 +342,10 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
 }
 
 export const deleteTown = async (payload: TownDeleteRequest): Promise<any> => {
-  await client.mutate({
+  const { data } = await client.mutate({
     mutation: deleteTownMutation,
     variables: { input: payload },
   });
+
+  return data.deleteTown;
 };
