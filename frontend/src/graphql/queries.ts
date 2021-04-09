@@ -341,11 +341,9 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
   return data.updateUser;
 }
 
-export const deleteTown = async (payload: TownDeleteRequest): Promise<any> => {
-  const { data } = await client.mutate({
+export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
+  await client.mutate({
     mutation: deleteTownMutation,
     variables: { input: payload },
   });
-
-  return data.deleteTown;
 };
