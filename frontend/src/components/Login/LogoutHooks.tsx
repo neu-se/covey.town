@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import { useGoogleLogout } from 'react-google-login';
 import CoveyTownUser from './User';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -7,8 +7,9 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 const clientId =
   '147790869304-31si4r0ejgmklrphlis0eehdgk0qo9qo.apps.googleusercontent.com';
 
-function LogoutHooks() {
+function LogoutHooks(): JSX.Element {
   const { dbClient } = useCoveyAppState();
+  const toast = useToast();
 
   async function setOffline() {
 
@@ -19,12 +20,20 @@ function LogoutHooks() {
   }
 
   const onLogoutSuccess = () => {
-    console.log('Logged out successfully.');
+    toast({
+      title: 'Logged out successfully!',
+      description: 'Your account has been signed out.',
+      status: 'success',
+    });
     setOffline();
   };
 
   const onFailure = () => {
-    console.log('Failed to login.');
+    toast({
+      title: 'Logged out failed!',
+      description: 'Error: Your account could not be signed out',
+      status: 'error',
+    });
   };
 
   const { signOut } = useGoogleLogout({
