@@ -42,7 +42,9 @@ export interface UpdateUserRequest {
   password: string
 }
 
-
+export interface DeleteUserRequest {
+  email: string
+}
 
 
 /**
@@ -224,6 +226,12 @@ const updateUserMutation = gql`
   }
 `;
 
+const deleteUserMutation = gql`
+  mutation deleteUser($input: deleteUserInput) {
+    deleteUser(input: $input)
+  }
+`;
+
 const acceptFriendMutation = gql`
   mutation acceptFriend($input: addFriendInput!) {
     acceptFriend(input: $input)
@@ -333,5 +341,15 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
     variables: {input: payload},
   });
   return data.updateUser;
+}
+
+export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
+  console.log(payload)
+  const { data } = await client.mutate({
+    mutation: deleteUserMutation,
+    variables: {input: payload},
+  });
+  console.log(data);
+  return data.deleteUser;
 }
 
