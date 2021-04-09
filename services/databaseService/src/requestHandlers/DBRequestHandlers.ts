@@ -36,7 +36,7 @@ export interface UserEmailRequest {
 
 export interface StatusChangeRequest {
   email: string;
-  status: boolean;
+  isOnline: boolean;
 }
 
 export interface AddFriendRequest {
@@ -140,16 +140,20 @@ export async function getStatusHandler(
 
 export async function setStatusHandler(
   requestData: StatusChangeRequest
-): Promise<void> {
+): Promise<ResponseEnvelope<Record<string, null>>> {
   const client: MongoClient = await MongoClientFactory.getInstance().getMongoClient();
   await client
     .db(DB_NAME)
     .collection(COLLECTION_NAME)
     .updateOne(
       { email: requestData.email },
-      { $set: { isOnline: requestData.status } }
+      { $set: { isOnline: requestData.isOnline } }
     );
   client.close();
+  return {
+    isOK: true,
+    message: "status changed",
+  };
 }
 
 export async function addFriendHandler(
@@ -190,7 +194,7 @@ export async function addFriendHandler(
   }
   client.close();
   return {
-    isOK: false,
+    isOK: true,
     response: {},
     message:
       "friend not added: either they are not in the database or they are already in your lists.",
@@ -219,12 +223,24 @@ export async function addUserHandler(
   }
   client.close();
   return {
-    isOK: false,
+    isOK: true,
     message: "user was not added",
   };
 }
 
-// export async function removeFriendHandler(requestData: RemoveFriendRequest): Promise<ResponseEnvelope<Record<string, null>>>{
-//   const client:MongoClient = MongoClientFactory.getInstance().getMongoClient();
-
-// }
+export async function removeFriendHandler(
+  requestData: RemoveFriendRequest
+): Promise<ResponseEnvelope<Record<string, null>>> {
+  const client: MongoClient = await MongoClientFactory.getInstance().getMongoClient();
+  await client
+    .db(DB_NAME)
+    .collection(COLLECTION_NAME)
+    .updateOne(
+      { email: requestData.email },
+      { $pull: { friends: requestData.friendEmail } }
+    );
+  return {
+    isOK: true,
+    message: "friend removed",
+  };
+}
