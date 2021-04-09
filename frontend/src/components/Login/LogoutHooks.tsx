@@ -2,13 +2,24 @@ import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { useGoogleLogout } from 'react-google-login';
 
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+
 const clientId =
   '147790869304-31si4r0ejgmklrphlis0eehdgk0qo9qo.apps.googleusercontent.com';
 
 function LogoutHooks() {
+  const { dbClient } = useCoveyAppState();
+
+  async function setOffline() {
+
+    // HOW TO GET USERNAME ????
+    
+    await dbClient.setOnlineStatus({ email: "userEmail", isOnline: false });
+  }
+
   const onLogoutSuccess = () => {
     console.log('Logged out successfully.');
-    // await dbClient.setOnlineStatus({ email: userEmail, isOnline: true }); HOW TO GET USERNAME FROM LOGINHOOKS ????
+    setOffline();
   };
 
   const onFailure = () => {

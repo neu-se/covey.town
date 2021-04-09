@@ -29,17 +29,23 @@ function LoginHooks(): JSX.Element {
     setTimeout(refreshToken, refreshTiming);
   };
 
-  async function checkUserExistsInDB(userEmail: string) {
-    // check if user exists -> yes: setOnlineStatus = true / no: addUser and setOnlineStatus = true
-    await dbClient.userExistence({ email: userEmail });
-    await dbClient.setOnlineStatus({ email: userEmail, isOnline: true });
+  async function checkUserExistsInDB(userInfo: any) {
+    // TODO
+    // 1. check if user exists
+    // await dbClient.userExistence({ email: userEmail });
+    // 2. if user does not exist: this piece of code creates a new user if is does not exist and sets online = true
+    await dbClient.addUser({ user: { firstName: userInfo.givenName, lastName: userInfo.familyName, email: userInfo.email, friends: [], isOnline: true }});
+    // 3. if use exists: set isOnline = true
+    // await dbClient.userExistence({ email: userInfo.email });
   }
     
   const onSuccess = (res: any) => {
     console.log('Login successful: currentUser:', res.profileObj);
-    const userEmail: string = res.profileObj.email;
-    setNewUserEmail(userEmail); // TODO: how to pass the email around to LogoutHooks and TownSelection?
-    checkUserExistsInDB(userEmail);
+    // setNewUserEmail(res.profileObj); // TODO: how to pass the email around to LogoutHooks and TownSelection?
+    checkUserExistsInDB(res.profileObj);
+
+    // TODO
+    // Create a toast onSuccess
     refreshTokenSetup(res);
   };
 
@@ -48,6 +54,9 @@ function LoginHooks(): JSX.Element {
     alert(
       `Failed to login.`
     );
+
+    // TODO
+    // Create a toast onFailure
   };
 
   const { signIn } =  useGoogleLogin({
