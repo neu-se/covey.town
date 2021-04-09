@@ -42,6 +42,8 @@ class CoveyGameScene extends Phaser.Scene {
   preload() {
     // this.load.image("logo", logoImg);
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
+    this.load.image('tiles2', '/assets/roguelikeIndoor_transparent32px.png');
+    this.load.image('tiles3', '/assets/roguelikeSheet_transparent32px.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
@@ -216,13 +218,15 @@ class CoveyGameScene extends Phaser.Scene {
      tileset image in Phaser's cache (i.e. the name you used in preload)
      */
     const tileset = map.addTilesetImage('tuxmon-sample-32px-extruded', 'tiles');
+    const tileset2 = map.addTilesetImage('roguelikeIndoor_transparent32px', 'tiles2');
+    const tileset3 = map.addTilesetImage('roguelikeSheet_transparent32px', 'tiles3');
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const belowLayer = map.createLayer('Below Player', tileset, 0, 0);
-    const worldLayer = map.createLayer('World', tileset, 0, 0);
+    const belowLayer = map.createLayer('Below Player', [tileset, tileset2, tileset3], 0, 0);
+    const worldLayer = map.createLayer('World', [tileset, tileset2, tileset3], 0, 0);
     worldLayer.setCollisionByProperty({ collides: true });
-    const aboveLayer = map.createLayer('Above Player', tileset, 0, 0);
+    const aboveLayer = map.createLayer('Above Player', [tileset, tileset2, tileset3], 0, 0);
     /* By default, everything gets depth sorted on the screen in the order we created things.
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
      it a depth. Higher depths will sit on top of lower depth objects.

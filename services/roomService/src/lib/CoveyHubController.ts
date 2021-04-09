@@ -47,7 +47,7 @@ export default class CoveyHubController {
   }
 
   get coveyHubID(): string {
-    return this.coveyHubID;
+    return this._coveyHubID;
   }
 
 
@@ -67,7 +67,7 @@ export default class CoveyHubController {
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
   private _listeners: CoveyHubListener[] = [];
 
-  private readonly _coveyHubID: string;
+  private  _coveyHubID: string;
 
   private _friendlyName: string;
 

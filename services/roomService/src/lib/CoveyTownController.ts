@@ -2,6 +2,7 @@ import { customAlphabet, nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import CoveyHubStore from './CoveyHubStore';
 import CoveyHubController from './CoveyHubController';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
@@ -86,23 +87,24 @@ export default class CoveyTownController {
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
-    // Add Hubs
-    const hospital = new CoveyHubController('Hospital', true, this._coveyTownID );
-    this._hubs.push(hospital);
-    const club = new CoveyHubController('Club', true, this._coveyTownID);
-    this._hubs.push(club);
-    const privateHub1 = new CoveyHubController('House_1', false, this._coveyTownID);
-    this._hubs.push(privateHub1);
-    const privateHub2 = new CoveyHubController('House_2', false, this._coveyTownID);
-    this._hubs.push(privateHub2);
-    const privateHub3 = new CoveyHubController('House_3', false, this._coveyTownID);
-    this._hubs.push(privateHub3);
-    const privateHub4 = new CoveyHubController('House_4', false, this._coveyTownID);
-    this._hubs.push(privateHub4);
-    const privateHub5 = new CoveyHubController('House_5', false, this._coveyTownID);
-    this._hubs.push(privateHub5);
-    const privateHub6 = new CoveyHubController('House_6', false, this._coveyTownID);
-    this._hubs.push(privateHub6);
+    const hubsStore = CoveyHubStore.getInstance();
+    const hospitalHub = hubsStore.createHub('Hospital', true, this._coveyTownID );
+    this._hubs.push(hospitalHub);
+    const schoolHub = hubsStore.createHub('School', true, this._coveyTownID );
+    this._hubs.push(schoolHub);
+    // Add Private Hubs
+    const privHub1 = hubsStore.createHub('House_1', true, this._coveyTownID );
+    this._hubs.push(privHub1);
+    const privHub2 = hubsStore.createHub('House_2', true, this._coveyTownID );
+    this._hubs.push(privHub2);
+    const privHub3 = hubsStore.createHub('House_3', true, this._coveyTownID );
+    this._hubs.push(privHub3);
+    const privHub4 = hubsStore.createHub('House_4', true, this._coveyTownID );
+    this._hubs.push(privHub4);
+    const privHub5 = hubsStore.createHub('House_5', true, this._coveyTownID );
+    this._hubs.push(privHub5);
+    const privHub6 = hubsStore.createHub('House_6', true, this._coveyTownID );
+    this._hubs.push(privHub6);
     
   }
 
