@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io-client';
+import DatabaseServiceClient from './classes/DatabaseServiceClient';
 import Player, { UserLocation } from './classes/Player';
 import TownsServiceClient from './classes/TownsServiceClient';
 
@@ -28,4 +29,5 @@ export type CoveyAppState = {
   emitMovement: (location: UserLocation) => void,
   socket: Socket | null,
   apiClient: TownsServiceClient,
+  dbClient: DatabaseServiceClient,
 };

@@ -46,6 +46,7 @@ export default function addDBRoutes(http: Server, app: Express): io.Server {
 
   app.get("/users/:emailID/friends", BodyParser.json(), async (req, res) => {
     try {
+      console.log("fired!!");
       const result = await getFriendsHandler({ email: req.params.emailID });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {

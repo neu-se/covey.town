@@ -19,15 +19,13 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
-
-import DbClient2, { UserStatus}   from './testingDB';
+import {User, UserStatus} from '../../classes/DatabaseServiceClient';
 import LoginHooks from './LoginHooks'
 import LogoutHooks from './LogoutHooks'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -41,37 +39,25 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
+  const {dbClient} = useCoveyAppState();
   const toast = useToast();
-
-
-  // const mongoDBClient = new DbClient2();
-  // console.log('mongoDBClient creation', mongoDBClient);
 
   const [currentFriendList, setFriendList] = useState<UserStatus[]>();   
 
   const updateFriendList = useCallback(async () => {
 
+      const res = await dbClient.getFriends({email: 'cl@gmail.com'})
+      console.log(res)
 
-      // let friendList = mongoDBClient.getAllFriends(email)
-      // const allUsers = mongoDBClient.getAllUserEmails()
-      // console.log('testing allUsers query', allUsers);
+      setFriendList(res);
 
-      // Connection to DB not finalized - so below code creates the output from DB manually
-      const user1: UserStatus = ({email: 'testEmail', isOnline: true})
-      const user2: UserStatus = ({email: 'testEmail2', isOnline: false})
-      const allUsersTest = [user1, user2]
-
-      console.log('testing allUsers query', allUsersTest);
-
-      setFriendList(allUsersTest);
-
-    }, []);
+    }, [dbClient]);
   
   useEffect(() => {
     updateFriendList();
-    const timer = setInterval(updateFriendList, 2000);
+    // const timer = setInterval(updateFriendList, 2000);
     return () => {
-      clearInterval(timer)
+      // clearInterval(timer)
     };
   }, [updateFriendList]);
   
@@ -206,7 +192,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
                 {currentFriendList?.map((friends) => (
                     <Tr key={friends.email}><Td role='cell'>{friends.email}</Td>
-                      <Td role='cell'>{friends.isOnline}</Td>
+                      <Td role='cell'>{friends.isOnline.toString()}</Td>
                         <Td role='cell'> <Button> Delete Friend</Button></Td></Tr>
                   ))}
 
