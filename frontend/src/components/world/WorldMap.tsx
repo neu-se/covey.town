@@ -5,7 +5,7 @@ import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import NearbyPlayersContext from '../../contexts/NearbyPlayersContext';
-import GameBoard from './GameBoard';
+import CheckersGame from './CheckersGame';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
@@ -35,6 +35,8 @@ class CoveyGameScene extends Phaser.Scene {
   private video: Video;
 
   private emitMovement: (loc: UserLocation) => void;
+
+  private isCheckersBoardLoaded = false;
 
   constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
     super('PlayGame');
@@ -442,8 +444,6 @@ class CoveyGameScene extends Phaser.Scene {
     ];
     // drawing it
 
-    
-
     // drawing game piece
     // TODO: game piece class
     // const redPiece = this.add.ellipse(724, 617, 56, 56, 0xff0000).setDepth(33);
@@ -482,6 +482,15 @@ class CoveyGameScene extends Phaser.Scene {
     this.input.keyboard.addCapture(this.previouslyCapturedKeys);
     this.previouslyCapturedKeys = [];
   }
+
+  checkersBoardLoaded() {
+    return this.isCheckersBoardLoaded;
+  }
+
+  setCheckersBoardLoaded(state :boolean) {
+    this.isCheckersBoardLoaded = state;
+  }
+
 }
 
 export default function WorldMap(): JSX.Element {
@@ -506,7 +515,6 @@ export default function WorldMap(): JSX.Element {
     
 
     const game = new Phaser.Game(config);
-    const gameBoard = new GameBoard(config);
     if (video) {
       const newGameScene = new CoveyGameScene(video, emitMovement);
       setGameScene(newGameScene);
@@ -520,15 +528,16 @@ export default function WorldMap(): JSX.Element {
       }
     }
     
-    
-    
     return () => {
       game.destroy(true);
     };
   }, [video, emitMovement]);
 
   const deepPlayers = JSON.stringify(players);
-  // let boardCreated = true;
+ 
+  const { nearbyPlayers } = useNearbyPlayers();
+  const hasNearbyPlayer = nearbyPlayers.length > 0;
+
   useEffect(() => {
     // triggered when players move 
     // keep track of whether board has been created or not bool
@@ -537,13 +546,30 @@ export default function WorldMap(): JSX.Element {
     // scene can be visible/invisible
     // coveygamescene could have method showGameBoard/hideGameBoard
     gameScene?.updatePlayersLocations(players);
-    // if(nearbyPlayers.nearbyPlayers.length > 0 && gameScene && gameScene.scene && !boardCreated) {
-    //   gameScene?.scene.add('board', new GameBoard('gameBoard'), true);
-    //   boardCreated = true;
-    // } 
-    // else if (boardCreated) {
-    //   gameScene?.scene.remove('board');
-    // }
+  
+    // If so, initiate and display GameBoard Scene
+    if(hasNearbyPlayer && gameScene && gameScene.scene && !gameScene.checkersBoardLoaded()) {
+      console.log('if statement entered');
+
+      const config = {
+        type: Phaser.AUTO,
+        parent: 'map-container',
+        minWidth: 600,
+        minHeight: 600,
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 }, // Top down game, so no gravity
+            debugger: true,
+          },
+        },
+      };
+
+      const checkersScene = new CheckersGame();
+      gameScene.scene.add('checkers', checkersScene, true);
+      console.log('CheckersBoard added');
+      gameScene.setCheckersBoardLoaded(true);
+    } 
   }, [players, deepPlayers, gameScene]);
 
   return <div id="map-container"/>;

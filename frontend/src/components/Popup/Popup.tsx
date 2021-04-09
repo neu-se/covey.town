@@ -21,8 +21,6 @@ import {
   } from "@chakra-ui/react";
 import React, { useEffect, useState } from 'react';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
-import GameBoard from '../world/GameBoard';
-import * as board from "./checker-board.png";
 
 // interface Props {
 //     showing : boolean;
