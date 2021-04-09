@@ -26,6 +26,7 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import CoveyTownUser from './User';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -42,7 +43,20 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const {dbClient} = useCoveyAppState();
   const toast = useToast();
 
-  const [currentFriendList, setFriendList] = useState<UserStatus[]>();   
+  const [currentFriendList, setFriendList] = useState<UserStatus[]>();
+
+
+  // New code
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const checkUserStatus = useCallback(async () => {
+    const userProfile = CoveyTownUser.getInstance();
+    const userEmail = userProfile.getUserEmail();
+    const status  = await dbClient.getOnlineStatus({ email: userEmail });
+    setIsLoggedIn(status);
+  }, [dbClient]);
+
+  
 
   const updateFriendList = useCallback(async () => {
       const exist = await dbClient.userExistence({email: 'cl@gmail.com'})
@@ -68,11 +82,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   
   useEffect(() => {
     updateFriendList();
-    // const timer = setInterval(updateFriendList, 2000);
+    checkUserStatus();
+    // const timer1 = setInterval(checkUserStatus, 2000);
+    const timer2 = setInterval(updateFriendList, 2000);
     return () => {
-      // clearInterval(timer)
+      // clearInterval(timer1)
+      clearInterval(timer2)
     };
-  }, [updateFriendList]);
+  }, [updateFriendList, checkUserStatus]);
   
   
 
@@ -179,26 +196,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     <>
       <form>
         <Stack>
-          <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Select a username</Heading>
-
-            <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
-              />
-            </FormControl>
-
-            <Heading p="4" as="h2" size="lg">-or-</Heading>
-            <LoginHooks/>
-            <LogoutHooks/>
-          </Box>
-
-
-          <Heading p="4" as="h4" size="md">Friend list</Heading>
-            <Box maxH="500px" overflowY="scroll">
-              <Table>
+          {isLoggedIn ? (
+            <Box p="4" borderWidth="1px" borderRadius="lg">
+            <Heading p="4" as="h4" size="md">Friend list</Heading>
+            <Table>
                 <TableCaption placement="bottom">Friends</TableCaption>
                 <Thead><Tr><Th>Username</Th><Th>Status</Th><Th>Remove</Th></Tr></Thead>
                 <Tbody>
@@ -211,7 +212,26 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
                 </Tbody>
               </Table>
+            <LogoutHooks/>
             </Box>
+          ) : (
+            <Box p="4" borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg">Select a username</Heading>
+
+            <FormControl>
+              <FormLabel htmlFor="name">Name</FormLabel>
+              <Input autoFocus name="name" placeholder="Your name"
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
+              />
+            </FormControl>
+
+            <Heading p="4" as="h2" size="lg">-or-</Heading>
+            <LoginHooks/>
+            </Box>
+          )}
+
+
 
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>

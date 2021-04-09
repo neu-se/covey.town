@@ -39,8 +39,6 @@ function LoginHooks(): JSX.Element {
   }
     
   const onSuccess = (res: any) => {
-    console.log('Login successful: currentUser:', res.profileObj);
-    
     // Save the user data in CoveyTownUser singleton
     const userProfile = CoveyTownUser.getInstance();
     userProfile.setUserEmail(res.profileObj.email);
