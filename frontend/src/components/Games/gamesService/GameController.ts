@@ -12,7 +12,6 @@ import {
   HangmanPlayer2Move,
   TicMove, TTLPlayer2Move,
 } from '../gamesClient/Types';
-import TicTacToeGame from './TicTacToeGame';
 import HangmanGame from './HangmanGame';
 import TTLGame from './TTLGame';
 
@@ -21,13 +20,13 @@ export default class GameController {
 
   private static _instance: GameController;
 
-  private _gamesList: (TTLGame | HangmanGame | TicTacToeGame)[] = [];
+  private _gamesList: (TTLGame | HangmanGame )[] = [];
 
-  get gamesList(): (TTLGame | HangmanGame | TicTacToeGame)[] {
+  get gamesList(): (TTLGame | HangmanGame)[] {
     return this._gamesList;
   }
 
-  set gamesList(value: (TTLGame | HangmanGame | TicTacToeGame)[]) {
+  set gamesList(value: (TTLGame | HangmanGame )[]) {
     this._gamesList = value;
   }
 
@@ -50,9 +49,9 @@ export default class GameController {
       newGame = new HangmanGame(player1, <HangmanWord>(initialState));
     } else if (requestData.gameType === 'TTL') {
       newGame = new TTLGame(player1, <TTLChoices>(initialState));
-    } else if (requestData.gameType === 'TicTacToe') {
-      // TODO: add params for TicTacToe constructor
-      newGame = new TicTacToeGame();
+    // } else if (requestData.gameType === 'TicTacToe') {
+    //   // TODO: add params for TicTacToe constructor
+    //   newGame = new TicTacToeGame();
     }
     if (newGame === undefined) {
       return {
@@ -107,9 +106,10 @@ export default class GameController {
     }
     // TODO: move() method should return a boolean value
     let success = true;
-    if (targetGame instanceof TicTacToeGame) {
-      targetGame.move(<TicMove>move);
-    } else if (targetGame instanceof TTLGame) {
+    // if (targetGame instanceof TicTacToeGame) {
+    //   targetGame.move(<TicMove>move);
+    // } else
+      if (targetGame instanceof TTLGame) {
       targetGame.move(<TTLPlayer2Move>move);
     } else if (targetGame instanceof HangmanGame) {
       targetGame.move(<HangmanPlayer2Move>move);
@@ -145,7 +145,7 @@ export default class GameController {
    * Returns an instance of a game found by its ID
    *
    */
-  public findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
+  public findGameById(gameId: string): (HangmanGame | TTLGame | undefined) {
     try {
       return this.gamesList.find(game => game.id === gameId);
     } catch (e) {

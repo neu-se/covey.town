@@ -5,7 +5,6 @@ import TTLDisplay from "./GameDisplays/TTLDisplay";
 import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
 import GameController from "./gamesService/GameController";
 import TTLGame from "./gamesService/TTLGame";
-import TicTacToeGame from "./gamesService/TicTacToeGame";
 import HangmanGame from "./gamesService/HangmanGame";
 
 interface GameContainerProps {
@@ -40,9 +39,9 @@ export default function GameContainer({gameType, gameId, player1Username, player
       </div>
 
           <div className="games-border games-extra-padded">
-            {gameType === "TicTacToe" &&
-            <TicTacToeDisplay game={game as TicTacToeGame}/>
-            }
+            {/* {gameType === "TicTacToe" && */}
+            {/* <TicTacToeDisplay game={game as TicTacToeGame}/> */}
+            {/* } */}
             {gameType === "TTL" &&
             //  TODO: Fill game data programmatically
             <TTLDisplay game = {game as TTLGame}/>
