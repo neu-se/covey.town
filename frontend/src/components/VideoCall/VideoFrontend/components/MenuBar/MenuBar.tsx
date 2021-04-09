@@ -14,8 +14,7 @@ import ToggleVideoButton from '../Buttons/ToggleVideoButton/ToggleVideoButton';
 import ToggleScreenShareButton from '../Buttons/ToogleScreenShareButton/ToggleScreenShareButton';
 import TownSettings from '../../../../Login/TownSettings';
 import MenuContainer from '@material-ui/core/Menu';
-import GameModalDialog from "../../../../Games/GameModalDialog";
-import GameContainer from "../../../../Games/GameContainer";
+import JoinGameModalDialog from "../../../../Games/JoinGameModalDialog";
 import CreateGameModalDialog from "../../../../Games/CreateGameModalDialog";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -96,10 +95,8 @@ export default function MenuBar(props: { setMediaError?(error: Error): void }) {
               <Grid container justify="flex-end">
                 <TownSettings />
                 {/*TODO: Remove these from menu bar!*/}
-                <GameModalDialog dialogType={"joining"} gameType={"TicTacToe"} player1Username={"bayley"}/>
-                <GameModalDialog dialogType={"unavailable"} gameType={"Hangman"} player1Username={"kayla"}/>
+                <JoinGameModalDialog dialogType={"unavailable"} gameType={"Hangman"} gameId={"1"}/>
                 <CreateGameModalDialog/>
-                <GameContainer gameType={"Hangman"} player1Username={"miranda"} player2Username={"bayley"}/>
                 <Menu />
                 <EndCallButton />
               </Grid>

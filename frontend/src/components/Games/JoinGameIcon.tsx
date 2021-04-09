@@ -1,6 +1,6 @@
 import React from 'react'
 import GameController from "./gamesService/GameController";
-import GameModalDialog from "./GameModalDialog";
+import JoinGameModalDialog from "./JoinGameModalDialog";
 
 interface JoinGameIconProps {
   gameType: string,
@@ -16,16 +16,16 @@ export default function JoinGameIcon({gameType, gameId}: JoinGameIconProps) : JS
       {
         game !== undefined && game.player2ID === "" &&
           // TODO: how to get player ID/username?
-          <GameModalDialog dialogType="joining"
+          <JoinGameModalDialog dialogType="joining"
+                               gameId={gameId}
+                               gameType={gameType}
+                               player1Username=""/>
+      }{
+      game !== undefined && game.player2ID !== "" &&
+      <JoinGameModalDialog dialogType="unavailable"
                            gameId={gameId}
                            gameType={gameType}
                            player1Username=""/>
-      }{
-      game !== undefined && game.player2ID !== "" &&
-      <GameModalDialog dialogType="unavailable"
-                       gameId={gameId}
-                       gameType={gameType}
-                       player1Username=""/>
     }
     </div>
 
