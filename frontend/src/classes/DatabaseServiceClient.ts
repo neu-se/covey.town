@@ -70,9 +70,7 @@ export default class DatabaseServiceClient {
      */
 
     constructor(serviceURL?: string) {
-    
-      // const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
-      const baseURL = serviceURL ;
+      const baseURL = serviceURL || process.env.REACT_APP_DATABASE_SERVICE_URL;
       assert(baseURL);
       this._axios = axios.create({ baseURL });
     }

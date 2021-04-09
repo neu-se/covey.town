@@ -8,11 +8,13 @@ import TownsServiceClient from '../../classes/TownsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import DatabaseServiceClient from '../../classes/DatabaseServiceClient';
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
 const mockToast = jest.fn();
 jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../classes/DatabaseServiceClient');
 jest.mock('../../classes/Video/Video');
 jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts', () => ({
   __esModule: true, // this property makes it work
@@ -99,6 +101,7 @@ function wrappedTownSelection() {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
+    dbClient: new DatabaseServiceClient()
   }}>
     <TownSelection doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }
@@ -207,6 +210,7 @@ describe('Part 1 - Public room listing', () => {
         .toBeInTheDocument());
     })
     // All towns are in doc, now make sure they are sorted by occupancy
+    
     let rows = renderData.getAllByRole('row');
     for (let i = 1; i < rows.length; i += 1) { // off-by-one for the header row
       // console.log(rows[i]);
