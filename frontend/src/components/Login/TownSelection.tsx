@@ -19,7 +19,7 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
-import {User, UserStatus} from '../../classes/DatabaseServiceClient';
+import {UserStatus} from '../../classes/DatabaseServiceClient';
 import LoginHooks from './LoginHooks'
 import LogoutHooks from './LogoutHooks'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
@@ -45,12 +45,25 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [currentFriendList, setFriendList] = useState<UserStatus[]>();   
 
   const updateFriendList = useCallback(async () => {
+      const exist = await dbClient.userExistence({email: 'cl@gmail.com'})
+      console.log('user exists: ', exist)
+      const friends = await dbClient.getFriends({email: 'cl@gmail.com'})
+      console.log(friends)
+      let status  = await dbClient.getOnlineStatus({email: 'cl@gmail.com'})
+      console.log('status before:', status)
+      await dbClient.setOnlineStatus({email: 'cl@gmail.com', isOnline: true})
+      status = await dbClient.getOnlineStatus({email: 'cl@gmail.com'})
+      console.log('status after:', status)
 
-      const res = await dbClient.getFriends({email: 'cl@gmail.com'})
-      console.log(res)
-
-      setFriendList(res);
-
+      const newUser = {firstName: 'Robert',
+      lastName: 'Kubica',
+      email: 'rk@gmail.com',
+      friends: [],
+      isOnline: false}
+      await dbClient.addUser( {user: newUser });
+      
+      await dbClient.addFriend({email: 'cl@gmail.com', friendEmail: 'abd@gmail.com'})
+      await dbClient.deleteFriend({email: 'cl@gmail.com', friendEmail: 'dr@gmail.com'})
     }, [dbClient]);
   
   useEffect(() => {

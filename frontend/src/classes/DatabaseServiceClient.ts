@@ -23,7 +23,7 @@ export type UserStatus = {
  */
  export interface StatusChangeRequest {
     email: string;
-    status: boolean;
+    isOnline: boolean;
   }
 
 
@@ -49,7 +49,6 @@ export type UserStatus = {
     email: string
     friendEmail: string
   }
-
 
 /**
  * Envelope that wraps any response from the server
@@ -83,7 +82,7 @@ export default class DatabaseServiceClient {
         if (ignoreResponse) {
           return {} as T;
         }
-        assert(response.data.response);
+        assert(response.data.response !== undefined);
         return response.data.response;
       }
       throw new Error(`Error processing request: ${response.data.message}`);
@@ -101,28 +100,28 @@ export default class DatabaseServiceClient {
     }
 
 
-    async getOnlineStatus(requestData: UserEmailRequest): Promise<void> {
-        const responseWrapper = await this._axios.get<ResponseEnvelope<void>>(`/users/${requestData.email}/status`);
+    async getOnlineStatus(requestData: UserEmailRequest): Promise<boolean> {
+        const responseWrapper = await this._axios.get<ResponseEnvelope<boolean>>(`/users/${requestData.email}/status`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
     }
 
-    async setOnlineStatus(requestData: StatusChangeRequest): Promise<void> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}/status/${requestData.status}`);
-        return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
+    async setOnlineStatus(requestData: StatusChangeRequest): Promise<Record<string, null>> {
+        const responseWrapper = await this._axios.post<ResponseEnvelope<Record<string, null>>>(`/users/status/`,requestData);
+        return DatabaseServiceClient.unwrapOrThrowError(responseWrapper,true);
     }
 
-    async addUser(requestData: AddUserRequest): Promise<void> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.user}`);
-        return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
+    async addUser(requestData: AddUserRequest): Promise<Record<string, null>> {
+        const responseWrapper = await this._axios.post<ResponseEnvelope<Record<string, null>>>(`/users/`,requestData);
+        return DatabaseServiceClient.unwrapOrThrowError(responseWrapper,true);
     }
 
-    async addFriend(requestData: AddFriendRequest): Promise<void> {
-        const responseWrapper = await this._axios.post<ResponseEnvelope<void>>(`/users/${requestData.email}/friends/${requestData.friendEmail}`);
-        return DatabaseServiceClient.unwrapOrThrowError(responseWrapper);
+    async addFriend(requestData: AddFriendRequest): Promise<Record<string, null>> {
+        const responseWrapper = await this._axios.post<ResponseEnvelope<Record<string, null>>>(`/users/${requestData.email}/friends/${requestData.friendEmail}`);
+        return DatabaseServiceClient.unwrapOrThrowError(responseWrapper,true);
     }
 
-    async deleteFriend(requestData: RemoveFriendRequest): Promise<void> {
-        const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/users/${requestData.email}/friends/${requestData.friendEmail}`);
+    async deleteFriend(requestData: RemoveFriendRequest): Promise<Record<string, null>> {
+        const responseWrapper = await this._axios.delete<ResponseEnvelope<Record<string, null>>>(`/users/${requestData.email}/friends/${requestData.friendEmail}`);
         return DatabaseServiceClient.unwrapOrThrowError(responseWrapper, true);
       }
   }

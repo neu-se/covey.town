@@ -9,6 +9,7 @@ import {
   getAllUsersHandler,
   getFriendsHandler,
   getStatusHandler,
+  removeFriendHandler,
   setStatusHandler,
   userExistsHandler,
 } from "../requestHandlers/DBRequestHandlers";
@@ -46,7 +47,6 @@ export default function addDBRoutes(http: Server, app: Express): io.Server {
 
   app.get("/users/:emailID/friends", BodyParser.json(), async (req, res) => {
     try {
-      console.log("fired!!");
       const result = await getFriendsHandler({ email: req.params.emailID });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
@@ -71,9 +71,9 @@ export default function addDBRoutes(http: Server, app: Express): io.Server {
     }
   });
 
-  app.post("/users/:emailID/status/", BodyParser.json(), async (req, res) => {
+  app.post("/users/status/", BodyParser.json(), async (req, res) => {
     try {
-      const result = await setStatusHandler(req.body.status);
+      const result = await setStatusHandler(req.body);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
@@ -86,7 +86,7 @@ export default function addDBRoutes(http: Server, app: Express): io.Server {
 
   app.post("/users", BodyParser.json(), async (req, res) => {
     try {
-      const result = await addUserHandler(req.body.status);
+      const result = await addUserHandler(req.body);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
@@ -98,11 +98,31 @@ export default function addDBRoutes(http: Server, app: Express): io.Server {
   });
 
   app.post(
-    "/users/:emailID/friends/:friendEmailID ",
+    "/users/:emailID/friends/:friendEmailID",
     BodyParser.json(),
     async (req, res) => {
       try {
         const result = await addFriendHandler({
+          email: req.params.emailID,
+          friendEmail: req.params.friendEmailID,
+        });
+        res.status(StatusCodes.OK).json(result);
+      } catch (err) {
+        logError(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message:
+            "Internal server error, please see log in server for more details",
+        });
+      }
+    }
+  );
+
+  app.delete(
+    "/users/:emailID/friends/:friendEmailID",
+    BodyParser.json(),
+    async (req, res) => {
+      try {
+        const result = await removeFriendHandler({
           email: req.params.emailID,
           friendEmail: req.params.friendEmailID,
         });
