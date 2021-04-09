@@ -8,6 +8,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
+import ChatScreen from './components/Chat/ChatScreen';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
@@ -223,9 +224,19 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       return <div>Loading...</div>;
     }
     return (
+      // <div>
+      //   <WorldMap />
+      //   <VideoOverlay preferredMode="fullwidth" />
+      //   <ChatScreen />
+      // </div>
       <div>
-        <WorldMap />
-        <VideoOverlay preferredMode="fullwidth" />
+        <div className='rowC'>
+              <WorldMap />
+              <ChatScreen />
+        </div>
+        <div>
+          <VideoOverlay preferredMode="fullwidth" />
+        </div>
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
