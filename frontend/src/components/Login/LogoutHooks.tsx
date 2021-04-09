@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { useGoogleLogout } from 'react-google-login';
-
+import CoveyTownUser from './User';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 const clientId =
@@ -13,8 +13,9 @@ function LogoutHooks() {
   async function setOffline() {
 
     // HOW TO GET USERNAME ????
-    
-    await dbClient.setOnlineStatus({ email: "userEmail", isOnline: false });
+    const userProfile = CoveyTownUser.getInstance();
+    const userEmail = userProfile.getUserEmail();
+    await dbClient.setOnlineStatus({ email: userEmail, isOnline: false });
   }
 
   const onLogoutSuccess = () => {

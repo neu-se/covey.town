@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@chakra-ui/react';
 import { FcGoogle } from 'react-icons/fc';
 import { useGoogleLogin } from 'react-google-login';
-
+import CoveyTownUser from './User';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 
@@ -42,7 +42,11 @@ function LoginHooks(): JSX.Element {
   const onSuccess = (res: any) => {
     console.log('Login successful: currentUser:', res.profileObj);
     // setNewUserEmail(res.profileObj); // TODO: how to pass the email around to LogoutHooks and TownSelection?
+    const userProfile = CoveyTownUser.getInstance();
+    userProfile.setUserEmail(res.profileObj.email);
+    userProfile.setUserName(res.profileObj.givenName)
     checkUserExistsInDB(res.profileObj);
+
 
     // TODO
     // Create a toast onSuccess

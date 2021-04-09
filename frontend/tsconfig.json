@@ -25,6 +25,7 @@
   },
   "include": [
     "src",
-    "src/classes/DatabaseServiceClient.ts"
+    "src/classes/DatabaseServiceClient.ts",
+    "src/components/Login/User.tsx"
   ]
 }
