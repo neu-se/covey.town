@@ -24,6 +24,7 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
+import { EditIcon } from '@chakra-ui/icons'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
@@ -39,64 +40,162 @@ enum RelationshipStatus {
   Taken = "taken",
 }
 
-interface CoveyUser {
-  userID: string,
-  username: string,
-  password: string,
-  isPublic: boolean,
-  email?: string,
-  bio?: string,
-  hobbies?: string,
-  firstName?: string,
-  lastName?: string,
-  dob?: string,
-  relationshipStatus?: RelationshipStatus
+interface CreateUserRequest {
+  bio: string,
+  dob: string,
+  is_public: boolean,
+  located: string,
+  hobbies: string,
+  gender: string,
+  relationship_status: string,
+  user_id: string
+}
+
+interface CreateUserResponse {
+  bio: string,
+  dob: string,
+  is_public: boolean,
+  located: string,
+  hobbies: string,
+  gender: string,
+  relationship_status: string,
+  created_at: string,
+  updated_at: string,
+  user: AuthUser
+}
+
+interface AuthUser {
+  email: string,
+  name: string,
+  picture: string,
+}
+
+interface GetUserByIdBody {
+  userId: string,
+}
+
+interface UpdateUserBody {
+  bio: string,
+  gender: string,
+  hobbies: string,
+  is_public: boolean,
+  located: string,
+  relationship_status: string,
+  userId: string,
+}
+
+interface GetUserByIdResponse {
+  bio: string,
+  dob: string,
+  is_public: boolean,
+  located: string,
+  hobbies: string,
+  gender: string,
+  relationship_status: string,
+  created_at: string,
+  updated_at: string,
+  id: any, // ignore
+  user: AuthUser
 }
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const toast = useToast();
   const { isAuthenticated, user } = useAuth0();
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
-  const [coveyUser, setCoveyUser] = useState<CoveyUser>({
-    userID: "123",
-    username: "Scott",
-    password: "Pass123$",
-    isPublic: false,
-  });
   const [editting, setEditting] = useState<boolean>(false);
 
-  const fetchUserInformation = () => {
-    const url = ""; // getUsersByID Rest endpoint
-    const data = {
-      userId: "someID" // the user id we want to use
-    }
-    fetch(url, {
-      method: "GET",
+  // user fields that cant be editted
+  const [userName, setUserName] = useState<string>('');
+  const [password, setPassword] = useState<string>(''); // not used right now
+  const [email, setEmail] = useState<string>('');
+  const [dob, setDob] = useState<string>('');
+
+  // editable fields
+  const [bio, setBio] = useState<string>('');
+  const [located, setLocated] = useState<string>('');
+  const [hobbies, setHobbies] = useState<string>('');
+  const [gender, setGender] = useState<string>('');
+  const [relationshipStatus, setRelationshipStatus] = useState<string>('');
+  const [isPublic, setIsPublic] = useState<boolean>(false);
+
+  const setUser = (userData: CreateUserResponse | GetUserByIdResponse) => {
+    setBio(userData.bio);
+    setDob(userData.dob);
+    setGender(userData.gender);
+    setHobbies(userData.hobbies);
+    setIsPublic(userData.is_public);
+    setLocated(userData.located);
+    setRelationshipStatus(userData.relationship_status);
+    setUserName(userData.user.name);
+    setEmail(userData.user.email);
+  }
+
+  const createNewUser = async (req: CreateUserRequest) => {
+    const createUserUrl = "https://coveytown-g39.hasura.app/api/rest/user"; 
+    fetch(createUserUrl, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(req),
+    })
+      .then(res => res.json())
+      .then(obj => {
+        const userData = obj.insert_CoveyTown_user_profile.returning[0];
+        setUser(userData);
+      })
+      .catch(err => console.log(err))
+  }
+
+  const fetchUserInformation = () => {
+    const getUserUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId"; 
+    const data: GetUserByIdBody = {
+      userId: user.sub
+    }
+    fetch(getUserUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+      },
+      body: JSON.stringify(data),
     })
       .then((res) => res.json())
       .then((obj) => {
-        if (obj.status === "isOK") {
-          setCoveyUser(obj.data);
+        if (obj.CoveyTown_user_profile.length === 1) { // user exists
+          const userData = obj.CoveyTown_user_profile[0];
+          setUser(userData);
         }
-        else {
-          // error message
+        else { // make a new user
+          const date = new Date();
+          const req: CreateUserRequest = {
+            bio: '',
+            dob: date.toISOString(),
+            is_public: true,
+            located: '',
+            hobbies: '',
+            gender: '',
+            relationship_status: '',
+            user_id: user.sub
+          }
+          createNewUser(req)
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => { // there exists no user, so create one and populate
+        console.log(err)
+      })
   }
 
   useEffect(() => {
-    fetchUserInformation();
+    if (user) {
+      fetchUserInformation();
+    }
   }, user)
 
 
@@ -199,160 +298,125 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
-  const renderPopulatedFields = (currentUser: CoveyUser) => {
+  const renderPopulatedFields = () => {
     const fields: JSX.Element[] = [];
-    // type CoveyUser = typeof currentUser;
-    Object.keys(currentUser).forEach(key => {
-      switch (key) {
-        case "userID":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.userID}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "username":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.username}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "password":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.password}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "isPublic":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>Public</FormLabel>
-                <Input name={key}
-                  value={currentUser.isPublic ? "Yes" : "No"}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "email":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.email}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "bio":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.bio}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "hobbies":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.hobbies}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "firstName":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.firstName}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "lastName":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.lastName}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "dob":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.dob}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        case "relationshipStatus":
-          fields.push(
-            <Flex pl="4" pr="4" pt="1" pb="1">
-              <FormControl>
-                <FormLabel htmlFor={key}>{key.toLocaleUpperCase()}</FormLabel>
-                <Input name={key}
-                  value={currentUser.relationshipStatus === RelationshipStatus.Single
-                    ? "Single"
-                    : "Taken"}
-                  isReadOnly={!editting}
-                  variant="filled" />
-              </FormControl>
-            </Flex>
-          )
-          break;
-        default: throw new Error("Unsupported Key in CoveyUser")
-      }
-    }
-    );
+
+    // username
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="username">Username</FormLabel>
+          <Input name="username"
+            value={userName}
+            isReadOnly
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // password
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="dob">Date Of Birth</FormLabel>
+          <Input name="dob"
+            value={dob}
+            isReadOnly
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // email
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="email">Email</FormLabel>
+          <Input name="email"
+            value={email}
+            isReadOnly
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // bio - e
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="bio">Biography</FormLabel>
+          <Input name="bio"
+            value={bio}
+            isReadOnly={!editting}
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // hobbies - e
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="hobbies">Hobbies</FormLabel>
+          <Input name="hobbies"
+            value={hobbies}
+            isReadOnly={!editting}
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // relationshipStatus - e
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="rel">Relationship Status</FormLabel>
+          <Input name="rel"
+            value={relationshipStatus}
+            isReadOnly={!editting}
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // located - e
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="loc">Located</FormLabel>
+          <Input name="loc"
+            value={located}
+            isReadOnly={!editting}
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // gender - e
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="gen">Gender</FormLabel>
+          <Input name="gen"
+            value={gender}
+            isReadOnly={!editting}
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
+
+    // isPublic - e
+    fields.push(
+      <Flex pl="4" pr="4" pt="1" pb="1">
+        <FormControl>
+          <FormLabel htmlFor="isPublic">Public</FormLabel>
+          <Input name="isPublic"
+            value={isPublic ? "Yes" : "No"}
+            isReadOnly={!editting}
+            variant="filled" />
+        </FormControl>
+      </Flex>
+    )
 
     return fields
   }
@@ -380,9 +444,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <form>
               <Stack>
                 <Box borderWidth="1px" borderRadius="lg">
-                  <Heading p="4" as="h2" size="lg">Your User Profile</Heading>
+                  <Heading p="4" as="h2" size="lg">
+                    Your User Profile
+                    {
+                      editting ?
+                        <Button
+                          style={{ float: "right" }}
+                          colorScheme="blue"
+                          onClick={() => setEditting(false)}>Save</Button>
+                        :
+                        <Button
+                          style={{ float: "right" }}
+                          colorScheme="green"
+                          onClick={() => setEditting(true)}>Edit</Button>
+                    }
+                  </Heading>
                   <FormControl spacing={4}>
-                    {renderPopulatedFields(coveyUser)}
+                    {renderPopulatedFields()}
                   </FormControl>
                 </Box>
                 <Box borderWidth="1px" borderRadius="lg">
