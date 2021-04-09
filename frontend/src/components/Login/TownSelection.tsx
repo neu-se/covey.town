@@ -123,6 +123,54 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [relationshipStatus, setRelationshipStatus] = useState<string>('');
   const [isPublic, setIsPublic] = useState<boolean>(false);
 
+  const updateUser = () => {
+    // build the user object
+    const req: UpdateUserBody = {
+      bio,
+      hobbies,
+      relationship_status: relationshipStatus,
+      located,
+      gender,
+      is_public: isPublic,
+      userId: user.sub
+    }
+
+    // send the user object to patch
+    const updateUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId"
+    fetch(updateUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+      },
+      body: JSON.stringify(req),
+    })
+    .then((res) => res.json())
+    .then((obj) => {
+      console.log(obj)
+      if (obj.update_CoveyTown_user_profile.affected_rows > 0) {
+        toast({
+          title: "Update Profile",
+          description: "Successfully updated your profile",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        })
+      }
+      else {
+        toast({
+          title: "Update Profile",
+          description: "Failed to update your profile",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
+      }
+    })
+    .then(() => setEditting(false))
+    .catch((err) => console.log(err))
+  }
+
   const setUser = (userData: CreateUserResponse | GetUserByIdResponse) => {
     setBio(userData.bio);
     setDob(userData.dob);
@@ -197,8 +245,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       fetchUserInformation();
     }
   }, user)
-
-
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -308,6 +354,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <FormLabel htmlFor="username">Username</FormLabel>
           <Input name="username"
             value={userName}
+            isDisabled={editting}
             isReadOnly
             variant="filled" />
         </FormControl>
@@ -321,6 +368,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <FormLabel htmlFor="dob">Date Of Birth</FormLabel>
           <Input name="dob"
             value={dob}
+            isDisabled={editting}
             isReadOnly
             variant="filled" />
         </FormControl>
@@ -334,6 +382,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <FormLabel htmlFor="email">Email</FormLabel>
           <Input name="email"
             value={email}
+            isDisabled={editting}
             isReadOnly
             variant="filled" />
         </FormControl>
@@ -348,6 +397,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Input name="bio"
             value={bio}
             isReadOnly={!editting}
+            onChange={(event) => setBio(event.target.value)}
             variant="filled" />
         </FormControl>
       </Flex>
@@ -361,6 +411,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Input name="hobbies"
             value={hobbies}
             isReadOnly={!editting}
+            onChange={(event) => setHobbies(event.target.value)}
             variant="filled" />
         </FormControl>
       </Flex>
@@ -374,6 +425,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Input name="rel"
             value={relationshipStatus}
             isReadOnly={!editting}
+            onChange={(event) => setRelationshipStatus(event.target.value)}
             variant="filled" />
         </FormControl>
       </Flex>
@@ -387,6 +439,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Input name="loc"
             value={located}
             isReadOnly={!editting}
+            onChange={(event) => setLocated(event.target.value)}
             variant="filled" />
         </FormControl>
       </Flex>
@@ -400,6 +453,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Input name="gen"
             value={gender}
             isReadOnly={!editting}
+            onChange={(event) => setGender(event.target.value)}
             variant="filled" />
         </FormControl>
       </Flex>
@@ -409,10 +463,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     fields.push(
       <Flex pl="4" pr="4" pt="1" pb="1">
         <FormControl>
-          <FormLabel htmlFor="isPublic">Public</FormLabel>
-          <Input name="isPublic"
-            value={isPublic ? "Yes" : "No"}
+          <FormLabel htmlFor="isPublic">Make Profile Public?</FormLabel>
+          <Checkbox name="isPublic"
+            isChecked={isPublic}
             isReadOnly={!editting}
+            onChange={(event) => setIsPublic(event.target.checked)}
             variant="filled" />
         </FormControl>
       </Flex>
@@ -451,7 +506,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                         <Button
                           style={{ float: "right" }}
                           colorScheme="blue"
-                          onClick={() => setEditting(false)}>Save</Button>
+                          onClick={() => updateUser()}>Save</Button>
                         :
                         <Button
                           style={{ float: "right" }}
