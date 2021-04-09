@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@chakra-ui/react';
 import { FcGoogle } from 'react-icons/fc';
 import { useGoogleLogin } from 'react-google-login';
@@ -10,6 +10,7 @@ const clientId =
   '147790869304-31si4r0ejgmklrphlis0eehdgk0qo9qo.apps.googleusercontent.com';
 
 function LoginHooks(): JSX.Element {
+  const [newUserEmail, setNewUserEmail] = useState<string>('');
   const { dbClient } = useCoveyAppState();
 
   const refreshTokenSetup = (res: any) => {
@@ -28,14 +29,17 @@ function LoginHooks(): JSX.Element {
     setTimeout(refreshToken, refreshTiming);
   };
 
-  async function userIsOnline(userEmail: string) {
+  async function checkUserExistsInDB(userEmail: string) {
+    // check if user exists -> yes: setOnlineStatus = true / no: addUser and setOnlineStatus = true
+    await dbClient.userExistence({ email: userEmail });
     await dbClient.setOnlineStatus({ email: userEmail, isOnline: true });
   }
     
   const onSuccess = (res: any) => {
     console.log('Login successful: currentUser:', res.profileObj);
     const userEmail: string = res.profileObj.email;
-    userIsOnline(userEmail);
+    setNewUserEmail(userEmail); // TODO: how to pass the email around to LogoutHooks and TownSelection?
+    checkUserExistsInDB(userEmail);
     refreshTokenSetup(res);
   };
 

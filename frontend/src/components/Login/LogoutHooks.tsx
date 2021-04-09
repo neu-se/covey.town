@@ -8,6 +8,7 @@ const clientId =
 function LogoutHooks() {
   const onLogoutSuccess = () => {
     console.log('Logged out successfully.');
+    // await dbClient.setOnlineStatus({ email: userEmail, isOnline: true }); HOW TO GET USERNAME FROM LOGINHOOKS ????
   };
 
   const onFailure = () => {
