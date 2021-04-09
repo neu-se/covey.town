@@ -19,13 +19,13 @@ export default function JoinGameIcon({gameType, gameId}: JoinGameIconProps) : JS
           <JoinGameModalDialog dialogType="joining"
                                gameId={gameId}
                                gameType={gameType}
-                               player1Username=""/>
+                               />
       }{
       game !== undefined && game.player2ID !== "" &&
       <JoinGameModalDialog dialogType="unavailable"
                            gameId={gameId}
                            gameType={gameType}
-                           player1Username=""/>
+                           />
     }
     </div>
 
