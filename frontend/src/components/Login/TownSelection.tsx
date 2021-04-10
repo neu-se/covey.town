@@ -163,12 +163,42 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     // }
   }
 
+  const handleRejectFriend = async (userID: string) => {
+    setFriendRequestIDList(friendRequestIDList.filter(id => id !== userID))
+    setFriendRequestList(friendRequestList.filter(user => user.userID !== userID))
+    if (loggedInUser) {
+      try {
+        await db.saveFriendRequests({
+          userID: loggedInUser.userID,
+          requests: friendRequestIDList.filter(id => id !== userID)
+        })
+      } catch (e) {
+        toast({
+          title: 'Unable to add friend from authinfo',
+          description: e.toString(),
+          status: 'error'
+        })
+      }
+    }
+  }
+
+  const handleAcceptRequest = async (userID: string) => {
+    if (loggedInUser) {
+      if (loggedInUser.friendIDs.indexOf(userID) < 0) {
+        // Update this user's friend list in auth info
+        loggedInUser.friendIDs = [...loggedInUser.friendIDs, userID];
+        handleRejectFriend(userID);
+      }
+    }
+  }
+
   useEffect(() => {
     if (friendRequestSocket && friendRequestSocket.disconnected) {
       friendRequestSocket.connect();
       friendRequestSocket.on('receiveRequest', handleIncomingRequest);
+      friendRequestSocket.on('friendRequestAccepted', handleAcceptRequest);
     }
-    return () => { friendRequestSocket?.disconnect() };
+    return () => { };
   })
 
   const handleSendFriendRequest = async () => {
@@ -337,29 +367,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     return result;
   }
 
-  const handleRejectFriend = async (userID: string) => {
-    // setFriendRequestList(friendRequestList.filter(request => request.userID !== userID));
-    setFriendRequestIDList(friendRequestIDList.filter(id => id !== userID))
-    setFriendRequestList(friendRequestList.filter(user => user.userID !== userID))
-    if (loggedInUser) {
-      try {
-        await db.saveFriendRequests({
-          userID: loggedInUser.userID,
-          requests: friendRequestIDList.filter(id => id !== userID)
-        })
-      } catch (e) {
-        toast({
-          title: 'Unable to add friend from authinfo',
-          description: e.toString(),
-          status: 'error'
-        })
-      }
-    }
-  }
-
   const handleAddFriend = async (userID: string) => {
     if (loggedInUser) {
       if (loggedInUser.friendIDs.indexOf(userID) < 0) {
+        if(friendRequestSocket) {
+          friendRequestSocket.emit('acceptRequest', userID);
+        }
         // Update this user's friend list in auth info
         loggedInUser.friendIDs = [...loggedInUser.friendIDs, userID];
         // Update this user's friend list in db
