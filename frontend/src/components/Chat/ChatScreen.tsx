@@ -8,30 +8,25 @@ const NEW_CHAT_MESSAGE_EVENT = "groupMessage"; // Name of the event
 // const SOCKET_SERVER_URL = "http://localhost:8081";
 
 const useChat = (coveyTownID : string, socket: Socket) => {
-  const [messages, setMessages] = useState<Array<string>>([]); // Sent and received messages
+  const [messages, setMessages] = useState<MsgFormat[]>([]); // Sent and received messages
   const socketRef = useRef(socket);
 
   useEffect(() => {
-    
-    // // Creates a WebSocket connection
-    // socketRef?.current = socketIOClient(SOCKET_SERVER_URL, {
-    //   query: { coveyTownID },
-    // });
-    
+
     // Listens for incoming messages
     socketRef?.current?.on(NEW_CHAT_MESSAGE_EVENT, (message: any) => {
       const incomingMessage = {
         ...message,
         ownedByCurrentUser: message.senderId === socketRef.current?.id,
       };
-      setMessages((msgArray) => [...msgArray, incomingMessage]);
+      setMessages((msgs) => [...msgs, incomingMessage]);
     });
     
     // Destroys the socket reference
     // when the connection is closed
-    return () => {
-      socketRef.current.disconnect();
-    };
+    // return () => {
+    //   socketRef.current.disconnect();
+    // };
   }, [coveyTownID]);
 
   // Sends a message to the server that
@@ -41,10 +36,18 @@ const useChat = (coveyTownID : string, socket: Socket) => {
       body: messageBody,
       senderId: socketRef.current.id,
     });
+
+    // socketRef.current.emit(NEW_CHAT_MESSAGE_EVENT, messageBody) ;
+
   };
 
   return { messages, sendMessage };
 };
+
+type MsgFormat = {
+  body: string,
+  senderId: string,
+}
 
 
 const ChatScreen = () => {
@@ -58,10 +61,11 @@ const ChatScreen = () => {
   const { messages, sendMessage } = useChat(currentTownID, socket as Socket);
 
 
-  console.log("myPlayerID", myPlayerID);
+  console.log("messages", messages);
 
-  const handleSubmit = () =>  {
-    sendMessage(newMessage );
+  const handleSubmit = (e: any) =>  {
+    e.preventDefault();
+    sendMessage(newMessage);
     // if(receiver ===  'everyone') {
     //   sendMessage(newMessage);
     //     // send to all
@@ -83,29 +87,26 @@ const ChatScreen = () => {
             {players.filter(player => player.id !== myPlayerID).map(player => <option key={player.userName}  value={player.id}> {player.userName} </option>)}
           </Select>
           <ol>
-            {messages}
-          {/* {messages.map((message, i) => (
+            text
+            twq
+          {messages.map((message) => (
             <li
-              key={i}
+              key={JSON.stringify(message)}
               // className={`message-item ${
               //   message.ownedByCurrentUser ? "my-message" : "received-message"
               // }`}
             >
               {message.body}
             </li>
-          ))} */}
+          ))}
         </ol>
         </div>
-        <form id="form" onSubmit={()=> handleSubmit()}>
+        <form id="form">
           <input id="input" placeholder="Write message..." onChange={(e) => setNewMessage(e.target.value)} />
-          <button type='submit'>Send</button>
+          <button type='submit' onClick={(e)=> handleSubmit(e)}>Send</button>
         </form>
       </body>
     </div>
   );
 };
-export default ChatScreen
-
-function socketIOClient(SOCKET_SERVER_URL: string, arg1: { query: { coveyTownID: string; }; }): undefined {
-  throw new Error("Function not implemented.");
-}
+export default ChatScreen;
