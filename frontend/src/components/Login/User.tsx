@@ -5,6 +5,8 @@ export default class CoveyTownsUser {
 
   private _userName: string;
 
+  private _userStatus!: boolean;
+
   constructor() {
     this._userEmail = "";
     this._userName = "";
@@ -31,5 +33,13 @@ export default class CoveyTownsUser {
 
   getUserName(): string {
     return this._userName;
+  }
+
+  setUserStatus(status: boolean): void {
+    this._userStatus = status;
+  }
+
+  getUserStatus(): boolean {
+    return this._userStatus;
   }
 }

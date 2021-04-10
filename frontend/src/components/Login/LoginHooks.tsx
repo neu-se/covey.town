@@ -43,6 +43,7 @@ function LoginHooks(): JSX.Element {
     const userProfile = CoveyTownUser.getInstance();
     userProfile.setUserEmail(res.profileObj.email);
     userProfile.setUserName(res.profileObj.givenName);
+    userProfile.setUserStatus(true);
 
     // Checking if user exists in database
     checkUserExistsInDB(res.profileObj);

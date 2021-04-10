@@ -3,11 +3,13 @@ import assert from "assert";
 import {
   Box,
   Button,
+  Center,
   Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
+  Icon,
   Input,
   Stack,
   Table,
@@ -39,62 +41,36 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
-  const {dbClient} = useCoveyAppState();
+  const { apiClient, dbClient } = useCoveyAppState();
   const toast = useToast();
 
   const [currentFriendList, setFriendList] = useState<UserStatus[]>();
-
+  
 
   // New code
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const checkUserStatus = useCallback(async () => {
-    const userProfile = CoveyTownUser.getInstance();
-    const userEmail = userProfile.getUserEmail();
-    const status  = await dbClient.getOnlineStatus({ email: userEmail });
-    setIsLoggedIn(status);
-  }, [dbClient]);
+  const userProfile = CoveyTownUser.getInstance();
+  const userEmail = userProfile.getUserEmail();
+  const userStatus = userProfile.getUserStatus();
+  const [friendEmail, setFriendEmail] = useState<string>('');
 
   
 
   const updateFriendList = useCallback(async () => {
-      const exist = await dbClient.userExistence({email: 'cl@gmail.com'})
-      console.log('user exists: ', exist)
-      const friends = await dbClient.getFriends({email: 'cl@gmail.com'})
-      console.log(friends)
-      let status  = await dbClient.getOnlineStatus({email: 'cl@gmail.com'})
-      console.log('status before:', status)
-      await dbClient.setOnlineStatus({email: 'cl@gmail.com', isOnline: true})
-      status = await dbClient.getOnlineStatus({email: 'cl@gmail.com'})
-      console.log('status after:', status)
-
-      const newUser = {firstName: 'Robert',
-      lastName: 'Kubica',
-      email: 'rk@gmail.com',
-      friends: [],
-      isOnline: false}
-      await dbClient.addUser( {user: newUser });
-      
-      await dbClient.addFriend({email: 'cl@gmail.com', friendEmail: 'abd@gmail.com'})
-      await dbClient.deleteFriend({email: 'cl@gmail.com', friendEmail: 'dr@gmail.com'})
-    }, [dbClient]);
+    const friends = await dbClient.getFriends({ email: userEmail });
+    setFriendList(friends);
+  }, [dbClient, userEmail]);
   
   useEffect(() => {
     updateFriendList();
-    checkUserStatus();
-    // const timer1 = setInterval(checkUserStatus, 2000);
-    const timer2 = setInterval(updateFriendList, 2000);
+    const timer = setInterval(updateFriendList, 2000);
     return () => {
-      // clearInterval(timer1)
-      clearInterval(timer2)
+      clearInterval(timer)
     };
-  }, [updateFriendList, checkUserStatus]);
+  }, [updateFriendList]);
   
   
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -110,6 +86,50 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       clearInterval(timer)
     };
   }, [updateTownListings]);
+
+
+  const handleAddFriend = useCallback(async (newFriendEmail: string) => {
+    try {
+      const friendExists = await dbClient.userExistence({ email: newFriendEmail });
+      if (!friendExists) {
+        toast({
+          title: `Unable to add ${newFriendEmail}`,
+          description: 'Please enter a valid friend email',
+          status: 'error',
+        });
+        return;
+      }
+      await dbClient.addFriend({ email: userEmail, friendEmail: newFriendEmail });
+      toast({
+        title: `You added ${newFriendEmail} to your friend list!`,
+        description: 'Check the friend list to see if they are online',
+        status: 'success',
+      });
+    } catch (err) {
+      toast({
+        title: 'Unable to add your friend',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  }, [dbClient, toast, userEmail]);
+
+
+  const handleDeleteFriend = useCallback(async (friendEmailDelete: string) => {
+    try {
+      await dbClient.deleteFriend({ email: userEmail, friendEmail: friendEmailDelete });
+      toast({
+        title: `Success removing ${friendEmailDelete} from your friend list!`,
+        status: 'success',
+      });
+    } catch (err) {
+      toast({
+        title: `Unable to delete ${friendEmailDelete} from your friend list`,
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  }, [dbClient, toast, userEmail]);
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
@@ -196,18 +216,47 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     <>
       <form>
         <Stack>
-          {isLoggedIn ? (
+          {userStatus ? (
             <Box p="4" borderWidth="1px" borderRadius="lg">
+              <Heading p="4" as="h2" size="lg">Hello {userProfile.getUserName()}!</Heading>
+              <Heading p="4" as="h4" size="md">Add a Friend</Heading>
+              <Flex p="4">
+                <FormControl>
+                    <Input name="friendEmail" placeholder="Email of your friend"
+                       value={friendEmail}
+                       onChange={event => setFriendEmail(event.target.value)}/>
+                </FormControl>
+                  <Button onClick={() => handleAddFriend(friendEmail)}>Add Friend</Button>
+              </Flex>
             <Heading p="4" as="h4" size="md">Friend list</Heading>
             <Table>
                 <TableCaption placement="bottom">Friends</TableCaption>
-                <Thead><Tr><Th>Username</Th><Th>Status</Th><Th>Remove</Th></Tr></Thead>
+                <Thead><Tr><Th>Username</Th><Th>Online</Th><Th>Remove</Th></Tr></Thead>
                 <Tbody>
 
                 {currentFriendList?.map((friends) => (
-                    <Tr key={friends.email}><Td role='cell'>{friends.email}</Td>
-                      <Td role='cell'>{friends.isOnline.toString()}</Td>
-                        <Td role='cell'> <Button> Delete Friend</Button></Td></Tr>
+                  <Tr key={friends.email}>
+                    <Td role='cell'>{friends.email}</Td>
+                    <Td role='cell'>{friends.isOnline ? (
+                      <Icon viewBox="0 0 200 200" color="green.500">
+                        <path
+                          fill="currentColor"
+                          d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+                        />
+                      </Icon>
+                      ) : (
+                      <Icon viewBox="0 0 200 200" color="red.500">
+                        <path
+                          fill="currentColor"
+                          d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+                        />
+                      </Icon>
+                      )}
+                    </Td>
+                    <Td role='cell'>
+                      <Button onClick={() => handleDeleteFriend(friends.email)}>Delete Friend</Button>
+                    </Td>
+                  </Tr>
                   ))}
 
                 </Tbody>
