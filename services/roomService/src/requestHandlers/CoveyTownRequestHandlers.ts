@@ -87,8 +87,6 @@ export interface TownUpdateRequest {
 export interface PrivateMessageRequest {
   coveyTownID: string;
   coveyTownPassword: string;
-  sender: Player;
-  receiver: Player;
   message: PrivateChatMessage;
 }
 
@@ -98,7 +96,6 @@ export interface PrivateMessageRequest {
 export interface GlobalMessageRequest {
   coveyTownID: string;
   coveyTownPassword: string;
-  sender: Player;
   message: GlobalChatMessage;
 }
 /**
@@ -223,6 +220,22 @@ export async function privateMessageHandler(
   };
 }
 
+export async function globalMessageHandler(
+  requestData: GlobalMessageRequest,
+): Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const success = townsStore.sendGlobalMessage(
+    requestData.coveyTownID,
+    requestData.coveyTownPassword,
+    requestData.message,
+  );
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? 'Error: could not send global message.' : undefined,
+  };
+}
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -291,10 +304,10 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(s.player, movementData);
   });
 
-  socket.on('globalMessage', (message: GlobalChatMessage) => {
+  socket.on('onGlobalMessage', (message: GlobalChatMessage) => {
     townController.sendGlobalPlayerMessage(message);
   });
-  socket.on('privateMessage', (message: PrivateChatMessage) => {
+  socket.on('onPrivateMessage', (message: PrivateChatMessage) => {
     townController.sendPrivatePlayerMessage(message);
   });
 }
