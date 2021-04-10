@@ -222,7 +222,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           setUser(userData);
         }
         else { // make a new user
-          const date = new Date();
           const req: CreateUserRequest = {
             bio: '',
             dob: '',
