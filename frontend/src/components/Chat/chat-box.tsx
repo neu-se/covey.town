@@ -13,17 +13,17 @@ import {
   InputLabel,
   ListItem,
   MenuItem,
-  Select,
+  Select, Tooltip,
   Typography,
 } from "@material-ui/core";
-import { Mention, MentionsInput } from 'react-mentions'
-import { useToast } from '@chakra-ui/react';
+import {Mention, MentionsInput} from 'react-mentions'
+import {useToast} from '@chakra-ui/react';
 import '../../App.css';
-import { makeStyles } from "@material-ui/styles";
+import {makeStyles} from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
-import PlayerMention, { ServerMentionMessage } from "../../classes/PlayerMention";
+import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
@@ -35,9 +35,10 @@ const useStyles = makeStyles({
     top: '2%',
     right: '2%',
     // bottom: '70vh',
-    background: '#efe4b1',
+    background: '#0e0e29',
     width: '20vw',
     height: '71vh',
+    border: '3px solid #efe4b1',
     borderRadius: '45px',
     // overflow: 'auto',
     scrollbarGutter: '10px'
@@ -53,7 +54,10 @@ const useStyles = makeStyles({
   fabIcon: {
     // width: '20%'
   },
-  formControl: {},
+  formControl: {
+    background: '#efead6',
+
+  },
   messageCreation: {
     justifyContent: 'between',
     float: 'right',
@@ -69,30 +73,43 @@ const useStyles = makeStyles({
   },
   messageBorder: {
     marginLeft: '5px',
-    marginRight: '5px'
+    marginRight: '5px',
+    backgroundColor: '#ffffff',
+    borderRadius: '45px'
+
+
   },
   otherPlayerMessage: {
     float: 'left',
-    textAlign: 'left'
+    textAlign: 'left',
 
   },
   otherPlayerMessageName: {
-    color: '#1d2bff'
+    color: '#1d2bff',
+    backgroundColor: '#ffffff',
+    borderRadius: '45px',
+    margin: '2px'
   },
   playerMessage: {
-    alignItems: 'right',
-    textAlign: 'left'
+    float: 'right',
+    textAlign: 'right',
+
+
   },
   playerMessageName: {
-    color: '#ff0c13'
+    color: '#ff0c13',
+    backgroundColor: '#ffffff',
+    borderRadius: '45px',
+    margin: '2px'
+
   },
 
   textField: {
     width: '80%',
     background: '#efead6',
-    marginLeft: '5px',
-    marginRight: '5px'
+    alignItems: 'end',
 
+    borderBottomLeftRadius: '45px'
   }
 
 });
@@ -123,7 +140,7 @@ const ChatBox = (): JSX.Element => {
   const toast = useToast();
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }
 
   useEffect(() => {
@@ -171,7 +188,6 @@ const ChatBox = (): JSX.Element => {
     })
     return _uniqBy(allUserIds, myUser => myUser.id)
   }
-
 
 
   const sendMessage = async (text: string) => {
@@ -251,14 +267,24 @@ const ChatBox = (): JSX.Element => {
           {messages.map((message) =>
             // console.log(message);
             (<Grid
+              direction='column'
               key={message.messageId}
-              className={checkSender(message.senderProfileId)}>
-              <ListItem
-                className={checkSenderName(message.senderProfileId)}>{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}</ListItem>
-              <Typography className={classes.messageBorder}>
-                {message.content}
+              className={checkSender(message.senderProfileId)}
+
+            >
+              <Typography
+                className={checkSenderName(message.senderProfileId)}
+                display="inline"
+              >
+
+                &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
               </Typography>
-              <div ref={messagesEndRef} />
+              <Typography className={classes.messageBorder}
+                          display="inline"
+              >
+                &nbsp;{message.content}&nbsp;
+              </Typography>
+              <div ref={messagesEndRef}/>
             </Grid>)
           )
           }
@@ -274,24 +300,15 @@ const ChatBox = (): JSX.Element => {
                          onBlur={onBlur}
 
           >
-            {/* <Tooltip title="User mentioned you"> */}
             <Mention
-              // style={{color: '#1d2bff'}}
               trigger="@"
               data={users}
               markup="@{{__id__||__display__}}"
             />
-            {/* </Tooltip> */}
 
 
           </MentionsInput>
-          {/* <TextField
-            className={classes.textField}
-            // multiline
-            variant="filled"
-            value={newText}
-            onChange={(e) => checkForMention(e)}
-          /> */}
+
           <Fab
             className={classes.fabIcon}
             onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>
