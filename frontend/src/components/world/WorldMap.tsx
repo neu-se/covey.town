@@ -565,10 +565,11 @@ export default function WorldMap(): JSX.Element {
         },
       };
 
-      const checkersScene = new CheckersGame();
-      gameScene.scene.add('checkers', checkersScene, true);
-      console.log('CheckersBoard added');
-      gameScene.setCheckersBoardLoaded(true);
+      // only gets drawn if players are in same location at time game loads: does not work if they start apart and come together
+      // const checkersScene = new CheckersGame();
+      // gameScene.scene.add('checkers', checkersScene, true);
+      // console.log('CheckersBoard added');
+      // gameScene.setCheckersBoardLoaded(true);
     } 
   }, [players, deepPlayers, gameScene]);
 
