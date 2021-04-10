@@ -30,7 +30,7 @@ export default function CreateGameModalDialog(): JSX.Element {
   const [truth2, setTruth2] = useState('')
   const [lie, setLie] = useState('')
   const [playing, setPlaying] = useState(false)
-  const [game, setGame] = useState<TTLGame | HangmanGame>()
+  const [game, setGame] = useState<TTLGame | HangmanGame | null>(null)
   const controller = GameController.getInstance()
   const toast = useToast()
 
@@ -57,7 +57,13 @@ export default function CreateGameModalDialog(): JSX.Element {
           </ModalHeader>
           <ModalCloseButton onClick={async () => {
             if (game) {
-              await controller.deleteGame({gameID: game.id})
+              await controller.deleteGame({gameID: game.id});
+              setGame(null)
+              setPlaying(false)
+              setLie("")
+              setTruth1("")
+              setTruth2("")
+              setHangmanWord("")
             }
           }} />
           <ModalBody>
@@ -79,7 +85,7 @@ export default function CreateGameModalDialog(): JSX.Element {
                   {/* </label><br/> */}
                   <label htmlFor="hangman">
                     <input type="radio" id="hangman" name="gameChoice" value="hangman" className="games-padded-asset"
-                           checked={gameSelection === 'hangman'}
+                           checked={gameSelection === 'Hangman'}
                            onChange={() =>
                              setGameSelection(
                                "Hangman"
