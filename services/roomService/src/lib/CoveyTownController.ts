@@ -1,11 +1,11 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { CoveyTown, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
-import MongoDBClient from '../services/MongoDBClient';
+import MongoAtlasClient from '../services/MongoAtlasClient';
 import IDBClient from '../services/IDBClient';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
@@ -73,7 +73,7 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
-  private _dbClient;
+  private _dbClient: Promise<IDBClient>;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
@@ -81,7 +81,7 @@ export default class CoveyTownController {
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
-    this._dbClient = MongoDBClient.getInstance();
+    this._dbClient = MongoAtlasClient.setup();
   }
 
   /**
@@ -102,15 +102,12 @@ export default class CoveyTownController {
     // Notify other players that this player has joined
     this._listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
 
-    // (await this._dbClient).saveTown({
-    //   coveyTownID: this._coveyTownID,
-    //   capacity: this._capacity,
-    //   occupancy: this.occupancy,
-    //   friendlyName: this._friendlyName,
-    //   players: [],
-    //   isPubliclyListed: this._isPubliclyListed,
-    // });
-
+    try {
+      const dbClient = await this._dbClient;
+      dbClient.saveTown(this.toCoveyTown());
+    } catch (err) {
+      throw new Error(`Error saving town in addPlayer(): ${err.toString()}`);
+    }
     return theSession;
   }
 
@@ -167,5 +164,28 @@ export default class CoveyTownController {
 
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
+  }
+
+  toCoveyTown(): CoveyTown {
+    const {
+      coveyTownID,
+      friendlyName,
+      occupancy,
+      capacity,
+      players,
+      townUpdatePassword,
+      isPubliclyListed,
+    } = this;
+
+    const coveyTown: CoveyTown = {
+      coveyTownID,
+      friendlyName,
+      occupancy,
+      capacity,
+      players: players.map(p => p.id),
+      townUpdatePassword,
+      isPubliclyListed,
+    };
+    return coveyTown;
   }
 }

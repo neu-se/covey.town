@@ -11,6 +11,7 @@ export type CoveyTownList = { friendlyName: string; coveyTownID: string; current
 export type CoveyTown = {
   coveyTownID: string,
   friendlyName: string,
+  townUpdatePassword: string,
   isPubliclyListed: boolean,
   occupancy: number,
   capacity: number,

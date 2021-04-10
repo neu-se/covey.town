@@ -26,6 +26,8 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
+  private _coveyUserID: string;
+
   pauseGame: () => void = ()=>{};
 
   unPauseGame: () => void = ()=>{};
@@ -34,6 +36,11 @@ export default class Video {
     this._userName = userName;
     this._coveyUserID = coveyUserID;
     this._coveyTownID = coveyTownID;
+    this._coveyUserID = coveyUserID;
+  }
+
+  get coveyUserID(): string {
+    return this._coveyUserID;
   }
 
   get isPubliclyListed(): boolean {
@@ -65,7 +72,7 @@ export default class Video {
         // Request our token to join the town
         this.townsServiceClient.joinTown({
           coveyTownID: this._coveyTownID,
-          coveyUserID: this._coveyUserID, 
+          coveyUserID: this._coveyUserID,
           userName: this._userName,
         })
           .then((result) => {
