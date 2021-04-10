@@ -78,7 +78,9 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
           </>
           }
           {
-            playing && game &&
+            playing &&
+            //  TODO: Uncomment this when actually connected to game!
+            // game &&
             <>
               <div className="col-12">
                 <h1 className="games-headline">
@@ -86,7 +88,8 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
                 </h1>
                 <ModalCloseButton/>
                 <hr/>
-                <p className="games-subhead">{game.player1ID} vs. {game.player2ID}</p>
+                {/* TODO: remove null check when above like is uncommented */}
+                <p className="games-subhead">{game ? game.player1ID : "player1"} vs. {game ? game.player2ID : "player2"}</p>
                 <br/>
               </div>
 
