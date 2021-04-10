@@ -25,6 +25,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 import { CoveyUser } from '../../CoveyTypes';
 import RealmDBClient from '../../services/database/RealmDBClient';
 import useAuthInfo from '../../hooks/useAuthInfo';
+import useFriendRequestSocket from '../../hooks/useFriendRequestSocketContext';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
@@ -454,6 +455,9 @@ export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const authInfo = useAuthInfo();
   const loggedInUser = authInfo.currentUser;
+  const toast = useToast();
+  const { friendRequestSocket, setFriendRequestSocket } = useFriendRequestSocket();
+
   const {
     emitMovement, players,
   } = useCoveyAppState();
@@ -514,8 +518,38 @@ export default function WorldMap(): JSX.Element {
     console.log(townUsers.length);
   }, [players])
 
-  const handleAddFriend = (townUserID: string) => {
-    // TODO
+  const handleAddFriend = async (townUserID: string) => {
+    if (!friendRequestSocket) {
+      toast({
+        title: `Unable to send friend request`,
+        description: `Friend Request Socket is null`,
+        status: 'error'
+      })
+      return;
+    }
+    friendRequestSocket.emit('sendRequest', townUserID);
+    if (loggedInUser) {
+      await db.getFriendRequests(townUserID)
+        .then(async (response) => {
+          if (response) {
+            console.log(response.requests);
+            await db.saveFriendRequests({
+              userID: townUserID,
+              requests: [...response.requests, loggedInUser.userID]
+            })
+          } else {
+            await db.saveFriendRequests({
+              userID: townUserID,
+              requests: [loggedInUser.userID]
+            })
+          }
+        })
+    }
+    toast({
+      title: `Successfully sent friend request`,
+      description: `A friend request has been sent to user ID ${townUserID}!`,
+      status: 'success'
+    })
   }
 
   function areAlreadyFriends(townUserID: string) : boolean {
