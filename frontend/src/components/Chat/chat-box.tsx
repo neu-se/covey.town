@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 import _escapeRegExp from 'lodash/escapeRegExp'
 import _uniqBy from 'lodash/uniqBy'
@@ -121,6 +121,10 @@ const ChatBox = (): JSX.Element => {
   const onFocus = () => video?.pauseGame();
   const onBlur = () => video?.unPauseGame();
   const toast = useToast();
+  const messagesEndRef = useRef<null | HTMLDivElement>(null)
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   useEffect(() => {
     setUsers(players.filter(p => p.id !== myPlayerID)
@@ -136,6 +140,10 @@ const ChatBox = (): JSX.Element => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages]);
 
 
   const getDisplayTextFromMention = (text: string) => {
@@ -163,6 +171,7 @@ const ChatBox = (): JSX.Element => {
     })
     return _uniqBy(allUserIds, myUser => myUser.id)
   }
+
 
 
   const sendMessage = async (text: string) => {
@@ -249,6 +258,7 @@ const ChatBox = (): JSX.Element => {
               <Typography className={classes.messageBorder}>
                 {message.content}
               </Typography>
+              <div ref={messagesEndRef} />
             </Grid>)
           )
           }
