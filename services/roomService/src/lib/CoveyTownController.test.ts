@@ -62,16 +62,14 @@ describe('CoveyTownController', () => {
     const townName = `FriendlyNameTest-${nanoid()}`;
     const townController = new CoveyTownController(townName, true);
     const hubs = townController.getHubControllers();
-    // uncomment this later
-    //expect(hubs.filter(e => e.isPubliclyListed === true).length).toBe(2);
+    expect(hubs.filter(e => e.isPubliclyListed === true).length).toBe(8);
   });
 
   it('Private Hubs are created', () => { // Included in handout
     const townName = `FriendlyNameTest-${nanoid()}`;
     const townController = new CoveyTownController(townName, true);
     const hubs = townController.getHubControllers();
-    // uncomment this later
-    //expect(hubs.filter(e => e.isPubliclyListed === false).length).toBe(6); 
+    expect(hubs.filter(e => e.isPubliclyListed === false).length).toBe(0); 
   });
   
   describe('addPlayer', () => { // Included in handout
