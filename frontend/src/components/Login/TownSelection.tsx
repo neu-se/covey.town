@@ -76,6 +76,7 @@ interface GetUserByIdBody {
 
 interface UpdateUserBody {
   bio: string,
+  dob: string,
   gender: string,
   hobbies: string,
   is_public: boolean,
@@ -94,7 +95,6 @@ interface GetUserByIdResponse {
   relationship_status: string,
   created_at: string,
   updated_at: string,
-  id: any, // ignore
   user: AuthUser
 }
 
@@ -127,6 +127,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     // build the user object
     const req: UpdateUserBody = {
       bio,
+      dob,
       hobbies,
       relationship_status: relationshipStatus,
       located,
@@ -224,7 +225,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           const date = new Date();
           const req: CreateUserRequest = {
             bio: '',
-            dob: date.toISOString(),
+            dob: '',
             is_public: true,
             located: '',
             hobbies: '',
@@ -361,15 +362,15 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       </Flex>
     )
 
-    // password
+    // dob
     fields.push(
       <Flex pl="4" pr="4" pt="1" pb="1">
         <FormControl>
           <FormLabel htmlFor="dob">Date Of Birth</FormLabel>
           <Input name="dob"
             value={dob}
-            isDisabled={editting}
-            isReadOnly
+            isReadOnly={!editting}
+            onChange={(event) => setDob(event.target.value)}
             variant="filled" />
         </FormControl>
       </Flex>
