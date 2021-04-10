@@ -142,7 +142,7 @@ describe('CoveyTownController', () => {
       expect(listenerRemoved.onTownDestroyed).not.toBeCalled();
     });
 
-    it('should send private message', async () => {
+    it('should send a private message', async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
 
@@ -155,7 +155,7 @@ describe('CoveyTownController', () => {
       expect(mockListeners[2].onPrivateMessage).toBeCalledWith(message);
     });
 
-    it("should send private message and other players can't see it", async () => {
+    it("should send a private message and other players can't see it", async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
       const player3 = new Player('player 3');
@@ -168,35 +168,89 @@ describe('CoveyTownController', () => {
       expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
       expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
       expect(mockListeners[2].onPrivateMessage).toBeCalledWith(message);
-      // TODO check that player 2 got the message but player 3 did not
+      // TODO check that players 1 and 2 got the message but player 3 did not
     });
 
-    it('should send global message', async () => {
+    it('should send a global message', async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
       const player3 = new Player('player 3');
 
       const session1 = await testingTown.addPlayer(player1);
+      await testingTown.addPlayer(player2);
+      await testingTown.addPlayer(player3);
       const message = new GlobalChatMessage('hello', session1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
-      // TODO player 2 and player 3 should have gotten the message
+      // TODO players 1-3 should have gotten the message
     });
 
-    it('players in other rooms do not get a from the current room', async () => {
+    it('players in other rooms do not get a message from the current room', async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
       const player3 = new Player('player 3');
+      const player4 = new Player('player 4');
 
       const session1 = await testingTown.addPlayer(player1);
+      await testingTown.addPlayer(player2);
+      await testingTown.addPlayer(player3);
       const message = new GlobalChatMessage('hello', session1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
-      // TODO player 2 and player 3 should have gotten the message
+      // TODO players 1-3
+    });
+
+    it('players that have left the room do not get a message from the current room', async () => {
+      const player1 = new Player('player 1');
+      const player2 = new Player('player 2');
+      const player3 = new Player('player 3');
+      const player4 = new Player('player 4');
+
+      const session1 = await testingTown.addPlayer(player1);
+      await testingTown.addPlayer(player2);
+      await testingTown.addPlayer(player3);
+      const message = new GlobalChatMessage('hello', session1);
+      mockListeners.forEach(listener => listener.onGlobalMessage(message));
+      expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
+      // TODO players 1-3
+    });
+
+    it('global messages should be censored appropriately', async () => {
+      const player1 = new Player('player 1');
+
+      const session1 = await testingTown.addPlayer(player1);
+      const message1 = new GlobalChatMessage('professor bell', session1);
+      const message2 = new GlobalChatMessage('bell', session1);
+      const message3 = new GlobalChatMessage('professor', session1);
+      mockListeners.forEach(listener => listener.onGlobalMessage(message1));
+      expect(message1.message).toEqual('professor ****')
+      mockListeners.forEach(listener => listener.onGlobalMessage(message2));
+      expect(message2.message).toEqual('****')
+      mockListeners.forEach(listener => listener.onGlobalMessage(message3));
+      expect(message3.message).toEqual(message3.message)
+    });
+
+    it('private messages should be censored appropriately', async () => {
+      const player1 = new Player('player 1');
+      const player2 = new Player('player 2');
+
+      const session1 = await testingTown.addPlayer(player1);
+      const session2 = await testingTown.addPlayer(player2);
+      const message1 = new PrivateChatMessage('professor bell', session1, session2);
+      const message2 = new PrivateChatMessage('bell', session1, session2);
+      const message3 = new PrivateChatMessage('professor', session1, session2);
+      mockListeners.forEach(listener => listener.onPrivateMessage(message1));
+      expect(message1.message).toEqual('professor ****')
+      mockListeners.forEach(listener => listener.onPrivateMessage(message2));
+      expect(message2.message).toEqual('****')
+      mockListeners.forEach(listener => listener.onPrivateMessage(message3));
+      expect(message3.message).toEqual(message3.message)
     });
   });
 
