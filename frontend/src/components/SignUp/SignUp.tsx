@@ -66,6 +66,7 @@ export default function SimpleCard(): JSX.Element {
           status: 'error',
           isClosable: true
         })
+        return false;
       }
   
       if (confirmPassword !== password) {
