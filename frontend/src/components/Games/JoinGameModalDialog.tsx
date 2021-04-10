@@ -35,9 +35,9 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
       </MenuItem>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay/>
+        <ModalOverlay />
         <ModalContent>
-          {!playing && game &&
+          {!playing &&
           <>
             {dialogType === "unavailable" &&
             <ModalHeader>
@@ -57,7 +57,7 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
             }
             {dialogType === "joining" &&
             <ModalBody>
-              Are you sure you want to join a {gameType} game with {game.player1ID}?
+              Are you sure you want to join a {gameType} game with {game ? game.player1ID : "this player"}?
             </ModalBody>
             }
             {dialogType === "joining" &&
@@ -78,7 +78,7 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
           </>
           }
           {
-            playing && game && game.player2ID !== "" &&
+            playing && game &&
             <>
               <div className="col-12">
                 <h1 className="games-headline">

@@ -22,6 +22,7 @@ declare module 'twilio-video' {
 
   interface RemoteVideoTrack {
     isSwitchedOff: boolean;
+    // @ts-ignore
     setPriority: (priority: Track.Priority | null) => void;
   }
 
