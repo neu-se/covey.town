@@ -55,6 +55,24 @@ function Game() {
     // }
   }
 
+  sendMove = async () => {
+    return fetch("/api/movies", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ weather: this.props.weather }),
+    })
+      .then((raw) => {
+        return raw.json();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+
   function renderSquare(i) {
     return (
       <Square
