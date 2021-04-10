@@ -11,16 +11,23 @@ import {
   useDisclosure,
   useToast
 } from '@chakra-ui/react';
+import Player from '../../classes/Player'
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 import Game from './Board'
 // import Game from './Game'
 
+interface ChildComponentProps {
+  players: Array<Player>;
+}
 
-
-const GameModal: React.FunctionComponent = () => {
+export default function GameModal({ players }: ChildComponentProps) {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
+  const playerUsername = video?.userName;
+  const townID = video?.coveyTownID;
 
+  // const { players } = props;
+  const playerID = players.find((p) => p.userName === playerUsername)?.id;
 
   const openGame = useCallback(()=>{
     onOpen();
@@ -37,6 +44,17 @@ const GameModal: React.FunctionComponent = () => {
   }, [onClose, video]);
 
 
+  // Assuming there are no duplicate usernames for the scope of this project
+  // we will search for player ID through the array.
+  const getPlayerID = () =>  {
+    alert("fuck");
+    const pl = players.find((p) => p.userName === playerUsername);
+    console.log(pl!.id);
+    console.log(pl?.userName);
+    return pl!.id;
+  }
+
+
   return <>
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay/>
@@ -44,7 +62,10 @@ const GameModal: React.FunctionComponent = () => {
       <ModalHeader>TIC TAC TOE</ModalHeader>
     <div className="game">
               <div className="board">
-                <Game
+                {/* {console.log(`username: ${playerUsername}`)}
+                {console.log(`players ${JSON.stringify(players)}`)}
+                {console.log(`id: ${playerID}`)} */}
+                <Game townID={townID} playerID={playerID} playerUsername={playerUsername}
                   />  
                   </div>
                   </div>
@@ -56,4 +77,3 @@ const GameModal: React.FunctionComponent = () => {
 }
 
 
-export default GameModal;

@@ -516,5 +516,5 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  return <><div id="map-container"/><GameModal/><LeaderboardModal/></>;
+  return <><div id="map-container"/><GameModal players={players} /><LeaderboardModal/></>;
 }

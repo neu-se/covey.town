@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ScoreList, UserLocation } from '../CoveyTypes';
 import { LeaderboardRequest, LeaderboardResponse, StartGameRequest,
-  StartGameResponse,InfoRequest, InfoResponse, PlayerResponse, GetBoardResponse
+  StartGameResponse,InfoRequest, InfoResponse, PlayerResponse, GetBoardResponse, makeMoveRequest
 } from '../requestHandlers/CoveyTownRequestHandlers';
 
 
@@ -155,7 +155,7 @@ export default class TownsServiceClient {
   }
 
   async startGame(requestData: StartGameRequest): Promise<StartGameResponse> {
-    const responseWrapper = await this._axios.get(`/tictactoe/${requestData.coveyTownID}`);
+    const responseWrapper = await this._axios.post(`/tictactoe/${requestData.coveyTownID}/${requestData.playerID}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
@@ -176,6 +176,12 @@ export default class TownsServiceClient {
 
   async getBoard(requestData: InfoRequest): Promise<GetBoardResponse> {
     const responseWrapper = await this._axios.get(`/tictactoe/board/${requestData.coveyTownID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async makeMove(requestData: makeMoveRequest): Promise<GetBoardResponse> {
+    const responseWrapper = await this._axios.post(`/tictactoe/${requestData.coveyTownID}/${requestData.player}/move`);
+    console.log(responseWrapper.data);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
