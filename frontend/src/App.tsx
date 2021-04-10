@@ -27,6 +27,7 @@ import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ReactCheckers  from './components/world/ReactCheckers';
+import useNearbyPlayers from './hooks/useNearbyPlayers';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -219,6 +220,10 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     });
   }, [dispatchAppUpdate, setOnDisconnect]);
 
+  const { nearbyPlayers } = appState.nearbyPlayers;
+  const hasNearbyPlayer = nearbyPlayers.length > 0;
+  
+
   const page = useMemo(() => {
     if (!appState.sessionToken) {
       return <Login doLogin={setupGameController} />;
@@ -231,8 +236,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         <div id="overlay">
           <Popup />
         </div>
-        <div id="overlay">
-             <ReactCheckers/>
+        <div id="overlay" hidden={hasNearbyPlayer}>
+             <ReactCheckers />
          </div>
         
         <VideoOverlay preferredMode="fullwidth" />

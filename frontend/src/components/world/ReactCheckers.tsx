@@ -100,6 +100,10 @@ import React, { useContext, useEffect, useState } from 'react';
      const { nearbyPlayers } = useNearbyPlayers();
      const hasNearbyPlayer = nearbyPlayers.length > 0;
 
+     console.log(hasNearbyPlayer);
+     console.log("playa");
+
+
      useEffect(() => {
          const config = {
            type: Phaser.AUTO,
@@ -127,6 +131,6 @@ import React, { useContext, useEffect, useState } from 'react';
      }, []);
 
 
-     return <div id="board-container"/>;
+     return <div id="board-container" style={{ display: hasNearbyPlayer ? "block" : "none" }}/>;
 
  }
