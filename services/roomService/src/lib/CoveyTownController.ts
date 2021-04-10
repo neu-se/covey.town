@@ -1,4 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
+import Censorer from '../censorship/Censorer';
 import { UserLocation } from '../CoveyTypes';
 import AChatMessage from '../types/AChatMessage';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -8,6 +9,7 @@ import PlayerSession from '../types/PlayerSession';
 import PrivateChatMessage from '../types/PrivateChatMessage';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
+// import emojify from 'emojify.js';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -73,6 +75,8 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
+
+  private _censorer: Censorer = new Censorer;
 
   /** The list of AChatMessages that are sent between players in this town * */
   private _messages: AChatMessage[] = [];
@@ -165,11 +169,15 @@ export default class CoveyTownController {
   }
 
   sendPrivatePlayerMessage(message: PrivateChatMessage): void {
+    message.message = this._censorer.censorMessage(message.message);
+    // message.message = emojify.replace(message.message);
     this._messages.push(message);
     this._listeners.forEach(listener => listener.onPrivateMessage(message));
   }
 
   sendGlobalPlayerMessage(message: GlobalChatMessage): void {
+    message.message = this._censorer.censorMessage(message.message);
+    // message.message = emojify.replace(message.message);
     this._messages.push(message);
     this._listeners.forEach(listener => listener.onGlobalMessage(message));
   }
