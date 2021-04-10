@@ -56,7 +56,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { friendRequestSocket, setFriendRequestSocket } = useFriendRequestSocket();
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -152,15 +151,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           }
         })
     }
-    // if(friendRequestList.filter(user => user.userID === userID).length === 0) {
-    //   await db.getUser(userID)
-    //     .then(response => {
-    //       console.log('Get CoveyUser from db using request')
-    //       if (response != null) {
-    //         addFriendRequestToList(response)
-    //       }
-    //     })
-    // }
   }
 
   const handleRejectFriend = async (userID: string) => {
@@ -346,16 +336,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   // Filter state's friend request list for unique items and return list of CoveyUsers for render
   function filteredFriendRequests(): (CoveyUser | undefined)[] {
-    // const result : (CoveyUser | undefined)[] = []
-    // friendRequestIDList.forEach(async id => {
-    //   await db.getUser(id)
-    //     .then(response => {
-    //       if(response) {
-    //         result.push(response)
-    //         console.log(result);
-    //       }
-    //     })
-    // })
     const mapped = friendRequestList.map((request) => request.userID);
     const filtered = mapped.filter((id, index) => mapped.indexOf(id) === index);
     const result = filtered.map(id => {
