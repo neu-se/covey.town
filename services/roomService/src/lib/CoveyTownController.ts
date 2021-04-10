@@ -134,7 +134,7 @@ export default class CoveyTownController {
    * Subscribe to events from this town. Callers should make sure to
    * unsubscribe when they no longer want those events by calling removeTownListener
    *
-   * @param listener New listener
+   * @param listener New listeners
    */
   addTownListener(listener: CoveyTownListener): void {
     this._listeners.push(listener);
