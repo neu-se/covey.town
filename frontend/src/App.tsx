@@ -273,8 +273,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       </div>
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
-
-
   return (
     <BrowserRouter>
         <AuthGuard>

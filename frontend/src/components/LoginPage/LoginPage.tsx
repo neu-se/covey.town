@@ -190,7 +190,6 @@ export default function SimpleCard(): JSX.Element {
                 direction={{ base: 'column', sm: 'row' }}
                 align='start'
                 justify='space-between'>
-                <Checkbox>Remember me</Checkbox>
                 <Link href='/signup' color='blue.400'>Create an Account</Link>
               </Stack>
               <Button

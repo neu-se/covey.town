@@ -16,6 +16,8 @@ export default class Video {
 
   private _userName: string;
 
+  private _coveyUserID: string;
+
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
 
   private _coveyTownID: string;
@@ -30,8 +32,9 @@ export default class Video {
 
   unPauseGame: () => void = ()=>{};
 
-  constructor(userName: string, coveyUserID:string, coveyTownID: string) {
+  constructor(userName: string, coveyUserID: string, coveyTownID: string) {
     this._userName = userName;
+    this._coveyUserID = coveyUserID;
     this._coveyTownID = coveyTownID;
     this._coveyUserID = coveyUserID;
   }
@@ -57,6 +60,10 @@ export default class Video {
 
   get coveyTownID(): string {
     return this._coveyTownID;
+  }
+
+  get coveyUserId(): string {
+    return this._coveyUserID;
   }
 
   private async setup(): Promise<TownJoinResponse> {

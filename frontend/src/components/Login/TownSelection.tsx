@@ -38,7 +38,9 @@ interface TownSelectionProps {
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const [friendList, setFriendList] = useState<CoveyUser[]>([])
-  const [addFriendEmail, setAddFriendEmail] = useState<string>('');
+  const [friendRequestList, setFriendRequestList] = useState<CoveyUser[]>([])
+  const [friendRequestIDList, setFriendRequestIDList] = useState<string[]>([])
+  const [addFriendID, setAddFriendID] = useState<string>('');
   const authInfo = useAuthInfo();
   const loggedInUser = authInfo.currentUser;
   assert(loggedInUser);
@@ -55,7 +57,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { friendRequestSocket, setFriendRequestSocket } = useFriendRequestSocket();
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -63,14 +64,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
-
-  useEffect(() => {
-    updateTownListings();
-    const timer = setInterval(updateTownListings, 2000);
-    return () => {
-      clearInterval(timer)
-    };
-  }, [updateTownListings]);
 
   if (loggedInUser === null) {
     toast({
@@ -126,12 +119,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, loggedInUser.userID, coveyRoomID);
 
-      const loggedIn = await doLogin(initData);
-      if (loggedIn) {
-        assert(initData.providerVideoToken);
-        await connect(initData.providerVideoToken);
+      if (loggedInUser) {
+        const initData = await Video.setup(userName, loggedInUser?.userID, coveyRoomID);
+        const loggedIn = await doLogin(initData);
+        if (loggedIn) {
+          assert(initData.providerVideoToken);
+          await connect(initData.providerVideoToken);
+        }
       }
     } catch (err) {
       toast({
@@ -142,67 +137,126 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   }, [userName, loggedInUser.userID, doLogin, toast, connect]);
 
-  const fetchFriend = () => {
-    if (loggedInUser) {
-      const list: CoveyUser[] = [];
-      loggedInUser.friendIDs.map(async (id) => {
-        await db.getUser(id)
-          .then(response => {
-            if (response != null) {
-              list.push(response);
-            }
-            return response;
-          });
-      });
-      setFriendList(list);
+  const addFriendRequestToList = (request: CoveyUser) => {
+    if (friendRequestList.filter(user => user.userID === request.userID).length === 0) {
+      setFriendRequestList(currentList => [...currentList, request]);
     }
+  }
 
-    // Test values
-    // setFriendList([{
-    //   userID: '1',
-    //   isLoggedIn: false,
-    //   profile: {
-    //     username: 'genevieve',
-    //     email: 'genevieve@gmail.com',
-    //   },
-    //   currentTown: null,
-    //   friendIDs: [],
-    //   actions: {
-    //     logout: () => new Promise<void>((resolve, reject) => {})
-    //   }
-    // },{
-    //   userID: '2',
-    //   isLoggedIn: true,
-    //   profile: {
-    //     username: 'nick',
-    //     email: 'nick@gmail.com',
-    //   },
-    //   currentTown: null,
-    //   friendIDs: [],
-    //   actions: {
-    //     logout: () => new Promise<void>((resolve, reject) => {})
-    //   }
-    // },{
-    //   userID: '3',
-    //   isLoggedIn: true,
-    //   profile: {
-    //     username: 'brian',
-    //     email: 'brian@gmail.com',
-    //   },
-    //   currentTown: {
-    //     coveyTownID: 'town1',
-    //     friendlyName: 'friendly room'
-    //   },
-    //   friendIDs: [],
-    //   actions: {
-    //     logout: () => new Promise<void>((resolve, reject) => {})
-    //   }
-    // }])
+  const handleIncomingRequest = async (userID: string) => {
+    if (friendRequestIDList.filter(id => id === userID).length === 0) {
+      setFriendRequestIDList([...friendRequestIDList, userID]);
+      await db.getUser(userID)
+        .then(response => {
+          if (response) {
+            addFriendRequestToList(response)
+          }
+        })
+    }
+  }
+
+  const handleRejectFriend = async (userID: string) => {
+    setFriendRequestIDList(friendRequestIDList.filter(id => id !== userID))
+    setFriendRequestList(friendRequestList.filter(user => user.userID !== userID))
+    if (loggedInUser) {
+      try {
+        await db.saveFriendRequests({
+          userID: loggedInUser.userID,
+          requests: friendRequestIDList.filter(id => id !== userID)
+        })
+      } catch (e) {
+        toast({
+          title: 'Unable to add friend from authinfo',
+          description: e.toString(),
+          status: 'error'
+        })
+      }
+    }
+  }
+
+  const handleAcceptRequest = async (userID: string) => {
+    if (loggedInUser) {
+      if (loggedInUser.friendIDs.indexOf(userID) < 0) {
+        // Update this user's friend list in auth info
+        loggedInUser.friendIDs = [...loggedInUser.friendIDs, userID];
+        handleRejectFriend(userID);
+      }
+    }
   }
 
   useEffect(() => {
-    fetchFriend()
-  }, [authInfo])
+    if (friendRequestSocket && friendRequestSocket.disconnected) {
+      friendRequestSocket.connect();
+      friendRequestSocket.on('receiveRequest', handleIncomingRequest);
+      friendRequestSocket.on('friendRequestAccepted', handleAcceptRequest);
+    }
+    return () => { };
+  })
+
+  const handleSendFriendRequest = async () => {
+    if (addFriendID.length < 1) {
+      toast({
+        title: 'Enter a valid user ID to send friend request',
+        description: `You didn't enter a valid user ID`,
+        status: 'info'
+      })
+      return;
+    }
+    if (!friendRequestSocket) {
+      toast({
+        title: `Unable to send friend request`,
+        description: `Friend Request Socket is null`,
+        status: 'error'
+      })
+      return;
+    }
+    friendRequestSocket.emit('sendRequest', addFriendID);
+    if (loggedInUser) {
+      await db.getFriendRequests(addFriendID)
+        .then(async (response) => {
+          if (response) {
+            console.log(response.requests);
+            await db.saveFriendRequests({
+              userID: addFriendID,
+              requests: [...response.requests, loggedInUser.userID]
+            })
+          } else {
+            await db.saveFriendRequests({
+              userID: addFriendID,
+              requests: [loggedInUser.userID]
+            })
+          }
+        })
+    }
+    toast({
+      title: `Successfully sent friend request`,
+      description: `A friend request has been sent to user ID ${addFriendID}!`,
+      status: 'success'
+    })
+  }
+
+  const fetchFriend = async () => {
+    if (loggedInUser) {
+      await db.getUser(loggedInUser.userID)
+        .then(user => {
+          if(user) {
+            const list: CoveyUser[] = [];
+            console.log(user.friendIDs)
+            user.friendIDs.map(async (id) => {
+              await db.getUser(id)
+                .then(response => {
+                  if (response) {
+                    console.log(response)
+                    list.push(response);
+                  }
+                  return response;
+                })
+                .then(() => setFriendList(list));
+              });
+          }
+        })
+    }
+  }
 
   const handleProfile = () => history.push('/profile')
   const handleCreate = async () => {
@@ -252,25 +306,88 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
-  const handleAddFriend = () => {
-    if (addFriendEmail.length > 0) {
-      // TODO: Find user with given addFriendEmail and call DB to add friend
-      toast({
-        title: `Unable to add friend`,
-        description: `Unable to find a user with email ${addFriendEmail}`,
-        status: 'error'
-      })
-      toast({
-        title: `Successfully added friend`,
-        description: `${addFriendEmail} is now your friend!`,
-        status: 'success'
-      })
-    } else {
-      toast({
-        title: 'Enter a valid email to add friend',
-        description: `You didn't enter a valid email address`,
-        status: 'info'
-      })
+  const populateFriendRequest = async () => {
+    if (loggedInUser) {
+      await db.getFriendRequests(loggedInUser.userID)
+        .then(response => {
+          if (response) {
+            response.requests.map(async (requestID) => {
+              const requestUser = await db.getUser(requestID);
+              if (requestUser) {
+                addFriendRequestToList(requestUser);
+              }
+            })
+            console.log(response.requests);
+            setFriendRequestIDList(response.requests);
+          }
+        })
+    }
+  }
+
+  useEffect(() => {
+    updateTownListings();
+    const timer = setInterval(updateTownListings, 2000);
+    // Fetch friend IDs from authInfo and CoveyUser objects from db
+    fetchFriend();
+    // Fetch friend requests IDs from db, assign to state's friendRequestIDList, assign CoveyUser objects to state's FriendRequestList
+    populateFriendRequest();
+    return () => {
+      clearInterval(timer)
+    };
+  }, [updateTownListings]);
+
+  // Filter state's friend request list for unique items and return list of CoveyUsers for render
+  function filteredFriendRequests(): (CoveyUser | undefined)[] {
+    const mapped = friendRequestList.map((request) => request.userID);
+    const filtered = mapped.filter((id, index) => mapped.indexOf(id) === index);
+    const result = filtered.map(id => {
+      const userRequest = friendRequestList.find(user => user.userID === id);
+      if (userRequest) { return userRequest; } return undefined;
+    });
+    console.log(friendRequestList)
+    console.log(result)
+    return result;
+  }
+
+  const handleAddFriend = async (userID: string) => {
+    if (loggedInUser) {
+      if (loggedInUser.friendIDs.indexOf(userID) < 0) {
+        if(friendRequestSocket) {
+          friendRequestSocket.emit('acceptRequest', userID);
+        }
+        // Update this user's friend list in auth info
+        loggedInUser.friendIDs = [...loggedInUser.friendIDs, userID];
+        // Update this user's friend list in db
+        try {
+          await db.saveUser(loggedInUser);
+        } catch (e) {
+          toast({
+            title: 'Unable to add friend from db',
+            description: e.toString(),
+            status: 'error'
+          })
+        }
+        // Update friend's friend list on db and add them to state's friend list
+        await db.getUser(userID)
+          .then(async (response) => {
+            if (response) {
+              setFriendList([...friendList, response]);
+              const friend = JSON.parse(JSON.stringify(response));
+              friend.friendIDs = [...friend.friendIDs, loggedInUser.userID];
+              try {
+                console.log(friend);
+                await db.saveUser(friend);
+              } catch (e) {
+                toast({
+                  title: `Error updating friend's friendlist`,
+                  description: e.toString(),
+                  status: 'error'
+                })
+              }
+            }
+          })
+        handleRejectFriend(userID);
+      }
     }
   }
 
@@ -296,10 +413,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           </Box>
 
           <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Friends:</Heading>
+            <Flex justifyContent="space-between">
+              <Heading as="h2" size="lg">Friends:</Heading>
+              <Button alignSelf="right" onClick={fetchFriend}>Refresh</Button>
+            </Flex>
             {
               friendList.length > 0 ?
-                <Box maxH="500px" overflowY="scroll">
+                <Box maxH="500px" overflowY="auto">
                   <Table>
                     <Thead><Tr><Th>Friend Name</Th><Th>Status</Th><Th>Join friend&apos;s town</Th></Tr></Thead>
                     <TableCaption placement="top">Online</TableCaption>
@@ -344,16 +464,47 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                     </Tbody>
                   </Table>
                 </Box> :
-                <Heading p="4" as="h6" size="sm">You have no friend</Heading>
+                <Heading p="4" as="h6" size="sm">You have no friends <span aria-label="a very sad face" role="img">😔</span></Heading>
+            }
+
+            {
+              friendRequestIDList.length > 0 ?
+                <Box maxH="500px" overflowY="auto">
+                  <Table>
+                    <TableCaption placement="top">Pending friend requests</TableCaption>
+                    <Tbody>
+                      {
+                        filteredFriendRequests().map(friend =>
+                          friend !== undefined &&
+                          <Tr key={friend.userID}>
+                            <Td role='cell'>
+                              <Flex>
+                                <Avatar size="2xs" src={friend.profile.pfpURL} marginRight="5px" />
+                                {friend.profile.username}
+                              </Flex>
+                            </Td>
+                            <Td role='cell'>
+                              <Flex justifyContent="flex-end">
+                                <Button marginRight="2" onClick={() => handleAddFriend(friend.userID)}>Add</Button>
+                                <Button onClick={() => handleRejectFriend(friend.userID)}>Remove</Button>
+                              </Flex>
+                            </Td>
+                          </Tr>)
+                      }
+                    </Tbody>
+                  </Table>
+                </Box> :
+                <span />
             }
 
             <Box marginTop="2">
               <FormControl>
-                <FormLabel htmlFor="addFriendEmail">Add friend</FormLabel>
+                <FormLabel htmlFor="addFriendID">Add friend</FormLabel>
                 <Flex>
-                  <Input name="addFriendEmail" placeholder="Add friend using their email address" value={addFriendEmail} onChange={event => setAddFriendEmail(event.target.value)} />
-                  <Button marginLeft="2" onClick={handleAddFriend}>Add</Button>
+                  <Input name="addFriendID" placeholder="Send friend request using their user ID" value={addFriendID} onChange={event => setAddFriendID(event.target.value)} />
+                  <Button marginLeft="2" onClick={handleSendFriendRequest}>Send friend request</Button>
                 </Flex>
+                <Heading p="4" as="h6" size="md">Your user ID is {loggedInUser ? loggedInUser.userID : 'Error'}</Heading>
               </FormControl>
             </Box>
           </Box>
