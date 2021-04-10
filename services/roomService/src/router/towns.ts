@@ -108,7 +108,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
-  const socketServer = new io.Server(http, { cors: { origin: '*' } });
-  socketServer.on('connection', townSubscriptionHandler);
-  return socketServer;
+  const ioServer: io.Server = new io.Server(http, { cors: { origin: '*' } });
+  ioServer.on('connection', (socket) => {
+    townSubscriptionHandler(socket, ioServer)
+  });
+  return ioServer;
 }
