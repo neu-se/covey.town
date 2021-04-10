@@ -56,7 +56,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { friendRequestSocket, setFriendRequestSocket } = useFriendRequestSocket();
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -152,23 +151,44 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           }
         })
     }
-    // if(friendRequestList.filter(user => user.userID === userID).length === 0) {
-    //   await db.getUser(userID)
-    //     .then(response => {
-    //       console.log('Get CoveyUser from db using request')
-    //       if (response != null) {
-    //         addFriendRequestToList(response)
-    //       }
-    //     })
-    // }
+  }
+
+  const handleRejectFriend = async (userID: string) => {
+    setFriendRequestIDList(friendRequestIDList.filter(id => id !== userID))
+    setFriendRequestList(friendRequestList.filter(user => user.userID !== userID))
+    if (loggedInUser) {
+      try {
+        await db.saveFriendRequests({
+          userID: loggedInUser.userID,
+          requests: friendRequestIDList.filter(id => id !== userID)
+        })
+      } catch (e) {
+        toast({
+          title: 'Unable to add friend from authinfo',
+          description: e.toString(),
+          status: 'error'
+        })
+      }
+    }
+  }
+
+  const handleAcceptRequest = async (userID: string) => {
+    if (loggedInUser) {
+      if (loggedInUser.friendIDs.indexOf(userID) < 0) {
+        // Update this user's friend list in auth info
+        loggedInUser.friendIDs = [...loggedInUser.friendIDs, userID];
+        handleRejectFriend(userID);
+      }
+    }
   }
 
   useEffect(() => {
     if (friendRequestSocket && friendRequestSocket.disconnected) {
       friendRequestSocket.connect();
       friendRequestSocket.on('receiveRequest', handleIncomingRequest);
+      friendRequestSocket.on('friendRequestAccepted', handleAcceptRequest);
     }
-    return () => { friendRequestSocket?.disconnect() };
+    return () => { };
   })
 
   const handleSendFriendRequest = async () => {
@@ -316,16 +336,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   // Filter state's friend request list for unique items and return list of CoveyUsers for render
   function filteredFriendRequests(): (CoveyUser | undefined)[] {
-    // const result : (CoveyUser | undefined)[] = []
-    // friendRequestIDList.forEach(async id => {
-    //   await db.getUser(id)
-    //     .then(response => {
-    //       if(response) {
-    //         result.push(response)
-    //         console.log(result);
-    //       }
-    //     })
-    // })
     const mapped = friendRequestList.map((request) => request.userID);
     const filtered = mapped.filter((id, index) => mapped.indexOf(id) === index);
     const result = filtered.map(id => {
@@ -337,29 +347,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     return result;
   }
 
-  const handleRejectFriend = async (userID: string) => {
-    // setFriendRequestList(friendRequestList.filter(request => request.userID !== userID));
-    setFriendRequestIDList(friendRequestIDList.filter(id => id !== userID))
-    setFriendRequestList(friendRequestList.filter(user => user.userID !== userID))
-    if (loggedInUser) {
-      try {
-        await db.saveFriendRequests({
-          userID: loggedInUser.userID,
-          requests: friendRequestIDList.filter(id => id !== userID)
-        })
-      } catch (e) {
-        toast({
-          title: 'Unable to add friend from authinfo',
-          description: e.toString(),
-          status: 'error'
-        })
-      }
-    }
-  }
-
   const handleAddFriend = async (userID: string) => {
     if (loggedInUser) {
       if (loggedInUser.friendIDs.indexOf(userID) < 0) {
+        if(friendRequestSocket) {
+          friendRequestSocket.emit('acceptRequest', userID);
+        }
         // Update this user's friend list in auth info
         loggedInUser.friendIDs = [...loggedInUser.friendIDs, userID];
         // Update this user's friend list in db
