@@ -1,16 +1,17 @@
 import React, {useState} from 'react'
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Button,
   FormControl,
   FormLabel,
   Input,
-  Button, useDisclosure,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure, useToast,
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
@@ -18,6 +19,8 @@ import TTLGame from "./gamesService/TTLGame";
 import HangmanGame from "./gamesService/HangmanGame";
 import TTLDisplay from "./GameDisplays/TTLDisplay";
 import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
+import GameController from "./gamesService/GameController";
+import {GameCreateRequest} from "./gamesClient/Types";
 
 export default function CreateGameModalDialog(): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -28,6 +31,17 @@ export default function CreateGameModalDialog(): JSX.Element {
   const [lie, setLie] = useState('')
   const [playing, setPlaying] = useState(false)
   const [game, setGame] = useState<TTLGame | HangmanGame>()
+  const controller = GameController.getInstance()
+  const toast = useToast()
+
+  const getNewGame = async (requestData : GameCreateRequest) => {
+    const newGameID = await controller.createGame(requestData)
+      .then(response => response.response?.gameID);
+    if (newGameID !== undefined) {
+      return controller.findGameById(newGameID)
+    }
+    return undefined
+  }
 
   return (
     <>
@@ -41,7 +55,11 @@ export default function CreateGameModalDialog(): JSX.Element {
           <ModalHeader>
             New Game
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton onClick={async () => {
+            if (game) {
+              await controller.deleteGame({gameID: game.id})
+            }
+          }} />
           <ModalBody>
             {
               !playing &&
@@ -162,14 +180,38 @@ export default function CreateGameModalDialog(): JSX.Element {
             {!playing &&
             <ModalFooter>
             <Button className="games-padded-asset" colorScheme="green"
-                    onClick={() => {
+                    onClick={async () => {
                       // TODO: get correct player1 usernames and add tictactoe option
                       if (gameSelection === "ttl") {
-                        setGame(new TTLGame("",
-                          { choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3 }));
-                      }
-                      else if (gameSelection === "Hangman") {
-                        setGame(new HangmanGame("", {word: hangmanWord}))
+                        const newGame = await getNewGame({
+                          player1: "", gameType: gameSelection, initialGameState:
+                            {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}
+                        });
+                        if (newGame !== undefined) {
+                          setGame(newGame);
+                        }
+                        else {
+                          toast({
+                            title: 'Unable to create game',
+                            description: 'Something went wrong, unable to create game',
+                            status: 'error',
+                          });
+                        }
+                      } else if (gameSelection === "Hangman") {
+                        const newGame = await getNewGame({
+                          player1: "", gameType: gameSelection, initialGameState:
+                            {word: hangmanWord}
+                        });
+                        if (newGame !== undefined) {
+                          setGame(newGame);
+                        }
+                        else {
+                          toast({
+                            title: 'Unable to create game',
+                            description: 'Something went wrong, unable to create game',
+                            status: 'error',
+                          });
+                        }
                       }
                       setPlaying(true);
                     }}>
