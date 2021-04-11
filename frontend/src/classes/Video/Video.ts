@@ -1,4 +1,3 @@
-import { BooleanArraySupportOption } from 'prettier';
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
 

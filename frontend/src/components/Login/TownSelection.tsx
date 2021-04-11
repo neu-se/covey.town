@@ -62,9 +62,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         return;
       }
       if (resetToken) {
-        Video.teardown();
+        await Video.teardown();
       }
-      const initData = await Video.setup(userName, coveyRoomID);
+      const initData = await Video.setup(userName, coveyRoomID, resetToken);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -138,18 +138,18 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [setCurrentPublicTowns, apiClient]);
   useEffect(() => {
     updateTownListings();
-    console.log('in use effect before townIDToMerge check ', townIDToMerge)
-    if (townIDToMerge !== '') {
-      handleJoin(townIDToMerge, true);
-      dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: ''});
-    }
     const timer = setInterval(updateTownListings, 2000);
     return () => {
       clearInterval(timer)
     };
   }, [updateTownListings]);
 
-
+  useEffect(() => {
+    if (townIDToMerge !== '') {
+      handleJoin(townIDToMerge, true);
+      dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: ''});
+    }
+  }, [townIDToMerge]);
 
   return (
     <>

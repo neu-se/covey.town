@@ -80,18 +80,25 @@ export default class CoveyTownsStore {
     if (existingRequestingTown && passwordMatches(coveyTownPassword, existingRequestingTown.townUpdatePassword)
       && existingDestinationTown) {
         // TODO: FIX THIS
-        const newTown = new CoveyTownController(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
+        // const newTown = new CoveyTownController(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
         // for each player of each room, emit a warning that they're being moved
+        // this.createTown(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
+        existingRequestingTown.townsMerged(existingDestinationTown.coveyTownID)
 
-        existingRequestingTown.townsMerged(newTown.coveyTownID)
-        existingDestinationTown.townsMerged(newTown.coveyTownID)
+        console.log(newTownIsMergeable);
+        //TODO: add newTownIsMergeable to update??
+        this.updateTown(existingDestinationTown.coveyTownID, existingDestinationTown.townUpdatePassword, 
+          newTownFriendlyName, newTownIsPubliclyListed)
+        // console.log(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
+        // existingDestinationTown.townsMerged(newTown.coveyTownID)
 
         setTimeout(() => {
           // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
           // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
 
+          // need to delete town???
           existingRequestingTown.disconnectAllPlayers()
-          existingDestinationTown.disconnectAllPlayers();
+          // existingDestinationTown.disconnectAllPlayers();
 
           
         }, 10000)
@@ -99,14 +106,14 @@ export default class CoveyTownsStore {
         // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
         // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
         
-        this._towns.push(newTown);
+        // this._towns.push(newTown);
 
 
         // need to add all listeners?? or ??? townSubscriptionHandler???
         // existingRequestingTown.disconnectAllPlayers();
         // existingDestinationTown.disconnectAllPlayers();
 
-        return newTown;
+        return existingDestinationTown;
       }
       return undefined;
   }
