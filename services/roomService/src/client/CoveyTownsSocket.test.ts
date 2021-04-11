@@ -24,6 +24,7 @@ describe('TownServiceApiSocket', () => {
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
+      creator: 'Guest'
     });
     return {
       friendlyName,

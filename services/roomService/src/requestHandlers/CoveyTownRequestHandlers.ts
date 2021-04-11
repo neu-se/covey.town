@@ -4,6 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import { updateUser } from '../database/databaseService';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -42,6 +43,7 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  creator: string;
 }
 
 /**
@@ -65,6 +67,10 @@ export interface TownListResponse {
 export interface TownDeleteRequest {
   coveyTownID: string;
   coveyTownPassword: string;
+}
+
+export interface CreateUserRequest {
+  email: string;
 }
 
 /**
@@ -122,6 +128,13 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
   };
 }
 
+export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
+  await updateUser(requestData.email);
+  return {
+    isOK: true,
+  };
+}
+
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   return {
@@ -138,7 +151,7 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
       message: 'FriendlyName must be specified',
     };
   }
-  const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed);
+  const newTown = await townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed, requestData.creator);
   return {
     isOK: true,
     response: {

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { UserLocation } from '../CoveyTypes';
+import { updateUser } from '../database/databaseService';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
@@ -42,6 +43,7 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  creator: string;
 }
 
 /**
@@ -77,6 +79,11 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface UserCreateRequest {
+  email: string;
+  username: string;
 }
 
 /**
@@ -120,6 +127,11 @@ export default class TownsServiceClient {
     throw new Error(`Error processing request: ${response.data.message}`);
   }
 
+  async updateUser(requestData: UserCreateRequest): Promise<void> {
+    await updateUser(requestData.email, requestData.username);
+    return;
+  }
+  
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<TownCreateResponse>>('/towns', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);

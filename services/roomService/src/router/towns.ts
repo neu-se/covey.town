@@ -4,6 +4,7 @@ import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
+  createUserHandler,
   townCreateHandler, townDeleteHandler,
   townJoinHandler,
   townListHandler,
@@ -11,6 +12,7 @@ import {
   townUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
+import { updateUser } from '../database/databaseService';
 
 export default function addTownRoutes(http: Server, app: Express): io.Server {
   /*
@@ -33,6 +35,22 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  app.post('/users', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await createUserHandler({
+        email: req.params.email,
+      });
+      res.status(200)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500)
+        .json({
+          message: 'Internal server error, please see log in server for details',
+        });
+    }
+
+  });
   /**
    * Delete a town
    */

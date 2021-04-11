@@ -144,7 +144,7 @@ describe('CoveyTownController', () => {
     let session: PlayerSession;
     beforeEach(async () => {
       const townName = `connectPlayerSocket tests ${nanoid()}`;
-      testingTown = CoveyTownsStore.getInstance().createTown(townName, false);
+      testingTown = CoveyTownsStore.getInstance().createTown(townName, false, 'Guest');
       mockReset(mockSocket);
       player = new Player('test player');
       session = await testingTown.addPlayer(player);

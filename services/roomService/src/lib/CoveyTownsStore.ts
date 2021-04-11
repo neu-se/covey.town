@@ -1,5 +1,6 @@
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
+import { getPublicTowns, addNewTown, updateTown, deleteTown } from '../database/databaseService';
 
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
@@ -37,9 +38,16 @@ export default class CoveyTownsStore {
       }));
   }
 
-  createTown(friendlyName: string, isPubliclyListed: boolean): CoveyTownController {
+  async createTown(friendlyName: string, isPubliclyListed: boolean, userEmail: string): Promise<CoveyTownController> {
     const newTown = new CoveyTownController(friendlyName, isPubliclyListed);
-    this._towns.push(newTown);
+    this._towns.push(newTown);     
+    // store in database  KS
+
+    const townID = newTown.coveyTownID;
+    const password = newTown.townUpdatePassword;
+    await addNewTown(townID, password, friendlyName, isPubliclyListed, userEmail);
+    console.log('newTown Created');
+
     return newTown;
   }
 

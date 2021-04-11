@@ -1,20 +1,29 @@
 import { buildSchema } from 'graphql';
 import { graphqlHTTP } from 'express-graphql';
+import  '../database/databaseService';
 
 const schema = buildSchema(`
-# Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-# This "Book" type defines the queryable fields for every book in our data source.
-type Book {
-  title: String
-  author: String
+# userType
+type User {
+  email: String
+  username: String
+  nickname: String
+  currentAvatar: String
 }
-# The "Query" type is special: it lists all of the available queries that
-# clients can execute, along with the return type for each. In this
-# case, the "books" query returns an array of zero or more Books (defined above).
+# town type
+type Town {
+  coveyTownID: String!
+  coveyTownPassword: String
+  friendlyName: String
+  isPublicallyListed: Boolean
+}
 type Query {
-  books: [Book]
-}
-`);
+  savedTowns(email: String!): [Town]
+  publicTowns: [Town]
+  createdTowns(email: String!): [Town]
+  user(email: String!): User
+  town(townID: String!): Town
+}`);
 
 
 
@@ -30,7 +39,7 @@ const books = [
 ];
 
 const rootResolver = {
-  books: () => books,
+  
 };
 const graphql = graphqlHTTP({schema, graphiql: true, rootValue: rootResolver });
 module.exports = graphql;

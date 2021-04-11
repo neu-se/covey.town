@@ -27,7 +27,7 @@ function createTownForTesting(friendlyNameToUse?: string, isPublic = false) {
   const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
     `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
   return CoveyTownsStore.getInstance()
-    .createTown(friendlyName, isPublic);
+    .createTown(friendlyName, isPublic, 'Guest');
 }
 
 describe('CoveyTownsStore', () => {
