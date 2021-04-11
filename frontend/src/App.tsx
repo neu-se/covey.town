@@ -226,6 +226,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     return (
       <div>
         <WorldMap />
+        <Chat />
         <VideoOverlay preferredMode="fullwidth" />
       </div>
     );
