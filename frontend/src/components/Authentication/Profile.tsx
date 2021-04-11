@@ -21,11 +21,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'flex-end',
     width: '100%',
     marginBottom: '30px',
+  },
+
+  bodyDiv: {
+    backgroundColor: '#87ceff',
+    height: '100vh',
   }
 }));
 
 export default function Profile(): JSX.Element {
-  const { buttonContainer } = useStyles();
+  const { buttonContainer, bodyDiv } = useStyles();
+
   const { myPlayerID, players } = useCoveyAppState();
   const myPlayer = players.find((player) => player.id === myPlayerID);
   const [ currentAvatar, setCurrentAvatar ] = useState<string>(myPlayer?.currentAvatar || 'misa');
@@ -41,6 +47,7 @@ export default function Profile(): JSX.Element {
 
   
   return (
+    <div className={bodyDiv}>
     <IntroContainer>
             <div className={buttonContainer}>
         <BackHomeButton />
@@ -93,5 +100,6 @@ export default function Profile(): JSX.Element {
         
       </Stack>
     </IntroContainer>
+    </div>
   );
 } 
