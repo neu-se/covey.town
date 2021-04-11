@@ -10,10 +10,22 @@ import {
   Text
 } from '@chakra-ui/react';
 import { BsFillInfoCircleFill } from 'react-icons/bs'
+import { makeStyles, Theme } from '@material-ui/core';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import IntroContainer from '../VideoCall/VideoFrontend/components/IntroContainer/IntroContainer';
+import BackHomeButton from './BackHomeButton';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
+    marginBottom: '30px',
+  }
+}));
 
 export default function Profile(): JSX.Element {
+  const { buttonContainer } = useStyles();
   const { myPlayerID, players } = useCoveyAppState();
   const myPlayer = players.find((player) => player.id === myPlayerID);
   const [ currentAvatar, setCurrentAvatar ] = useState<string>(myPlayer?.currentAvatar || 'misa');
@@ -22,13 +34,17 @@ export default function Profile(): JSX.Element {
     setAvatarPreview(event.target.value)
   }
 
+
   const handleSave = () => {
     // Todo: add logic
   }
 
+  
   return (
     <IntroContainer>
-      
+            <div className={buttonContainer}>
+        <BackHomeButton />
+      </div>
       <Stack>
         <Center h="50px">
           <Heading as="h1" size="lg">Profile Page</Heading>
