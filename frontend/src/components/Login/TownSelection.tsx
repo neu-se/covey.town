@@ -3,6 +3,7 @@ import assert from "assert";
 import {
   Box,
   Button,
+  // Center,
   Checkbox,
   Flex,
   FormControl,
@@ -58,9 +59,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   
 
   const updateFriendList = useCallback(async () => {
-    const friends = await dbClient.getFriends({ email: userEmail });
-    setFriendList(friends);
-  }, [dbClient, userEmail]);
+    if (googleUserName !== "") {
+      const friends = await dbClient.getFriends({ email: userEmail });
+      setFriendList(friends);
+    }
+  }, [dbClient, googleUserName, userEmail]);
   
   useEffect(() => {
     updateFriendList();
@@ -134,8 +137,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [dbClient, toast, userEmail]);
 
   const handleJoin = useCallback(async (coveyRoomID: string, finalName: string) => {
+    let newFinalName = finalName;
+    if (userProfile.getUserName() !== "" && userProfile.getUserStatus() !== false) {
+      newFinalName = userProfile.getUserName();
+    }
     try {
-      if (!finalName || finalName.length === 0) {
+      if (!newFinalName || newFinalName.length === 0) {
         toast({
           title: 'Unable to join town',
           description: 'Please select a username',
@@ -151,7 +158,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(finalName, coveyRoomID);
+      const initData = await Video.setup(newFinalName, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -165,7 +172,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, connect, toast]);
+  }, [userProfile, doLogin, toast, connect]);
 
   const handleCreate = async () => {
     if (googleUserName !== "" && userProfile.getUserStatus() !== false) {
@@ -220,6 +227,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  window.onbeforeunload = async () => {
+
+    await dbClient.setOnlineStatus({ email: userEmail, isOnline: false });
+    
+    }
+    
   return (
     <>
       <form>
