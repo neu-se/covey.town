@@ -3,7 +3,6 @@ import assert from "assert";
 import {
   Box,
   Button,
-  Center,
   Checkbox,
   Flex,
   FormControl,
@@ -51,7 +50,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const userProfile = CoveyTownUser.getInstance();
   const userEmail = userProfile.getUserEmail();
   const userStatus = userProfile.getUserStatus();
+  const googleUserName = userProfile.getUserName();
   const [friendEmail, setFriendEmail] = useState<string>('');
+  let finalUserName = userName;
+
 
   
 
@@ -131,9 +133,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   }, [dbClient, toast, userEmail]);
 
-  const handleJoin = useCallback(async (coveyRoomID: string) => {
+  const handleJoin = useCallback(async (coveyRoomID: string, finalName: string) => {
     try {
-      if (!userName || userName.length === 0) {
+      if (!finalName || finalName.length === 0) {
         toast({
           title: 'Unable to join town',
           description: 'Please select a username',
@@ -149,7 +151,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-      const initData = await Video.setup(userName, coveyRoomID);
+      const initData = await Video.setup(finalName, coveyRoomID);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -163,13 +165,19 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, userName, connect, toast]);
+  }, [doLogin, connect, toast]);
 
   const handleCreate = async () => {
-    if (!userName || userName.length === 0) {
+    if (googleUserName !== "" && userProfile.getUserStatus() !== false) {
+      finalUserName = googleUserName;
+    }
+    else {
+      finalUserName = userName;
+    }
+    if ((!finalUserName || finalUserName.length === 0)) {
       toast({
         title: 'Unable to create town',
-        description: 'Please select a username before creating a town',
+        description: 'Please select a username, or log in before creating a town',
         status: 'error',
       });
       return;
@@ -202,7 +210,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         isClosable: true,
         duration: null,
       })
-      await handleJoin(newTownInfo.coveyTownID);
+      await handleJoin(newTownInfo.coveyTownID, finalUserName);
     } catch (err) {
       toast({
         title: 'Unable to connect to Towns Service',
@@ -319,7 +327,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                        onChange={event => setTownIDToJoin(event.target.value)}/>
               </FormControl>
                 <Button data-testid='joinTownByIDButton'
-                        onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
+                        onClick={() => handleJoin(townIDToJoin, finalUserName)}>Connect</Button>
               </Flex>
 
             </Box>
@@ -334,7 +342,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                     <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
                       role='cell'>{town.coveyTownID}</Td>
                       <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
-                        <Button onClick={() => handleJoin(town.coveyTownID)}
+                        <Button onClick={() => handleJoin(town.coveyTownID, finalUserName)}
                                 disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
                   ))}
                 </Tbody>
