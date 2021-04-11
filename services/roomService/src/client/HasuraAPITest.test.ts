@@ -91,7 +91,7 @@ describe('ValidAPIs', () => {
     });
     const g: GetUserById[] = response.data.CoveyTown_user_profile;
 
-    expect(g.filter(profile => profile.user.name === `test-auth0-${userId}`));
+    expect(g.filter(profile => profile.user.name === `test-auth0-${userId}`)).toHaveLength(1);
   });
   it('deletes the created user', async () => {
     const response = await axios.delete(`${url}/user`, {
@@ -102,6 +102,14 @@ describe('ValidAPIs', () => {
     });
 
     expect(response.data.delete_CoveyTown_user_profile.affected_rows).toEqual(1);
+
+    // making sure that it is deleted
+    const fetchAllResponse = await axios.get(`${url}/users`, {
+      headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
+    });
+    const g: GetUserById[] = fetchAllResponse.data.CoveyTown_user_profile;
+
+    expect(g.filter(profile => profile.user.name === `test-auth0-${userId}`)).toHaveLength(0);
   });
 });
 
