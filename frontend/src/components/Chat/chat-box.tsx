@@ -27,9 +27,7 @@ import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
-const colors = ['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"]
-const usedColors = []
-const pickColor = () => colors[Math.floor(Math.random() * colors.length)];
+
 const useStyles = makeStyles({
   root: {},
   chatbox: {
@@ -89,7 +87,7 @@ const useStyles = makeStyles({
 
   },
   otherPlayerMessageName: {
-    backgroundColor: pickColor(),
+    // backgroundColor: pickColor(),
     color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
@@ -101,7 +99,7 @@ const useStyles = makeStyles({
 
   },
   playerMessageName: {
-    backgroundColor: pickColor(),
+    // backgroundColor: pickColor(),
     color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
@@ -136,6 +134,7 @@ const ChatBox = (): JSX.Element => {
     players,
     socket
   } = useCoveyAppState();
+  const [colors, setColors] = useState<string[]>(['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"])
   const [newText, setNewText] = useState<string>('')
   const [newRecipient, setNewRecipient] = useState<'town' | { recipientId: string }>('town');
   const classes = useStyles();
@@ -149,9 +148,24 @@ const ChatBox = (): JSX.Element => {
     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }
 
+
+  const usedColors = new Map<string, string>()
+  const pickColor = (playerId: string): string => {
+    if (usedColors.get(playerId) === undefined) {
+      const color = colors[Math.floor(Math.random() * colors.length)]
+      usedColors.set(playerId, color)
+      colors.filter(thisColor => thisColor !== color)
+      return color
+    }
+    const temp = usedColors.get(playerId)
+    return temp || ''
+
+
+  }
   const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
   const checkSenderName = (profileId: string) => (profileId === myPlayerID ?
-    classes.playerMessageName : (classes.otherPlayerMessageName))
+    classes.playerMessageName : classes.otherPlayerMessageName)
+
 
   useEffect(() => {
     setUsers(players.filter(p => p.id !== myPlayerID)
@@ -243,7 +257,7 @@ const ChatBox = (): JSX.Element => {
   }
 
   return (
-    <Box border={1} >
+    <Box border={1} overflow="auto" >
       <Grid className={classes.chatbox}>
         <Typography
           variant='h4'
@@ -284,12 +298,16 @@ const ChatBox = (): JSX.Element => {
               direction='column'
               key={message.messageId}
               className={checkSender(message.senderProfileId)}
-
             >
               <Typography
                 className={checkSenderName(message.senderProfileId)}
                 display="inline"
+                style={{
+
+                  backgroundColor: pickColor(message.senderProfileId)
+                }}
               >
+
 
                 &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
               </Typography>
