@@ -72,6 +72,7 @@ const useStyles = makeStyles({
   },
   messageWindow: {
     overflow: 'auto',
+    maxHeight: '55vh',
     flexWrap: 'nowrap'
   },
   messageBorder: {
