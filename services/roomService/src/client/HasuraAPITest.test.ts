@@ -79,7 +79,7 @@ describe('ValidAPIs', () => {
         headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
       },
     );
-    expect(updateResponse.data.update_CoveyTown_user_profile.affected_rows);
+    expect(updateResponse.data.update_CoveyTown_user_profile.affected_rows).toEqual(1);
     const fetchResponse = await fetchUser(userId);
 
     expect(fetchResponse.length).toEqual(1);
@@ -110,6 +110,64 @@ describe('ValidAPIs', () => {
     const g: GetUserById[] = fetchAllResponse.data.CoveyTown_user_profile;
 
     expect(g.filter(profile => profile.user.name === `test-auth0-${userId}`)).toHaveLength(0);
+  });
+});
+
+describe('InvalidAPIs', () => {
+  const newUser = {
+    bio: 'I’m an early bird and I’m a night owl so I’m wise and I have worms!',
+    dob: new Date().toISOString(),
+    is_public: true,
+    located: 'Scranton, PA',
+    hobbies: 'Improv, Stand-up',
+    gender: 'Male',
+    relationship_status: 'Single',
+  };
+  it('fails creating user without user id', async () => {
+    try {
+      await axios.post(`${url}/user`, newUser, {
+        headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
+      });
+      fail('this should have failed');
+    } catch (error) {
+      expect(true);
+    }
+  });
+
+  it('does not delete without user id', async () => {
+    const response = await axios.delete(`${url}/user`, {
+      headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
+    });
+
+    expect(response.data.delete_CoveyTown_user_profile.affected_rows).toEqual(0);
+  });
+  it('does not delete with invalid user id', async () => {
+    const response = await axios.delete(`${url}/user`, {
+      headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
+      data: {
+        userId: 'invalid-user-id',
+      },
+    });
+
+    expect(response.data.delete_CoveyTown_user_profile.affected_rows).toEqual(0);
+  });
+
+  it('fails updating without userId', async () => {
+    const updateResponse = await axios.patch(`${url}/user/userId`, newUser, {
+      headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
+    });
+    expect(updateResponse.data.update_CoveyTown_user_profile.affected_rows).toEqual(0);
+  });
+
+  it('fails updating with invalid userId', async () => {
+    const updateResponse = await axios.patch(
+      `${url}/user/userId`,
+      { ...newUser, userId: 'invalid-user-id' },
+      {
+        headers: { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET },
+      },
+    );
+    expect(updateResponse.data.update_CoveyTown_user_profile.affected_rows).toEqual(0);
   });
 });
 
