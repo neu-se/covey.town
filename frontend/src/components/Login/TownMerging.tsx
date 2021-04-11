@@ -92,11 +92,11 @@ const TownMerging: React.FunctionComponent = () => {
                                   newTownIsPubliclyListed: newTownIsPublic, 
                                   newTownIsMergeable
                                 });
-      toast({
-        title: 'Towns merged',
-        description: 'To see the updated town, please exit and re-join this town',
-        status: 'success'
-      })
+      // toast({
+      //   title: 'Towns merged',
+      //   description: 'To see the updated town, please exit and re-join this town',
+      //   status: 'success'
+      // })
       closeSettings();
     } catch(err) {
       toast({

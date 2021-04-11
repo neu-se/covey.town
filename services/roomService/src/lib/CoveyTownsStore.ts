@@ -84,6 +84,8 @@ export default class CoveyTownsStore {
         // for each player of each room, emit a warning that they're being moved
         // this.createTown(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
         existingRequestingTown.townsMerged(existingDestinationTown.coveyTownID)
+        existingDestinationTown.townsMerged(existingRequestingTown.coveyTownID)
+
 
         console.log(newTownIsMergeable);
         //TODO: add newTownIsMergeable to update??
