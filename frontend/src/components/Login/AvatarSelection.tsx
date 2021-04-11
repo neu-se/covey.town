@@ -28,13 +28,14 @@ class Avatar {
 }
 
 const avatars: Avatar[] = [
-  new Avatar('JANE', 'john', 'http://www.avatarsinpixels.com/Public/images/previews/minipix1.png'),
-  new Avatar('FLURRY', 'misa', 'http://www.avatarsinpixels.com/Public/images/previews/minipix2.png'),
-  new Avatar('LILA', 'tyler', 'http://www.avatarsinpixels.com/Public/images/previews/minipix3.png'),
-  new Avatar('CATMAN', 'bella', 'http://www.avatarsinpixels.com/Public/images/previews/minipix4.png'),
-  new Avatar('DIANA', 'claire', 'http://www.avatarsinpixels.com/Public/images/previews/minipix5.png'),
-  new Avatar('SARAH', 'devon', 'http://www.avatarsinpixels.com/Public/images/previews/minipix6.png'),
+  new Avatar('JOHN', 'john', 'https://i.ibb.co/C18Kvxt/john.png'),
+  new Avatar('MISA', 'misa', 'https://i.ibb.co/N75bghZ/misa-front.png'),
+  new Avatar('TYLER', 'tyler', 'https://i.ibb.co/DCMmgqz/tyler.png'),
+  new Avatar('CLAIRE', 'claire', 'https://i.ibb.co/nk6XLR0/claire.png'),
+  new Avatar('ED', 'ed', 'https://i.ibb.co/d4ZSt5P/ed.png'),
+  new Avatar('Devon', 'devon', 'https://i.ibb.co/7JQVXrH/devon.png'),
 ];
+
 
 interface AvatarSelectionProps {
   setAvatarId: (avatarId: string) => void;
