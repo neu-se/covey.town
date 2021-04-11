@@ -37,7 +37,7 @@ describe('TownsServiceAPIREST', () => {
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
-      creator: 'Guest'
+      creator: 'Guest',
     });
     return {
       friendlyName,

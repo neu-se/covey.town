@@ -138,7 +138,7 @@ export async function createUserHandler(requestData: CreateUserRequest): Promise
 
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const townList: CoveyTownList = await townsStore.getTowns()
+  const townList: CoveyTownList = await townsStore.getTowns();
   return {
     isOK: true,
     response: { towns: townList },

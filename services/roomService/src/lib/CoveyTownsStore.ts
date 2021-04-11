@@ -1,8 +1,7 @@
+import { customAlphabet, nanoid } from 'nanoid';
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
 import {
-  TownData,
-  allTownResponse,
   getPublicTowns,
   getAllTowns,
   addNewTown,
@@ -10,16 +9,14 @@ import {
   updateTownPublicStatus,
   deleteTown,
   getTownByID,
-  townListingInfo
+  TownListingInfo,
 } from '../database/databaseService';
-import { F } from 'ramda';
-import { customAlphabet, nanoid } from 'nanoid';
 
 
 export type CreateTownResponse = {
   coveyTownController: CoveyTownController,
   coveyTownPassword: string,
-}
+};
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
     return true;
@@ -55,8 +52,8 @@ export default class CoveyTownsStore {
   }
 
   async getTowns(): Promise<CoveyTownList> {
-    const publicTowns: townListingInfo[] = await getPublicTowns();
-    let response: CoveyTownList = [];
+    const publicTowns: TownListingInfo[] = await getPublicTowns();
+    const response: CoveyTownList = [];
     for (let town of publicTowns) {
       const coveyTownID = town.coveyTownID;
       const controller = this.getControllerForTown(coveyTownID);
@@ -69,7 +66,7 @@ export default class CoveyTownsStore {
           coveyTownID: coveyTownID,
           currentOccupancy: occupancy,
           maximumOccupancy: capacity,
-        })
+        });
       }
     }
     return response;

@@ -18,30 +18,31 @@ export type TownData = {
   coveyTownPassword: string,
   friendlyName: string,
   isPublicallyListed: boolean,
-}
+};
 
-export type allTownResponse = {
+export type AllTownResponse = {
   coveyTownID: string,
-}
+};
 
-export type townListingInfo = {
+export type TownListingInfo = {
   coveyTownID: string,
   friendlyName: string,
-}
+};
 
 // functions interacting with Users
 export async function updateUser(email: string) {
   let count = 0;
   const existing = await db('Users')
     .where('email', email)
-    .then((rows: any) => {
-      for (let row of rows) {
-        count += 1;
-      }
+    .then((rows: any[]) => {
+      count = rows.length;
+      // for (let row of rows) {
+      //   count += 1;
+      // }
     });
 
-    if (count === 0) {
-      await db('Users')
+  if (count === 0) {
+    await db('Users')
       .insert({
         'email': email,
       });
@@ -49,8 +50,8 @@ export async function updateUser(email: string) {
 }
 
 // Functions interacting with Towns
-export async function getPublicTowns(): Promise<townListingInfo[]> {
-  let results: townListingInfo[] = [];
+export async function getPublicTowns(): Promise<TownListingInfo[]> {
+  const results: TownListingInfo[] = [];
   await db('Towns')
     .select('coveyTownID', 'friendlyName')
     .where('isPublicallyListed', true)
@@ -62,33 +63,32 @@ export async function getPublicTowns(): Promise<townListingInfo[]> {
   return results;
 }
 
-export async function getAllTowns(): Promise<allTownResponse[]> {
-  const results: allTownResponse[] = [];
+export async function getAllTowns(): Promise<AllTownResponse[]> {
+  const results: AllTownResponse[] = [];
   await db('Towns')
     .select('coveyTownID')
     .then((rows: any) => {
       for (let row of rows) {
-        results.push({ coveyTownID: row['coveyTownID'],  })
+        results.push({ coveyTownID: row['coveyTownID']});
       }
     });
   return results;
 }
 
 export async function getTownByID(townID: string): Promise<TownData> {
-  let result: TownData;
-  result = await db('Towns')
+  const result = await db('Towns')
     .select('coveyTownID', 'coveyTownPassword', 'friendlyName', 'isPublicallyListed')
     .where('coveyTownID', townID)
     .then((rows: any) => {
-      let town = {
+      const town = {
         coveyTownID: rows[0]['coveyTownID'],
         coveyTownPassword: rows[0]['coveyTownPassword'],
         friendlyName: rows[0]['friendlyName'],
         isPublicallyListed: rows[0]['isPublicallyListed'],
-      }
+      };
       return town;
     });
-    return result;
+  return result;
 }
 
 export async function addNewTown(townID: string, password: string, friendlyName: string, isPublicallyListed: boolean, email: string) {
@@ -108,25 +108,25 @@ export async function addNewTown(townID: string, password: string, friendlyName:
 }
 
 export async function updateTownName(townID: string, password: string, friendlyName: string) {
-  return await db('Towns')
+  return db('Towns')
     .where('coveyTownID', townID)
     .andWhere('coveyTownPassword', password)
     .update({
       'friendlyName': friendlyName,
     });
-  }
-  
-  export async function updateTownPublicStatus(townID: string, password: string, isPublicallyListed: boolean) {
-    return db('Towns')
-      .where('coveyTownID', townID)
-      .andWhere('coveyTownPassword', password)
-      .update({
+}
+
+export async function updateTownPublicStatus(townID: string, password: string, isPublicallyListed: boolean) {
+  return db('Towns')
+    .where('coveyTownID', townID)
+    .andWhere('coveyTownPassword', password)
+    .update({
       'isPublicallyListed': isPublicallyListed,
     });
 }
 
 export async function deleteTown(townID: string, password: string) {
-  return await db('Towns')
+  return db('Towns')
     .where('coveyTownID', townID)
     .andWhere('coveyTownPassword', password)
     .del();
@@ -140,7 +140,7 @@ export async function saveTown(user: string, townID: string) {
     .where('userEmail', user);
 
   if (savedTown !== undefined) {
-    return await db('SavedTowns')
+    return db('SavedTowns')
       .insert({
         'coveyTownID': townID,
         'userEmail': user,
@@ -150,14 +150,14 @@ export async function saveTown(user: string, townID: string) {
 }
 
 export async function unsaveTown(user: string, townID: string) {
-  return await db('SavedTowns')
+  return db('SavedTowns')
     .where('userEmail', user)
     .andWhere('coveyTownID', townID)
     .del();
 }
 
 export async function getSavedTowns(user: string) {
-  return await db('SavedTowns')
+  return db('SavedTowns')
     .innerJoin('Towns', 'SavedTowns.coveyTownID', 'Towns.coveyTownID')
     .select('Towns.coveyTownID', 'Towns.friendlyName')
     .where('Savedtowns.userEmail', user);
@@ -166,7 +166,7 @@ export async function getSavedTowns(user: string) {
 
 // functions interacting with avatars
 export async function updateAvatar(user: string, avatar: string) {
-  return await db('Users')
+  return db('Users')
     .where('email', user)
     .update({
       'currentAvatar': avatar,

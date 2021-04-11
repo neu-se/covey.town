@@ -83,7 +83,6 @@ export interface TownUpdateRequest {
 
 export interface UserCreateRequest {
   email: string;
-  username: string;
 }
 
 /**
@@ -128,8 +127,8 @@ export default class TownsServiceClient {
   }
 
   async updateUser(requestData: UserCreateRequest): Promise<void> {
-    await updateUser(requestData.email, requestData.username);
-    return;
+    const responseWrapper = await this._axios.post<ResponseEnvelope<void>>('/users', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
   
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {
