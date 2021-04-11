@@ -88,13 +88,13 @@ import React, { useContext, useEffect, useState } from 'react';
         for (let r = 0; r <= 7; r += 1) {
             switch (r) {
                 case 0:
-                    this.addCheckerRow(r, 'redChecker', 1, container);
-                    break;
-                case 1:
                     this.addCheckerRow(r, 'redChecker', 2, container);
                     break;
-                case 2:
+                case 1:
                     this.addCheckerRow(r, 'redChecker', 1, container);
+                    break;
+                case 2:
+                    this.addCheckerRow(r, 'redChecker', 2, container);
                     break;
                 case 3:
                     // (no checkers)
@@ -103,13 +103,13 @@ import React, { useContext, useEffect, useState } from 'react';
                     // (no checkers)
                     break;
                 case 5:
-                    this.addCheckerRow(r, 'blackChecker', 2, container);
-                    break;
-                case 6:
                     this.addCheckerRow(r, 'blackChecker', 1, container);
                     break;
-                case 7:
+                case 6:
                     this.addCheckerRow(r, 'blackChecker', 2, container);
+                    break;
+                case 7:
+                    this.addCheckerRow(r, 'blackChecker', 1, container);
                     break;
                 default: 
                     break;
