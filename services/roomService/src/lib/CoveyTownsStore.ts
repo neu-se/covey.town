@@ -1,7 +1,25 @@
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
-import { getPublicTowns, addNewTown, updateTown, deleteTown } from '../database/databaseService';
+import {
+  TownData,
+  allTownResponse,
+  getPublicTowns,
+  getAllTowns,
+  addNewTown,
+  updateTownName,
+  updateTownPublicStatus,
+  deleteTown,
+  getTownByID,
+  townListingInfo
+} from '../database/databaseService';
+import { F } from 'ramda';
+import { customAlphabet, nanoid } from 'nanoid';
 
+
+export type CreateTownResponse = {
+  coveyTownController: CoveyTownController,
+  coveyTownPassword: string,
+}
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
     return true;
@@ -20,6 +38,14 @@ export default class CoveyTownsStore {
   static getInstance(): CoveyTownsStore {
     if (CoveyTownsStore._instance === undefined) {
       CoveyTownsStore._instance = new CoveyTownsStore();
+      
+      // populate with existing towns from DB
+      const allTowns = getAllTowns();
+      for (let town in allTowns) {
+        const newController = new CoveyTownController(town);
+        CoveyTownsStore._instance._towns.push(newController);
+      }
+
     }
     return CoveyTownsStore._instance;
   }
@@ -28,52 +54,68 @@ export default class CoveyTownsStore {
     return this._towns.find(town => town.coveyTownID === coveyTownID);
   }
 
-  getTowns(): CoveyTownList {
-    return this._towns.filter(townController => townController.isPubliclyListed)
-      .map(townController => ({
-        coveyTownID: townController.coveyTownID,
-        friendlyName: townController.friendlyName,
-        currentOccupancy: townController.occupancy,
-        maximumOccupancy: townController.capacity,
-      }));
+  async getTowns(): Promise<CoveyTownList> {
+    const publicTowns: townListingInfo[] = await getPublicTowns();
+    let response: CoveyTownList = [];
+    for (let town of publicTowns) {
+      const coveyTownID = town.coveyTownID;
+      const controller = this.getControllerForTown(coveyTownID);
+      if (controller) {
+        const capacity = controller?.capacity;
+        const occupancy = controller?.occupancy;
+
+        response.push({
+          friendlyName: town.friendlyName,
+          coveyTownID: coveyTownID,
+          currentOccupancy: occupancy,
+          maximumOccupancy: capacity,
+        })
+      }
+    }
+    return response;
   }
 
-  async createTown(friendlyName: string, isPubliclyListed: boolean, userEmail: string): Promise<CoveyTownController> {
-    const newTown = new CoveyTownController(friendlyName, isPubliclyListed);
-    this._towns.push(newTown);     
-    // store in database  KS
+  async createTown(friendlyName: string, isPubliclyListed: boolean, userEmail: string): Promise<CreateTownResponse> {
+    const custom = customAlphabet('1234567890ABCDEF', 8).toString();
+    // tried to use the custom alphabet thing but it was being weird :(
+    const townID = nanoid(30); 
+    const password = nanoid(24);
 
-    const townID = newTown.coveyTownID;
-    const password = newTown.townUpdatePassword;
+    const newTown = new CoveyTownController(townID);
+    this._towns.push(newTown); 
     await addNewTown(townID, password, friendlyName, isPubliclyListed, userEmail);
     console.log('newTown Created');
 
-    return newTown;
+    return {coveyTownController: newTown, coveyTownPassword: password};
   }
 
-  updateTown(coveyTownID: string, coveyTownPassword: string, friendlyName?: string, makePublic?: boolean): boolean {
-    const existingTown = this.getControllerForTown(coveyTownID);
-    if (existingTown && passwordMatches(coveyTownPassword, existingTown.townUpdatePassword)) {
+  async updateTown(coveyTownID: string, coveyTownPassword: string, friendlyName?: string, makePublic?: boolean): Promise<boolean> {
+    const existingTown = await getTownByID(coveyTownID); 
+    if (existingTown && passwordMatches(coveyTownPassword, existingTown.coveyTownPassword)) {
       if (friendlyName !== undefined) {
         if (friendlyName.length === 0) {
           return false;
         }
-        existingTown.friendlyName = friendlyName;
+        await updateTownName(coveyTownID, coveyTownPassword, friendlyName);
       }
       if (makePublic !== undefined) {
-        existingTown.isPubliclyListed = makePublic;
+        await updateTownPublicStatus(coveyTownID, coveyTownPassword, makePublic);
       }
       return true;
     }
     return false;
   }
 
-  deleteTown(coveyTownID: string, coveyTownPassword: string): boolean {
-    const existingTown = this.getControllerForTown(coveyTownID);
-    if (existingTown && passwordMatches(coveyTownPassword, existingTown.townUpdatePassword)) {
-      this._towns = this._towns.filter(town => town !== existingTown);
-      existingTown.disconnectAllPlayers();
-      return true;
+  async deleteTown(coveyTownID: string, coveyTownPassword: string): Promise<boolean> {
+    const existingTown = await getTownByID(coveyTownID);
+    const controller = this.getControllerForTown(coveyTownID);
+    if (controller) {
+      if (existingTown && passwordMatches(coveyTownPassword, existingTown.coveyTownPassword)) {
+        this._towns = this._towns.filter(town => town !== controller);
+        controller.disconnectAllPlayers();
+        await deleteTown(coveyTownID, coveyTownPassword);
+        return true;
+      }
     }
     return false;
   }

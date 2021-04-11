@@ -18,32 +18,12 @@ export default class CoveyTownController {
     return this._capacity;
   }
 
-  set isPubliclyListed(value: boolean) {
-    this._isPubliclyListed = value;
-  }
-
-  get isPubliclyListed(): boolean {
-    return this._isPubliclyListed;
-  }
-
-  get townUpdatePassword(): string {
-    return this._townUpdatePassword;
-  }
-
   get players(): Player[] {
     return this._players;
   }
 
   get occupancy(): number {
     return this._listeners.length;
-  }
-
-  get friendlyName(): string {
-    return this._friendlyName;
-  }
-
-  set friendlyName(value: string) {
-    this._friendlyName = value;
   }
 
   get coveyTownID(): string {
@@ -64,20 +44,11 @@ export default class CoveyTownController {
 
   private readonly _coveyTownID: string;
 
-  private _friendlyName: string;
-
-  private readonly _townUpdatePassword: string;
-
-  private _isPubliclyListed: boolean;
-
   private _capacity: number;
 
-  constructor(friendlyName: string, isPubliclyListed: boolean) {
-    this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
+  constructor(coveyTownID: string) {
+    this._coveyTownID = coveyTownID;
     this._capacity = 50;
-    this._townUpdatePassword = nanoid(24);
-    this._isPubliclyListed = isPubliclyListed;
-    this._friendlyName = friendlyName;
   }
 
   /**

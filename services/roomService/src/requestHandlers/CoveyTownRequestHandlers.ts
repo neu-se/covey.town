@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { updateUser } from '../database/databaseService';
+import { updateUser, getTownByID, TownData } from '../database/databaseService';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -112,6 +112,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
+  const town: TownData = await getTownByID(requestData.coveyTownID);
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
@@ -122,16 +123,14 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       coveySessionToken: newSession.sessionToken,
       providerVideoToken: newSession.videoToken,
       currentPlayers: coveyTownController.players,
-      friendlyName: coveyTownController.friendlyName,
-      isPubliclyListed: coveyTownController.isPubliclyListed,
+      friendlyName: town.friendlyName,
+      isPubliclyListed: town.isPublicallyListed,
     },
   };
 }
 
 export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
-  console.log('handler', requestData.email);
   const resp = await updateUser(requestData.email);
-  console.log('handler response: ', resp);
   return {
     isOK: true,
   };
@@ -139,9 +138,10 @@ export async function createUserHandler(requestData: CreateUserRequest): Promise
 
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
+  const townList: CoveyTownList = await townsStore.getTowns()
   return {
     isOK: true,
-    response: { towns: townsStore.getTowns() },
+    response: { towns: townList },
   };
 }
 
@@ -157,15 +157,15 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   return {
     isOK: true,
     response: {
-      coveyTownID: newTown.coveyTownID,
-      coveyTownPassword: newTown.townUpdatePassword,
+      coveyTownID: newTown.coveyTownController.coveyTownID,
+      coveyTownPassword: newTown.coveyTownPassword,
     },
   };
 }
 
 export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
+  const success = await townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   return {
     isOK: success,
     response: {},
@@ -175,7 +175,7 @@ export async function townDeleteHandler(requestData: TownDeleteRequest): Promise
 
 export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
+  const success = await townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
   return {
     isOK: success,
     response: {},
