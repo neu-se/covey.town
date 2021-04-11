@@ -36,15 +36,6 @@ function getEmail(isAuthenticated: boolean, user: any): string {
   return 'Guest';
 }
 
-function linkUser(apiClient: any) {
-
-    apiClient.updateUser({
-      'email': 'Guest',
-      'username': 'Guest',
-    });
-
-}
-
 function getDefaultUsername(isAuthenticated:boolean, user:any){
   if(!isAuthenticated) {
     return 'Guest';

@@ -76,18 +76,19 @@ export async function getAllTowns(): Promise<allTownResponse[]> {
 
 export async function getTownByID(townID: string): Promise<TownData> {
   let result: TownData;
-  return await db('Towns')
+  result = await db('Towns')
     .select('coveyTownID', 'coveyTownPassword', 'friendlyName', 'isPublicallyListed')
     .where('coveyTownID', townID)
     .then((rows: any) => {
-      let result = {
-        coveyTownID: rows['coveyTownID'],
-        coveyTownPassword: rows['coveyTownPassword'],
-        friendlyName: rows['friendlyName'],
-        isPublicallyListed: rows['isPublicallyListed'],
+      let town = {
+        coveyTownID: rows[0]['coveyTownID'],
+        coveyTownPassword: rows[0]['coveyTownPassword'],
+        friendlyName: rows[0]['friendlyName'],
+        isPublicallyListed: rows[0]['isPublicallyListed'],
       }
-      return result
+      return town;
     });
+    return result;
 }
 
 export async function addNewTown(townID: string, password: string, friendlyName: string, isPublicallyListed: boolean, email: string) {
