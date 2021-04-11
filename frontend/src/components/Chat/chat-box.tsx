@@ -27,7 +27,9 @@ import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
-
+const colors = ['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"]
+const usedColors = []
+const pickColor = () => colors[Math.floor(Math.random() * colors.length)];
 const useStyles = makeStyles({
   root: {},
   chatbox: {
@@ -37,7 +39,7 @@ const useStyles = makeStyles({
     // bottom: '70vh',
     background: '#0e0e29',
     width: '20vw',
-    height: '71vh',
+    height: '70vh',
     border: '3px solid #efe4b1',
     borderRadius: '45px',
     // overflow: 'auto',
@@ -56,6 +58,8 @@ const useStyles = makeStyles({
   },
   formControl: {
     background: '#efead6',
+    alignContent: 'center'
+
 
   },
   messageCreation: {
@@ -67,7 +71,6 @@ const useStyles = makeStyles({
     color: '#1d2bff'
   },
   messageWindow: {
-    height: '55vh',
     overflow: 'auto',
     flexWrap: 'nowrap'
   },
@@ -85,8 +88,8 @@ const useStyles = makeStyles({
 
   },
   otherPlayerMessageName: {
-    color: '#1d2bff',
-    backgroundColor: '#ffffff',
+    backgroundColor: pickColor(),
+    color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
   },
@@ -97,8 +100,8 @@ const useStyles = makeStyles({
 
   },
   playerMessageName: {
-    color: '#ff0c13',
-    backgroundColor: '#ffffff',
+    backgroundColor: pickColor(),
+    color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
 
@@ -108,6 +111,8 @@ const useStyles = makeStyles({
     width: '80%',
     background: '#efead6',
     alignItems: 'end',
+    position: 'absolute',
+    bottom: 0,
 
     borderBottomLeftRadius: '45px'
   }
@@ -142,6 +147,10 @@ const ChatBox = (): JSX.Element => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }
+
+  const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
+  const checkSenderName = (profileId: string) => (profileId === myPlayerID ?
+    classes.playerMessageName : (classes.otherPlayerMessageName))
 
   useEffect(() => {
     setUsers(players.filter(p => p.id !== myPlayerID)
@@ -221,8 +230,7 @@ const ChatBox = (): JSX.Element => {
     ));
     setNewText('')
   }
-  const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
-  const checkSenderName = (profileId: string) => (profileId === myPlayerID ? classes.playerMessageName : classes.otherPlayerMessageName)
+
 
   const handleRecipientSelect = (e: React.ChangeEvent<{ value: unknown }>) => {
     const {value} = e.target;
@@ -234,7 +242,7 @@ const ChatBox = (): JSX.Element => {
   }
 
   return (
-    <Box border={1}>
+    <Box border={1} >
       <Grid className={classes.chatbox}>
         <Typography
           variant='h4'
@@ -244,7 +252,9 @@ const ChatBox = (): JSX.Element => {
           className={classes.formControl}
         >
           <InputLabel
-            id="playerChatSelection">Select A Player</InputLabel>
+            id="playerChatSelection"
+
+          >Select A Player</InputLabel>
           <Select
             labelId="playerChatSelection"
             defaultValue='town'
@@ -258,8 +268,11 @@ const ChatBox = (): JSX.Element => {
           </Select>
         </FormGroup>
 
-
-        <Grid className={classes.messageWindow} direction="column" container>
+        <Box height="80%">
+        <Grid className={classes.messageWindow}
+              direction="column"
+              container
+        >
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
@@ -290,7 +303,7 @@ const ChatBox = (): JSX.Element => {
           }
 
 
-        </Grid>
+        </Grid></Box>
         <Grid container className={classes.messageCreation}>
 
           <MentionsInput className={classes.textField}
