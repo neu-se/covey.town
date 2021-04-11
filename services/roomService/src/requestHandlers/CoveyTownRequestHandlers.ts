@@ -129,7 +129,9 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
 }
 
 export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
-  await updateUser(requestData.email);
+  console.log('handler', requestData.email);
+  const resp = await updateUser(requestData.email);
+  console.log('handler response: ', resp);
   return {
     isOK: true,
   };
