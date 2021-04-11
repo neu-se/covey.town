@@ -157,7 +157,7 @@ export async function unsaveTown(user: string, townID: string) {
 }
 
 export async function getSavedTowns(user: string) {
-  return await knexInstance('SavedTowns')
+  return await db('SavedTowns')
     .innerJoin('Towns', 'SavedTowns.coveyTownID', 'Towns.coveyTownID')
     .select('Towns.coveyTownID', 'Towns.friendlyName')
     .where('Savedtowns.userEmail', user);
@@ -166,8 +166,9 @@ export async function getSavedTowns(user: string) {
 
 // functions interacting with avatars
 export async function updateAvatar(user: string, avatar: string) {
-  return await knexInstance('Users')
+  return await db('Users')
     .where('email', user)
     .update({
       'currentAvatar': avatar,
     });
+}
