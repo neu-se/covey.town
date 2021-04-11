@@ -224,11 +224,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       return <div>Loading...</div>;
     }
     return (
-      // <div>
-      //   <WorldMap />
-      //   <VideoOverlay preferredMode="fullwidth" />
-      //   <ChatScreen />
-      // </div>
       <div>
         <div className='rowC'>
               <WorldMap />

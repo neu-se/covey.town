@@ -22,7 +22,7 @@ const useChat = (coveyTownID: string, socket: Socket) => {
   useEffect(() => {
 
     // Listens for incoming messages
-    socketRef?.current?.on(NEW_CHAT_MESSAGE_EVENT, (message: any) => {
+    socketRef?.current?.on(coveyTownID, (message: any) => {
       const incomingMessage = {
         ...message,
         ownedByCurrentUser: message.senderId === socketRef.current?.id,
@@ -40,7 +40,7 @@ const useChat = (coveyTownID: string, socket: Socket) => {
   // Sends a message to the server that
   // forwards it to all users in the same room
   const sendMessage = (messageBody: string) => {
-    socketRef.current.emit(NEW_CHAT_MESSAGE_EVENT, {
+    socketRef.current.emit(coveyTownID, {
       body: messageBody,
       senderId: socketRef.current.id,
       ownedByCurrentUser: true,
