@@ -57,17 +57,29 @@ describe('TownServiceApiSocket', () => {
     const {socketDisconnected} = TestUtils.createSocketClient(server, joinData.coveySessionToken, nanoid());
     await socketDisconnected;
   });
+  it('Rejects invalid CoveyTownIDs, even if otherwise valid session token, doesnt break with non-default misa', async () => {
+    const town = await createTownForTesting();
+    const joinData = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blue-hair'});
+    const {socketDisconnected} = TestUtils.createSocketClient(server, joinData.coveySessionToken, nanoid());
+    await socketDisconnected;
+  });
   it('Rejects invalid session tokens, even if otherwise valid town id', async () => {
     const town = await createTownForTesting();
     await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blond-hair'});
     const {socketDisconnected} = TestUtils.createSocketClient(server, nanoid(), town.coveyTownID);
     await socketDisconnected;
   });
+  it('Rejects invalid session tokens, even if otherwise valid town id, doesnt break with non-defualt misa', async () => {
+    const town = await createTownForTesting();
+    await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blue-hair'});
+    const {socketDisconnected} = TestUtils.createSocketClient(server, nanoid(), town.coveyTownID);
+    await socketDisconnected;
+  });
   it('Dispatches movement updates to all clients in the same town', async () => {
     const town = await createTownForTesting();
     const joinData = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blond-hair'});
-    const joinData2 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blond-hair'});
-    const joinData3 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blond-hair'});
+    const joinData2 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-red-hair'});
+    const joinData3 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-green-hair'});
     const socketSender = TestUtils.createSocketClient(server, joinData.coveySessionToken, town.coveyTownID).socket;
     const {playerMoved} = TestUtils.createSocketClient(server, joinData2.coveySessionToken, town.coveyTownID);
     const {playerMoved: playerMoved2} = TestUtils.createSocketClient(server, joinData3.coveySessionToken, town.coveyTownID);
@@ -90,8 +102,8 @@ describe('TownServiceApiSocket', () => {
   });
   it('Informs all new players when a player joins', async () => {
     const town = await createTownForTesting();
-    const joinData = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blond-hair'});
-    const joinData2 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blond-hair'});
+    const joinData = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-blue-hair'});
+    const joinData2 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid(), character: 'misa-red-hair'});
     const {socketConnected, newPlayerJoined} = TestUtils.createSocketClient(server, joinData.coveySessionToken, town.coveyTownID);
     const {
       socketConnected: connectPromise2,
