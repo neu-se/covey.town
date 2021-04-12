@@ -87,8 +87,8 @@ export interface TownUpdateRequest {
  * Payload sent by the client to merge two towns
  */
  export interface TownMergeRequest {
-  requestingCoveyTownID: string;
   destinationCoveyTownID: string;
+  requestedCoveyTownID: string;
   coveyTownPassword: string, 
   newTownFriendlyName: string, 
   newTownIsPubliclyListed: boolean, 
@@ -176,8 +176,8 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
 // TODO: move all this logic into timeout?
 export async function townMergeRequestHandler(requestData: TownMergeRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const mergedTown = townsStore.mergeTowns(requestData.requestingCoveyTownID, 
-    requestData.destinationCoveyTownID, requestData.coveyTownPassword, 
+  const mergedTown = townsStore.mergeTowns(requestData.destinationCoveyTownID, 
+    requestData.requestedCoveyTownID, requestData.coveyTownPassword, 
     requestData.newTownFriendlyName, requestData.newTownIsPubliclyListed, 
     requestData.newTownIsMergeable);
   if (mergedTown) {
@@ -235,8 +235,8 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
-    onTownMerged(coveyTownID: string) {
-      socket.emit('roomsMerged', coveyTownID)
+    onTownMerged(destinationTownID: string, requestedTownID: string) {
+      socket.emit('roomsMerged', destinationTownID, requestedTownID)
     }
   };
 }

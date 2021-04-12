@@ -57,14 +57,21 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({ action: 'disconnect' });
   });
 
-  socket.on('roomsMerged', (coveyTownID: string) => {
-    dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: coveyTownID});
-    
-    // TODO: is this the right toast?
+  socket.on('roomsMerged', (destinationTownID: string, requestedTownID: string) => {
+    dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: destinationTownID});
+
+    let coveyTownID;
+    if (destinationTownID === video.coveyTownID) {
+      coveyTownID = requestedTownID;
+    } else {
+      coveyTownID = destinationTownID
+    }
+
+    // TODO: countdown???
     if (toast) {
       toast({
-        title: 'Town is merging',
-        description: 'Town is Merging with Another Town',
+        title: 'Town is merging with another town',
+        description: `this town is merging with ${coveyTownID}!`,
         status: 'success'
       }) 
     }

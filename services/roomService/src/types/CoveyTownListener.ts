@@ -29,7 +29,8 @@ export default interface CoveyTownListener {
 
   /**
    * Called when a player requests that their town be merged with another town
-   * @param newTownID the town to be merged with
+   * @param destinationTownID the town ID of the destination town
+   * @param requestedTownID the town ID of the town requested to merge
    */
-  onTownMerged(newTownID: string): void;
+  onTownMerged(destinationTownID: string, requestedTownID: string): void;
 }

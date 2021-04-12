@@ -182,7 +182,7 @@ export default class CoveyTownController {
    * 
    * @param newTownID the newTownID of the town to be merged with
    */
-  townsMerged(newTownID: string): void {
-    this._listeners.forEach((listener) => listener.onTownMerged(newTownID));
+  townsMerged(destinationTownID: string, requestedTownID: string): void {
+    this._listeners.forEach((listener) => listener.onTownMerged(destinationTownID, requestedTownID));
   }
 }

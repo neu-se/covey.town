@@ -86,8 +86,8 @@ const TownMerging: React.FunctionComponent = () => {
   const toast = useToast();
   const handleMergeRequest = async () => {
     try {
-      await apiClient.mergeTowns({requestingCoveyTownID: currentTownID, 
-                                  destinationCoveyTownID: townChosen, 
+      await apiClient.mergeTowns({destinationCoveyTownID: currentTownID, 
+                                  requestedCoveyTownID: townChosen, 
                                   coveyTownPassword: roomMergePassword,
                                   newTownFriendlyName: mergedTownName, 
                                   newTownIsPubliclyListed: newTownIsPublic, 

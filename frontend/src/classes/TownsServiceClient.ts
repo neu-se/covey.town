@@ -48,8 +48,8 @@ export interface TownCreateRequest {
  * Payload sent by the client to merge two towns
  */
 export interface TownMergeRequest {
-  requestingCoveyTownID: string;
   destinationCoveyTownID: string;
+  requestedCoveyTownID: string;
   coveyTownPassword: string, 
   newTownFriendlyName: string, 
   newTownIsPubliclyListed: boolean, 

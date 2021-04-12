@@ -59,12 +59,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.patch('/towns', BodyParser.json(), async (req, res) => {
     try {
-
-      
-
       const result = await townMergeRequestHandler({
-        requestingCoveyTownID: req.body.requestingCoveyTownID,
         destinationCoveyTownID: req.body.destinationCoveyTownID,
+        requestedCoveyTownID: req.body.requestedCoveyTownID,
         coveyTownPassword: req.body.coveyTownPassword,
         newTownFriendlyName: req.body.newTownFriendlyName,
         newTownIsPubliclyListed: req.body.newTownIsPubliclyListed,
