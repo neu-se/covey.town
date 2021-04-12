@@ -93,12 +93,8 @@ export default function MenuBar(props: { setMediaError?(error: Error): void }) {
           <Hidden smDown>
             <Grid style={{ flex: 1 }}>
               <Grid container justify="flex-end">
-                <TownVoting />
-
                 <TownMerging />
-
                 <TownSettings />
-
                 <Menu />
                 <EndCallButton />
               </Grid>

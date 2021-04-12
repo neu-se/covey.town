@@ -84,7 +84,7 @@ export interface TownUpdateRequest {
 }
 
 /**
- * TODO: documentation here
+ * Payload sent by the client to merge two towns
  */
  export interface TownMergeRequest {
   requestingCoveyTownID: string;
@@ -173,12 +173,9 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   };
 }
 
-// move all this logic into timeout
+// TODO: move all this logic into timeout?
 export async function townMergeRequestHandler(requestData: TownMergeRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  // townsStore.getControllerForTown(requestData.requestingCoveyTownID)?.getListeners()[0].onTownMerged(requestData.requestingCoveyTownID, requestData.destinationCoveyTownID)
-  //onTownMerged
-  // townsStore.(requestData.requestingCoveyTownID, requestData.destinationCoveyTownID)
   const mergedTown = townsStore.mergeTowns(requestData.requestingCoveyTownID, 
     requestData.destinationCoveyTownID, requestData.coveyTownPassword, 
     requestData.newTownFriendlyName, requestData.newTownIsPubliclyListed, 
@@ -186,7 +183,7 @@ export async function townMergeRequestHandler(requestData: TownMergeRequest): Pr
   if (mergedTown) {
     return {
       isOK: true,
-      // TODO: need to pass the controller here
+      // TODO: need to pass the controller here?
       response: {},
     };
   }

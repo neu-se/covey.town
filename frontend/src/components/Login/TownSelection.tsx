@@ -39,8 +39,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient, townIDToMerge } = useCoveyAppState();
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
-
-  // const [newTownIDToMerge, setNewTownIDToMerge] = useState<string>(townIDToMerge);
   const toast = useToast();
 
   const handleJoin = useCallback(async (coveyRoomID: string, resetToken = false) => {

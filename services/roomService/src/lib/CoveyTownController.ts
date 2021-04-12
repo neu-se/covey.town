@@ -130,6 +130,7 @@ export default class CoveyTownController {
 
   /**
    * Updates the location of a player within the town
+   * 
    * @param player Player to update location for
    * @param location New location for this player
    */
@@ -158,10 +159,6 @@ export default class CoveyTownController {
     this._listeners = this._listeners.filter((v) => v !== listener);
   }
 
-  getListeners(): CoveyTownListener[] {
-    return this._listeners;
-  }
-
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the
    * session token is not valid.
@@ -172,13 +169,20 @@ export default class CoveyTownController {
     return this._sessions.find((p) => p.sessionToken === token);
   }
 
+  /**
+   * Disconnects all players from this town
+   */
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
   }
 
-  
+  /**
+   * Notify all players that they will be merged with the town associated with 
+   * the newTownID given
+   * 
+   * @param newTownID the newTownID of the town to be merged with
+   */
   townsMerged(newTownID: string): void {
-    console.log("townsMerged in controller")
     this._listeners.forEach((listener) => listener.onTownMerged(newTownID));
   }
 }

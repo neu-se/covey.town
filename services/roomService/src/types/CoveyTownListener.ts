@@ -1,4 +1,3 @@
-import { StringifyOptions } from 'querystring';
 import Player from './Player';
 
 /**
@@ -28,6 +27,9 @@ export default interface CoveyTownListener {
    */
   onTownDestroyed(): void;
 
-  //TODO: add doc
+  /**
+   * Called when a player requests that their town be merged with another town
+   * @param newTownID the town to be merged with
+   */
   onTownMerged(newTownID: string): void;
 }

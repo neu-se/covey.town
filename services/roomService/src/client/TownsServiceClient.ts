@@ -47,6 +47,9 @@ export interface TownCreateRequest {
   isMergeable: boolean;
 }
 
+/**
+ * Payload sent by the client to merge two towns
+ */
 export interface TownMergeRequest {
   requestingCoveyTownID: string;
   destinationCoveyTownID: string;

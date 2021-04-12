@@ -73,7 +73,7 @@ export function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): C
   }
 
   let updatePlayer;
-  let defState;
+  let defaultState;
   switch (update.action) {
     case 'doConnect':
       nextState.sessionToken = update.data.sessionToken;
@@ -124,10 +124,9 @@ export function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): C
       break;
     case 'disconnect':
       state.socket?.disconnect();
-      defState = defaultAppState();
-      defState.townIDToMerge = state.townIDToMerge;
-      return defState;
-    //   return defaultAppState();
+      defaultState = defaultAppState();
+      defaultState.townIDToMerge = state.townIDToMerge;
+      return defaultState;
     case 'updateTownToMerge':
       nextState.townIDToMerge = update.newTownIDToMerge;
       break;

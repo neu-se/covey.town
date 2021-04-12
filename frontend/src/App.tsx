@@ -9,7 +9,6 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
@@ -23,7 +22,7 @@ import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDi
 import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
-import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
+import { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import { CoveyAppUpdate, appStateReducer, defaultAppState } from './AppHelper'
 
@@ -61,6 +60,7 @@ async function GameController(initData: TownJoinResponse,
   socket.on('roomsMerged', (coveyTownID: string) => {
     dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: coveyTownID});
     
+    // TODO: is this the right toast?
     if (toast) {
       toast({
         title: 'Town is merging',
@@ -68,12 +68,6 @@ async function GameController(initData: TownJoinResponse,
         status: 'success'
       }) 
     }
-    console.log("in roomsMerged");
-    
-    // frontend & backend timer
-    // after emit put timeout
-
-    // dispatchAppUpdate =>
   })
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
@@ -102,7 +96,6 @@ async function GameController(initData: TownJoinResponse,
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
   const toast = useToast();
-
 
   const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate, toast);
