@@ -95,8 +95,8 @@ export default function MenuBar(props: { setMediaError?(error: Error): void , pl
               <Grid container justify="flex-end">
                 <TownSettings />
                 {/*TODO: Remove these from menu bar!*/}
-                <JoinGameModalDialog dialogType={"joining"} gameType={"Hangman"} gameId={"1"}/>
-                <CreateGameModalDialog currentPlayer ={props.playerInfo}/>
+                <JoinGameModalDialog currentPlayer={props.playerInfo} dialogType={"joining"} gameType={"Hangman"} gameId={"1"}/>
+                <CreateGameModalDialog currentPlayer={props.playerInfo}/>
                 <Menu />
                 <EndCallButton />
               </Grid>

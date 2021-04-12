@@ -18,12 +18,13 @@ import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
 import HangmanGame from "./gamesService/HangmanGame";
 
 interface GameModalDialogProps {
+  currentPlayer: {username: string, id: string},
   dialogType: string;
   gameId: string;
   gameType: string;
 }
 
-export default function JoinGameModalDialog({dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
+export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const controller = GameController.getInstance()
   const game = controller.findGameById(gameId)
@@ -64,8 +65,7 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
             <ModalFooter>
               <Button className="games-padded-asset" colorScheme="green"
                       onClick={() => {
-                        //  TODO: get player 2's username
-                        game?.playerJoin("", "");
+                        game?.playerJoin(currentPlayer.id, currentPlayer.username);
                         setPlaying(true)
                       }
                       }>Join Game</Button>
@@ -94,10 +94,6 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
               </div>
 
               <div className="games-border games-extra-padded">
-                {/* TODO: re-add tictactoe option */}
-                {/* {gameType === "TicTacToe" && */}
-                {/* <TicTacToeDisplay game={game as TicTacToeGame}/> */}
-                {/* } */}
                 {gameType === "ttl" &&
                 <TTLDisplay game={game as TTLGame}/>
                 }
