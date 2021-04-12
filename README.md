@@ -45,3 +45,10 @@ Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWN
 
 In the `frontend` directory, run `npm start` (again, you'll need to run `npm install` the very first time). After several moments (or minutes, depending on the speed of your machine), a browser will open with the frontend running locally.
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
+
+
+
+### INSTRUCTIONS FOR LAUNCHING OUR TEXT CHAT FEATURE
+
+Our feature is directly built into the existing covey.town frontend/services folders. Following the instructions for configuring and launching the existing frontend and 
+backend results in it being deployed correctly. You can interact with it alongside the covey.town game screen, but it will not display if your browser window is too small. 
