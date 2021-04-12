@@ -16,7 +16,7 @@ export default class Player {
 
   private readonly _avatarID: string;
 
-  constructor(userName: string, avatarID: string) {
+  constructor(userName: string, avatarID?: string) {
     this.location = {
       x: 0,
       y: 0,
@@ -24,7 +24,7 @@ export default class Player {
       rotation: 'front',
     };
     this._userName = userName;
-    this._avatarID = avatarID;
+    this._avatarID = avatarID || 'misa';
     this._id = nanoid();
   }
 

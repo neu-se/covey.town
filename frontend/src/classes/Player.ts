@@ -11,11 +11,11 @@ export default class Player {
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation, avatarID: string) {
+  constructor(id: string, userName: string, location: UserLocation, avatarID?: string) {
     this._id = id;
     this._userName = userName;
     this.location = location;
-    this._avatarID = avatarID;
+    this._avatarID = avatarID || 'misa';
   }
 
   get userName(): string {
