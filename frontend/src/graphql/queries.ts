@@ -243,11 +243,7 @@ export const findAllUserProfiles = async (): Promise<any> => {
 
 export const listTown = async (): Promise<any> => {
   const { data } = await client.query({ query: townList });
-  if (data.townList.isOK) {
-    console.log(data);
-    return data.townList.response;
-  }
-  return null;
+  return data.townList.response;
 };
 
 export const findAllUsersByUserName = async (username: string): Promise<any> => {
@@ -287,7 +283,7 @@ export const createTown = async (payload: TownCreateRequest): Promise<any> => {
   if (data.townCreateRequest.isOK) {
     return data.townCreateRequest.response;
   }
-  return null;
+ throw new Error(`Error processing request: ${data.townCreateRequest.message}`);
 };
 
 export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
@@ -299,7 +295,7 @@ export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
   if (data.townJoinRequest.isOK) {
     return data.townJoinRequest.response;
   }
-  return null;
+   throw new Error(`Error processing request: ${ data.townJoinRequest.message}`);
 };
 
 export const addFriend = async (payload: AddFriendRequest): Promise<any> => {
