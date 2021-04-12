@@ -42,14 +42,11 @@ export interface UpdateUserRequest {
   password: string
 }
 
-<<<<<<< HEAD
-=======
 export interface DeleteUserRequest {
   email: string
 }
 
 
->>>>>>> c70fd1e36ab5a2ff1b5457b33efd987450add3ec
 /**
  * Envelope that wraps any response from the server
  */
@@ -207,6 +204,15 @@ const joinTownMutation = gql`
   }
 `;
 
+const deleteTownMutation = gql`
+  mutation deleteTown($input: townDeleteRequestInput!) {
+    townDeleteRequest(input: $input) {
+      isOK
+      message
+    }
+  }
+`;
+
 const addFriendMutation = gql`
   mutation addFriend($input: addFriendInput!) {
     addFriend(input: $input)
@@ -229,18 +235,9 @@ const updateUserMutation = gql`
   }
 `;
 
-<<<<<<< HEAD
-const deleteTownMutation = gql`
-  mutation deleteTown($input: townDeleteRequestInput!) {
-    townDeleteRequest(input: $input) {
-      isOK
-      message
-    }
-=======
 const deleteUserMutation = gql`
   mutation deleteUser($input: deleteUserInput) {
     deleteUser(input: $input)
->>>>>>> c70fd1e36ab5a2ff1b5457b33efd987450add3ec
   }
 `;
 
@@ -351,22 +348,20 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
   return data.updateUser;
 }
 
-<<<<<<< HEAD
-export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
-  await client.mutate({
-    mutation: deleteTownMutation,
-    variables: { input: payload },
-  });
-};
-=======
 export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
-  console.log(payload)
   const { data } = await client.mutate({
     mutation: deleteUserMutation,
     variables: {input: payload},
   });
-  console.log(data);
   return data.deleteUser;
 }
 
->>>>>>> c70fd1e36ab5a2ff1b5457b33efd987450add3ec
+export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
+  const { data } = await client.mutate({
+    mutation: deleteTownMutation,
+    variables: { input: payload },
+  });
+  if (!data.townDeleteRequest.isOK) {
+    throw new Error(`Error processing request: ${ data.townJoinRequest.message}`);
+  }
+};
