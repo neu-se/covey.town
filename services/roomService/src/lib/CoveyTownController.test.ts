@@ -148,7 +148,7 @@ describe('CoveyTownController', () => {
 
       const session1 = await testingTown.addPlayer(player1);
       const session2 = await testingTown.addPlayer(player2);
-      const message = new PrivateChatMessage('hello', session1, session2);
+      const message = new PrivateChatMessage('hello', player1, player2);
       mockListeners.forEach(listener => listener.onPrivateMessage(message));
       expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
       expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
@@ -163,7 +163,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       const session2 = await testingTown.addPlayer(player2);
       const session3 = await testingTown.addPlayer(player3);
-      const message = new PrivateChatMessage('hello', session1, session2);
+      const message = new PrivateChatMessage('hello', player1, player2);
       mockListeners.forEach(listener => listener.onPrivateMessage(message));
       expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
       expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
@@ -179,7 +179,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', session1);
+      const message = new GlobalChatMessage('hello', player1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -196,7 +196,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', session1);
+      const message = new GlobalChatMessage('hello', player1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -213,7 +213,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', session1);
+      const message = new GlobalChatMessage('hello', player1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -225,15 +225,22 @@ describe('CoveyTownController', () => {
       const player1 = new Player('player 1');
 
       const session1 = await testingTown.addPlayer(player1);
-      const message1 = new GlobalChatMessage('professor bell', session1);
-      const message2 = new GlobalChatMessage('bell', session1);
-      const message3 = new GlobalChatMessage('professor', session1);
+      const message1 = new GlobalChatMessage('professor bell icecream', player1);
+      testingTown.sendGlobalPlayerMessage(message1);
+      const message2 = new GlobalChatMessage('bell', player1);
+      testingTown.sendGlobalPlayerMessage(message2);
+      const message3 = new GlobalChatMessage('professor boyland', player1);
+      testingTown.sendGlobalPlayerMessage(message3);
+      const message4 = new GlobalChatMessage('professor bell bell boyland', player1);
+      testingTown.sendGlobalPlayerMessage(message4);
       mockListeners.forEach(listener => listener.onGlobalMessage(message1));
-      expect(message1.message).toEqual('professor ****')
+      expect(message1.message).toEqual('professor **** icecream')
       mockListeners.forEach(listener => listener.onGlobalMessage(message2));
       expect(message2.message).toEqual('****')
       mockListeners.forEach(listener => listener.onGlobalMessage(message3));
-      expect(message3.message).toEqual(message3.message)
+      expect(message3.message).toEqual('professor boyland')
+      mockListeners.forEach(listener => listener.onGlobalMessage(message4));
+      expect(message4.message).toEqual('professor **** **** boyland')
     });
 
     it('private messages should be censored appropriately', async () => {
@@ -242,15 +249,22 @@ describe('CoveyTownController', () => {
 
       const session1 = await testingTown.addPlayer(player1);
       const session2 = await testingTown.addPlayer(player2);
-      const message1 = new PrivateChatMessage('professor bell', session1, session2);
-      const message2 = new PrivateChatMessage('bell', session1, session2);
-      const message3 = new PrivateChatMessage('professor', session1, session2);
+      const message1 = new PrivateChatMessage('professor bell icecream', player1, player2);
+      testingTown.sendPrivatePlayerMessage(message1);
+      const message2 = new PrivateChatMessage('bell', player1, player2);
+      testingTown.sendPrivatePlayerMessage(message2);
+      const message3 = new PrivateChatMessage('professor boyland', player1, player2);
+      testingTown.sendPrivatePlayerMessage(message3);
+      const message4 = new PrivateChatMessage('professor bell bell boyland', player1, player2);
+      testingTown.sendPrivatePlayerMessage(message4);
       mockListeners.forEach(listener => listener.onPrivateMessage(message1));
-      expect(message1.message).toEqual('professor ****')
+      expect(message1.message).toEqual('professor **** icecream')
       mockListeners.forEach(listener => listener.onPrivateMessage(message2));
       expect(message2.message).toEqual('****')
       mockListeners.forEach(listener => listener.onPrivateMessage(message3));
-      expect(message3.message).toEqual(message3.message)
+      expect(message3.message).toEqual('professor boyland')
+      mockListeners.forEach(listener => listener.onPrivateMessage(message4));
+      expect(message4.message).toEqual('professor **** **** boyland')
     });
   });
 

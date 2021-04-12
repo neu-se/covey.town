@@ -1,14 +1,14 @@
 /* eslint-disable */
-import PlayerSession from "./PlayerSession";
+import Player from "./Player";
 /**
  * TODO:
  */
 export default abstract class AChatMessage{
 
     private _message: string
-    private readonly _sender: PlayerSession
+    private readonly _sender: Player
 
-    constructor(message: string, sender: PlayerSession){
+    constructor(message: string, sender: Player){
         this._message = message;
         this._sender = sender;
 
@@ -24,7 +24,7 @@ export default abstract class AChatMessage{
         this._message = message;
     }
 
-    public get sender(): PlayerSession {
+    public get sender(): Player {
         return this._sender;
     }
     
