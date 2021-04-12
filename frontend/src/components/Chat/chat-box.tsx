@@ -41,7 +41,7 @@ const useStyles = makeStyles({
     border: '3px solid #efe4b1',
     borderRadius: '45px',
     // overflow: 'auto',
-    scrollbarGutter: '10px'
+    scrollbarGutter: '10px',
 
   },
   chatHeader: {
@@ -144,8 +144,19 @@ const ChatBox = (): JSX.Element => {
   const onBlur = () => video?.unPauseGame();
   const toast = useToast();
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+    // messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+    let temp = messagesEndRef.current?.scrollTop
+    temp = messagesEndRef.current?.scrollHeight
+    // const temp = document.getElementById("messageDiv")
+    // console.log(temp?.scrollHeight)
+    //     // let typescriptSucks = temp?.scrollTop
+    //     // console.log("ts sucks", typescriptSucks)
+    //     // typescriptSucks = temp?.scrollHeight
+    //     // console.log("ts sucks more", typescriptSucks)
+    // return typescriptSucks
+
   }
 
 
@@ -283,19 +294,26 @@ const ChatBox = (): JSX.Element => {
           </Select>
         </FormGroup>
 
-        <Box height="80%">
+        <Box height="80%"
+
+             //
+        >
         <Grid className={classes.messageWindow}
               direction="column"
+
               container
         >
-          {/*  Actual messages would go here */}
-          {/* map messages here- ternary? popular function- clsx- space delimiter */}
-          {/* TODO: get name from sender profile */}
-          {/* {console.log(messages)} */}
+          <Box display="flex"
+               flexDirection="column"
+               justifyContent="flex-end"
+               overflow-y="scroll"
+               id="messageDiv"
+          >
+
           {messages.map((message) =>
             // console.log(message);
             (<Grid
-              direction='column'
+
               key={message.messageId}
               className={checkSender(message.senderProfileId)}
             >
@@ -316,11 +334,13 @@ const ChatBox = (): JSX.Element => {
               >
                 &nbsp;{message.content}&nbsp;
               </Typography>
-              <div ref={messagesEndRef}/>
             </Grid>)
           )
-          }
+          }</Box>
 
+          <div ref={messagesEndRef}
+
+          />
 
         </Grid></Box>
         <Grid container className={classes.messageCreation}>
