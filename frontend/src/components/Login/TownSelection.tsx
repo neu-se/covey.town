@@ -540,34 +540,29 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   return (
     <>
-      {
-        !isAuthenticated ?
-          (
-            <form>
-              <Stack>
+      <form>
+        <Stack>
+          {
+            !isAuthenticated ?
+              (
                 <Box borderWidth="1px" borderRadius="lg">
                   <Heading p="4" as="h2" size="lg">Please log in to use Covey.Town</Heading>
                   <Heading p="4" as="h6" size="md">
                     By clicking on the Login button in the top right of the page,
                     you will become a part of the most interactive community on
                     the entire internet!
-                  </Heading>
-                </Box>
-              </Stack>
-            </form>
-          )
-          :
-          (
-            <form>
-              <Stack>
+                      </Heading>
+                </Box>)
+              :
+              (
                 <Box borderWidth="1px" borderRadius="lg">
                   <Heading p="4" as="h2" size="lg">
                     Your User Profile
-                    <Button ml={3} onClick={() => setOpenDeleteConfirmation(true)}
+                        <Button ml={3} onClick={() => setOpenDeleteConfirmation(true)}
                       style={{ float: "right" }}
                       colorScheme="red">
                       Delete
-                    </Button>
+                        </Button>
                     {
                       editting ?
                         <Button
@@ -585,97 +580,98 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                     {renderPopulatedFields()}
                   </FormControl>
                 </Box>
-                <Box borderWidth="1px" borderRadius="lg">
-                  <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
-                  <Flex p="4">
-                    <Box flex="1">
-                      <FormControl>
-                        <FormLabel htmlFor="townName">New Town Name</FormLabel>
-                        <Input name="townName" placeholder="New Town Name"
-                          value={newTownName}
-                          onChange={event => setNewTownName(event.target.value)}
-                        />
-                      </FormControl>
-                    </Box><Box>
-                      <FormControl>
-                        <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                        <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
-                          onChange={(e) => {
-                            setNewTownIsPublic(e.target.checked)
-                          }} />
-                      </FormControl>
-                    </Box>
-                    <Box>
-                      <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
-                    </Box>
-                  </Flex>
-                </Box>
-                <Heading p="4" as="h2" size="lg">-or-</Heading>
+              )
+          }
 
-                <Box borderWidth="1px" borderRadius="lg">
-                  <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
-                  <Box borderWidth="1px" borderRadius="lg">
-                    <Flex p="4"><FormControl>
-                      <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
-                      <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                        value={townIDToJoin}
-                        onChange={event => setTownIDToJoin(event.target.value)} />
-                    </FormControl>
-                      <Button data-testid='joinTownByIDButton'
-                        onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
-                    </Flex>
+          <Box borderWidth="1px" borderRadius="lg">
+            <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
+            <Flex p="4">
+              <Box flex="1">
+                <FormControl>
+                  <FormLabel htmlFor="townName">New Town Name</FormLabel>
+                  <Input name="townName" placeholder="New Town Name"
+                    value={newTownName}
+                    onChange={event => setNewTownName(event.target.value)}
+                  />
+                </FormControl>
+              </Box><Box>
+                <FormControl>
+                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                  <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
+                    onChange={(e) => {
+                      setNewTownIsPublic(e.target.checked)
+                    }} />
+                </FormControl>
+              </Box>
+              <Box>
+                <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
+              </Box>
+            </Flex>
+          </Box>
+          <Heading p="4" as="h2" size="lg">-or-</Heading>
 
-                  </Box>
+          <Box borderWidth="1px" borderRadius="lg">
+            <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
+            <Box borderWidth="1px" borderRadius="lg">
+              <Flex p="4"><FormControl>
+                <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
+                <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
+                  value={townIDToJoin}
+                  onChange={event => setTownIDToJoin(event.target.value)} />
+              </FormControl>
+                <Button data-testid='joinTownByIDButton'
+                  onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
+              </Flex>
 
-                  <Heading p="4" as="h4" size="md">Select a public town to join</Heading>
-                  <Box maxH="500px" overflowY="scroll">
-                    <Table>
-                      <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
-                      <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
-                      <Tbody>
-                        {currentPublicTowns?.map((town) => (
-                          <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
-                            role='cell'>{town.coveyTownID}</Td>
-                            <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
-                              <Button onClick={() => handleJoin(town.coveyTownID)}
-                                disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </Box>
-                </Box>
-              </Stack>
-              <Modal
-                isCentered
-                onClose={() => setOpenDeleteConfirmation(false)}
-                isOpen={openDeleteConfirmation}
-                motionPreset="slideInBottom"
-                size="sm"
-              >
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Account Delete Confirmation</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    Are you sure you want to delete your Covey Town account?
-                    You will be leaving the literal best community on the planet.
-                    We will send you bitcoin if you stay!
+            </Box>
+
+            <Heading p="4" as="h4" size="md">Select a public town to join</Heading>
+            <Box maxH="500px" overflowY="scroll">
+              <Table>
+                <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
+                <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
+                <Tbody>
+                  {currentPublicTowns?.map((town) => (
+                    <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
+                      role='cell'>{town.coveyTownID}</Td>
+                      <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
+                        <Button onClick={() => handleJoin(town.coveyTownID)}
+                          disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </Box>
+          </Box>
+        </Stack>
+        <Modal
+          isCentered
+          onClose={() => setOpenDeleteConfirmation(false)}
+          isOpen={openDeleteConfirmation}
+          motionPreset="slideInBottom"
+          size="sm"
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Account Delete Confirmation</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              Are you sure you want to delete your Covey Town account?
+              You will be leaving the literal best community on the planet.
+              We will send you bitcoin if you stay!
                  </ModalBody>
-                  <ModalFooter>
-                    <Button mr={3} variant="ghost"
-                      onClick={() => setOpenDeleteConfirmation(false)}>
-                      Cancel
+            <ModalFooter>
+              <Button mr={3} variant="ghost"
+                onClick={() => setOpenDeleteConfirmation(false)}>
+                Cancel
                     </Button>
-                    <Button colorScheme="red" variant="ghost"
-                      onClick={() => deleteUser()}>
-                      Delete
+              <Button colorScheme="red" variant="ghost"
+                onClick={() => deleteUser()}>
+                Delete
                     </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </form>
-          )
-      }
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </form>
     </>
   );
 }
