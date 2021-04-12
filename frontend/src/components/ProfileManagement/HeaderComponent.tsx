@@ -43,14 +43,6 @@ function HeaderComponent(): JSX.Element {
                   </Button>
                 </Link>
               )}
-              {isAuthenticated && (
-                <Link to='/inviteTown'>
-                  {" "}
-                  <Button size='md' color='blue.500'>
-                    Town Invites
-                  </Button>
-                </Link>
-              )}
 
               {isAuthenticated && <LogoutButton />}
 
