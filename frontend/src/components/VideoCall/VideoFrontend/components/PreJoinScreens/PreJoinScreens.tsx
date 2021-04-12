@@ -15,7 +15,7 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
         to hang out in, or join an existing one.
       </Text>
       <DeviceSelectionScreen setMediaError={props.setMediaError} />
-      <TownSelection doLogin={props.doLogin} />
+      <TownSelection test={false} doLogin={props.doLogin} />
     </IntroContainer>
   );
 }
