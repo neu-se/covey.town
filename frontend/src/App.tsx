@@ -34,7 +34,6 @@ import theme from './components/VideoCall/VideoFrontend/theme';
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
 import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
 import StarterPage from "./components/ProfileManagement/StarterPage";
-import InviteTownComponent from "./components/ProfileManagement/InviteTownComponent";
 import FriendsPage from "./components/UserProfiles/FriendsPage";
 import InviteFriendComponent from "./components/ProfileManagement/InviteFriendComponent";
 
@@ -292,9 +291,6 @@ return (
             )}
             {isAuthenticated && (
               <Route path = '/friendsPage' component={FriendsPage} />
-            )}
-              {isAuthenticated && (
-              <Route path = '/inviteTown' component={InviteTownComponent} />
             )}
 
             <Route path='/starterPage' exact component={StarterPage} />
