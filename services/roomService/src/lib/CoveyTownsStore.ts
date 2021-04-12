@@ -32,7 +32,7 @@ function passwordMatches(provided: string, expected: string): boolean {
 }
 
 export async function updateTown(coveyTownID: string, coveyTownPassword: string, friendlyName?: string, makePublic?: boolean): Promise<boolean> {
-  const existingTown: TownData = await getTownByID(coveyTownID);
+  const existingTown = await getTownByID(coveyTownID);
   if (existingTown && passwordMatches(coveyTownPassword, existingTown.coveyTownPassword)) {
     if (friendlyName !== undefined) {
       if (friendlyName.length === 0) {

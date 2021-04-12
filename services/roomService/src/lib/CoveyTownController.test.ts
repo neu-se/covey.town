@@ -8,7 +8,7 @@ import CoveyTownListener from '../types/CoveyTownListener';
 import {UserLocation} from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
 import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
-import CoveyTownsStore from './CoveyTownsStore';
+import { CoveyTownsStore } from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 
 jest.mock('./TwilioVideo');

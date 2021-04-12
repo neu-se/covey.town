@@ -90,7 +90,7 @@ export async function getAllTowns(): Promise<AllTownResponse[]> {
   return results;
 }
 
-export async function getTownByID(townID: string): Promise<TownData> {
+export async function getTownByID(townID: string): Promise<TownData | void> {
   const result = await db('Towns')
     .select('coveyTownID', 'coveyTownPassword', 'friendlyName', 'isPublicallyListed')
     .where('coveyTownID', townID)
@@ -104,6 +104,10 @@ export async function getTownByID(townID: string): Promise<TownData> {
         isPublicallyListed: row.isPublicallyListed,
       };
       return town;
+
+    })
+    .catch(() => {
+      return;
     });
   return result;
 }
