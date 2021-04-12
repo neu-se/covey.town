@@ -15,12 +15,12 @@ import {
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import TTLGame from "./gamesService/TTLGame";
-import HangmanGame from "./gamesService/HangmanGame";
-import TTLDisplay from "./GameDisplays/TTLDisplay";
-import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
-import GameController from "./gamesService/GameController";
-import {GameCreateRequest} from "./gamesClient/Types";
+import TTLGame from "../gamesService/TTLGame";
+import HangmanGame from "../gamesService/HangmanGame";
+import TTLDisplay from "../GameDisplays/TTLDisplay";
+import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
+import GameController from "../gamesService/GameController";
+import {GameCreateRequest} from "../gamesClient/Types";
 
 export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();

@@ -11,11 +11,11 @@ import {
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import GameController from "./gamesService/GameController";
-import TTLDisplay from "./GameDisplays/TTLDisplay";
-import TTLGame from "./gamesService/TTLGame";
-import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
-import HangmanGame from "./gamesService/HangmanGame";
+import GameController from "../gamesService/GameController";
+import TTLDisplay from "../GameDisplays/TTLDisplay";
+import TTLGame from "../gamesService/TTLGame";
+import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
+import HangmanGame from "../gamesService/HangmanGame";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},

@@ -14,8 +14,8 @@ import ToggleVideoButton from '../Buttons/ToggleVideoButton/ToggleVideoButton';
 import ToggleScreenShareButton from '../Buttons/ToogleScreenShareButton/ToggleScreenShareButton';
 import TownSettings from '../../../../Login/TownSettings';
 import MenuContainer from '@material-ui/core/Menu';
-import JoinGameModalDialog from "../../../../Games/JoinGameModalDialog";
-import CreateGameModalDialog from "../../../../Games/CreateGameModalDialog";
+import JoinGameModalDialog from "../../../../Games/GameModals/JoinGameModalDialog";
+import CreateGameModalDialog from "../../../../Games/GameModals/CreateGameModalDialog";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   container: {

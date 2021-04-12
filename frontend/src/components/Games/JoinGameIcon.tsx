@@ -1,6 +1,6 @@
 import * as  React from 'react'
 import GameController from "./gamesService/GameController";
-import JoinGameModalDialog from "./JoinGameModalDialog";
+import JoinGameModalDialog from "./GameModals/JoinGameModalDialog";
 
 interface JoinGameIconProps {
   gameType: string,
