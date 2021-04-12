@@ -28,6 +28,13 @@ export type TownListingInfo = {
   friendlyName: string,
 };
 
+export type UserInfo = {
+  email: string,
+  username: string,
+  nickname: string,
+  currentAvatar: string,
+};
+
 // functions interacting with Users
 export async function updateUser(email: string): Promise<void>  {
   let count = 0;
@@ -43,6 +50,22 @@ export async function updateUser(email: string): Promise<void>  {
         'email': email,
       });
   }
+}
+
+export async function getAllUserInfo(email: string): Promise<UserInfo> {
+  return db('Users')
+    .where('email', email)
+    .then((rows: any[]) => {
+      const user = rows[0];
+      return { email: user.email, username: user.username, nickname: user.nickname, currentAvatar: user.currentAvatar };
+    });
+}
+
+export async function deleteUser(email: string): Promise<void> {
+  await db('Users')
+    .where('email', email)
+    .del();
+
 }
 
 // Functions interacting with Towns
@@ -166,6 +189,16 @@ export async function updateAvatar(user: string, avatar: string): Promise<void> 
     .where('email', user)
     .update({
       'currentAvatar': avatar,
+    });
+}
+
+export async function getCurrentAvatar(user: string): Promise<string> {
+  return db('Users')
+    .select('currentAvatar')
+    .where('email', user)
+    .then((rows: any[]) => {
+      const response = rows[0];
+      return response.currentAvatar;
     });
 }
 
