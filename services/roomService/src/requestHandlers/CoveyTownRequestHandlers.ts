@@ -2,6 +2,7 @@ import assert from 'assert';
 import { Socket } from 'socket.io';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import AChatMessage from '../types/AChatMessage';
 import CoveyTownListener from '../types/CoveyTownListener';
 import GlobalChatMessage from '../types/GlobalChatMessage';
 import Player from '../types/Player';
@@ -59,6 +60,14 @@ export interface TownCreateResponse {
  */
 export interface TownListResponse {
   towns: CoveyTownList;
+}
+
+export interface ListMessagesRequest {
+  coveyTownID: string;
+}
+
+export interface ListMessagesResponse {
+  messages: AChatMessage[];
 }
 
 /**
@@ -234,6 +243,21 @@ export async function globalMessageHandler(
     response: {},
     message: !success ? 'Error: could not send global message.' : undefined,
   };
+}
+
+export async function listMessagesHandler(requestData: ListMessagesRequest) : Promise<ResponseEnvelope<ListMessagesResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const currentTown = townsStore.getControllerForTown(requestData.coveyTownID);
+  if (currentTown) {
+    return {
+      isOK: true,
+      response: { messages: currentTown.messages },
+    };
+  }
+  return {
+    isOK: false,
+    message: 'Error: invalid town ID',
+  }
 }
 
 /**

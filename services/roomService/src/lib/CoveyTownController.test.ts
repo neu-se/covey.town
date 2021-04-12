@@ -148,7 +148,7 @@ describe('CoveyTownController', () => {
 
       const session1 = await testingTown.addPlayer(player1);
       const session2 = await testingTown.addPlayer(player2);
-      const message = new PrivateChatMessage('hello', session1, session2);
+      const message = new PrivateChatMessage('hello', player1, player2);
       mockListeners.forEach(listener => listener.onPrivateMessage(message));
       expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
       expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
@@ -163,7 +163,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       const session2 = await testingTown.addPlayer(player2);
       const session3 = await testingTown.addPlayer(player3);
-      const message = new PrivateChatMessage('hello', session1, session2);
+      const message = new PrivateChatMessage('hello', player1, player2);
       mockListeners.forEach(listener => listener.onPrivateMessage(message));
       expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
       expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
@@ -179,7 +179,8 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', session1);
+      const message = new GlobalChatMessage('hello', player1);
+
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -196,7 +197,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', session1);
+      const message = new GlobalChatMessage('hello', player1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -213,7 +214,7 @@ describe('CoveyTownController', () => {
       const session1 = await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', session1);
+      const message = new GlobalChatMessage('hello', player1);
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -225,13 +226,13 @@ describe('CoveyTownController', () => {
       const player1 = new Player('player 1');
 
       const session1 = await testingTown.addPlayer(player1);
-      const message1 = new GlobalChatMessage('professor bell icecream', session1);
+      const message1 = new GlobalChatMessage('professor bell icecream', player1);
       testingTown.sendGlobalPlayerMessage(message1);
-      const message2 = new GlobalChatMessage('bell', session1);
+      const message2 = new GlobalChatMessage('bell', player1);
       testingTown.sendGlobalPlayerMessage(message2);
-      const message3 = new GlobalChatMessage('professor boyland', session1);
+      const message3 = new GlobalChatMessage('professor boyland', player1);
       testingTown.sendGlobalPlayerMessage(message3);
-      const message4 = new GlobalChatMessage('professor bell bell boyland', session1);
+      const message4 = new GlobalChatMessage('professor bell bell boyland', player1);
       testingTown.sendGlobalPlayerMessage(message4);
       mockListeners.forEach(listener => listener.onGlobalMessage(message1));
       expect(message1.message).toEqual('professor **** icecream')
@@ -249,13 +250,13 @@ describe('CoveyTownController', () => {
 
       const session1 = await testingTown.addPlayer(player1);
       const session2 = await testingTown.addPlayer(player2);
-      const message1 = new PrivateChatMessage('professor bell icecream', session1, session2);
+      const message1 = new PrivateChatMessage('professor bell icecream', player1, player2);
       testingTown.sendPrivatePlayerMessage(message1);
-      const message2 = new PrivateChatMessage('bell', session1, session2);
+      const message2 = new PrivateChatMessage('bell', player1, player2);
       testingTown.sendPrivatePlayerMessage(message2);
-      const message3 = new PrivateChatMessage('professor boyland', session1, session2);
+      const message3 = new PrivateChatMessage('professor boyland', player1, player2);
       testingTown.sendPrivatePlayerMessage(message3);
-      const message4 = new PrivateChatMessage('professor bell bell boyland', session1, session2);
+      const message4 = new PrivateChatMessage('professor bell bell boyland', player1, player2);
       testingTown.sendPrivatePlayerMessage(message4);
       mockListeners.forEach(listener => listener.onPrivateMessage(message1));
       expect(message1.message).toEqual('professor **** icecream')
