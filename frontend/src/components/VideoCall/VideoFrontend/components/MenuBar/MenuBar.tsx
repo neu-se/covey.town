@@ -14,8 +14,6 @@ import ToggleVideoButton from '../Buttons/ToggleVideoButton/ToggleVideoButton';
 import ToggleScreenShareButton from '../Buttons/ToogleScreenShareButton/ToggleScreenShareButton';
 import TownSettings from '../../../../Login/TownSettings';
 import TownMerging from '../../../../Login/TownMerging';
-import TownVoting from '../../../../Login/TownVoting';
-import MenuContainer from '@material-ui/core/Menu';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   container: {

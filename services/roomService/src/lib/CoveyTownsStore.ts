@@ -79,43 +79,19 @@ export default class CoveyTownsStore {
     const existingDestinationTown = this.getControllerForTown(destinationCoveyTownID);
     if (existingRequestingTown && passwordMatches(coveyTownPassword, existingRequestingTown.townUpdatePassword)
       && existingDestinationTown) {
-        // TODO: FIX THIS
-        // const newTown = new CoveyTownController(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
-        // for each player of each room, emit a warning that they're being moved
-        // this.createTown(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
-        existingRequestingTown.townsMerged(existingDestinationTown.coveyTownID)
-        existingDestinationTown.townsMerged(existingRequestingTown.coveyTownID)
-
+        existingRequestingTown.townsMerged(existingDestinationTown.coveyTownID);
+        existingDestinationTown.townsMerged(existingDestinationTown.coveyTownID);
 
         console.log(newTownIsMergeable);
         //TODO: add newTownIsMergeable to update??
         this.updateTown(existingDestinationTown.coveyTownID, existingDestinationTown.townUpdatePassword, 
           newTownFriendlyName, newTownIsPubliclyListed);
-        // console.log(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
-        // existingDestinationTown.townsMerged(newTown.coveyTownID)
 
         setTimeout(() => {
-          // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
-          // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
-
-          // I think we can just call this.deleteTown because disconnectAllPlayers gets called in that
-          existingRequestingTown.disconnectAllPlayers();
+          existingDestinationTown.disconnectAllPlayers();
           this.deleteTown(existingRequestingTown.coveyTownID, existingRequestingTown.townUpdatePassword);
-          // existingDestinationTown.disconnectAllPlayers();
-
-          
         }, 10000)
         
-        // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
-        // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
-        
-        // this._towns.push(newTown);
-
-
-        // need to add all listeners?? or ??? townSubscriptionHandler???
-        // existingRequestingTown.disconnectAllPlayers();
-        // existingDestinationTown.disconnectAllPlayers();
-
         return existingDestinationTown;
       }
       return undefined;
