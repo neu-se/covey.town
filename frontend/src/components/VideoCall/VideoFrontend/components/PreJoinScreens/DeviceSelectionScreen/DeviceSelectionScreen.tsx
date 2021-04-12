@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Button, FormControl, FormErrorMessage, FormLabel, Input, useToast, } from '@chakra-ui/react';
 import assert from 'assert';
 import LocalVideoPreview from './LocalVideoPreview/LocalVideoPreview';
+import LocalStorage_TwilioVideo from '../../../../../../classes/LocalStorage/TwilioVideo';
 import SettingsMenu from './SettingsMenu/SettingsMenu';
 import ToggleAudioButton from '../../Buttons/ToggleAudioButton/ToggleAudioButton';
 import ToggleVideoButton from '../../Buttons/ToggleVideoButton/ToggleVideoButton';
@@ -61,10 +62,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface DeviceSelectionScreenProps {
+  useAudio: boolean
+  useVideo: boolean
   setMediaError?(error: Error): void;
 }
 
-export default function DeviceSelectionScreen({ setMediaError }: DeviceSelectionScreenProps) {
+export default function DeviceSelectionScreen({ useAudio, useVideo, setMediaError }: DeviceSelectionScreenProps) {
   const classes = useStyles();
   const { getToken, isFetching } = useAppState();
   const {
@@ -74,6 +77,9 @@ export default function DeviceSelectionScreen({ setMediaError }: DeviceSelection
   const {
     handleSubmit, errors, register, formState,
   } = useForm();
+
+  // set LocalStorage_TwilioVideo constant to True
+  // LocalStorage_TwilioVideo.twilioVideoMicEnabled = true;
 
   return (
     <>
@@ -88,6 +94,8 @@ export default function DeviceSelectionScreen({ setMediaError }: DeviceSelection
                 className={classes.mobileButton}
                 disabled={disableButtons}
                 setMediaError={setMediaError}
+                //enabled={useAudio}
+                isAudioEnabled={true}
               />
               <ToggleVideoButton
                 className={classes.mobileButton}
@@ -106,6 +114,7 @@ export default function DeviceSelectionScreen({ setMediaError }: DeviceSelection
                   className={classes.deviceButton}
                   disabled={disableButtons}
                   setMediaError={setMediaError}
+                  isAudioEnabled={true}
                 />
                 <ToggleVideoButton
                   className={classes.deviceButton}

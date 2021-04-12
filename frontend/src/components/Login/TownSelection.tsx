@@ -19,24 +19,36 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
+import { Grid, Hidden, makeStyles, Theme, } from '@material-ui/core';
+import { useAuth0 } from '@auth0/auth0-react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  saveUserButton: {
+    float: 'right',
+  },
+}));
+
 interface TownSelectionProps {
+  username: string;
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
-export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+export default function TownSelection({ username, doLogin }: TownSelectionProps): JSX.Element {
+  const [userName, setUserName] = useState<string>('');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
+  const [useSavedUserName, setUseSavedUserName] = useState<boolean>(false);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+
+  const classes = useStyles();
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -89,6 +101,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   }, [doLogin, userName, connect, toast]);
 
+  const handleSaveUsername = () => {
+    // TODO call api to saveUser!
+    try {
+      toast({
+        title: 'Successfully saved username!',
+        description: `Any time you log into Covey.Town in the future, your username will already be filled in the name box.`,
+        status: 'success',
+      });
+    } catch (err) {
+      toast({
+        title: 'Unable to connect to Account Service',
+        description: err.toString(),
+        status: 'error',
+      });
+    }
+  }
+
   const handleCreate = async () => {
     if (!userName || userName.length === 0) {
       toast({
@@ -120,7 +149,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       toast({
         title: `Town ${newTownName} is ready to go!`,
         description: <>{privateMessage}Please record these values in case you need to change the
-          room:<br/>Town ID: {newTownInfo.coveyTownID}<br/>Town Editing
+          room:<br />Town ID: {newTownInfo.coveyTownID}<br />Town Editing
           Password: {newTownInfo.coveyTownPassword}</>,
         status: 'success',
         isClosable: true,
@@ -136,20 +165,43 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const { isAuthenticated } = useAuth0();
+
+  // white-space attribute to nowrap
+
   return (
     <>
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Select a username</Heading>
+            <Flex>
 
-            <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
-              />
-            </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="name">Name</FormLabel>
+                <Input autoFocus name="name" placeholder="Your name"
+                  isDisabled={useSavedUserName}
+                  value={userName}
+                  onChange={event => setUserName(event.target.value)}
+                />
+
+              </FormControl>
+              {isAuthenticated &&
+                <>
+                  <Box>
+                    <FormControl>
+                      <FormLabel whiteSpace="nowrap" htmlFor="savedUserName">Saved Name</FormLabel>
+                      <Checkbox id="savedUserName" name="savedUserName" isChecked={useSavedUserName}
+                        onChange={(e) => {
+                          setUseSavedUserName(e.target.checked);
+                          setUserName(username);
+                        }} />
+                    </FormControl>
+                  </Box>
+                  <Button isDisabled={useSavedUserName} onClick={handleSaveUsername}>Save</Button>
+                </>
+              }
+            </Flex>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
@@ -158,19 +210,19 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <FormControl>
                   <FormLabel htmlFor="townName">New Town Name</FormLabel>
                   <Input name="townName" placeholder="New Town Name"
-                         value={newTownName}
-                         onChange={event => setNewTownName(event.target.value)}
+                    value={newTownName}
+                    onChange={event => setNewTownName(event.target.value)}
                   />
                 </FormControl>
               </Box><Box>
-              <FormControl>
-                <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
-                          onChange={(e) => {
-                            setNewTownIsPublic(e.target.checked)
-                          }}/>
-              </FormControl>
-            </Box>
+                <FormControl>
+                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                  <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
+                    onChange={(e) => {
+                      setNewTownIsPublic(e.target.checked)
+                    }} />
+                </FormControl>
+              </Box>
               <Box>
                 <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
               </Box>
@@ -184,11 +236,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               <Flex p="4"><FormControl>
                 <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
                 <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
-                       value={townIDToJoin}
-                       onChange={event => setTownIDToJoin(event.target.value)}/>
+                  value={townIDToJoin}
+                  onChange={event => setTownIDToJoin(event.target.value)} />
               </FormControl>
                 <Button data-testid='joinTownByIDButton'
-                        onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
+                  onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
               </Flex>
 
             </Box>
@@ -204,7 +256,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                       role='cell'>{town.coveyTownID}</Td>
                       <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
                         <Button onClick={() => handleJoin(town.coveyTownID)}
-                                disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
+                          disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
                   ))}
                 </Tbody>
               </Table>

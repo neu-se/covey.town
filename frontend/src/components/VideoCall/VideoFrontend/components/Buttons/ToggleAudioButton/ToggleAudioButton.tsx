@@ -7,12 +7,15 @@ import MicOffIcon from '../../../icons/MicOffIcon';
 import useLocalAudioToggle from '../../../hooks/useLocalAudioToggle/useLocalAudioToggle';
 import { useHasAudioInputDevices } from '../../../hooks/deviceHooks/deviceHooks';
 
+// add another prop, use that to set the use audio/video instead of use local audio toggle
 export default function ToggleAudioButton(props: {
   disabled?: boolean;
   className?: string;
+  isAudioEnabled?: boolean;
   setMediaError?(error: Error): void;
 }) {
-  const { isEnabled: isAudioEnabled, toggleAudioEnabled } = useLocalAudioToggle();
+  const { isEnabled, toggleAudioEnabled } = useLocalAudioToggle();
+  const isAudioEnabled = props.isAudioEnabled ? props.isAudioEnabled : isEnabled;
   const lastClickTimeRef = useRef(0);
   const hasAudioDevices = useHasAudioInputDevices();
 
