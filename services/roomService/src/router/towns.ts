@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import io from 'socket.io';
 import {
   globalMessageHandler,
+  listMessagesHandler,
   privateMessageHandler,
   townCreateHandler,
   townDeleteHandler,
@@ -138,6 +139,24 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       });
     }
   });
+
+  /**
+   * List all messages for a given town
+   */
+  app.get('/messages/:townID', BodyParser.json(), async (req, res) => {
+      try {
+        const result = await listMessagesHandler({
+          coveyTownID: req.params.townID,
+        });
+        res.status(StatusCodes.OK).json(result);
+      } catch (err) {
+        logError(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+      }
+  });
+
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

@@ -79,7 +79,7 @@ export default class CoveyTownController {
   private _censorer: Censorer = new Censorer;
 
   /** The list of AChatMessages that are sent between players in this town * */
-  private _messages: AChatMessage[] = [];
+  public messages: AChatMessage[] = [];
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -171,14 +171,14 @@ export default class CoveyTownController {
   sendPrivatePlayerMessage(message: PrivateChatMessage): void {
     message.message = this._censorer.censorMessage(message.message);
     // message.message = emojify.replace(message.message);
-    this._messages.push(message);
+    this.messages.push(message);
     this._listeners.forEach(listener => listener.onPrivateMessage(message));
   }
 
   sendGlobalPlayerMessage(message: GlobalChatMessage): void {
     message.message = this._censorer.censorMessage(message.message);
     // message.message = emojify.replace(message.message);
-    this._messages.push(message);
+    this.messages.push(message);
     this._listeners.forEach(listener => listener.onGlobalMessage(message));
   }
 }
