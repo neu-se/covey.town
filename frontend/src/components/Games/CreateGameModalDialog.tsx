@@ -22,7 +22,7 @@ import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
 import GameController from "./gamesService/GameController";
 import {GameCreateRequest} from "./gamesClient/Types";
 
-export default function CreateGameModalDialog(): JSX.Element {
+export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gameSelection, setGameSelection] = useState('')
   const [hangmanWord, setHangmanWord] = useState('')
@@ -32,6 +32,7 @@ export default function CreateGameModalDialog(): JSX.Element {
   const [playing, setPlaying] = useState(false)
   const [game, setGame] = useState<TTLGame | HangmanGame | null>(null)
   const controller = GameController.getInstance()
+  const { currentPlayer } = props
   const toast = useToast()
 
   const getNewGame = async (requestData : GameCreateRequest) => {
@@ -73,16 +74,6 @@ export default function CreateGameModalDialog(): JSX.Element {
                   Select a game type to get started:
                   <br/>
                   <br/>
-                  {/* TODO: re-add tictactoe option */}
-                  {/* <label htmlFor="tictactoe"> */}
-                  {/*  <input type="radio" id="tictactoe" name="gameChoice" value="tictactoe" className="games-padded-asset" */}
-                  {/*         checked={gameSelection === 'tictactoe'} */}
-                  {/*         onChange={() => */}
-                  {/*           setGameSelection( */}
-                  {/*             "tictactoe" */}
-                  {/*           )}/> */}
-                  {/*  Tic Tac Toe */}
-                  {/* </label><br/> */}
                   <label htmlFor="hangman">
                     <input type="radio" id="hangman" name="gameChoice" value="hangman" className="games-padded-asset"
                            checked={gameSelection === 'Hangman'}
@@ -163,15 +154,11 @@ export default function CreateGameModalDialog(): JSX.Element {
                     </h1>
                     <ModalCloseButton />
                     <hr/>
-                    <p className="games-subhead">{game.player1ID} vs. {game.player2ID}</p>
+                    <p className="games-subhead">{game.player1Username} vs. {game.player2Username}</p>
                     <br/>
                   </div>
 
                   <div className="games-border games-extra-padded">
-                    {/* TODO: re-add tictactoe option */}
-                    {/* {gameType === "TicTacToe" && */}
-                    {/* <TicTacToeDisplay game={game as TicTacToeGame}/> */}
-                    {/* } */}
                     {gameSelection === "ttl" &&
                     <TTLDisplay game = {game as TTLGame}/>
                     }
@@ -190,7 +177,7 @@ export default function CreateGameModalDialog(): JSX.Element {
                       // TODO: get correct player1 usernames and add tictactoe option
                       if (gameSelection === "ttl") {
                         const newGame = await getNewGame({
-                          player1: "", gameType: gameSelection, initialGameState:
+                          player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}
                         });
                         if (newGame !== undefined) {
@@ -205,7 +192,7 @@ export default function CreateGameModalDialog(): JSX.Element {
                         }
                       } else if (gameSelection === "Hangman") {
                         const newGame = await getNewGame({
-                          player1: "", gameType: gameSelection, initialGameState:
+                          player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {word: hangmanWord}
                         });
                         if (newGame !== undefined) {

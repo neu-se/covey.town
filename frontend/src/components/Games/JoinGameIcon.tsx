@@ -1,4 +1,4 @@
-import React from 'react'
+import * as  React from 'react'
 import GameController from "./gamesService/GameController";
 import JoinGameModalDialog from "./JoinGameModalDialog";
 

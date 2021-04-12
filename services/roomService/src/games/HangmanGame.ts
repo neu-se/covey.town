@@ -14,13 +14,17 @@ export default class HangmanGame implements IGame {
   }
 
   gameState: string;
-    
+
   player1ID: string;
-    
+
+  player1Username: string;
+
   player2ID: string;
-    
+
+  player2Username: string;
+
   alreadyGuessed : string[];
-    
+
   limbList : Limb[];
 
   finalWord: string;
@@ -32,22 +36,24 @@ export default class HangmanGame implements IGame {
   head : string;
 
   back : string;
-  
+
   leftArm : string;
-  
+
   rightArm : string;
-  
+
   leftLeg : string;
-  
+
   rightLeg : string;
 
 
-  constructor(player1ID:string, initialGameData: HangmanWord ) {
+  constructor(player1ID:string, player1Username:string, initialGameData: HangmanWord ) {
     this.gameStartMessage = 'Choose a letter!';
     this.gameState = this.initializeGame();
     this.player1ID = player1ID;
+    this.player1Username = player1Username;
     this.finalWord = initialGameData.word;
     this.player2ID = '';
+    this.player2Username = '';
     this.alreadyGuessed = [];
     this.limbList = [Limb.RightLeg, Limb.LeftLeg, Limb.RightArm, Limb.LeftArm, Limb.Back, Limb.Head];
     this.splitWord = this.finalWord.split('');
@@ -57,7 +63,6 @@ export default class HangmanGame implements IGame {
     this.rightArm = 'RightArm';
     this.leftLeg = 'LeftLeg';
     this.rightLeg = 'RightLeg';
-    
   }
 
 
@@ -66,7 +71,7 @@ export default class HangmanGame implements IGame {
   }
 
   limbToString(limb : Limb): string {
-    if (limb === Limb.Head) { 
+    if (limb === Limb.Head) {
       return this.head;
     } if (limb === Limb.Back) {
       return this.back;
@@ -77,8 +82,8 @@ export default class HangmanGame implements IGame {
     } if (limb === Limb.LeftLeg) {
       return this.leftLeg;
     } if (limb === Limb.RightLeg) {
-      return this.rightLeg; 
-    } 
+      return this.rightLeg;
+    }
     return '';
   }
 
@@ -97,8 +102,8 @@ export default class HangmanGame implements IGame {
     this.isGameOver();
     if (limb !== undefined) {
       return this.limbToString(limb);
-    } 
-    return '';  
+    }
+    return '';
   }
 
 
@@ -110,7 +115,7 @@ export default class HangmanGame implements IGame {
     if (this.splitWord.length === 0) {
       this.finishGame(this.player2ID);
       return true;
-    } 
+    }
     return false;
 
   }
@@ -121,12 +126,13 @@ export default class HangmanGame implements IGame {
   }
 
 
-  playerJoin(player2ID: string): void {
+  playerJoin(player2ID: string, player2Username: string): void {
     if (this.player2ID === '') {
       this.player2ID = player2ID;
+      this.player2Username = player2Username;
     } else {
       throw new Error('Game is already full');
     }
   }
-  
+
 }

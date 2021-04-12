@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-export default function MenuBar(props: { setMediaError?(error: Error): void }) {
+export default function MenuBar(props: { setMediaError?(error: Error): void , playerInfo: {username: string, id: string} }) {
   const classes = useStyles();
   const { isSharingScreen, toggleScreenShare } = useVideoContext();
   const roomState = useRoomState();
@@ -96,7 +96,7 @@ export default function MenuBar(props: { setMediaError?(error: Error): void }) {
                 <TownSettings />
                 {/*TODO: Remove these from menu bar!*/}
                 <JoinGameModalDialog dialogType={"joining"} gameType={"Hangman"} gameId={"1"}/>
-                <CreateGameModalDialog/>
+                <CreateGameModalDialog currentPlayer ={props.playerInfo}/>
                 <Menu />
                 <EndCallButton />
               </Grid>

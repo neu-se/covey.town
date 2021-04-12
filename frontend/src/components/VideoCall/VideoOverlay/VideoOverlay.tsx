@@ -35,6 +35,7 @@ const Main = styled('main')(({ theme: _theme }: { theme: Theme }) => ({
 interface Props {
   highlightedProfiles?: string[];
   hexColour?: string;
+  playerInfo: {username: string, id: string}
   preferredMode: 'sidebar' | 'fullwidth';
   onPresentingChanged?(presenting: boolean): void;
 }
@@ -126,7 +127,9 @@ export default function VideoGrid(props: Props) {
             <ReconnectingNotification />
             <MobileTopMenuBar />
             <Room />
-            <MenuBar setMediaError={setMediaError} />
+            <MenuBar
+              playerInfo = {props.playerInfo}
+              setMediaError={setMediaError} />
           </Main>
         )}
         <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />

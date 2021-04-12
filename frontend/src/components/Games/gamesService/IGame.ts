@@ -1,4 +1,4 @@
-import {TicMove, HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move} from '../gamesClient/Types';
+import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from '../gamesClient/Types';
 
 export default interface IGame {
 
@@ -10,11 +10,14 @@ export default interface IGame {
 
   player2ID : string;
 
-  initializeGame(): void;
 
-  move(move: TicMove | TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move) : void;
+  initializeGame(initialGameData?:string): string;
+
+  move(move: TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move) : void;
 
   isGameOver() : boolean;
 
-  finishGame(gameState : string, player1ID: string, player2ID: string): void;
+  finishGame(winningPlayerID: string): string;
+
+  playerJoin(player2ID: string, player2Username: string) : void;
 }

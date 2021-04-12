@@ -10,7 +10,7 @@ import {
   TTLChoices,
   HangmanWord,
   HangmanPlayer2Move,
-  TicMove, TTLPlayer2Move,
+  TTLPlayer2Move,
 } from '../gamesClient/Types';
 import HangmanGame from './HangmanGame';
 import TTLGame from './TTLGame';
@@ -43,15 +43,13 @@ export default class GameController {
    */
   async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse>> {
     let newGame;
-    const { player1 } = requestData;
+    const { player1Id } = requestData;
+    const { player1Username } = requestData;
     const initialState = requestData.initialGameState;
     if (requestData.gameType === 'Hangman') {
-      newGame = new HangmanGame(player1, <HangmanWord>(initialState));
+      newGame = new HangmanGame(player1Id, player1Username, <HangmanWord>(initialState));
     } else if (requestData.gameType === 'TTL') {
-      newGame = new TTLGame(player1, <TTLChoices>(initialState));
-    // } else if (requestData.gameType === 'TicTacToe') {
-    //   // TODO: add params for TicTacToe constructor
-    //   newGame = new TicTacToeGame();
+      newGame = new TTLGame(player1Id, player1Username, <TTLChoices>(initialState));
     }
     if (newGame === undefined) {
       return {
@@ -73,7 +71,8 @@ export default class GameController {
    *
    */
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
-    const { player2 } = requestData;
+    const { player2Id } = requestData;
+    const { player2Username } = requestData;
     const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
     if (targetGame === undefined) {
       return {
@@ -81,7 +80,7 @@ export default class GameController {
         message: 'Error: Target game not found',
       };
     }
-    targetGame.playerJoin(player2);
+    targetGame.playerJoin(player2Id, player2Username);
     return {
       isOK: true,
       response: {

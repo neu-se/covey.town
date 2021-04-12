@@ -57,7 +57,7 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
             }
             {dialogType === "joining" &&
             <ModalBody>
-              Are you sure you want to join a {gameType} game with {game ? game.player1ID : "this player"}?
+              Are you sure you want to join a {gameType} game with {game ? game.player1Username : "this player"}?
             </ModalBody>
             }
             {dialogType === "joining" &&
@@ -65,7 +65,7 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
               <Button className="games-padded-asset" colorScheme="green"
                       onClick={() => {
                         //  TODO: get player 2's username
-                        game?.playerJoin("");
+                        game?.playerJoin("", "");
                         setPlaying(true)
                       }
                       }>Join Game</Button>
@@ -89,7 +89,7 @@ export default function JoinGameModalDialog({dialogType, gameId, gameType}: Game
                 <ModalCloseButton/>
                 <hr/>
                 {/* TODO: remove null check when above like is uncommented */}
-                <p className="games-subhead">{game ? game.player1ID : "player1"} vs. {game ? game.player2ID : "player2"}</p>
+                <p className="games-subhead">{game ? game.player1Username : "player1"} vs. {game ? game.player2Username : "player2"}</p>
                 <br/>
               </div>
 

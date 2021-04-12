@@ -17,7 +17,11 @@ export default class HangmanGame implements IGame {
 
   player1ID: string;
 
+  player1Username: string;
+
   player2ID: string;
+
+  player2Username: string;
 
   alreadyGuessed : string[];
 
@@ -42,12 +46,14 @@ export default class HangmanGame implements IGame {
   rightLeg : string;
 
 
-  constructor(player1ID:string, initialGameData: HangmanWord ) {
+  constructor(player1ID:string, player1Username:string, initialGameData: HangmanWord ) {
     this.gameStartMessage = 'Choose a letter!';
     this.gameState = this.initializeGame();
     this.player1ID = player1ID;
+    this.player1Username = player1Username;
     this.finalWord = initialGameData.word;
     this.player2ID = '';
+    this.player2Username = '';
     this.alreadyGuessed = [];
     this.limbList = [Limb.RightLeg, Limb.LeftLeg, Limb.RightArm, Limb.LeftArm, Limb.Back, Limb.Head];
     this.splitWord = this.finalWord.split('');
@@ -57,7 +63,6 @@ export default class HangmanGame implements IGame {
     this.rightArm = 'RightArm';
     this.leftLeg = 'LeftLeg';
     this.rightLeg = 'RightLeg';
-
   }
 
 
@@ -121,9 +126,10 @@ export default class HangmanGame implements IGame {
   }
 
 
-  playerJoin(player2ID: string): void {
+  playerJoin(player2ID: string, player2Username: string): void {
     if (this.player2ID === '') {
       this.player2ID = player2ID;
+      this.player2Username = player2Username
     } else {
       throw new Error('Game is already full');
     }
