@@ -15,7 +15,6 @@ import {
   MenuDivider,
   useDisclosure,
   useColorModeValue,
-  Stack,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 
@@ -34,12 +33,12 @@ const NavLink = ({ children, onClick: url }: { children: ReactNode, onClick: (op
   </Link>
 );
 
-const NavHeader = () => {
+const NavHeader: React.FunctionComponent = () => {
   const { user, isAuthenticated, logout, loginWithRedirect } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-    return (
-      <>
+  return (
+    <>
       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
         <Flex h={16} alignItems='center' justifyContent='space-between'>
           <IconButton
@@ -53,47 +52,47 @@ const NavHeader = () => {
             <Box>Covey.Town</Box>
           </HStack>
 
-          { isAuthenticated &&
-          <Flex alignItems='center'>
-            <Menu>
-              <Box>Hello, {user.name}!</Box> 
-              <MenuButton
-                as={Button}
-                rounded='full'
-                variant='link'
-                cursor='pointer'>
-                <Avatar
-                  name = {user.name}
-                  size='sm'
-                  src={user.picture}
-                />
-              </MenuButton>
-              <MenuList>
-                <MenuItem>Profile</MenuItem>
-                <MenuDivider />
-                <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
-              </MenuList>
-            </Menu>
-          </Flex>
+          {isAuthenticated &&
+            <Flex alignItems='center'>
+              <Menu>
+                <Box>Hello, {user.name}!</Box>
+                <MenuButton
+                  as={Button}
+                  rounded='full'
+                  variant='link'
+                  cursor='pointer'>
+                  <Avatar
+                    name={user.name}
+                    size='sm'
+                    src={user.picture}
+                  />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>Profile</MenuItem>
+                  <MenuDivider />
+                  <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
+                </MenuList>
+              </Menu>
+            </Flex>
           }
 
-          { !isAuthenticated &&
-          <Flex alignItems='center'>
-            <Menu>
-            <HStack
-              as='nav'
-              spacing={4}
-              display={{ base: 'none', md: 'flex' }}>
-                <NavLink onClick={loginWithRedirect}>Login</NavLink>              
-            </HStack>
-            </Menu>
-          </Flex>
+          {!isAuthenticated &&
+            <Flex alignItems='center'>
+              <Menu>
+                <HStack
+                  as='nav'
+                  spacing={4}
+                  display={{ base: 'none', md: 'flex' }}>
+                  <NavLink onClick={loginWithRedirect}>Login</NavLink>
+                </HStack>
+              </Menu>
+            </Flex>
           }
         </Flex>
 
       </Box>
-      </>
-      );
+    </>
+  );
 };
 
 export default NavHeader;

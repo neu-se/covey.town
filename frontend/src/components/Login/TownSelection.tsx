@@ -10,9 +10,6 @@ import {
   FormLabel,
   Heading,
   Input,
-  InputGroup,
-  InputLeftAddon,
-  InputLeftElement,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -24,15 +21,12 @@ import {
   Table,
   TableCaption,
   Tbody,
-  Text,
   Td,
   Th,
   Thead,
   Tr,
   useToast,
-  useDisclosure,
 } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
@@ -41,11 +35,6 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
-}
-
-enum RelationshipStatus {
-  Single = "single",
-  Taken = "taken",
 }
 
 interface CreateUserRequest {
@@ -124,7 +113,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   // user fields that cant be editted
   const [userName, setUserName] = useState<string>('');
-  const [password, setPassword] = useState<string>(''); // not used right now
   const [email, setEmail] = useState<string>('');
   const [dob, setDob] = useState<string>('');
 
@@ -204,81 +192,73 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     setEmail(userData.user.email);
   }
 
-  const createNewUser = async (req: CreateUserRequest) => {
-    const createUserUrl = "https://coveytown-g39.hasura.app/api/rest/user";
-    fetch(createUserUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
-      },
-      body: JSON.stringify(req),
-    })
-      .then(res => res.json())
-      .then(obj => {
-        const userData = obj.insert_CoveyTown_user_profile.returning[0];
-        setUser(userData);
-      })
-      .catch(err => {
-        toast({
-          title: "Create Account",
-          description: `Failed to create your account: ${err}`,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        })
-      })
-  }
-
-  const fetchUserInformation = () => {
-    const getUserUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId";
-    const data: GetUserByIdBody = {
-      userId: user.sub
-    }
-    fetch(getUserUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((obj) => {
-        if (obj.CoveyTown_user_profile.length === 1) { // user exists
-          const userData = obj.CoveyTown_user_profile[0];
-          setUser(userData);
-        }
-        else { // make a new user
-          const req: CreateUserRequest = {
-            bio: '',
-            dob: '',
-            is_public: true,
-            located: '',
-            hobbies: '',
-            gender: '',
-            relationship_status: '',
-            user_id: user.sub
-          }
-          createNewUser(req)
-        }
-      })
-      .catch((err) => {
-        toast({
-          title: "Get User Information",
-          description: `Failed to get user by id: ${err}`,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        })
-      })
-  }
-
   useEffect(() => {
     if (user) {
-      fetchUserInformation();
+      const getUserUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId";
+      const data: GetUserByIdBody = {
+        userId: user.sub
+      }
+      fetch(getUserUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+        },
+        body: JSON.stringify(data),
+      })
+        .then((res) => res.json())
+        .then((obj) => {
+          if (obj.CoveyTown_user_profile.length === 1) { // user exists
+            const userData = obj.CoveyTown_user_profile[0];
+            setUser(userData);
+          }
+          else { // make a new user
+            const req: CreateUserRequest = {
+              bio: '',
+              dob: '',
+              is_public: true,
+              located: '',
+              hobbies: '',
+              gender: '',
+              relationship_status: '',
+              user_id: user.sub
+            }
+            const createUserUrl = "https://coveytown-g39.hasura.app/api/rest/user";
+            fetch(createUserUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+              },
+              body: JSON.stringify(req),
+            })
+              .then(res => res.json())
+              .then(objData => {
+                const userData = objData.insert_CoveyTown_user_profile.returning[0];
+                setUser(userData);
+              })
+              .catch(err => {
+                toast({
+                  title: "Create Account",
+                  description: `Failed to create your account: ${err}`,
+                  status: "error",
+                  duration: 9000,
+                  isClosable: true,
+                })
+              })
+          }
+        })
+        .catch((err) => {
+          toast({
+            title: "Get User Information",
+            description: `Failed to get user by id: ${err}`,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          })
+        })
     }
-  }, user)
+  }, [user, toast])
 
   const updateTownListings = useCallback(() => {
     apiClient.listTowns()
@@ -525,7 +505,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     })
       .then(res => res.json())
       .then(obj => {
-        console.log(obj)
         if (obj.delete_CoveyTown_user_profile.affected_rows === 1
           && obj.delete_CoveyTown_users.affected_rows === 1) {
           toast({
