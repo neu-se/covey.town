@@ -6,7 +6,7 @@ import React from 'react';
 export default function ChatMessage(): JSX.Element {
     return (
           <Text>
-            user1: hi
+            Global message sent
           </Text>
     );
   }
