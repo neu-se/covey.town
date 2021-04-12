@@ -84,13 +84,11 @@ const resolvers = {
             bio: args.input.bio,
           });
         }
-
         if (args.input.location !== undefined) {
           user = await User.findByIdAndUpdate(args.input.id, {
             location: args.input.location,
           });
         }
-
         if (args.input.occupation !== undefined) {
           user = await User.findByIdAndUpdate(args.input.id, {
             occupation: args.input.occupation,
@@ -109,12 +107,6 @@ const resolvers = {
         if (args.input.linkedInLink !== undefined) {
           user = await User.findByIdAndUpdate(args.input.id, {
             linkedInLink: args.input.linkedInLink,
-          });
-        }
-
-        if (args.input.password !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            password: args.input.password,
           });
         }
         return user;
