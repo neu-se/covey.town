@@ -89,15 +89,6 @@ const NavHeader = () => {
             </Menu>
           </Flex>
           }
-
-        {/* {isOpen ? (
-          <Box pb={4}>
-            <Stack as='nav' spacing={4}>
-              <NavLink url={loginWithRedirect}>Login</NavLink>
-            </Stack>
-          </Box>
-        ) : null} */}
-
         </Flex>
 
       </Box>

@@ -13,6 +13,13 @@ import {
   InputGroup,
   InputLeftAddon,
   InputLeftElement,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
   Stack,
   Table,
   TableCaption,
@@ -23,6 +30,7 @@ import {
   Thead,
   Tr,
   useToast,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons'
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
@@ -74,6 +82,10 @@ interface GetUserByIdBody {
   userId: string,
 }
 
+interface DeleteUserByIdBody {
+  userId: string,
+}
+
 interface UpdateUserBody {
   bio: string,
   dob: string,
@@ -100,7 +112,7 @@ interface GetUserByIdResponse {
 
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const toast = useToast();
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, logout } = useAuth0();
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -108,6 +120,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const [editting, setEditting] = useState<boolean>(false);
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState<boolean>(false);
 
   // user fields that cant be editted
   const [userName, setUserName] = useState<string>('');
@@ -146,30 +159,37 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       },
       body: JSON.stringify(req),
     })
-    .then((res) => res.json())
-    .then((obj) => {
-      console.log(obj)
-      if (obj.update_CoveyTown_user_profile.affected_rows > 0) {
+      .then((res) => res.json())
+      .then((obj) => {
+        if (obj.update_CoveyTown_user_profile.affected_rows > 0) {
+          toast({
+            title: "Update Profile",
+            description: "Successfully updated your profile",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          })
+        }
+        else {
+          toast({
+            title: "Update Profile",
+            description: "Failed to update your profile",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          })
+        }
+      })
+      .then(() => setEditting(false))
+      .catch((err) => {
         toast({
           title: "Update Profile",
-          description: "Successfully updated your profile",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        })
-      }
-      else {
-        toast({
-          title: "Update Profile",
-          description: "Failed to update your profile",
+          description: `Failed to update your profile: ${err}`,
           status: "error",
           duration: 9000,
           isClosable: true,
         })
-      }
-    })
-    .then(() => setEditting(false))
-    .catch((err) => console.log(err))
+      })
   }
 
   const setUser = (userData: CreateUserResponse | GetUserByIdResponse) => {
@@ -185,7 +205,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }
 
   const createNewUser = async (req: CreateUserRequest) => {
-    const createUserUrl = "https://coveytown-g39.hasura.app/api/rest/user"; 
+    const createUserUrl = "https://coveytown-g39.hasura.app/api/rest/user";
     fetch(createUserUrl, {
       method: "POST",
       headers: {
@@ -199,11 +219,19 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         const userData = obj.insert_CoveyTown_user_profile.returning[0];
         setUser(userData);
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        toast({
+          title: "Create Account",
+          description: `Failed to create your account: ${err}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
+      })
   }
 
   const fetchUserInformation = () => {
-    const getUserUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId"; 
+    const getUserUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId";
     const data: GetUserByIdBody = {
       userId: user.sub
     }
@@ -235,8 +263,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           createNewUser(req)
         }
       })
-      .catch((err) => { // there exists no user, so create one and populate
-        console.log(err)
+      .catch((err) => {
+        toast({
+          title: "Get User Information",
+          description: `Failed to get user by id: ${err}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
       })
   }
 
@@ -247,7 +281,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, user)
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -255,6 +288,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
+
   useEffect(() => {
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
@@ -476,6 +510,55 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     return fields
   }
 
+  const deleteUser = () => {
+    const deleteUrl = "https://coveytown-g39.hasura.app/api/rest/user"
+    const req: DeleteUserByIdBody = {
+      userId: user.sub
+    }
+    fetch(deleteUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+      },
+      body: JSON.stringify(req),
+    })
+      .then(res => res.json())
+      .then(obj => {
+        console.log(obj)
+        if (obj.delete_CoveyTown_user_profile.affected_rows === 1
+          && obj.delete_CoveyTown_users.affected_rows === 1) {
+          toast({
+            title: "Delete Account",
+            description: "Successfully deleted your account. You will be redirected in 3 seconds..",
+            status: "warning",
+            duration: 9000,
+            isClosable: true,
+
+          })
+          setTimeout(() => logout({ returnTo: window.location.origin }), 3000);
+        }
+        else {
+          toast({
+            title: "Delete Account",
+            description: "Failed to delete your account",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          })
+        }
+      })
+      .catch((err) => {
+        toast({
+          title: "Delete Account",
+          description: `Failed to delete your account: ${err}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
+      })
+  }
+
   return (
     <>
       {
@@ -501,6 +584,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <Box borderWidth="1px" borderRadius="lg">
                   <Heading p="4" as="h2" size="lg">
                     Your User Profile
+                    <Button ml={3} onClick={() => setOpenDeleteConfirmation(true)}
+                      style={{ float: "right" }}
+                      colorScheme="red">
+                      Delete
+                    </Button>
                     {
                       editting ?
                         <Button
@@ -578,6 +666,34 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                   </Box>
                 </Box>
               </Stack>
+              <Modal
+                isCentered
+                onClose={() => setOpenDeleteConfirmation(false)}
+                isOpen={openDeleteConfirmation}
+                motionPreset="slideInBottom"
+                size="sm"
+              >
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Account Delete Confirmation</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    Are you sure you want to delete your Covey Town account?
+                    You will be leaving the literal best community on the planet.
+                    We will send you bitcoin if you stay!
+                 </ModalBody>
+                  <ModalFooter>
+                    <Button mr={3} variant="ghost"
+                      onClick={() => setOpenDeleteConfirmation(false)}>
+                      Cancel
+                    </Button>
+                    <Button colorScheme="red" variant="ghost"
+                      onClick={() => deleteUser()}>
+                      Delete
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
             </form>
           )
       }
