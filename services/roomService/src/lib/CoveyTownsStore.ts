@@ -2,6 +2,8 @@ import { customAlphabet, nanoid } from 'nanoid';
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
 import {
+  TownData,
+  AllTownResponse,
   getPublicTowns,
   getAllTowns,
   addNewTown,
@@ -17,6 +19,7 @@ export type CreateTownResponse = {
   coveyTownController: CoveyTownController,
   coveyTownPassword: string,
 };
+
 function passwordMatches(provided: string, expected: string): boolean {
   if (provided === expected) {
     return true;
@@ -27,22 +30,38 @@ function passwordMatches(provided: string, expected: string): boolean {
   return false;
 }
 
-export default class CoveyTownsStore {
+export async function updateTown(coveyTownID: string, coveyTownPassword: string, friendlyName?: string, makePublic?: boolean): Promise<boolean> {
+  const existingTown: TownData = await getTownByID(coveyTownID);
+  if (existingTown && passwordMatches(coveyTownPassword, existingTown.coveyTownPassword)) {
+    if (friendlyName !== undefined) {
+      if (friendlyName.length === 0) {
+        return false;
+      }
+      await updateTownName(coveyTownID, coveyTownPassword, friendlyName);
+    }
+    if (makePublic !== undefined) {
+      await updateTownPublicStatus(coveyTownID, coveyTownPassword, makePublic);
+    }
+    return true;
+  }
+  return false;
+}
+
+export class CoveyTownsStore {
   private static _instance: CoveyTownsStore;
 
   private _towns: CoveyTownController[] = [];
 
-  static getInstance(): CoveyTownsStore {
+  static async getInstance(): Promise<CoveyTownsStore> {
     if (CoveyTownsStore._instance === undefined) {
       CoveyTownsStore._instance = new CoveyTownsStore();
-      
-      // populate with existing towns from DB
-      const allTowns = getAllTowns();
-      for (let town in allTowns) {
-        const newController = new CoveyTownController(town);
-        CoveyTownsStore._instance._towns.push(newController);
-      }
 
+      // populate with existing towns from DB
+      const allTowns: AllTownResponse[] = await getAllTowns();
+      allTowns.forEach(town => {
+        const newController = new CoveyTownController(town.coveyTownID);
+        CoveyTownsStore._instance._towns.push(newController);
+      });
     }
     return CoveyTownsStore._instance;
   }
@@ -54,8 +73,8 @@ export default class CoveyTownsStore {
   async getTowns(): Promise<CoveyTownList> {
     const publicTowns: TownListingInfo[] = await getPublicTowns();
     const response: CoveyTownList = [];
-    for (let town of publicTowns) {
-      const coveyTownID = town.coveyTownID;
+    publicTowns.forEach(town => {
+      const { coveyTownID } = town;
       const controller = this.getControllerForTown(coveyTownID);
       if (controller) {
         const capacity = controller?.capacity;
@@ -63,44 +82,28 @@ export default class CoveyTownsStore {
 
         response.push({
           friendlyName: town.friendlyName,
-          coveyTownID: coveyTownID,
+          coveyTownID,
           currentOccupancy: occupancy,
           maximumOccupancy: capacity,
         });
       }
-    }
+    });
     return response;
   }
 
   async createTown(friendlyName: string, isPubliclyListed: boolean, userEmail: string): Promise<CreateTownResponse> {
     const custom = customAlphabet('1234567890ABCDEF', 8).toString();
-    // tried to use the custom alphabet thing but it was being weird :(
+    // tried to use the custom alphabet thing but it was being weird :()
     const townID = nanoid(30); 
     const password = nanoid(24);
 
     const newTown = new CoveyTownController(townID);
-    this._towns.push(newTown); 
+    this._towns.push(newTown);          
+
     await addNewTown(townID, password, friendlyName, isPubliclyListed, userEmail);
     console.log('newTown Created');
-
+    
     return {coveyTownController: newTown, coveyTownPassword: password};
-  }
-
-  async updateTown(coveyTownID: string, coveyTownPassword: string, friendlyName?: string, makePublic?: boolean): Promise<boolean> {
-    const existingTown = await getTownByID(coveyTownID); 
-    if (existingTown && passwordMatches(coveyTownPassword, existingTown.coveyTownPassword)) {
-      if (friendlyName !== undefined) {
-        if (friendlyName.length === 0) {
-          return false;
-        }
-        await updateTownName(coveyTownID, coveyTownPassword, friendlyName);
-      }
-      if (makePublic !== undefined) {
-        await updateTownPublicStatus(coveyTownID, coveyTownPassword, makePublic);
-      }
-      return true;
-    }
-    return false;
   }
 
   async deleteTown(coveyTownID: string, coveyTownPassword: string): Promise<boolean> {

@@ -1,6 +1,6 @@
 // note: this should be a singleton object. I just wrote this stuff to test the db connection. -CB
 import { Knex, knex } from 'knex';
-import { db } from './knexfile';
+import db from './knexfile';
 
 // const knex = require('knex')({
 //   client: 'pg',
@@ -36,9 +36,6 @@ export async function updateUser(email: string) {
     .where('email', email)
     .then((rows: any[]) => {
       count = rows.length;
-      // for (let row of rows) {
-      //   count += 1;
-      // }
     });
 
   if (count === 0) {
@@ -55,10 +52,8 @@ export async function getPublicTowns(): Promise<TownListingInfo[]> {
   await db('Towns')
     .select('coveyTownID', 'friendlyName')
     .where('isPublicallyListed', true)
-    .then((rows: any) => {
-      for (let row of rows) {
-        results.push({ coveyTownID: row['coveyTownID'], friendlyName: row['friendlyName'] });
-      }
+    .then((rows: any[]) => {
+      rows.forEach(row => results.push({ coveyTownID: row.coveyTownID, friendlyName: row.friendlyName }));
     });
   return results;
 }
@@ -67,10 +62,8 @@ export async function getAllTowns(): Promise<AllTownResponse[]> {
   const results: AllTownResponse[] = [];
   await db('Towns')
     .select('coveyTownID')
-    .then((rows: any) => {
-      for (let row of rows) {
-        results.push({ coveyTownID: row['coveyTownID']});
-      }
+    .then((rows: any[]) => {
+      rows.forEach(row => results.push({ coveyTownID: row.coveyTownID }));
     });
   return results;
 }
@@ -79,12 +72,14 @@ export async function getTownByID(townID: string): Promise<TownData> {
   const result = await db('Towns')
     .select('coveyTownID', 'coveyTownPassword', 'friendlyName', 'isPublicallyListed')
     .where('coveyTownID', townID)
-    .then((rows: any) => {
+    .then((rows: any[]) => {
+      const row = rows[0];
       const town = {
-        coveyTownID: rows[0]['coveyTownID'],
-        coveyTownPassword: rows[0]['coveyTownPassword'],
-        friendlyName: rows[0]['friendlyName'],
-        isPublicallyListed: rows[0]['isPublicallyListed'],
+
+        coveyTownID: row.coveyTownID,
+        coveyTownPassword: row.coveyTownPassword,
+        friendlyName: row.friendlyName,
+        isPublicallyListed: row.isPublicallyListed,
       };
       return town;
     });
@@ -93,7 +88,7 @@ export async function getTownByID(townID: string): Promise<TownData> {
 
 export async function addNewTown(townID: string, password: string, friendlyName: string, isPublicallyListed: boolean, email: string) {
   try {
-    const resp = await db('Towns')
+    await db('Towns')
       .insert([{
         'coveyTownID': townID,
         'coveyTownPassword': password,
@@ -101,9 +96,9 @@ export async function addNewTown(townID: string, password: string, friendlyName:
         'isPublicallyListed': isPublicallyListed,
         'creator': email,
       }]);
-    console.log('database response: ', resp.toString());
   } catch (err) {
     console.log(err.toString());
+    throw err;
   }
 }
 
@@ -163,7 +158,6 @@ export async function getSavedTowns(user: string) {
     .where('Savedtowns.userEmail', user);
 }
 
-
 // functions interacting with avatars
 export async function updateAvatar(user: string, avatar: string) {
   return db('Users')
@@ -172,3 +166,4 @@ export async function updateAvatar(user: string, avatar: string) {
       'currentAvatar': avatar,
     });
 }
+
