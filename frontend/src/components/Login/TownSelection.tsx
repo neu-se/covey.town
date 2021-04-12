@@ -55,10 +55,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     };
   }, [updateTownListings]);
 
-  // this is some dumb bullshit
-  // im makin a new line of code
-
-
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
       if (!userName || userName.length === 0) {
