@@ -5,6 +5,7 @@ import {
   TownData,
   AllTownResponse,
   getPublicTowns,
+  getSavedTowns,
   getAllTowns,
   addNewTown,
   updateTownName,
@@ -74,6 +75,27 @@ export class CoveyTownsStore {
     const publicTowns: TownListingInfo[] = await getPublicTowns();
     const response: CoveyTownList = [];
     publicTowns.forEach(town => {
+      const { coveyTownID } = town;
+      const controller = this.getControllerForTown(coveyTownID);
+      if (controller) {
+        const capacity = controller?.capacity;
+        const occupancy = controller?.occupancy;
+
+        response.push({
+          friendlyName: town.friendlyName,
+          coveyTownID,
+          currentOccupancy: occupancy,
+          maximumOccupancy: capacity,
+        });
+      }
+    });
+    return response;
+  }
+
+  async getSavedTowns(email: string): Promise<CoveyTownList> {
+    const savedTowns: TownListingInfo[] = await getSavedTowns(email);
+    const response: CoveyTownList = [];
+    savedTowns.forEach(town => {
       const { coveyTownID } = town;
       const controller = this.getControllerForTown(coveyTownID);
       if (controller) {

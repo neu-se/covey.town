@@ -4,7 +4,16 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import { CoveyTownsStore, updateTown } from '../lib/CoveyTownsStore';
-import { updateUser, getTownByID, TownData } from '../database/databaseService';
+import {
+  deleteUser,
+  updateUser,
+  getTownByID,
+  TownData,
+  saveTown,
+  unsaveTown,
+  getCurrentAvatar,
+  updateAvatar,
+} from '../database/databaseService';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -73,6 +82,24 @@ export interface CreateUserRequest {
   email: string;
 }
 
+export interface DeleteUserRequest {
+  email: string;
+}
+
+export interface SavedTownsRequest {
+  email: string;
+}
+
+export interface SaveTownRequest {
+  email: string;
+  coveyTownID: string;
+}
+
+export interface UnsaveTownRequest {
+  email: string;
+  coveyTownID: string;
+}
+
 /**
  * Payload sent by the client to update a Town.
  * N.B., JavaScript is terrible, so:
@@ -83,6 +110,15 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface GetAvatarRequest {
+  email: string;
+}
+
+export interface UpdateAvatarRequest {
+  email: string;
+  avatar: string;
 }
 
 /**
@@ -129,8 +165,30 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
   };
 }
 
+export async function getAvatarHandler(requestData: GetAvatarRequest): Promise<ResponseEnvelope<string>>{
+  const currentAvatar = await getCurrentAvatar(requestData.email);
+  return {
+    isOK: true,
+    response: currentAvatar,
+  };
+}
+
+export async function updateAvatarHandler(requestData: UpdateAvatarRequest): Promise<ResponseEnvelope<void>> {
+  await updateAvatar(requestData.email, requestData.avatar);
+  return {
+    isOK: true,
+  };
+}
+
 export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
   await updateUser(requestData.email);
+  return {
+    isOK: true,
+  };
+}
+
+export async function userDeleteHandler(requestData: DeleteUserRequest): Promise<ResponseEnvelope<void>> {
+  await deleteUser(requestData.email);
   return {
     isOK: true,
   };
@@ -142,6 +200,29 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   return {
     isOK: true,
     response: { towns: townList },
+  };
+}
+
+export async function savedTownHandler(requestData: SavedTownsRequest): Promise<ResponseEnvelope<TownListResponse>> {
+  const townsStore = await CoveyTownsStore.getInstance();
+  const townList: CoveyTownList = await townsStore.getSavedTowns(requestData.email);
+  return {
+    isOK: true,
+    response: { towns: townList },
+  };
+}
+
+export async function saveTownHandler(requestData: SaveTownRequest): Promise<ResponseEnvelope<void>> {
+  await saveTown(requestData.email, requestData.coveyTownID);
+  return {
+    isOK: true,
+  };
+}
+
+export async function deleteSavedTownHandler(requestData: UnsaveTownRequest): Promise<ResponseEnvelope<void>> {
+  await unsaveTown(requestData.email, requestData.coveyTownID);
+  return {
+    isOK: true,
   };
 }
 
