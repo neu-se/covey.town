@@ -1,4 +1,4 @@
-import { customAlphabet, nanoid } from 'nanoid';
+import { nanoid } from 'nanoid';
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
 import {
@@ -92,8 +92,6 @@ export class CoveyTownsStore {
   }
 
   async createTown(friendlyName: string, isPubliclyListed: boolean, userEmail: string): Promise<CreateTownResponse> {
-    const custom = customAlphabet('1234567890ABCDEF', 8).toString();
-    // tried to use the custom alphabet thing but it was being weird :()
     const townID = nanoid(30); 
     const password = nanoid(24);
 
@@ -101,7 +99,6 @@ export class CoveyTownsStore {
     this._towns.push(newTown);          
 
     await addNewTown(townID, password, friendlyName, isPubliclyListed, userEmail);
-    console.log('newTown Created');
     
     return {coveyTownController: newTown, coveyTownPassword: password};
   }

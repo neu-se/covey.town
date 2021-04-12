@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { UserLocation } from '../CoveyTypes';
-import { updateUser } from '../database/databaseService';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };

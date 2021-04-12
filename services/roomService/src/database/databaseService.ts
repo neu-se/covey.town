@@ -1,5 +1,4 @@
 // note: this should be a singleton object. I just wrote this stuff to test the db connection. -CB
-import { Knex, knex } from 'knex';
 import db from './knexfile';
 
 // const knex = require('knex')({
@@ -30,9 +29,9 @@ export type TownListingInfo = {
 };
 
 // functions interacting with Users
-export async function updateUser(email: string) {
+export async function updateUser(email: string): Promise<void>  {
   let count = 0;
-  const existing = await db('Users')
+  await db('Users')
     .where('email', email)
     .then((rows: any[]) => {
       count = rows.length;
@@ -86,24 +85,21 @@ export async function getTownByID(townID: string): Promise<TownData> {
   return result;
 }
 
-export async function addNewTown(townID: string, password: string, friendlyName: string, isPublicallyListed: boolean, email: string) {
-  try {
-    await db('Towns')
-      .insert([{
-        'coveyTownID': townID,
-        'coveyTownPassword': password,
-        'friendlyName': friendlyName,
-        'isPublicallyListed': isPublicallyListed,
-        'creator': email,
-      }]);
-  } catch (err) {
-    console.log(err.toString());
-    throw err;
-  }
+export async function addNewTown(townID: string, password: string, friendlyName: string, isPublicallyListed: boolean, email: string): Promise<void> {
+
+  await db('Towns')
+    .insert([{
+      'coveyTownID': townID,
+      'coveyTownPassword': password,
+      'friendlyName': friendlyName,
+      'isPublicallyListed': isPublicallyListed,
+      'creator': email,
+    }]);
+
 }
 
-export async function updateTownName(townID: string, password: string, friendlyName: string) {
-  return db('Towns')
+export async function updateTownName(townID: string, password: string, friendlyName: string): Promise<void> {
+  await db('Towns')
     .where('coveyTownID', townID)
     .andWhere('coveyTownPassword', password)
     .update({
@@ -111,8 +107,8 @@ export async function updateTownName(townID: string, password: string, friendlyN
     });
 }
 
-export async function updateTownPublicStatus(townID: string, password: string, isPublicallyListed: boolean) {
-  return db('Towns')
+export async function updateTownPublicStatus(townID: string, password: string, isPublicallyListed: boolean): Promise<void> {
+  await db('Towns')
     .where('coveyTownID', townID)
     .andWhere('coveyTownPassword', password)
     .update({
@@ -120,47 +116,53 @@ export async function updateTownPublicStatus(townID: string, password: string, i
     });
 }
 
-export async function deleteTown(townID: string, password: string) {
-  return db('Towns')
+export async function deleteTown(townID: string, password: string): Promise<void> {
+  await db('Towns')
     .where('coveyTownID', townID)
     .andWhere('coveyTownPassword', password)
     .del();
 }
 
 // functions interacting with saved towns
-export async function saveTown(user: string, townID: string) {
+export async function saveTown(user: string, townID: string): Promise<void> {
   // check if town aready saved
   const savedTown = db('SavedTowns')
     .where('coveyTownID', townID)
     .where('userEmail', user);
 
   if (savedTown !== undefined) {
-    return db('SavedTowns')
+    await db('SavedTowns')
       .insert({
         'coveyTownID': townID,
         'userEmail': user,
       });
   }
-  return 'town already exists';
 }
 
-export async function unsaveTown(user: string, townID: string) {
-  return db('SavedTowns')
+export async function unsaveTown(user: string, townID: string): Promise<void> {
+  await db('SavedTowns')
     .where('userEmail', user)
     .andWhere('coveyTownID', townID)
     .del();
 }
 
-export async function getSavedTowns(user: string) {
+export async function getSavedTowns(user: string): Promise<TownListingInfo[]> {
   return db('SavedTowns')
     .innerJoin('Towns', 'SavedTowns.coveyTownID', 'Towns.coveyTownID')
-    .select('Towns.coveyTownID', 'Towns.friendlyName')
-    .where('Savedtowns.userEmail', user);
+    .select('Towns.coveyTownID as townID', 'Towns.friendlyName as friendlyName')
+    .where('Savedtowns.userEmail', user)
+    .then((returnedTowns: any[]) => {
+      const townList: TownListingInfo[] = [];
+      returnedTowns.forEach(town => {
+        townList.push({ coveyTownID: town.townID, friendlyName: town.friendlyName });
+      });
+      return townList;
+    });
 }
 
 // functions interacting with avatars
-export async function updateAvatar(user: string, avatar: string) {
-  return db('Users')
+export async function updateAvatar(user: string, avatar: string): Promise<void> {
+  await db('Users')
     .where('email', user)
     .update({
       'currentAvatar': avatar,

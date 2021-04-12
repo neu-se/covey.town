@@ -130,7 +130,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
 }
 
 export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
-  const resp = await updateUser(requestData.email);
+  await updateUser(requestData.email);
   return {
     isOK: true,
   };
@@ -174,7 +174,6 @@ export async function townDeleteHandler(requestData: TownDeleteRequest): Promise
 }
 
 export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
-  const townsStore = await CoveyTownsStore.getInstance();
   const success = await updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
   return {
     isOK: success,

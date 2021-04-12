@@ -1,4 +1,4 @@
-import { Knex, knex } from 'knex';
+import { knex } from 'knex';
 
 const config = {
   client: 'pg',

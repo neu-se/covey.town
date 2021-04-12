@@ -4,16 +4,14 @@ import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
-  createUserHandler,
-  townCreateHandler, 
-  townDeleteHandler,
+  townCreateHandler, townDeleteHandler,
   townJoinHandler,
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  createUserHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
-import { updateUser } from '../database/databaseService';
 
 export default function addTownRoutes(http: Server, app: Express): io.Server {
   /*
@@ -50,8 +48,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
           message: 'Internal server error, please see log in server for details',
         });
     }
-
+  
   });
+
   /**
    * Delete a town
    */
