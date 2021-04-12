@@ -90,7 +90,7 @@ export default class CoveyTownsStore {
         console.log(newTownIsMergeable);
         //TODO: add newTownIsMergeable to update??
         this.updateTown(existingDestinationTown.coveyTownID, existingDestinationTown.townUpdatePassword, 
-          newTownFriendlyName, newTownIsPubliclyListed)
+          newTownFriendlyName, newTownIsPubliclyListed);
         // console.log(newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
         // existingDestinationTown.townsMerged(newTown.coveyTownID)
 
@@ -98,8 +98,9 @@ export default class CoveyTownsStore {
           // existingRequestingTown.players.forEach((player) => newTown.addPlayer(player));
           // existingDestinationTown.players.forEach((player) => newTown.addPlayer(player));
 
-          // need to delete town???
-          existingRequestingTown.disconnectAllPlayers()
+          // I think we can just call this.deleteTown because disconnectAllPlayers gets called in that
+          existingRequestingTown.disconnectAllPlayers();
+          this.deleteTown(existingRequestingTown.coveyTownID, existingRequestingTown.townUpdatePassword);
           // existingDestinationTown.disconnectAllPlayers();
 
           

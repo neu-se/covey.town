@@ -37,7 +37,7 @@ const TownMerging: React.FunctionComponent = () => {
   const [currentMergeableTowns, setCurrentMergeableTowns] = useState<CoveyTownInfo[]>();
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
-  const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsMergeable} = useCoveyAppState();
+  const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsMergeable, players} = useCoveyAppState();
   const [mergedTownName, setMergedTownName] = useState<string>('');
   const [townChosen, setTownChosen] = useState<string>('');
   const [roomMergePassword, setRoomMergePassword] = useState<string>('');
@@ -67,9 +67,10 @@ const TownMerging: React.FunctionComponent = () => {
   
 
   const updateMergeableTowns = useCallback(() => {
+    console.log(players.length);
     apiClient.listMergeableTowns()
       .then((towns) => {
-        setCurrentMergeableTowns(towns.towns.filter((town) => town.coveyTownID !== currentTownID)
+        setCurrentMergeableTowns(towns.towns.filter((town) => town.coveyTownID !== currentTownID && town.currentOccupancy + players.length <= town.maximumOccupancy)
           .sort((a, b) => b.currentOccupancy - a.currentOccupancy)
         );
       })
