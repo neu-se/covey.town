@@ -11,7 +11,6 @@ export default class Censorer implements ICensorer {
   +'c[o0][o0]n|p[e3][nm][il1!]s|v[a4]g|pr[o0][s5]t[il1!]t|[s5][l1]u[t]|[a4]r[s5][e3]|w[a4]nk|'
   +'b[o0][o0]b|b[e3][l1][l1]', 'g', 'i');
 
-  /* 
     */
   static getInstance(): Censorer {
     if (Censorer._instance === undefined) {
@@ -40,7 +39,7 @@ export default class Censorer implements ICensorer {
         ret += curr;
       }
       ret += ' ';
-      
+
     });
     return ret.substring(0, ret.length - 1);
     

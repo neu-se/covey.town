@@ -180,6 +180,7 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
       const message = new GlobalChatMessage('hello', player1);
+
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
