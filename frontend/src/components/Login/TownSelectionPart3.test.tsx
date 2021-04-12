@@ -101,7 +101,7 @@ function wrappedTownSelection() {
     },
     apiClient: new TownsServiceClient(),
   }}>
-    <TownSelection doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
+    <TownSelection username='test username' doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }
 
 describe('Town Selection - depends on Part 1 passing', () => {

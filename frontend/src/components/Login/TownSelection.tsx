@@ -19,18 +19,11 @@ import {
   Tr,
   useToast
 } from '@chakra-ui/react';
-import { Grid, Hidden, makeStyles, Theme, } from '@material-ui/core';
 import { useAuth0 } from '@auth0/auth0-react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  saveUserButton: {
-    float: 'right',
-  },
-}));
 
 interface TownSelectionProps {
   username: string;
@@ -47,8 +40,6 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
-
-  const classes = useStyles();
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
