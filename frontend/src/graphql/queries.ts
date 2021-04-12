@@ -42,6 +42,14 @@ export interface UpdateUserRequest {
   password: string
 }
 
+<<<<<<< HEAD
+=======
+export interface DeleteUserRequest {
+  email: string
+}
+
+
+>>>>>>> c70fd1e36ab5a2ff1b5457b33efd987450add3ec
 /**
  * Envelope that wraps any response from the server
  */
@@ -221,12 +229,18 @@ const updateUserMutation = gql`
   }
 `;
 
+<<<<<<< HEAD
 const deleteTownMutation = gql`
   mutation deleteTown($input: townDeleteRequestInput!) {
     townDeleteRequest(input: $input) {
       isOK
       message
     }
+=======
+const deleteUserMutation = gql`
+  mutation deleteUser($input: deleteUserInput) {
+    deleteUser(input: $input)
+>>>>>>> c70fd1e36ab5a2ff1b5457b33efd987450add3ec
   }
 `;
 
@@ -249,11 +263,7 @@ export const findAllUserProfiles = async (): Promise<any> => {
 
 export const listTown = async (): Promise<any> => {
   const { data } = await client.query({ query: townList });
-  if (data.townList.isOK) {
-    console.log(data);
-    return data.townList.response;
-  }
-  return null;
+  return data.townList.response;
 };
 
 export const findAllUsersByUserName = async (username: string): Promise<any> => {
@@ -293,7 +303,7 @@ export const createTown = async (payload: TownCreateRequest): Promise<any> => {
   if (data.townCreateRequest.isOK) {
     return data.townCreateRequest.response;
   }
-  return null;
+ throw new Error(`Error processing request: ${data.townCreateRequest.message}`);
 };
 
 export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
@@ -305,7 +315,7 @@ export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
   if (data.townJoinRequest.isOK) {
     return data.townJoinRequest.response;
   }
-  return null;
+   throw new Error(`Error processing request: ${ data.townJoinRequest.message}`);
 };
 
 export const addFriend = async (payload: AddFriendRequest): Promise<any> => {
@@ -341,9 +351,22 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
   return data.updateUser;
 }
 
+<<<<<<< HEAD
 export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
   await client.mutate({
     mutation: deleteTownMutation,
     variables: { input: payload },
   });
 };
+=======
+export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
+  console.log(payload)
+  const { data } = await client.mutate({
+    mutation: deleteUserMutation,
+    variables: {input: payload},
+  });
+  console.log(data);
+  return data.deleteUser;
+}
+
+>>>>>>> c70fd1e36ab5a2ff1b5457b33efd987450add3ec

@@ -1,4 +1,4 @@
-import React , {useState, useEffect} from "react";
+import React , {useState, useEffect, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import "../Styles/Profile.css";
 import { withRouter, Link, useHistory } from "react-router-dom";
@@ -22,9 +22,15 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure, useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
-import {findAllUserProfiles, searchUserByEmail, updateUser, UpdateUserRequest, User} from '../../graphql/queries';
+import {findAllUserProfiles, searchUserByEmail, updateUser, UpdateUserRequest, User, deleteUser, DeleteUserRequest} from '../../graphql/queries';
 import changePassword from "../services/auth0Services";
 
 
@@ -40,7 +46,7 @@ function ProfileComponent(): JSX.Element {
   }
 
   const history = useHistory();
-  const { user, isLoading } = useAuth0();
+  const { user, isLoading, logout } = useAuth0();
   const [userName, setUserName] = useState<string>("");
   const [id, setId] = useState<string>("");
   const [bio, setBio] = useState<string>("");
@@ -56,7 +62,10 @@ function ProfileComponent(): JSX.Element {
   const [location1, setLocation1] = useState<string>("");
   const [occupation1, setOccupation1] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const onAlertClose = () => setIsAlertOpen(false);
+  const cancelRef = useRef(null);
 
   useEffect(() => {
     const findUser = async () => {
@@ -111,6 +120,19 @@ function ProfileComponent(): JSX.Element {
       findUser();
 
   }
+  const handleDelete = async (email: string) => {
+    
+    setIsAlertOpen(false);
+    const payload: DeleteUserRequest = { email };
+    const success = await deleteUser(payload);
+    logout({ returnTo: window.location.origin });
+  }
+
+  const handleAlertDialog = () => {
+    setIsAlertOpen(true);
+    
+  }
+
 
   if (isLoading) {
     return <div> Loading... </div>
@@ -181,6 +203,18 @@ function ProfileComponent(): JSX.Element {
                 >
                   Change Password
                 </Button>
+                <Button
+                  variantColor='teal'
+                  variant='outline'
+                  type='submit'
+                  width='full'
+                  mt={4}
+                  color='white'
+                  onClick={
+                    handleAlertDialog}
+                >
+                  Delete account
+                </Button>
                 <Modal
                   isOpen={isOpen}
                   onClose={onClose}
@@ -238,10 +272,33 @@ function ProfileComponent(): JSX.Element {
                       }}>
                         Update
                       </Button>
-                      <Button onClick={onClose}>Delete</Button>
                     </ModalFooter>
                   </ModalContent>
                 </Modal>
+                <AlertDialog
+                  isOpen={isAlertOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onAlertClose}
+                >
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        Delete Account
+                      </AlertDialogHeader>
+                      <AlertDialogBody>
+                        Are you sure you want to delete your account? You cant undo this action afterwards.
+                      </AlertDialogBody>
+                      <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onAlertClose}>
+                          Cancel
+                        </Button>
+                        <Button colorScheme="red" onClick={() => { handleDelete(user.email) }} ml={3}>
+                          Delete
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
               </Box>
             </Flex>
           </Box>
