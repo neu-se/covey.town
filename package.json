@@ -55,6 +55,7 @@
         "ramda": "^0.27.1",
         "socket.io": "^4.0.0",
         "socket.io-client": "^4.0.0",
+        "twilio-video": "^2.13.1",
         "typescript-is": "^0.17.0"
     }
 }

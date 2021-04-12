@@ -22,7 +22,7 @@ declare module 'twilio-video' {
 
   interface RemoteVideoTrack {
     isSwitchedOff: boolean;
-    setPriority: (priority: Track.Priority | null) => void;
+    setPriority: (priority: Track.Priority) => RemoteVideoTrack;
   }
 
   interface VideoBandwidthProfileOptions {
@@ -32,10 +32,7 @@ declare module 'twilio-video' {
 
 declare global {
   interface Window {
-    // @ts-ignore
-    visualViewport?: {
-      scale: number;
-    };
+    readonly visualViewport: VisualViewport
   }
 
   interface MediaDevices {

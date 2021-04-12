@@ -9,10 +9,8 @@ import {
   GameListResponse,
   TTLChoices,
   HangmanWord,
-  HangmanPlayer2Move,
-  TicMove, TTLPlayer2Move,
+  HangmanPlayer2Move, TTLPlayer2Move,
 } from '../client/Types';
-import TicTacToeGame from './TicTacToeGame';
 import HangmanGame from './HangmanGame';
 import TTLGame from './TTLGame';
 
@@ -21,13 +19,13 @@ export default class GameController {
 
   private static _instance: GameController;
 
-  private _gamesList: (TTLGame | HangmanGame | TicTacToeGame)[] = [];
+  private _gamesList: (TTLGame | HangmanGame )[] = [];
 
-  get gamesList(): (TTLGame | HangmanGame | TicTacToeGame)[] {
+  get gamesList(): (TTLGame | HangmanGame)[] {
     return this._gamesList;
   }
 
-  set gamesList(value: (TTLGame | HangmanGame | TicTacToeGame)[]) {
+  set gamesList(value: (TTLGame | HangmanGame )[]) {
     this._gamesList = value;
   }
 
@@ -44,15 +42,13 @@ export default class GameController {
    */
   async createGame(requestData: GameCreateRequest): Promise<ResponseEnvelope<GameCreateResponse>> {
     let newGame;
-    const { player1 } = requestData;
+    const { player1Id } = requestData;
+    const { player1Username } = requestData;
     const initialState = requestData.initialGameState;
     if (requestData.gameType === 'Hangman') {
-      newGame = new HangmanGame(player1, <HangmanWord>(initialState));
+      newGame = new HangmanGame(player1Id, player1Username, <HangmanWord>(initialState));
     } else if (requestData.gameType === 'TTL') {
-      newGame = new TTLGame(player1, <TTLChoices>(initialState));
-    } else if (requestData.gameType === 'TicTacToe') {
-      // TODO: add params for TicTacToe constructor
-      newGame = new TicTacToeGame();
+      newGame = new TTLGame(player1Id, player1Username, <TTLChoices>(initialState));
     }
     if (newGame === undefined) {
       return {
@@ -74,7 +70,8 @@ export default class GameController {
    *
    */
   async joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
-    const { player2 } = requestData;
+    const { player2Id } = requestData;
+    const { player2Username } = requestData;
     const targetGame = this.gamesList.find(game => game.id === requestData.gameID);
     if (targetGame === undefined) {
       return {
@@ -82,7 +79,7 @@ export default class GameController {
         message: 'Error: Target game not found',
       };
     }
-    targetGame.playerJoin(player2);
+    targetGame.playerJoin(player2Id, player2Username);
     return {
       isOK: true,
       response: {
@@ -107,9 +104,10 @@ export default class GameController {
     }
     // TODO: move() method should return a boolean value
     let success = true;
-    if (targetGame instanceof TicTacToeGame) {
-      targetGame.move(<TicMove>move);
-    } else if (targetGame instanceof TTLGame) {
+    // if (targetGame instanceof TicTacToeGame) {
+    //   targetGame.move(<TicMove>move);
+    // } else
+    if (targetGame instanceof TTLGame) {
       targetGame.move(<TTLPlayer2Move>move);
     } else if (targetGame instanceof HangmanGame) {
       targetGame.move(<HangmanPlayer2Move>move);
@@ -127,8 +125,7 @@ export default class GameController {
    * Returns list of all games on the server
    *
    */
-
-  async findAllGames(): Promise<ResponseEnvelope<GameListResponse>> {
+  async findAllGames(): Promise<ResponseEnvelope<GameListResponse>>  {
     const games = this.gamesList.map(game => ({
       gameID: game.id,
       gameState: game.gameState,
@@ -146,21 +143,7 @@ export default class GameController {
    * Returns an instance of a game found by its ID
    *
    */
-  findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
-    try {
-      return this.gamesList.find(game => game.id === gameId);
-    } catch (e) {
-      throw new Error(e);
-    }
-
-  }
-
-  /**
-   * Returns an instance of a game found by its ID
-   *
-
-   */
-  public findGameById(gameId: string): (HangmanGame | TTLGame | TicTacToeGame | undefined) {
+  public findGameById(gameId: string): (HangmanGame | TTLGame | undefined) {
     try {
       return this.gamesList.find(game => game.id === gameId);
     } catch (e) {
@@ -173,7 +156,7 @@ export default class GameController {
    *
    * @param requestData
    */
-  async deleteGame(requestData: GameDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  async deleteGame(requestData: GameDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>>  {
     let success;
     const updatedList = this.gamesList.filter(game => game.id !== requestData.gameID);
     if (this.gamesList.length !== updatedList.length) {
@@ -189,3 +172,4 @@ export default class GameController {
     };
   }
 }
+

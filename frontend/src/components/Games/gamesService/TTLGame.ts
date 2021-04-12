@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { TTLPlayer2Move, TTLChoices } from '../client/Types';
+import { TTLPlayer2Move, TTLChoices } from '../gamesClient/Types';
 import IGame from './IGame';
 
 export default class TTLGame implements IGame {
@@ -10,7 +10,11 @@ export default class TTLGame implements IGame {
 
   player1ID: string;
 
+  player1Username: string;
+
   player2ID: string;
+
+  player2Username: string;
 
   option1: string;
 
@@ -31,15 +35,17 @@ export default class TTLGame implements IGame {
     this._id = value;
   }
 
-  constructor(player1ID:string, initialGameData: TTLChoices ) {
+  constructor(player1ID:string, player1Username:string, initialGameData: TTLChoices ) {
     this.id = nanoid();
     this.player1ID = player1ID;
+    this.player1Username = player1Username;
     this.option1 = initialGameData.choice1;
     this.option2 = initialGameData.choice2;
     this.option3 = initialGameData.choice3;
     this.correctOption = initialGameData.correctLie;
     this.gameState = this.initializeGame();
     this.player2ID = '';
+    this.player2Username = '';
     this.alreadyGuessed = [];
 
   }
@@ -69,9 +75,10 @@ export default class TTLGame implements IGame {
     return `${winningPlayerID} won!\n${this.gameState}`;
   }
 
-  playerJoin(player2ID: string): void {
+  playerJoin(player2ID: string, player2Username: string): void {
     if (this.player2ID === '') {
       this.player2ID = player2ID;
+      this.player2Username = player2Username;
     } else {
       throw new Error('Game is already full');
     }
