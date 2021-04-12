@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import CoveyTownsStore from './CoveyTownsStore';
+import { CoveyTownsStore } from './CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 
@@ -23,11 +23,11 @@ function mockCoveyListener(): CoveyTownListener {
   };
 }
 
-function createTownForTesting(friendlyNameToUse?: string, isPublic = false) {
+async function createTownForTesting(friendlyNameToUse?: string, isPublic = false) {
   const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
     `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
-  return CoveyTownsStore.getInstance()
-    .createTown(friendlyName, isPublic, 'Guest');
+  const coveyTownsStore = await CoveyTownsStore.getInstance();
+  return await coveyTownsStore.createTown(friendlyName, isPublic, 'Guest');
 }
 
 describe('CoveyTownsStore', () => {
