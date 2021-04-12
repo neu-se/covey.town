@@ -16,13 +16,15 @@ export default function JoinGameIcon({gameType, gameId}: JoinGameIconProps) : JS
       {
         game !== undefined && game.player2ID === "" &&
           // TODO: how to get player ID/username?
-          <JoinGameModalDialog dialogType="joining"
+          <JoinGameModalDialog currentPlayer={{username: "", id: ""}}
+                               dialogType="joining"
                                gameId={gameId}
                                gameType={gameType}
                                />
       }{
       game !== undefined && game.player2ID !== "" &&
-      <JoinGameModalDialog dialogType="unavailable"
+      <JoinGameModalDialog currentPlayer={{username: "", id: ""}}
+                           dialogType="unavailable"
                            gameId={gameId}
                            gameType={gameType}
                            />
