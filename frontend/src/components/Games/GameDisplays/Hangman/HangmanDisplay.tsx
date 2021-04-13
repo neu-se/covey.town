@@ -15,7 +15,7 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
       letters = game.alreadyGuessed.sort();
     }
     setAlreadyGuessedLetters(letters)
-  }, [])
+  }, [game.alreadyGuessed])
 
   useEffect(() => {
     updateAlreadyGuessedLetters();

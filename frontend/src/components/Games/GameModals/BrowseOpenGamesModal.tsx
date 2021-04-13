@@ -29,7 +29,6 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
 
   useEffect(() => {
     const fetchAllGames = async () => {
-      console.info("Fetching games")
       const { games } = await gamesClient.listGames()
       setGamesList(games)
     }
@@ -43,9 +42,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
         clearInterval(timer);
       }
     }
-  },[])
-
-  console.log('Games:',gamesList)
+  },[gamesClient])
 
   return (
     <>

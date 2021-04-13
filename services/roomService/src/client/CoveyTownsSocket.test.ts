@@ -1,6 +1,6 @@
-import Express from 'express';
-import CORS from 'cors';
-import http from 'http';
+import * as Express from 'express';
+import * as CORS from 'cors';
+import * as http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import * as TestUtils from './TestUtils';

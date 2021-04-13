@@ -235,7 +235,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           preferredMode="fullwidth" />
       </div>
     );
-  }, [setupGameController, appState.sessionToken, videoInstance]);
+  }, [setupGameController, appState.sessionToken, videoInstance, currentPlayerId, currentPlayerName]);
   return (
 
     <CoveyAppContext.Provider value={appState}>

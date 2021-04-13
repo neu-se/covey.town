@@ -1,4 +1,4 @@
-import { customAlphabet, nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { HangmanPlayer2Move, HangmanWord, Limb } from './GameTypes';
 import IGame from './IGame';
 
