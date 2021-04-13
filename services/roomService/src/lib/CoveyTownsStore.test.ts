@@ -1,9 +1,5 @@
 import { nanoid } from 'nanoid';
-<<<<<<< HEAD
-import { CoveyTownsStore } from './CoveyTownsStore';
-=======
 import { CoveyTownsStore, CreateTownResponse, updateTown } from './CoveyTownsStore';
->>>>>>> a9da212cae8b3892123de2b887d84039198c3625
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import db from '../database/knexfile';
@@ -28,19 +24,11 @@ function mockCoveyListener(): CoveyTownListener {
   };
 }
 
-<<<<<<< HEAD
-async function createTownForTesting(friendlyNameToUse?: string, isPublic = false) {
-  const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
-    `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
-  const coveyTownsStore = await CoveyTownsStore.getInstance();
-  return await coveyTownsStore.createTown(friendlyName, isPublic, 'Guest');
-=======
 async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<CreateTownResponse> {
   const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
     `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
   return CoveyTownsStore.getInstance().then((instance: CoveyTownsStore) =>
     instance.createTown(friendlyName, isPublic, 'Guest'));
->>>>>>> a9da212cae8b3892123de2b887d84039198c3625
 }
 
 describe('CoveyTownsStore', () => {
