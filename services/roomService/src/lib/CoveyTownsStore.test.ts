@@ -43,8 +43,8 @@ describe('CoveyTownsStore', () => {
       .toBe(store2);
   });
 
-  afterAll(() => {
-    db.destroy();
+  afterAll(async () => {
+    await db.destroy();
   });
 
   describe('createTown', () => {

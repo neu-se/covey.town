@@ -10,6 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
 import { CoveyTownsStore } from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import db from '../database/knexfile';
 
 jest.mock('./TwilioVideo');
 
@@ -33,6 +34,9 @@ describe('CoveyTownController', () => {
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
   });
+  afterAll(async () => {
+    await db.destroy();
+  })
   it('constructor should set the coveyTownID property', () => { // Included in handout
     const townID = nanoid(30);
     const townController = new CoveyTownController(townID);

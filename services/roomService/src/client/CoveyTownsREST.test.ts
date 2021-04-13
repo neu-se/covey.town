@@ -4,6 +4,7 @@ import http from 'http';
 import { nanoid } from 'nanoid';
 import assert from 'assert';
 import { AddressInfo } from 'net';
+import db from '../database/knexfile';
 
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
@@ -60,6 +61,7 @@ describe('TownsServiceAPIREST', () => {
   });
   afterAll(async () => {
     await server.close();
+    await db.destroy();
   });
   describe('CoveyTownCreateAPI', () => {
     it('Allows for multiple towns with the same friendlyName', async () => {
