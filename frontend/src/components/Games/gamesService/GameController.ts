@@ -1,7 +1,6 @@
 import HangmanGame from './HangmanGame';
 import TTLGame from './TTLGame';
-import {CoveyTownList} from "../../../../../services/roomService/src/CoveyTypes";
-import {GameList} from "../gamesClient/Types";
+import { GameList } from '../gamesClient/Types';
 
 
 export default class GameController {
@@ -25,7 +24,21 @@ export default class GameController {
       gameType: (game.alreadyGuessed ? 'Hangman' : 'Two Truths and a Lie'),
       player1Username: game.player1Username,
       player2ID: game.player2ID,
-      }));
+    }));
+  }
+
+  getGameByID(gameId: string): HangmanGame | TTLGame | undefined {
+    return this.gamesList.find(game => game.id === gameId);
+  }
+
+  deleteGame(gameId: string): boolean {
+    const gameToDelete = this.getGameByID(gameId);
+    const newGamesList = this.gamesList.filter(game => game !== gameToDelete);
+    if (newGamesList.length < this.gamesList.length) {
+      this.gamesList = newGamesList;
+      return true;
+    }
+    return false;
   }
 
   static getInstance(): GameController {

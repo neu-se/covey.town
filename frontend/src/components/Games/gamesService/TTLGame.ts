@@ -1,10 +1,12 @@
-import { nanoid } from 'nanoid';
+import { customAlphabet, nanoid } from 'nanoid';
 import { TTLPlayer2Move, TTLChoices } from '../gamesClient/Types';
 import IGame from './IGame';
 
 export default class TTLGame implements IGame {
 
-  private _id!: string;
+  friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
+
+  private _id: string = this.friendlyNanoID();
 
   gameState: string;
 
@@ -24,6 +26,7 @@ export default class TTLGame implements IGame {
 
   correctOption: number;
 
+
   alreadyGuessed : number[];
 
 
@@ -36,7 +39,6 @@ export default class TTLGame implements IGame {
   }
 
   constructor(player1ID:string, player1Username:string, initialGameData: TTLChoices ) {
-    this.id = nanoid();
     this.player1ID = player1ID;
     this.player1Username = player1Username;
     this.option1 = initialGameData.choice1;
