@@ -11,12 +11,16 @@ Click Login on the top right which will direct you to Auth0.
 
 ![Auth0-Page](docs/auth0-page.png)
 
-1. New Account
-   Enter email and new password.
+1. New Account (Enter email and new password.)
+
    ![Signup-New-Account](docs/signup-new-account.png) ![Allow-For-Authorization](docs/allow-for-authorization.png)
+
 2. Existing Account (Click continue after entering email and password.)
+
    ![Existing-Account](docs/signup-new-account.png)
+
 3. Google sign-in (You may see either)
+
    ![Google-Credentials](docs/google-credentials.png) Or: ![Email-List](docs/email-list.jpg)
 
 ### After login, you should see the main page:
@@ -27,9 +31,11 @@ Click Login on the top right which will direct you to Auth0.
 
 Initial Profile is created when signing up or joining through Google with username and email immutable.
 You can create and update a profile seen below by clicking edit and then save.
+
 ![Updating-Profile](docs/updating-profile.png) ![Profile-Updated](docs/profile-updated.png)
 
 Click delete if you want to delete your user/user profile.
+
 ![Confirm-Delete](docs/confirm-delete.png) ![Deleted-Redirect-Message](docs/deleted-redirect-message.png)
 
 ### You may now join a town or create a new town OR create/join a town without modifying your user profile.
