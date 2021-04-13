@@ -49,7 +49,7 @@ export interface GameListResponse {
   games: GameList;
 }
 
-export type GameList = { gameID: string; gameState: string }[];
+export type GameList = { gameID: string; gameState: string; gameType: string; player1Username: string, player2ID: string }[];
 
 
 

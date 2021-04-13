@@ -30,9 +30,9 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   const [playing, setPlaying] = useState(false);
   return (
     <>
-      <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
+      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => onOpen()}>
         <Typography variant="body1">Join Game</Typography>
-      </MenuItem>
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

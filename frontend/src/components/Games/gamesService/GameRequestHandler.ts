@@ -94,6 +94,9 @@ export async function findAllGames(): Promise<ResponseEnvelope<GameListResponse>
   const games = controller.gamesList.map(game => ({
       gameID: game.id,
       gameState: game.gameState,
+      gameType: (game.alreadyGuessed ? "Hangman" : "Two Truths and a Lie"),
+      player1Username: game.player1Username,
+    player2ID: game.player2ID,
     }),
   );
   return {

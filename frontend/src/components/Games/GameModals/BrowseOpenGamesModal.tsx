@@ -16,9 +16,10 @@ import Typography from "@material-ui/core/Typography";
 import { ListItem } from '@material-ui/core';
 import {GameList} from "../gamesClient/Types";
 import {findAllGames} from "../gamesService/GameRequestHandler";
+import JoinGameModalDialog from "./JoinGameModalDialog";
 
 
-export default function BrowseOpenGamesModal(): JSX.Element {
+export default function BrowseOpenGamesModal(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gamesList, setGamesList] = useState<GameList>();
 
@@ -60,7 +61,15 @@ export default function BrowseOpenGamesModal(): JSX.Element {
           }/>
           <ModalBody>
             <UnorderedList>
-              {gamesList?.map(game => <ListItem key={game.gameID}>Hello</ListItem>)}
+              {gamesList?.map(game =>
+                <ListItem key={game.gameID}>Play {game.gameType} with {game.player1Username}
+                  <div className="float-right">
+                    <JoinGameModalDialog currentPlayer={props.currentPlayer}
+                                         dialogType={game.player2ID !== '' ? 'joining' : 'unavailable'}
+                                         gameId={game.gameID} gameType={game.gameType} />
+                  </div>
+                </ListItem>
+              )}
             </UnorderedList>
           </ModalBody>
           <ModalFooter>
