@@ -362,6 +362,6 @@ export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
     variables: { input: payload },
   });
   if (!data.townDeleteRequest.isOK) {
-    throw new Error(`Error processing request: ${ data.townJoinRequest.message}`);
+    throw new Error(`Error processing request: ${ data.townDeleteRequest.message}`);
   }
 };
