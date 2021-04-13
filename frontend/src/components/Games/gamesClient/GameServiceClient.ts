@@ -13,9 +13,9 @@ export default class GameServiceClient {
   private _axios: AxiosInstance;
 
   constructor(serviceURL?: string) {
-    this._axios = axios.create({
-      baseURL: serviceURL,
-    });
+    const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
+    assert(baseURL);
+    this._axios = axios.create({ baseURL });
   }
 
   static unwrapOrThrowError<T>(response: AxiosResponse<ResponseEnvelope<T>>, ignoreResponse = false): T {

@@ -17,7 +17,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
 import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
-import {GameCreateRequest} from "../gamesClient/GameTypes";
+import {GameCreateRequest} from "../gamesClient/GameRequestTypes";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import TTLGame from "../gamesClient/TTLGame";
 import HangmanGame from "../gamesClient/HangmanGame";
@@ -172,15 +172,10 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
 
                   <div className="games-border games-extra-padded">
                     {gameSelection === "ttl" &&
-                    <TTLDisplay gameDetails = {currentGameObject} choices = {{
-                      choice1: truth1,
-                      choice2: truth2,
-                      lie,
-                      lieIndex: 3
-                    }}/>
+                    <TTLDisplay game = {currentGameObject as TTLGame}/>
                     }
                     {gameSelection === "Hangman" &&
-                    <HangmanDisplay gameDetails ={currentGameObject}/>
+                    <HangmanDisplay game ={currentGameObject as HangmanGame}/>
                     }
                   </div>
                 </>
@@ -191,7 +186,6 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             <ModalFooter>
             <Button className="games-padded-asset" colorScheme="green"
                     onClick={async () => {
-                      // TODO: get correct player1 usernames and add tictactoe option
                       if (gameSelection === "ttl") {
                         const newGameId = await getNewGame({
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
