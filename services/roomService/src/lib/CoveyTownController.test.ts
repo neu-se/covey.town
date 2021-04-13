@@ -33,17 +33,17 @@ describe('CoveyTownController', () => {
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
   });
-  it('constructor should set the friendlyName property', () => { // Included in handout
-    const townName = `FriendlyNameTest-${nanoid()}`;
-    const townController = new CoveyTownController(townName, false);
-    expect(townController.friendlyName)
-      .toBe(townName);
+  it('constructor should set the coveyTownID property', () => { // Included in handout
+    const townID = nanoid(30)
+    const townController = new CoveyTownController(townID);
+    expect(townController.coveyTownID)
+      .toBe(townID);
   });
   describe('addPlayer', () => { // Included in handout
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {
-        const townName = `FriendlyNameTest-${nanoid()}`;
-        const townController = new CoveyTownController(townName, false);
+        const townID = nanoid(30)
+        const townController = new CoveyTownController(townID);
         const newPlayerSession = await townController.addPlayer(new Player(nanoid()));
         expect(mockGetTokenForTown).toBeCalledTimes(1);
         expect(mockGetTokenForTown).toBeCalledWith(townController.coveyTownID, newPlayerSession.player.id);
@@ -55,8 +55,8 @@ describe('CoveyTownController', () => {
       mock<CoveyTownListener>(),
       mock<CoveyTownListener>()];
     beforeEach(() => {
-      const townName = `town listeners and events tests ${nanoid()}`;
-      testingTown = new CoveyTownController(townName, false);
+      const townID = nanoid(30)
+      testingTown = new CoveyTownController(townID);
       mockListeners.forEach(mockReset);
     });
     it('should notify added listeners of player movement when updatePlayerLocation is called', async () => {
@@ -144,44 +144,51 @@ describe('CoveyTownController', () => {
     let session: PlayerSession;
     beforeEach(async () => {
       const townName = `connectPlayerSocket tests ${nanoid()}`;
-      testingTown = CoveyTownsStore.getInstance().createTown(townName, false, 'Guest');
+      testingTown = await CoveyTownsStore.getInstance().then(instance => {
+        return instance.createTown(townName, false, 'Guest').then(town => {
+          return town.coveyTownController;
+        });
+      });
       mockReset(mockSocket);
+
       player = new Player('test player');
       session = await testingTown.addPlayer(player);
+
     });
     it('should reject connections with invalid town IDs by calling disconnect', async () => {
-      TestUtils.setSessionTokenAndTownID(nanoid(), session.sessionToken, mockSocket);
-      townSubscriptionHandler(mockSocket);
+      const townID = nanoid();
+      TestUtils.setSessionTokenAndTownID(townID, session.sessionToken, mockSocket);
+      await townSubscriptionHandler(mockSocket);
       expect(mockSocket.disconnect).toBeCalledWith(true);
     });
     it('should reject connections with invalid session tokens by calling disconnect', async () => {
       TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, nanoid(), mockSocket);
-      townSubscriptionHandler(mockSocket);
+      await townSubscriptionHandler(mockSocket);
       expect(mockSocket.disconnect).toBeCalledWith(true);
     });
     describe('with a valid session token', () => {
       it('should add a town listener, which should emit "newPlayer" to the socket when a player joins', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-        townSubscriptionHandler(mockSocket);
+        await townSubscriptionHandler(mockSocket);
         await testingTown.addPlayer(player);
         expect(mockSocket.emit).toBeCalledWith('newPlayer', player);
       });
       it('should add a town listener, which should emit "playerMoved" to the socket when a player moves', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-        townSubscriptionHandler(mockSocket);
+        await townSubscriptionHandler(mockSocket);
         testingTown.updatePlayerLocation(player, generateTestLocation());
         expect(mockSocket.emit).toBeCalledWith('playerMoved', player);
 
       });
       it('should add a town listener, which should emit "playerDisconnect" to the socket when a player disconnects', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-        townSubscriptionHandler(mockSocket);
+        await townSubscriptionHandler(mockSocket);
         testingTown.destroySession(session);
         expect(mockSocket.emit).toBeCalledWith('playerDisconnect', player);
       });
       it('should add a town listener, which should emit "townClosing" to the socket and disconnect it when disconnectAllPlayers is called', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-        townSubscriptionHandler(mockSocket);
+        await townSubscriptionHandler(mockSocket);
         testingTown.disconnectAllPlayers();
         expect(mockSocket.emit).toBeCalledWith('townClosing');
         expect(mockSocket.disconnect).toBeCalledWith(true);
@@ -189,7 +196,7 @@ describe('CoveyTownController', () => {
       describe('when a socket disconnect event is fired', () => {
         it('should remove the town listener for that socket, and stop sending events to it', async () => {
           TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-          townSubscriptionHandler(mockSocket);
+          await townSubscriptionHandler(mockSocket);
 
           // find the 'disconnect' event handler for the socket, which should have been registered after the socket was connected
           const disconnectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'disconnect');
@@ -204,7 +211,7 @@ describe('CoveyTownController', () => {
         });
         it('should destroy the session corresponding to that socket', async () => {
           TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-          townSubscriptionHandler(mockSocket);
+          await townSubscriptionHandler(mockSocket);
 
           // find the 'disconnect' event handler for the socket, which should have been registered after the socket was connected
           const disconnectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'disconnect');
@@ -212,7 +219,7 @@ describe('CoveyTownController', () => {
             disconnectHandler[1]();
             mockReset(mockSocket);
             TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-            townSubscriptionHandler(mockSocket);
+            await townSubscriptionHandler(mockSocket);
             expect(mockSocket.disconnect).toHaveBeenCalledWith(true);
           } else {
             fail('No disconnect handler registered');
@@ -222,7 +229,7 @@ describe('CoveyTownController', () => {
       });
       it('should forward playerMovement events from the socket to subscribed listeners', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
-        townSubscriptionHandler(mockSocket);
+        await townSubscriptionHandler(mockSocket);
         const mockListener = mock<CoveyTownListener>();
         testingTown.addTownListener(mockListener);
         // find the 'playerMovement' event handler for the socket, which should have been registered after the socket was connected

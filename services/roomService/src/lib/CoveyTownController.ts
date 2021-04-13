@@ -55,6 +55,7 @@ export default class CoveyTownController {
    * @param newPlayer The new player to add to the town
    */
   async addPlayer(newPlayer: Player): Promise<PlayerSession> {
+
     const theSession = new PlayerSession(newPlayer);
 
     this._sessions.push(theSession);
