@@ -8,7 +8,11 @@ export default interface IGame {
 
   player1ID: string;
 
+  player1Username: string;
+
   player2ID : string;
+
+  player2Username: string;
 
 
   initializeGame(initialGameData?:string): string;
