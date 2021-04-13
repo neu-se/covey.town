@@ -73,13 +73,13 @@ async function GameController(initData: TownJoinResponse,
     if (toast) {
       toast({
         title: 'Town is merging with another town',
-        description: `this town is merging with ${friendlyName} in 10 seconds! 
+        description: `this town is merging with ${friendlyName} momentarily! 
         The new town will be called "${newTownFriendlyName}", 
-        ${newTownIsPubliclyListed ? 'will be' : 'will not be'} publicly listed, 
-        and ${newTownIsMergeable ? 'will be' : 'will not be'} mergeable`,
+        ${newTownIsPubliclyListed ? '✓' : '✗'} Publicly Listed,
+        and ${newTownIsMergeable ? '✓' : '✗'} Mergeable`,
         status: 'success',
         isClosable: true,
-        duration: 10000,
+        duration: 7000,
       }) 
     }
   })

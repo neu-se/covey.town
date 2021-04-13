@@ -13,14 +13,11 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
-  Radio,
-  RadioGroup, 
   Table,
-  TableCaption,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -29,7 +26,7 @@ import {
 } from '@chakra-ui/react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
-import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
+import { CoveyTownInfo } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
@@ -41,43 +38,33 @@ const TownMerging: React.FunctionComponent = () => {
   const [mergedTownName, setMergedTownName] = useState<string>('');
   const [townChosen, setTownChosen] = useState<string>('');
   const [roomMergePassword, setRoomMergePassword] = useState<string>('');
-  const [newTownOccupancy, setNewTownOccupancy] = useState<number>(0);
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [newTownIsMergeable, setNewTownIsMergeable] = useState<boolean>(true);
+  const [currentTownOccupancy, setCurrentTownOccupancy] = useState<number>(0);
 
   const openMerging = useCallback(()=>{
     onOpen();
     video?.pauseGame();
   }, [onOpen, video]);
 
-  const closeSettings = useCallback(()=>{
+  const closeMergeModal = useCallback(()=>{
     onClose();
     video?.unPauseGame();
   }, [onClose, video]);
 
-  // const newOccupancy = useCallback(() => {
-  //   setNewTownOccupancy(0) 
-  //   let occ = 0;
-  //   const townsToAdd = currentMergeableTowns?.filter((town) => 
-  //     town.coveyTownID === currentTownID ||  town.coveyTownID === townChosen);
-  //   townsToAdd?.forEach((town) => occ += town.currentOccupancy)
-  //   // return occ;
-  //   setNewTownOccupancy(occ) 
-  // }, [townChosen]);
-  
-
   const updateMergeableTowns = useCallback(() => {
-    console.log(players.length);
+    setCurrentTownOccupancy(players.length);
     apiClient.listMergeableTowns()
       .then((towns) => {
         setCurrentMergeableTowns(towns.towns.filter((town) => town.coveyTownID !== currentTownID && town.currentOccupancy + players.length <= town.maximumOccupancy)
           .sort((a, b) => b.currentOccupancy - a.currentOccupancy)
         );
       })
-  }, [setCurrentMergeableTowns, apiClient]);
+  }, [setCurrentMergeableTowns, apiClient, currentTownID, players.length]);
+  
   useEffect(() => {
     updateMergeableTowns();
-    const timer = setInterval(updateMergeableTowns, 2000);
+    const timer = setInterval(updateMergeableTowns, 1000);
     return () => {
       clearInterval(timer)
     };
@@ -93,12 +80,7 @@ const TownMerging: React.FunctionComponent = () => {
                                   newTownIsPubliclyListed: newTownIsPublic, 
                                   newTownIsMergeable
                                 });
-      // toast({
-      //   title: 'Towns merged',
-      //   description: 'To see the updated town, please exit and re-join this town',
-      //   status: 'success'
-      // })
-      closeSettings();
+      closeMergeModal();
     } catch(err) {
       toast({
         title: 'Unable to merge towns',
@@ -107,55 +89,17 @@ const TownMerging: React.FunctionComponent = () => {
       }); 
     }
   };
-  
-
-  /**
-   * call playerDisconnect
-   */
-  // const handleJoin = useCallback(async (coveyRoomID: string) => {
-  //   try {
-  //     if (!userName || userName.length === 0) {
-  //       toast({
-  //         title: 'Unable to join town',
-  //         description: 'Please select a username',
-  //         status: 'error',
-  //       });
-  //       return;
-  //     }
-  //     if (!coveyRoomID || coveyRoomID.length === 0) {
-  //       toast({
-  //         title: 'Unable to join town',
-  //         description: 'Please enter a town ID',
-  //         status: 'error',
-  //       });
-  //       return;
-  //     }
-  //     const initData = await Video.setup(userName, coveyRoomID);
-
-  //     const loggedIn = await doLogin(initData);
-  //     if (loggedIn) {
-  //       assert(initData.providerVideoToken);
-  //       await connect(initData.providerVideoToken);
-  //     }
-  //   } catch (err) {
-  //     toast({
-  //       title: 'Unable to connect to Towns Service',
-  //       description: err.toString(),
-  //       status: 'error'
-  //     })
-  //   }
-  // }, [doLogin, userName, connect, toast]);
 
   return <>
     <MenuItem data-testid='openMerging' onClick={openMerging} disabled={!currentTownIsMergeable}>
       <Typography variant="body1">Merge with Other Towns</Typography>
     </MenuItem>
-    <Modal isOpen={isOpen} onClose={closeSettings}>
+    <Modal isOpen={isOpen} onClose={closeMergeModal}>
       <ModalOverlay/>
       <ModalContent style={{ maxWidth:'40rem' }}>
-
         <Heading p="4" as="h2" size="lg">Merge { currentTownFriendlyName } with another town?</Heading>
-
+        <Text fontSize="sm" color="red.600" py="2" px="6">**All players from both rooms will be transported into a new room and the password for this new room will remain the same as the password for this current room**</Text>
+        <Text py="2" px="6" fontSize="md" fontWeight="bold"> Your Town Occupancy: {currentTownOccupancy}</Text>
         <ModalCloseButton/>
         <form onSubmit={(ev)=>{ev.preventDefault(); handleMergeRequest()}}>
           <ModalBody pb={6}>
@@ -203,7 +147,6 @@ const TownMerging: React.FunctionComponent = () => {
                           setNewTownIsMergeable(e.target.checked)
                         }}/>
             </FormControl>
-            {/* <Heading>New occupancy: {newTownOccupancy}</Heading> */}
             <FormControl isRequired style={{marginTop:15}}>
               <FormLabel htmlFor="roomMergePassword">Town Update Password</FormLabel>
               <Input data-testid="roomMergePassword" id="roomMergePassword" placeholder="Password" name="password" type="password" value={roomMergePassword} onChange={(e)=>setRoomMergePassword(e.target.value)} />
@@ -214,7 +157,7 @@ const TownMerging: React.FunctionComponent = () => {
             <Button data-testid='submit' colorScheme="blue" mr={3} value="update" name='action2' onClick={()=>handleMergeRequest()}>
               Submit
             </Button>
-            <Button onClick={closeSettings}>Cancel</Button>
+            <Button onClick={closeMergeModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

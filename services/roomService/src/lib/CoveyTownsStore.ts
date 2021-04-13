@@ -94,7 +94,7 @@ export default class CoveyTownsStore {
           destinationTown.disconnectAllPlayers();
           this.deleteTown(requestedTown.coveyTownID, requestedTown.townUpdatePassword);
           
-        }, 10000)
+        }, 7000)
         
         return destinationTown;
       }
