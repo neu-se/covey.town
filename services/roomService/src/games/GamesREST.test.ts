@@ -1,13 +1,12 @@
-import Express from 'express';
-import CORS from 'cors';
-import http from 'http';
-import { nanoid } from 'nanoid';
-import assert from 'assert';
 import { AddressInfo } from 'net';
-import {GameListResponse, HangmanWord, TTLChoices} from "../client/Types";
-import HangmanServiceClient from "../client/HangmanServiceClient";
-import TTLGameServiceClient from "../client/TTLGameServiceClient";
-import addTownRoutes from "../router/towns";
+import * as http from 'http';
+import { nanoid } from 'nanoid';
+import * as CORS from 'cors';
+import * as Express from 'express';
+import * as assert from 'assert';
+import { GameListResponse } from '../client/Types';
+import HangmanServiceClient from '../client/HangmanServiceClient';
+import addTownRoutes from '../router/towns';
 
 type TestGameData = {
   id : string,
@@ -20,16 +19,16 @@ type TestGameData = {
 
 function expectGameListMatches(games: GameListResponse, game: TestGameData) {
   const matching = games.games.find(gameInfo => gameInfo.gameID === game.id);
-    assert(matching);
-    expect(matching.gameState)
-      .toBe(game.gameState);
+  assert(matching);
+  expect(matching.gameState)
+    .toBe(game.gameState);
 }
 
 describe('HangmanServiceAPIREST', () => {
   let server: http.Server;
   let apiClient: HangmanServiceClient;
 
-  async function createHangmanGameForTesting(player1IDToUse?: string, player1UsernameToUse?: string, hangmanWordToUse?: string, gameType = "Hangman"): Promise<TestGameData> {
+  async function createHangmanGameForTesting(player1IDToUse?: string, player1UsernameToUse?: string, hangmanWordToUse?: string, gameType = 'Hangman'): Promise<TestGameData> {
     const player1ID = player1IDToUse !== undefined ? player1IDToUse :
       `id${nanoid()}`;
     const player1Username = player1UsernameToUse !== undefined ? player1UsernameToUse :
@@ -38,17 +37,17 @@ describe('HangmanServiceAPIREST', () => {
       `word${nanoid()}`;
     const ret = await apiClient.createHangmanGame({
       player1Id: player1ID,
-      player1Username: player1Username,
-      gameType: gameType,
-      initialGameState: {word: hangmanWord}
+      player1Username,
+      gameType,
+      initialGameState: { word: hangmanWord },
     });
     return {
       id: ret.gameID,
       gameState: hangmanWord,
-      player1ID: player1ID,
-      player1Username: player1Username,
-      player2ID: "",
-      player2Username: ""
+      player1ID,
+      player1Username,
+      player2ID: '',
+      player2Username: '',
     };
   }
 
@@ -91,7 +90,7 @@ describe('HangmanServiceAPIREST', () => {
     });
     it('Prohibits a blank player1Username', async () => {
       try {
-        await createHangmanGameForTesting(undefined,'');
+        await createHangmanGameForTesting(undefined, '');
         fail('createHangmanGame should throw an error if player1Username is empty string');
       } catch (err) {
         // OK
@@ -106,7 +105,7 @@ describe('HangmanServiceAPIREST', () => {
     });
     it('Prohibits a blank initialGameState', async () => {
       try {
-        await createHangmanGameForTesting(undefined,undefined, '');
+        await createHangmanGameForTesting(undefined, undefined, '');
         fail('createHangmanGame should throw an error if initialGameState is empty string');
       } catch (err) {
         // OK
@@ -117,7 +116,7 @@ describe('HangmanServiceAPIREST', () => {
   describe('GamesListAPI', () => {
     it('Allows for multiple games with the same player1ID', async () => {
       const game1 = await createHangmanGameForTesting();
-      const game2 = await createHangmanGameForTesting(game1.player1ID, );
+      const game2 = await createHangmanGameForTesting(game1.player1ID );
 
       const games = await apiClient.listHangmanGames();
       expectGameListMatches(games, game1);
