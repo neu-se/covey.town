@@ -8,7 +8,6 @@ import {
   deleteUser,
   updateUser,
   getTownByID,
-  TownData,
   saveTown,
   unsaveTown,
   getCurrentAvatar,
@@ -163,13 +162,10 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
         friendlyName: town.friendlyName,
         isPubliclyListed: town.isPublicallyListed,
       },
-    }
+    };
   }
-  else {
-    return {
-      isOK: false,
-      
-    }
+  return {
+    isOK: false,
   };
 }
 

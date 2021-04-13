@@ -2,7 +2,6 @@ import { nanoid } from 'nanoid';
 import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
 import {
-  TownData,
   AllTownResponse,
   getPublicTowns,
   getSavedTowns,

@@ -96,18 +96,17 @@ export async function getTownByID(townID: string): Promise<TownData | void> {
     .where('coveyTownID', townID)
     .then((rows: any[]) => {
       const row = rows[0];
-      const town = {
+      let town;
+      if (row !== undefined) {
+        town = {
 
-        coveyTownID: row.coveyTownID,
-        coveyTownPassword: row.coveyTownPassword,
-        friendlyName: row.friendlyName,
-        isPublicallyListed: row.isPublicallyListed,
-      };
+          coveyTownID: row.coveyTownID,
+          coveyTownPassword: row.coveyTownPassword,
+          friendlyName: row.friendlyName,
+          isPublicallyListed: row.isPublicallyListed,
+        };
+      }
       return town;
-
-    })
-    .catch(() => {
-      return;
     });
   return result;
 }

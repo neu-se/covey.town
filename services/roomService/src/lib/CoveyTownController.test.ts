@@ -34,7 +34,7 @@ describe('CoveyTownController', () => {
     mockGetTokenForTown.mockClear();
   });
   it('constructor should set the coveyTownID property', () => { // Included in handout
-    const townID = nanoid(30)
+    const townID = nanoid(30);
     const townController = new CoveyTownController(townID);
     expect(townController.coveyTownID)
       .toBe(townID);
@@ -42,7 +42,7 @@ describe('CoveyTownController', () => {
   describe('addPlayer', () => { // Included in handout
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {
-        const townID = nanoid(30)
+        const townID = nanoid(30);
         const townController = new CoveyTownController(townID);
         const newPlayerSession = await townController.addPlayer(new Player(nanoid()));
         expect(mockGetTokenForTown).toBeCalledTimes(1);
@@ -55,7 +55,7 @@ describe('CoveyTownController', () => {
       mock<CoveyTownListener>(),
       mock<CoveyTownListener>()];
     beforeEach(() => {
-      const townID = nanoid(30)
+      const townID = nanoid(30);
       testingTown = new CoveyTownController(townID);
       mockListeners.forEach(mockReset);
     });
@@ -144,11 +144,9 @@ describe('CoveyTownController', () => {
     let session: PlayerSession;
     beforeEach(async () => {
       const townName = `connectPlayerSocket tests ${nanoid()}`;
-      testingTown = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.createTown(townName, false, 'Guest').then(town => {
-          return town.coveyTownController;
-        });
-      });
+      testingTown = await CoveyTownsStore.getInstance().then(instance => 
+        instance.createTown(townName, false, 'Guest').then(town => 
+          town.coveyTownController));
       mockReset(mockSocket);
 
       player = new Player('test player');

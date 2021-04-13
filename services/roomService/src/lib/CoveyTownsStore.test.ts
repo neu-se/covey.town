@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { CoveyTownsStore, CreateTownResponse, updateTown } from './CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
-import db from '../database/knexfile'
+import db from '../database/knexfile';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
@@ -27,9 +27,8 @@ function mockCoveyListener(): CoveyTownListener {
 async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<CreateTownResponse> {
   const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
     `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
-  return await CoveyTownsStore.getInstance().then((instance: CoveyTownsStore) => {
-    return instance.createTown(friendlyName, isPublic, 'Guest');
-  });
+  return CoveyTownsStore.getInstance().then((instance: CoveyTownsStore) =>
+    instance.createTown(friendlyName, isPublic, 'Guest'));
 }
 
 describe('CoveyTownsStore', () => {
@@ -51,7 +50,7 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', firstTown.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
+          const town = response[0];
           const name: string = town.friendlyName;
           return name;
         });
@@ -60,7 +59,7 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', secondTown.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
+          const town = response[0];
           const name: string = town.friendlyName;
           return name;
         });
@@ -81,14 +80,12 @@ describe('CoveyTownsStore', () => {
       const firstController = firstTown.coveyTownController;
       expect(firstController)
         .toBe(await CoveyTownsStore.getInstance()
-          .then(instance => {
-            return instance.getControllerForTown(firstController.coveyTownID)
-          }));
+          .then(instance =>
+            instance.getControllerForTown(firstController.coveyTownID)));
       expect(firstController)
         .toBe(await CoveyTownsStore.getInstance()
-          .then(instance => {
-            return instance.getControllerForTown(firstController.coveyTownID)
-          }));
+          .then(instance => 
+            instance.getControllerForTown(firstController.coveyTownID)));
     });
   });
 
@@ -99,8 +96,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       const res = await updateTown(town.coveyTownController.coveyTownID, 'abcd', 'newName', true);
@@ -110,8 +107,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       expect(currentFriendlyName)
@@ -120,8 +117,8 @@ describe('CoveyTownsStore', () => {
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const publicStatus: boolean = town.isPublicallyListed;
+          const currentTown = response[0];
+          const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
         });
       expect(currentPublicStatus)
@@ -134,30 +131,30 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       const res = await updateTown('abcdef', town.coveyTownPassword, 'newName', true);
 
       expect(res)
         .toBe(false);
-      let currentFriendlyName = await db('Towns')
+      const currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       expect(currentFriendlyName)
         .toBe(friendlyName);
-      let currentPublicStatus = await db('Towns')
+      const currentPublicStatus = await db('Towns')
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const publicStatus: boolean = town.isPublicallyListed;
+          const currentTown = response[0];
+          const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
         });
       expect(currentPublicStatus)
@@ -172,8 +169,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       const res = await updateTown(town.coveyTownController.coveyTownID, town.coveyTownPassword, undefined, true);
@@ -183,8 +180,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       expect(currentFriendlyName)
@@ -193,8 +190,8 @@ describe('CoveyTownsStore', () => {
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const publicStatus: boolean = town.isPublicallyListed;
+          const currentTown = response[0];
+          const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
         });
       expect(currentPublicStatus)
@@ -209,8 +206,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       expect(currentFriendlyName)
@@ -219,8 +216,8 @@ describe('CoveyTownsStore', () => {
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const publicStatus: boolean = town.isPublicallyListed;
+          const currentTown = response[0];
+          const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
         });
       expect(currentPublicStatus)
@@ -235,8 +232,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       expect(currentFriendlyName)
@@ -245,8 +242,8 @@ describe('CoveyTownsStore', () => {
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const publicStatus: boolean = town.isPublicallyListed;
+          const currentTown = response[0];
+          const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
         });
       expect(currentPublicStatus)
@@ -257,16 +254,14 @@ describe('CoveyTownsStore', () => {
   describe('deleteTown', () => {
     it('Should check the password before deleting the town', async () => {
       const town = await createTownForTesting();
-      const res = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.deleteTown(town.coveyTownController.coveyTownID, `${town.coveyTownPassword}*`);
-      });
+      const res = await CoveyTownsStore.getInstance().then(instance => 
+        instance.deleteTown(town.coveyTownController.coveyTownID, `${town.coveyTownPassword}*`));
       expect(res)
         .toBe(false);
     });
     it('Should fail if the townID does not exist', async () => {
-      const res = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.deleteTown('abcdef', 'efg');
-      })
+      const res = await CoveyTownsStore.getInstance().then(instance =>
+        instance.deleteTown('abcdef', 'efg'));
       expect(res)
         .toBe(false);
     });
@@ -288,18 +283,17 @@ describe('CoveyTownsStore', () => {
   describe('listTowns', () => {
     it('Should include public towns', async () => {
       const town = await createTownForTesting(undefined, true);
-      const towns = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.getTowns();
-      });
+      const towns = await CoveyTownsStore.getInstance().then(instance => 
+        instance.getTowns());
       const entry = towns.filter(townInfo => townInfo.coveyTownID === town.coveyTownController.coveyTownID);
       expect(entry.length)
         .toBe(1);
-      let currentFriendlyName = await db('Towns')
+      const currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       expect(entry[0].friendlyName)
@@ -313,16 +307,14 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       const secondTown = await createTownForTesting(townName, true);
-      const towns = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.getTowns().then(publicTowns => {
-          return publicTowns.filter(townInfo => townInfo.friendlyName === townName);
-        });
-      });
+      const towns = await CoveyTownsStore.getInstance().then(instance => 
+        instance.getTowns().then(publicTowns => 
+          publicTowns.filter(townInfo => townInfo.friendlyName === townName)));
       expect(towns.length)
         .toBe(2);
       expect(towns[0].friendlyName)
@@ -347,15 +339,13 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
-      const towns = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.getTowns().then(publicTowns => {
-          return publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID);
-        })
-      })
+      const towns = await CoveyTownsStore.getInstance().then(instance => 
+        instance.getTowns().then(publicTowns => 
+          publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID)));
         
       expect(towns.length)
         .toBe(0);
@@ -366,8 +356,8 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
       const town2 = await createTownForTesting(townName, true);
@@ -375,16 +365,13 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town2.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
-      const towns = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.getTowns().then(publicTowns => {
-          return publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID);
-
-        });
-      });
+      const towns = await CoveyTownsStore.getInstance().then(instance => 
+        instance.getTowns().then(publicTowns => 
+          publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID)));
         
       expect(towns.length)
         .toBe(1);
@@ -399,27 +386,22 @@ describe('CoveyTownsStore', () => {
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
         .then((response: any[]) => {
-          const town = response[0]
-          const name: string = town.friendlyName;
+          const currentTown = response[0];
+          const name: string = currentTown.friendlyName;
           return name;
         });
-      const towns = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.getTowns().then(publicTowns => {
-          return publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID);
-        });
-      });
+      const towns = await CoveyTownsStore.getInstance().then(instance => 
+        instance.getTowns().then(publicTowns => 
+          publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID)));
       expect(towns.length)
         .toBe(1);
-      const res = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.deleteTown(town.coveyTownController.coveyTownID, town.coveyTownPassword);
-      });
+      const res = await CoveyTownsStore.getInstance().then(instance => 
+        instance.deleteTown(town.coveyTownController.coveyTownID, town.coveyTownPassword));
       expect(res)
         .toBe(true);
-      const townsPostDelete = await CoveyTownsStore.getInstance().then(instance => {
-        return instance.getTowns().then(publicTowns => {
-          return publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID);
-        })
-      })
+      const townsPostDelete = await CoveyTownsStore.getInstance().then(instance => 
+        instance.getTowns().then(publicTowns => 
+          publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID)));
       expect(townsPostDelete.length)
         .toBe(0);
     });
