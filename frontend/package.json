@@ -40,6 +40,7 @@
     "react-import": "^1.5.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "react-use-disclosure": "^3.1.0",
     "sass-loader": "8.0.2",
     "socket.io-client": "^3.0.4",
     "strip-color": "^0.1.0",
