@@ -1,9 +1,9 @@
-import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import {
   GameCreateRequest,
   GameCreateResponse,
-  GameDeleteRequest, GameJoinRequest, GameJoinResponse,
+  GameDeleteRequest,
   GameListResponse,
   GameUpdateRequest,
   ResponseEnvelope,
@@ -48,10 +48,4 @@ export default class TTLGameServiceClient {
     const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/ttl-games');
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
   }
-
-  async joinTicGame(requestData: GameJoinRequest): Promise<GameJoinResponse> {
-    const responseWrapper = await this._axios.patch(`/ttl-games/${requestData.gameID}`, requestData);
-    return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
 }

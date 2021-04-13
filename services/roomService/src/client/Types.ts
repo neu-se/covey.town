@@ -21,7 +21,9 @@ export interface GameCreateResponse {
 export interface GameUpdateRequest {
   gameID: string;
   player?: number;
-  move:  TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move;
+  move?:  TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move;
+  player2Id?: string;
+  player2Username?: string;
 }
 
 export type TTLPlayer2Move = { guess: number };
@@ -49,15 +51,6 @@ export interface GameListResponse {
 
 export type GameList = { gameID: string; gameState: string }[];
 
-export interface GameJoinRequest {
-  player2Id: string;
-  player2Username: string;
-  gameID: string;
-}
-
-export interface GameJoinResponse {
-  gameID: string;
-}
 
 
 
