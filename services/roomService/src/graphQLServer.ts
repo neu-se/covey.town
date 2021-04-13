@@ -1,14 +1,19 @@
 import Express from 'express';
-import { ApolloServer, gql } from 'apollo-server-express';
+import CORS from 'cors';
+import { ApolloServer } from 'apollo-server-express';
+import io from 'socket.io';
+import {
+  townSubscriptionHandler,
+} from './requestHandlers/CoveyTownRequestHandlers';
 import { connection } from './data/Utils/index';
 import typeDefs from './typeDefs/index';
 import resolvers from './resolvers/index';
 
-const cors = require('cors');
+
 
 const app = Express();
 app.use(Express.json());
-app.use(cors());
+app.use(CORS());
 
 /**
  * Getting the instance of Apollo Server.
@@ -24,4 +29,6 @@ apolloServer.applyMiddleware({ app, path: '/graphql' });
 // Represents the database connection
 connection();
 
-app.listen(process.env.PORT || 8081, () => console.log('Listening'));
+const http = app.listen(process.env.PORT || 8081, () => console.log('Listening'));
+const socketServer = new io.Server(http, { cors: { origin: '*' } });
+socketServer.on('connection', townSubscriptionHandler);
