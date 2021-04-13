@@ -20,7 +20,7 @@ export default class GameController {
 
   getGames(): GameList {
     return this._gamesList.map(game => ({
-      gameID: game.id,
+      gameId: game.id,
       gameState: game.gameState,
       gameType: (game.alreadyGuessed ? 'Hangman' : 'Two Truths and a Lie'),
       player1Username: game.player1Username,

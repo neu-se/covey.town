@@ -140,11 +140,13 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.patch('/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
-      const result = updateGame(
+      const result = await updateGame(
         {
-          gameID: req.body.gameID,
+          gameId: req.params.gameId,
           player: req.body.player,
           move: req.body.move,
+          player2Username: req.body.player2Username,
+          player2Id: req.body.player2Id,
         },
       );
       res.status(StatusCodes.OK)
@@ -180,22 +182,21 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.delete('games/:gameId', BodyParser.json(), async (req, res) => {
     try {
-      const result = deleteGame(
+      const result = await deleteGame(
         {
-          gameID: req.body.gameID,
+          gameId: req.params.gameId,
         },
       );
-      res.status(StatusCodes.OK)
+      res.status(200)
         .json(result);
     } catch (err) {
       logError(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+      res.status(500)
         .json({
-          message: 'Internal server error, please see log in server for more details',
+          message: 'Internal server error, please see log in server for details',
         });
     }
-  },
-  );
+  });
 
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });

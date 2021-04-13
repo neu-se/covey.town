@@ -37,13 +37,13 @@ export default class HangmanServiceClient {
 
 
   async updateHangmanGame(requestData: GameUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/hangman-games/${requestData.gameID}`, requestData);
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/hangman-games/${requestData.gameId}`, requestData);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
 
   async deleteHangmanGame(requestData: GameDeleteRequest): Promise<void> {
-    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/hangman-games/${requestData.gameID}`);
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/hangman-games/${requestData.gameId}`);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 

@@ -21,7 +21,7 @@ type TestGameData = {
 };
 
 function expectGameListMatches(games: GameListResponse, game: TestGameData) {
-  const matching = games.games.find(gameInfo => gameInfo.gameID === game.id);
+  const matching = games.games.find(gameInfo => gameInfo.gameId === game.id);
   expect(matching).toBeDefined();
   if (matching !== undefined) {
     expect(matching.gameState)
@@ -48,7 +48,7 @@ describe('HangmanServiceAPIREST', () => {
       initialGameState,
     });
     return {
-      id: ret.gameID,
+      id: ret.gameId,
       gameState: initialGameState,
       player1ID,
       player1Username,
@@ -134,14 +134,14 @@ describe('HangmanServiceAPIREST', () => {
   });
 
   describe('HangmanGameDeleteAPI', () => {
-    it('Deletes a game if given a valid gameID, no longer allowing it to be joined or listed', async () => {
+    it('Deletes a game if given a valid gameId, no longer allowing it to be joined or listed', async () => {
       const { id } = await createHangmanGameForTesting();
       await apiClient.deleteHangmanGame({
-        gameID: id,
+        gameId: id,
       });
       try {
         await apiClient.updateHangmanGame({
-          gameID: id,
+          gameId: id,
           player2Id: nanoid(),
           player2Username: nanoid(),
         });
@@ -150,22 +150,22 @@ describe('HangmanServiceAPIREST', () => {
         // Expected
       }
       const listedGames = await apiClient.listHangmanGames();
-      if (listedGames.games.find(r => r.gameID === id)) {
+      if (listedGames.games.find(r => r.gameId === id)) {
         fail('Expected the deleted game to no longer be listed');
       }
     });
   });
   describe('HangmanGameUpdateAPI', () => {
-    it('Checks the gameID before updating any values', async () => {
+    it('Checks the gameId before updating any values', async () => {
       const game1 = await createHangmanGameForTesting();
       expectGameListMatches(await apiClient.listHangmanGames(), game1);
       try {
         await apiClient.updateHangmanGame({
-          gameID: game1.id.concat('1'),
+          gameId: game1.id.concat('1'),
           player2Id: nanoid(),
           player2Username: nanoid(),
         });
-        fail('updateGame with an invalid gameID should throw an error');
+        fail('updateGame with an invalid gameId should throw an error');
       } catch (err) {
         // error
       }
@@ -177,7 +177,7 @@ describe('HangmanServiceAPIREST', () => {
       const game1 = await createHangmanGameForTesting();
       expectGameListMatches(await apiClient.listHangmanGames(), game1);
       await apiClient.updateHangmanGame({
-        gameID: game1.id,
+        gameId: game1.id,
         player2Id: 'newId',
         player2Username: 'newName',
       });
@@ -205,7 +205,7 @@ describe('TTLServiceAPIREST', () => {
       initialGameState,
     });
     return {
-      id: ret.gameID,
+      id: ret.gameId,
       gameState: initialGameState,
       player1ID,
       player1Username,
@@ -305,14 +305,14 @@ describe('TTLServiceAPIREST', () => {
   // });
   //
   // describe('HangmanGameDeleteAPI', () => {
-  //   it('Deletes a game if given a valid gameID, no longer allowing it to be joined or listed', async () => {
+  //   it('Deletes a game if given a valid gameId, no longer allowing it to be joined or listed', async () => {
   //     const {id} = await createHangmanGameForTesting();
   //     await apiClient.deleteHangmanGame({
-  //       gameID: id,
+  //       gameId: id,
   //     });
   //     try {
   //       await apiClient.updateHangmanGame({
-  //         gameID: id,
+  //         gameId: id,
   //         player2Id: nanoid(),
   //         player2Username: nanoid(),
   //       });
@@ -321,22 +321,22 @@ describe('TTLServiceAPIREST', () => {
   //       // Expected
   //     }
   //     const listedGames = await apiClient.listHangmanGames();
-  //     if (listedGames.games.find(r => r.gameID === id)) {
+  //     if (listedGames.games.find(r => r.gameId === id)) {
   //       fail('Expected the deleted game to no longer be listed');
   //     }
   //   });
   // });
   // describe('HangmanGameUpdateAPI', () => {
-  //   it('Checks the gameID before updating any values', async () => {
+  //   it('Checks the gameId before updating any values', async () => {
   //     const game1 = await createHangmanGameForTesting();
   //     expectGameListMatches(await apiClient.listHangmanGames(), game1);
   //     try {
   //       await apiClient.updateHangmanGame({
-  //         gameID: game1.id.concat('1'),
+  //         gameId: game1.id.concat('1'),
   //         player2Id: nanoid(),
   //         player2Username: nanoid(),
   //       });
-  //       fail('updateGame with an invalid gameID should throw an error');
+  //       fail('updateGame with an invalid gameId should throw an error');
   //     } catch (err) {
   //       // error
   //     }
@@ -348,7 +348,7 @@ describe('TTLServiceAPIREST', () => {
   //     const game1 = await createHangmanGameForTesting();
   //     expectGameListMatches(await apiClient.listHangmanGames(), game1);
   //     await apiClient.updateHangmanGame({
-  //       gameID: game1.id,
+  //       gameId: game1.id,
   //       player2Id: 'newId',
   //       player2Username: 'newName',
   //     });

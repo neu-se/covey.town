@@ -35,12 +35,12 @@ export default class TTLGameServiceClient {
   }
 
   async updateTTLGame(requestData: GameUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameID}`, requestData);
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameId}`, requestData);
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async deleteTTLGame(requestData: GameDeleteRequest): Promise<void> {
-    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameID}`);
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameId}`);
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 

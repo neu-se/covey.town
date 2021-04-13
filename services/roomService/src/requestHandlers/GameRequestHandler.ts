@@ -34,7 +34,7 @@ export async function createGame(requestData: GameCreateRequest): Promise<Respon
   return {
     isOK: true,
     response: {
-      gameID: newGame.id,
+      gameId: newGame.id,
     },
   };
 }
@@ -50,7 +50,7 @@ export async function updateGame(requestData: GameUpdateRequest): Promise<Respon
   let success = true;
   if (requestData.move) {
     const { move } = requestData;
-    const targetGame = controller.gamesList.find(game => game.id === requestData.gameID);
+    const targetGame = controller.gamesList.find(game => game.id === requestData.gameId);
     if (targetGame === undefined) {
       return {
         isOK: false,
@@ -68,7 +68,7 @@ export async function updateGame(requestData: GameUpdateRequest): Promise<Respon
   if (requestData.player2Id && requestData.player2Username) {
     const { player2Id } = requestData;
     const { player2Username } = requestData;
-    const targetGame = controller.gamesList.find(game => game.id === requestData.gameID);
+    const targetGame = controller.gamesList.find(game => game.id === requestData.gameId);
     if (targetGame === undefined) {
       success = false;
       return {
@@ -117,17 +117,10 @@ export function findGameById(gameId: string): (HangmanGame | TTLGame | undefined
  */
 export async function deleteGame(requestData: GameDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const controller = GameController.getInstance();
-  let success;
-  const updatedList = controller.gamesList.filter(game => game.id !== requestData.gameID);
-  if (controller.gamesList.length !== updatedList.length) {
-    controller.gamesList = updatedList;
-    success = true;
-  } else {
-    success = false;
-  }
+  const success = controller.deleteGame(requestData.gameId);
   return {
-    isOK: true,
+    isOK: success,
     response: {},
-    message: !success ? 'Game to delete not found. Game ID may be invalid.' : undefined,
+    message: !success ? 'Invalid gameId. Please double check your game data.' : undefined,
   };
 }

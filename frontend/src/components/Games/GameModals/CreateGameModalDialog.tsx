@@ -35,10 +35,10 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const toast = useToast()
 
   const getNewGame = async (requestData : GameCreateRequest) => {
-    const newGameID = await createGame(requestData)
-      .then(response => response.response?.gameID);
-    if (newGameID !== undefined) {
-      return findGameById(newGameID)
+    const newgameId = await createGame(requestData)
+      .then(response => response.response?.gameId);
+    if (newgameId !== undefined) {
+      return findGameById(newgameId)
     }
     return undefined
   }
@@ -57,7 +57,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
           </ModalHeader>
           <ModalCloseButton onClick={async () => {
             if (game) {
-              await deleteGame({gameID: game.id});
+              await deleteGame({gameId: game.id});
               setGame(null)
               setPlaying(false)
               setLie("")

@@ -1,9 +1,11 @@
-import { nanoid } from 'nanoid';
+import { customAlphabet, nanoid } from 'nanoid';
 import { HangmanPlayer2Move, HangmanWord, Limb } from '../client/Types';
 import IGame from './IGame';
 
 export default class HangmanGame implements IGame {
-  private _id: string = nanoid();
+  friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
+
+  private _id: string = this.friendlyNanoID();
 
   get id(): string {
     return this._id;

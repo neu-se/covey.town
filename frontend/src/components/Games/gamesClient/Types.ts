@@ -15,11 +15,11 @@ export type HangmanWord = { word: string };
 export type TTLChoices = { choice1: string, choice2: string, choice3: string, correctLie: number };
 
 export interface GameCreateResponse {
-  gameID: string;
+  gameId: string;
 }
 
 export interface GameUpdateRequest {
-  gameID: string;
+  gameId: string;
   player?: number;
   move?:  TTLPlayer1Move | TTLPlayer2Move | HangmanPlayer1Move | HangmanPlayer2Move;
   player2Id?: string;
@@ -42,14 +42,14 @@ export enum Limb {
 
 
 export interface GameDeleteRequest {
-  gameID: string;
+  gameId: string;
 }
 
 export interface GameListResponse {
   games: GameList;
 }
 
-export type GameList = { gameID: string; gameState: string; gameType: string; player1Username: string, player2ID: string }[];
+export type GameList = { gameId: string; gameState: string; gameType: string; player1Username: string, player2ID: string }[];
 
 
 
