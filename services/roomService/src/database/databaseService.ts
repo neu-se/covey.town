@@ -152,7 +152,7 @@ export async function deleteTown(townID: string, password: string): Promise<void
 // functions interacting with saved towns
 export async function saveTown(user: string, townID: string): Promise<void> {
   // check if town aready saved
-  const savedTown = db('SavedTowns')
+  const savedTown = await db('SavedTowns')
     .where('coveyTownID', townID)
     .where('userEmail', user);
 
