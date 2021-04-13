@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { TownCreateRequest, TownJoinRequest } from '../classes/TownsServiceClient';
+import { TownCreateRequest, TownJoinRequest, TownDeleteRequest } from '../classes/TownsServiceClient';
 import client from './client';
 
 /**
@@ -204,6 +204,15 @@ const joinTownMutation = gql`
   }
 `;
 
+const deleteTownMutation = gql`
+  mutation deleteTown($input: townDeleteRequestInput!) {
+    townDeleteRequest(input: $input) {
+      isOK
+      message
+    }
+  }
+`;
+
 const addFriendMutation = gql`
   mutation addFriend($input: addFriendInput!) {
     addFriend(input: $input)
@@ -340,12 +349,19 @@ export const updateUser = async (payload: UpdateUserRequest): Promise<any> => {
 }
 
 export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
-  console.log(payload)
   const { data } = await client.mutate({
     mutation: deleteUserMutation,
     variables: {input: payload},
   });
-  console.log(data);
   return data.deleteUser;
 }
 
+export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
+  const { data } = await client.mutate({
+    mutation: deleteTownMutation,
+    variables: { input: payload },
+  });
+  if (!data.townDeleteRequest.isOK) {
+    throw new Error(`Error processing request: ${ data.townJoinRequest.message}`);
+  }
+};

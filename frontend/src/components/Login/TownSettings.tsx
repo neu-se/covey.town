@@ -20,6 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
+import { deleteTown } from '../../graphql/queries';
 
 const TownSettings: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
@@ -43,7 +44,7 @@ const TownSettings: React.FunctionComponent = () => {
   const processUpdates = async (action: string) =>{
     if(action === 'delete'){
       try{
-        await apiClient.deleteTown({coveyTownID: currentTownID,
+        await deleteTown({coveyTownID: currentTownID,
           coveyTownPassword: roomUpdatePassword});
         toast({
           title: 'Town deleted',
