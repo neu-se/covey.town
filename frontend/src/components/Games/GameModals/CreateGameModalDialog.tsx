@@ -19,8 +19,8 @@ import TTLGame from "../gamesService/TTLGame";
 import HangmanGame from "../gamesService/HangmanGame";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
 import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
-import GameController from "../gamesService/GameController";
 import {GameCreateRequest} from "../gamesClient/Types";
+import {createGame, deleteGame, findGameById} from '../gamesService/GameRequestHandler'
 
 export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -31,15 +31,14 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const [lie, setLie] = useState('')
   const [playing, setPlaying] = useState(false)
   const [game, setGame] = useState<TTLGame | HangmanGame | null>(null)
-  const controller = GameController.getInstance()
   const { currentPlayer } = props
   const toast = useToast()
 
   const getNewGame = async (requestData : GameCreateRequest) => {
-    const newGameID = await controller.createGame(requestData)
+    const newGameID = await createGame(requestData)
       .then(response => response.response?.gameID);
     if (newGameID !== undefined) {
-      return controller.findGameById(newGameID)
+      return findGameById(newGameID)
     }
     return undefined
   }
@@ -58,7 +57,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
           </ModalHeader>
           <ModalCloseButton onClick={async () => {
             if (game) {
-              await controller.deleteGame({gameID: game.id});
+              await deleteGame({gameID: game.id});
               setGame(null)
               setPlaying(false)
               setLie("")

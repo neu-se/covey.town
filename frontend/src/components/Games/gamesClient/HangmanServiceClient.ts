@@ -4,7 +4,7 @@ import {
   ResponseEnvelope,
   GameCreateRequest,
   GameCreateResponse,
-  GameDeleteRequest, GameJoinRequest, GameJoinResponse, GameListResponse,
+  GameDeleteRequest, GameListResponse,
   GameUpdateRequest,
 } from './Types';
 
@@ -50,11 +50,6 @@ export default class HangmanServiceClient {
 
   async listHangmanGames(): Promise<GameListResponse> {
     const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/hangman-games');
-    return HangmanServiceClient.unwrapOrThrowError(responseWrapper);
-  }
-
-  async joinHangmanGame(requestData: GameJoinRequest): Promise<GameJoinResponse> {
-    const responseWrapper = await this._axios.patch(`/hangman-games/${requestData.gameID}`, requestData);
     return HangmanServiceClient.unwrapOrThrowError(responseWrapper);
   }
 }

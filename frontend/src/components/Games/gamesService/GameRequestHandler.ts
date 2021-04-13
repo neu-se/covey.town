@@ -1,7 +1,6 @@
 import {
   GameCreateRequest,
-  GameCreateResponse, GameDeleteRequest,
-  GameJoinRequest, GameJoinResponse, GameListResponse, GameUpdateRequest, HangmanPlayer2Move,
+  GameCreateResponse, GameDeleteRequest, GameListResponse, GameUpdateRequest, HangmanPlayer2Move,
   HangmanWord,
   ResponseEnvelope,
   TTLChoices, TTLPlayer2Move,
@@ -40,56 +39,44 @@ export async function createGame(requestData: GameCreateRequest): Promise<Respon
   };
 }
 
-/**
- * Connects a second player to an existing game
- *
- */
-export async function joinGame(requestData: GameJoinRequest): Promise<ResponseEnvelope<GameJoinResponse>> {
-  const controller = GameController.getInstance();
-  const { player2Id } = requestData;
-  const { player2Username } = requestData;
-  const targetGame = controller.gamesList.find(game => game.id === requestData.gameID);
-  if (targetGame === undefined) {
-    return {
-      isOK: false,
-      message: 'Error: Target game not found',
-    };
-  }
-  targetGame.playerJoin(player2Id, player2Username);
-  return {
-    isOK: true,
-    response: {
-      gameID: targetGame.id,
-    },
-  };
-}
 
 /**
- * Updates the game state after a player makes a move
+ * Updates the game state after a player makes a move or a new player joins
  *
  * @param requestData
  */
 export async function updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   const controller = GameController.getInstance();
-  const { move } = requestData;
-  const targetGame = controller.gamesList.find(game => game.id === requestData.gameID);
-  if (targetGame === undefined) {
-    return {
-      isOK: false,
-      message: 'Error: Target game not found',
-    };
-  }
-  // TODO: move() method should return a boolean value
   let success = true;
-  // if (targetGame instanceof TicTacToeGame) {
-  //   targetGame.move(<TicMove>move);
-  // } else
-  if (targetGame instanceof TTLGame) {
-    targetGame.move(<TTLPlayer2Move>move);
-  } else if (targetGame instanceof HangmanGame) {
-    targetGame.move(<HangmanPlayer2Move>move);
-  } else {
-    success = false;
+  if (requestData.move) {
+    const { move } = requestData;
+    const targetGame = controller.gamesList.find(game => game.id === requestData.gameID);
+    if (targetGame === undefined) {
+      return {
+        isOK: false,
+        message: 'Error: Target game not found',
+      };
+    }
+    if (targetGame instanceof TTLGame) {
+      targetGame.move(<TTLPlayer2Move>move);
+    } else if (targetGame instanceof HangmanGame) {
+      targetGame.move(<HangmanPlayer2Move>move);
+    } else {
+      success = false;
+    }
+  }
+  if (requestData.player2Id && requestData.player2Username) {
+    const { player2Id } = requestData;
+    const { player2Username } = requestData;
+    const targetGame = controller.gamesList.find(game => game.id === requestData.gameID);
+    if (targetGame === undefined) {
+      success = false;
+      return {
+        isOK: false,
+        message: 'Error: Target game not found',
+      };
+    }
+    targetGame.playerJoin(player2Id, player2Username);
   }
   return {
     isOK: true,
@@ -105,9 +92,9 @@ export async function updateGame(requestData: GameUpdateRequest): Promise<Respon
 export async function findAllGames(): Promise<ResponseEnvelope<GameListResponse>> {
   const controller = GameController.getInstance();
   const games = controller.gamesList.map(game => ({
-    gameID: game.id,
-    gameState: game.gameState,
-  }),
+      gameID: game.id,
+      gameState: game.gameState,
+    }),
   );
   return {
     isOK: true,

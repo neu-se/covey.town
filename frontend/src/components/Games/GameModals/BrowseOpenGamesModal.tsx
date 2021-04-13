@@ -1,9 +1,6 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Button,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,33 +9,28 @@ import {
   ModalHeader,
   ModalOverlay,
   UnorderedList,
-  useDisclosure, useToast,
+  useDisclosure,
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import { ListItem } from '@material-ui/core';
-import GameController from "../gamesService/GameController";
 import {GameList} from "../gamesClient/Types";
-
+import {findAllGames} from "../gamesService/GameRequestHandler";
 
 
 export default function BrowseOpenGamesModal(): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const controller = GameController.getInstance();
   const [gamesList, setGamesList] = useState<GameList>();
-
-
-
 
   useEffect(() => {
     const fetchAllGames = async () => {
       console.info("Fetching games")
-      const games = (await townController.findAllGames()).response?.games
+      const games = (await findAllGames()).response?.games
       setGamesList(games)
     }
     fetchAllGames()
     const timer = setInterval(async () => {
-      fetchAllGames()
+      await fetchAllGames()
     }, 5000)
 
     return () => {

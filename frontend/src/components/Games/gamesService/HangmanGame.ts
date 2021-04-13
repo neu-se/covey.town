@@ -129,7 +129,7 @@ export default class HangmanGame implements IGame {
   playerJoin(player2ID: string, player2Username: string): void {
     if (this.player2ID === '') {
       this.player2ID = player2ID;
-      this.player2Username = player2Username
+      this.player2Username = player2Username;
     } else {
       throw new Error('Game is already full');
     }

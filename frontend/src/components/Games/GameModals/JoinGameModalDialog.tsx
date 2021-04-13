@@ -11,11 +11,11 @@ import {
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import GameController from "../gamesService/GameController";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
 import TTLGame from "../gamesService/TTLGame";
 import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import HangmanGame from "../gamesService/HangmanGame";
+import {findGameById} from '../gamesService/GameRequestHandler';
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
@@ -26,8 +26,7 @@ interface GameModalDialogProps {
 
 export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const controller = GameController.getInstance()
-  const game = controller.findGameById(gameId)
+  const game = findGameById(gameId)
   const [playing, setPlaying] = useState(false);
   return (
     <>
