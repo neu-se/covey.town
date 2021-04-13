@@ -1,7 +1,7 @@
-import { useContext } from 'react';
 import assert from 'assert';
+import { useContext } from 'react';
+import { UserProfileContextType } from '../classes/UserAccount';
 import UserContext from '../contexts/UserProfileContext';
-import { UserProfile } from '../CoveyTypes';
 
 /**
  * Use this hook to access the current user profile.
@@ -15,7 +15,7 @@ import { UserProfile } from '../CoveyTypes';
  * Use this hook if your component can only render when the user is logged in.
  * Otherwise, use the `useMaybeUser` hook.
  */
-export default function useUserProfile(): UserProfile {
+export default function useUserProfile(): UserProfileContextType {
   const ctx = useContext(UserContext);
   assert(ctx, 'User profile should be defined.');
   return ctx;

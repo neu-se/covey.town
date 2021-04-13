@@ -1,5 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
-import { ApiAuthDataType, ApiDataType, IUserAccount, IUserAccountLogin } from './UserAccount';
+import {
+  ApiDataType,
+  IApiLoginDataType,
+  IApiRegisterDataType,
+  IUserAccount,
+  IUserAccountLogin,
+} from './UserAccount';
 
 const baseUrl = 'http://localhost:4000';
 
@@ -16,9 +22,9 @@ export const getUser = async ({
   username,
   password,
   avatar,
-}: IUserAccountLogin): Promise<AxiosResponse<ApiAuthDataType>> => {
+}: IUserAccountLogin): Promise<AxiosResponse<IApiLoginDataType>> => {
   try {
-    const response: AxiosResponse<ApiAuthDataType> = await axios.post(`${baseUrl}/account`, {
+    const response: AxiosResponse<IApiLoginDataType> = await axios.post(`${baseUrl}/account`, {
       username,
       password,
       avatar,
@@ -29,13 +35,15 @@ export const getUser = async ({
   }
 };
 
-export const addUser = async (formData: IUserAccount): Promise<AxiosResponse<ApiDataType>> => {
+export const addUser = async (
+  formData: IUserAccount,
+): Promise<AxiosResponse<IApiRegisterDataType>> => {
   try {
     const account: Omit<IUserAccount, '_id'> = {
       username: formData.username,
       password: formData.password,
     };
-    const saveAccount: AxiosResponse<ApiDataType> = await axios.post(
+    const saveAccount: AxiosResponse<IApiRegisterDataType> = await axios.post(
       `${baseUrl}/add-user`,
       account,
     );
