@@ -204,8 +204,8 @@ async function GameController(initData: TownJoinResponse,
 
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
-  const currentPlayerName = defaultAppState().userName
-  const currentPlayerId = defaultAppState().myPlayerID
+  const currentPlayerName = appState.userName
+  const currentPlayerId = appState.myPlayerID
 
   const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate);
