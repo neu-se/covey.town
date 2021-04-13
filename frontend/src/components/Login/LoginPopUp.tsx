@@ -23,7 +23,7 @@ import useUserProfile from '../../hooks/useUserProfile';
 
 const LoginPopUp: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setUserProfile } = useUserProfile();
+  // const { setUserProfile } = useUserProfile();
 
   const [loginUserName, setLoginUserName] = useState<string>('');
   const [userPassword, setUserPassword] = useState<string>('');
@@ -77,7 +77,7 @@ const LoginPopUp: React.FunctionComponent = () => {
       const { user } = response.data;
       if (user) {
         resetValues();
-        setUserProfile({ ...user, isLoggedIn: true });
+        // setUserProfile({ ...user, isLoggedIn: true });
         closeLoginMenu();
       } else {
         setErrorMessage(response.data.message || '');
@@ -89,8 +89,6 @@ const LoginPopUp: React.FunctionComponent = () => {
         status: 'error',
       });
     }
-
-      
   };
 
   return (
@@ -142,18 +140,18 @@ const LoginPopUp: React.FunctionComponent = () => {
                 />
               </FormControl>
 
-<Button data-testid='loginMenuButton' style={{float: 'right', marginLeft: '20px'}} onClick={openLoginMenu}>Login </Button>
-    <Modal isOpen={isOpen} onClose={closeLoginMenu}>
-      <ModalOverlay/>
-      <ModalContent>
-        <ModalHeader>Log In</ModalHeader>
-        <ModalCloseButton/>
-        <form onSubmit={(ev)=>{ev.preventDefault(); loginUserAccount()}}>
-          <ModalBody pb={6}>
-            <FormControl isRequired>
-              <FormLabel htmlFor='loginAccount'>Enter your username</FormLabel>
-              <Input id='loginAccount' placeholder="Enter Username" name="loginAccount" value={loginUserName} onChange={(ev)=>setLoginUserName(ev.target.value)} />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel htmlFor='loginPassword'>Enter your password</FormLabel>
+                <Input
+                  id='loginPassword'
+                  placeholder='Enter Password'
+                  name='loginPassword'
+                  type='password'
+                  value={userPassword}
+                  onChange={ev => setUserPassword(ev.target.value)}
+                />
+              </FormControl>
+            </ModalBody>
 
             <ModalFooter>
               <Button
@@ -173,19 +171,5 @@ const LoginPopUp: React.FunctionComponent = () => {
     </>
   );
 };
-
-          <ModalFooter>
-            <Button data-testid='loginbutton' colorScheme="blue" mr={3} value="login" name='action1' onClick={()=>loginUserAccount()}>
-              Log In
-            </Button>
-            <Button onClick={closeLoginMenu}>Cancel</Button>
-          </ModalFooter>
-        </form>
-      </ModalContent>
-    </Modal>
-
-
-  </>
-}
 
 export default LoginPopUp;

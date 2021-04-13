@@ -15,9 +15,9 @@ import useUserProfile from '../../hooks/useUserProfile';
 
 const LogoutPopUp: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setUserProfile } = useUserProfile();
+  // const { setUserProfile } = useUserProfile();
   const logOutUser = () => {
-    setUserProfile(null);
+    // setUserProfile(null);
     onClose();
   };
   return (
