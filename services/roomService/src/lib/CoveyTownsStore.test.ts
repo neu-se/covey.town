@@ -43,6 +43,10 @@ describe('CoveyTownsStore', () => {
       .toBe(store2);
   });
 
+  afterAll(() => {
+    db.destroy();
+  });
+
   describe('createTown', () => {
     it('Should allow multiple towns with the same friendlyName', async () => {
       const firstTown = await createTownForTesting();
