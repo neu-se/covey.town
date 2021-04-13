@@ -190,7 +190,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <Button data-testid='joinTownByIDButton'
                         onClick={() => handleJoin(townIDToJoin)}>Connect</Button>
               </Flex>
-
             </Box>
 
             <Heading p="4" as="h4" size="md">Select a public town to join</Heading>

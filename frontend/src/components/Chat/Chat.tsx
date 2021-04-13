@@ -1,13 +1,23 @@
 import { Box, Button, Flex, Input } from '@chakra-ui/react';
+import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
 import ChatMessage from './ChatMessage';
 
-export default function Chat(): JSX.Element {
-  const [messages, setMessages] = useState<string[]>([]);
+type MessageProps = {
+  id: string;
+  userName: string;
+  message: string;
+}
+
+function Chat(): JSX.Element {
+  const [messages, setMessages] = useState<MessageProps[]>([]);
   const [input, setInput] = useState<string>('');
 
   const handleGlobalMessage = () => {
-    setMessages([...messages, input]);
+    if(input !== '') {
+      setMessages([...messages, {id: nanoid(), userName: 'Me', message: input}]);
+      setInput('');
+    }
   }
 
   useEffect(() => {
@@ -39,7 +49,9 @@ export default function Chat(): JSX.Element {
           p='4'
           align='left'
           overflow='auto'>
-            <ChatMessage />
+            {messages.map((msg) => (
+             <ChatMessage key={msg.id} userName = {msg.userName} message={msg.message}/>
+            ))}
         </Box>
         <Box w='100%' position='absolute' bottom='0' pb='1'>
           <Box m='auto' w='100%' pb='2' pr='4' align='left'>
@@ -55,3 +67,5 @@ export default function Chat(): JSX.Element {
     </Flex>
   );
 }
+
+export default Chat;
