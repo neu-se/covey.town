@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 
 import {
   Button,
-  Checkbox,
   FormControl,
   FormLabel,
   Input,
@@ -16,10 +15,8 @@ import {
   useDisclosure,
   useToast
 } from '@chakra-ui/react';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-import useCoveyAppState from '../../hooks/useCoveyAppState';
-import useMaybeVideo from '../../hooks/useMaybeVideo';
+import { IUserAccount } from '../../classes/UserAccount';
+import { getUser } from '../../classes/api';
 
 const LoginPopUp: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
@@ -28,10 +25,35 @@ const LoginPopUp: React.FunctionComponent = () => {
 
   const [loginUserName, setLoginUserName] = useState<string>('');
   const [userPassword, setUserPassword] = useState<string>('');
+  const[userList, setUserList] = useState<IUserAccount[]>([]);
+
+
   const [modal, setModal] = useState(false);
-
-
   const toast = useToast()
+
+
+
+  // useEffect(() => {
+  //   fetchAccount()
+  // }, []);
+
+
+
+  const openLoginMenu = async ()=>{
+    onOpen();
+  };
+
+  const closeLoginMenu = async ()=>{
+    onClose();
+  };
+
+  const fetchAccount = (): void => {
+    getUser()
+    .then(({ data: { accounts } }: IUserAccount[] | any) => setLoginUserName(accounts))
+    .catch((err: Error) => console.log(err))
+  }
+
+  const accountList = fetchAccount();
 
   const loginUserAccount = async () =>{
     if(loginUserAccount.length === 0){
@@ -50,6 +72,15 @@ const LoginPopUp: React.FunctionComponent = () => {
         status: 'error',
       });
       return;
+      }
+
+
+    } catch (err) {
+      toast({
+        title: 'Unable to login with account',
+        description: err.toString(),
+        status: 'error'
+      })
     }
 
       
