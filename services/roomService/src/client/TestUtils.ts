@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {io, Socket} from 'socket.io-client';
-import {Socket as ServerSocket} from 'socket.io';
+import { io, Socket } from 'socket.io-client';
+import { Socket as ServerSocket } from 'socket.io';
 
-import {AddressInfo} from 'net';
+import { AddressInfo } from 'net';
 import * as http from 'http';
 import { UserLocation } from '../CoveyTypes';
 
@@ -48,7 +48,7 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
 } {
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
-    auth: {token: sessionToken, coveyTownID},
+    auth: { token: sessionToken, coveyTownID },
     reconnection: false, timeout: 5000,
   });
   const connectPromise = new Promise<void>((resolve) => {

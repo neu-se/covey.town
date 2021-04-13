@@ -14,7 +14,7 @@ import {
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import { ListItem } from '@material-ui/core';
-import {GameList} from "../gamesClient/GameTypes";
+import {GameList} from "../gamesClient/GameList";
 import JoinGameModalDialog from "./JoinGameModalDialog";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import useMaybeVideo from "../../../hooks/useMaybeVideo";
