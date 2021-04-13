@@ -19,16 +19,16 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { getUser } from '../../classes/api';
-import { IUserAccount } from '../../classes/UserAccount';
+import useUserProfile from '../../hooks/useUserProfile';
 
 const LoginPopUp: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { setUserProfile } = useUserProfile();
 
   const [loginUserName, setLoginUserName] = useState<string>('');
   const [userPassword, setUserPassword] = useState<string>('');
   const [loginAvatar, setLoginAvatar] = useState<string>('');
   const [error, setErrorMessage] = useState<string | null>(null);
-  const [userList, setUserList] = useState<IUserAccount[]>([]);
 
   const [modal, setModal] = useState(false);
   const toast = useToast();
@@ -77,6 +77,7 @@ const LoginPopUp: React.FunctionComponent = () => {
       const { user } = response.data;
       if (user) {
         resetValues();
+        setUserProfile({ ...user, isLoggedIn: true });
         closeLoginMenu();
       } else {
         setErrorMessage(response.data.message || '');
@@ -94,10 +95,7 @@ const LoginPopUp: React.FunctionComponent = () => {
 
   return (
     <>
-      <Button
-        data-testid='loginMenuButton'
-        style={{ float: 'right', marginLeft: '20px' }}
-        onClick={openLoginMenu}>
+      <Button data-testid='loginMenuButton' onClick={openLoginMenu}>
         Login{' '}
       </Button>
       <Modal isOpen={isOpen} onClose={closeLoginMenu}>
