@@ -57,22 +57,29 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({ action: 'disconnect' });
   });
 
-  socket.on('roomsMerged', (destinationTownID: string, requestedTownID: string) => {
+  socket.on('roomsMerged', (destinationTownID: string, requestedTownID: string, destinationFriendlyName: string, 
+    requestedFriendlyName: string , newTownFriendlyName: string, newTownIsPubliclyListed: boolean, newTownIsMergeable: boolean) => {
     dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: destinationTownID});
 
     let coveyTownID;
+    let friendlyName;
     if (destinationTownID === video.coveyTownID) {
       coveyTownID = requestedTownID;
+      friendlyName = requestedFriendlyName;
     } else {
       coveyTownID = destinationTownID
+      friendlyName = destinationFriendlyName;
     }
-
-    // TODO: countdown???
     if (toast) {
       toast({
         title: 'Town is merging with another town',
-        description: `this town is merging with ${coveyTownID}!`,
-        status: 'success'
+        description: `this town is merging with ${friendlyName} in 10 seconds! 
+        The new town will be called "${newTownFriendlyName}", 
+        ${newTownIsPubliclyListed ? 'will be' : 'will not be'} publicly listed, 
+        and ${newTownIsMergeable ? 'will be' : 'will not be'} mergeable`,
+        status: 'success',
+        isClosable: true,
+        duration: 10000,
       }) 
     }
   })

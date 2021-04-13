@@ -32,5 +32,6 @@ export default interface CoveyTownListener {
    * @param destinationTownID the town ID of the destination town
    * @param requestedTownID the town ID of the town requested to merge
    */
-  onTownMerged(destinationTownID: string, requestedTownID: string): void;
+  onTownMerged(destinationTownID: string, requestedTownID: string, destinationFriendlyName: string, requestedFriendlyName: string, 
+    newTownFriendlyName: string, newTownIsPubliclyListed: boolean, newTownIsMergeable: boolean): void;
 }

@@ -82,8 +82,10 @@ export default class CoveyTownsStore {
     const requestedTown = this.getControllerForTown(requestedCoveyTownID);
     if (destinationTown && passwordMatches(coveyTownPassword, destinationTown.townUpdatePassword)
       && requestedTown) {
-        destinationTown.townsMerged(destinationTown.coveyTownID, requestedTown.coveyTownID)
-        requestedTown.townsMerged(destinationTown.coveyTownID, requestedTown.coveyTownID)
+        destinationTown.townsMerged(destinationTown.coveyTownID, requestedTown.coveyTownID, destinationTown.friendlyName, 
+          requestedTown.friendlyName, newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
+        requestedTown.townsMerged(destinationTown.coveyTownID, requestedTown.coveyTownID, destinationTown.friendlyName, 
+          requestedTown.friendlyName, newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
 
         this.updateTown(destinationTown.coveyTownID, destinationTown.townUpdatePassword, 
           newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
