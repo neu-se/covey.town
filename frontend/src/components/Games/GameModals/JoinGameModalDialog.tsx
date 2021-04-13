@@ -9,13 +9,12 @@ import {
   ModalCloseButton,
   Button, useDisclosure,
 } from '@chakra-ui/react'
-import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
 import TTLGame from "../gamesService/TTLGame";
 import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import HangmanGame from "../gamesService/HangmanGame";
-import {findGameById} from '../gamesService/GameRequestHandler';
+import {findGameById} from "../../../../../services/roomService/src/requestHandlers/GameRequestHandler";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},

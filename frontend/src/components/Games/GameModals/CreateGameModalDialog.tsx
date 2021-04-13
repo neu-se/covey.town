@@ -20,7 +20,7 @@ import HangmanGame from "../gamesService/HangmanGame";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
 import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import {GameCreateRequest} from "../gamesClient/Types";
-import {createGame, deleteGame, findGameById} from '../gamesService/GameRequestHandler'
+import {createGame, deleteGame, findGameById} from "../../../../../services/roomService/src/requestHandlers/GameRequestHandler";
 
 export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();

@@ -91,16 +91,9 @@ export async function updateGame(requestData: GameUpdateRequest): Promise<Respon
  */
 export async function findAllGames(): Promise<ResponseEnvelope<GameListResponse>> {
   const controller = GameController.getInstance();
-  const games = controller.gamesList.map(game => ({
-    gameID: game.id,
-    gameState: game.gameState,
-  }),
-  );
   return {
     isOK: true,
-    response: {
-      games,
-    },
+    response: { games: controller.getGames() },
   };
 }
 

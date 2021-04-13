@@ -163,7 +163,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.get('/games', BodyParser.json(), async (_req, res) => {
     try {
-      const result = findAllGames();
+      const result = await findAllGames();
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
