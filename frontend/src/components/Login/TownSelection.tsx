@@ -97,7 +97,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
     try {
       toast({
         title: 'Successfully saved username!',
-        description: `Any time you log into Covey.Town in the future, your username will already be filled in the name box.`,
+        description: 'Any time you log into Covey.Town in the future, you can click the \'Saved Name\' button to apply these settings.',
         status: 'success',
       });
     } catch (err) {
@@ -107,7 +107,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
         status: 'error',
       });
     }
-  }
+  };
 
   const handleCreate = async () => {
     if (!userName || userName.length === 0) {

@@ -26,9 +26,8 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
       // TODO actually call API
       // MOCK API CALL for get RETURNS:
       const saveData = { success: true }
-      const getData = { userID: 'test123', username: 'testuser123', email: 'testuser123@email.com', useAudio: true, useVideo: false, maps: [] }
+      const getData = { userID: 'test123', username: 'testuser123', email: 'testuser123@email.com', useAudio: true, useVideo: true, maps: [] }
       setUserInfo({ userID: getData.userID, email: getData.email, username: getData.username, useAudio: getData.useAudio, useVideo: getData.useVideo, maps: getData.maps });
-      console.log('Im logged in')
     }
     else {
       // set to default value
@@ -52,7 +51,6 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
         useVideo={userInfo.useVideo}
         setMediaError={props.setMediaError}
       />
-      {console.log(userInfo.username)}
       <TownSelection
         username={userInfo.username}
         doLogin={props.doLogin} />
