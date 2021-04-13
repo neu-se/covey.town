@@ -148,20 +148,28 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
-  const town: TownData = await getTownByID(requestData.coveyTownID);
+  const town = await getTownByID(requestData.coveyTownID);
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
-  return {
-    isOK: true,
-    response: {
-      coveyUserID: newPlayer.id,
-      coveySessionToken: newSession.sessionToken,
-      providerVideoToken: newSession.videoToken,
-      currentPlayers: coveyTownController.players,
-      friendlyName: town.friendlyName,
-      isPubliclyListed: town.isPublicallyListed,
-    },
+  if (town) {
+    return {
+      isOK: true,
+      response: {
+        coveyUserID: newPlayer.id,
+        coveySessionToken: newSession.sessionToken,
+        providerVideoToken: newSession.videoToken,
+        currentPlayers: coveyTownController.players,
+        friendlyName: town.friendlyName,
+        isPubliclyListed: town.isPublicallyListed,
+      },
+    }
+  }
+  else {
+    return {
+      isOK: false,
+      
+    }
   };
 }
 
@@ -297,13 +305,11 @@ export async function townSubscriptionHandler(socket: Socket): Promise<void> {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinTownHandler
   const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
-
   const townController = await CoveyTownsStore.getInstance()
     .then(instance => { 
       const s = instance.getControllerForTown(coveyTownID);
       return s;
     });
-
   // Retrieve our metadata about this player from the TownController
   const s = townController?.getSessionByToken(token);
   if (!s || !townController) {
