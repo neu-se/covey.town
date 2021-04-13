@@ -23,7 +23,7 @@ import useUserProfile from '../../hooks/useUserProfile';
 
 const LoginPopUp: React.FunctionComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // const { setUserProfile } = useUserProfile();
+  const { setUserProfile } = useUserProfile();
 
   const [loginUserName, setLoginUserName] = useState<string>('');
   const [userPassword, setUserPassword] = useState<string>('');
@@ -77,7 +77,7 @@ const LoginPopUp: React.FunctionComponent = () => {
       const { user } = response.data;
       if (user) {
         resetValues();
-        // setUserProfile({ ...user, isLoggedIn: true });
+        setUserProfile({ ...user, isLoggedIn: true });
         closeLoginMenu();
       } else {
         setErrorMessage(response.data.message || '');
@@ -119,7 +119,16 @@ const LoginPopUp: React.FunctionComponent = () => {
               loginUserAccount();
             }}>
             <ModalBody pb={6}>
-
+              <FormControl isRequired>
+                <FormLabel htmlFor='loginAccount'>Enter your avatar</FormLabel>
+                <Input
+                  id='loginAvatar'
+                  placeholder='Enter avatar'
+                  name='loginAvatar'
+                  value={loginAvatar}
+                  onChange={ev => setLoginAvatar(ev.target.value)}
+                />
+              </FormControl>
               <FormControl isRequired>
                 <FormLabel htmlFor='loginAccount'>Enter your username</FormLabel>
                 <Input
