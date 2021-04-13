@@ -94,7 +94,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
- /**
+  /**
   * List all mergeable towns
   */
   app.get('/mergeabletowns', BodyParser.json(), async (_req, res) => {
