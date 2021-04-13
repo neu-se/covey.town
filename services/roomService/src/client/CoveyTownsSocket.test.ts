@@ -47,7 +47,7 @@ describe('TownServiceApiSocket', () => {
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
   });
   afterAll(async () => {
-    await server.close();
+    server.close();
     TestUtils.cleanupSockets();
     await db.destroy();
   });
