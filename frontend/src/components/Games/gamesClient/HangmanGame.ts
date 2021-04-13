@@ -5,7 +5,7 @@ import IGame from './IGame';
 export default class HangmanGame implements IGame {
   friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
-  id: string = this.friendlyNanoID();
+  id: string = 'hangman'.concat(this.friendlyNanoID());
 
   gameState: string;
 

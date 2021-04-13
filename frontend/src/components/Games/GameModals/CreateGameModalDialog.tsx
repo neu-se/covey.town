@@ -181,6 +181,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             <Button className="games-padded-asset" colorScheme="green"
                     onClick={async () => {
                       if (gameSelection === "ttl") {
+                        console.log("new ttl game")
                         const newGameId = await getNewGame({
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}

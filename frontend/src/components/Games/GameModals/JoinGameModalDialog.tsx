@@ -15,16 +15,16 @@ import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import HangmanGame from "../gamesClient/HangmanGame";
 import TTLGame from "../gamesClient/TTLGame";
-import { GameUpdateRequest} from "../gamesClient/GameRequestTypes";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
   dialogType: string;
   gameId: string;
   gameType: string;
+  player1: string;
 }
 
-export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
+export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType, player1}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {gamesClient} = useCoveyAppState();
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
@@ -66,7 +66,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
             }
             {dialogType === "joining" &&
             <ModalBody>
-              Are you sure you want to join a {gameType} game with {currentGameObject ? currentGameObject.player1Username : "this player"}?
+              Are you sure you want to join a {gameType === "ttl" ? "Two Truths and a Lie" : gameType} game with {player1}?
             </ModalBody>
             }
             {dialogType === "joining" &&
@@ -89,12 +89,6 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
 
             }
           </>
-          }
-          {
-            playing &&
-              <div>
-                playing
-              </div>
           }
           {
             playing && currentGameObject !== undefined &&

@@ -23,7 +23,7 @@ export async function createGame(requestData: GameCreateRequest): Promise<Respon
   const initialState = requestData.initialGameState;
   if (requestData.gameType === 'Hangman') {
     newGame = new HangmanGame(player1Id, player1Username, <HangmanWord>(initialState));
-  } else if (requestData.gameType === 'TTL') {
+  } else if (requestData.gameType === 'ttl') {
     newGame = new TTLGame(player1Id, player1Username, <TTLChoices>(initialState));
   }
   if (newGame === undefined) {

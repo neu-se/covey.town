@@ -63,11 +63,12 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
           <ModalBody>
             <UnorderedList>
               {gamesList?.map(game =>
-                <ListItem key={game.id}>Play {game.id} with {game.player1Username}
+                <ListItem key={game.id}>Play {game.id.includes("ttl") ? "ttl" : "Hangman"} with {game.player1Username}
                   <div className="float-right">
                     <JoinGameModalDialog currentPlayer={props.currentPlayer}
                                          dialogType={game.player2ID === '' ? 'joining' : 'unavailable'}
-                                         gameId={game.id} gameType={game.id} />
+                                         gameId={game.id} gameType={game.id.includes("ttl") ? "ttl" : "Hangman"}
+                                         player1={game.player1Username}/>
                   </div>
                 </ListItem>
               )}

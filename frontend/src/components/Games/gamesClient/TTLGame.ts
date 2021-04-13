@@ -6,7 +6,7 @@ export default class TTLGame implements IGame {
 
   friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
-  id: string = this.friendlyNanoID();
+  id: string = 'ttl'.concat(this.friendlyNanoID());
 
   gameState: string;
 
