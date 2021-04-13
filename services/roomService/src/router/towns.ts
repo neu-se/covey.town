@@ -10,9 +10,8 @@ import {
   townSubscriptionHandler,
   townUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
-import { createGame, updateGame, findGameById, findAllGames, deleteGame } from '../requestHandlers/GameRequestHandler';
+import { createGame, updateGame, findAllGames, deleteGame } from '../requestHandlers/GameRequestHandler';
 import { logError } from '../Utils';
-import { HangmanWord, TTLChoices } from '../client/Types';
 
 
 export default function addTownRoutes(http: Server, app: Express): io.Server {
