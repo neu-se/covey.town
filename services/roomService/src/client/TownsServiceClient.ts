@@ -42,6 +42,7 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  creator: string;
 }
 
 /**
@@ -77,6 +78,10 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface UserCreateRequest {
+  email: string;
 }
 
 /**
@@ -120,6 +125,11 @@ export default class TownsServiceClient {
     throw new Error(`Error processing request: ${response.data.message}`);
   }
 
+  async updateUser(requestData: UserCreateRequest): Promise<void> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<void>>('/users', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+  }
+  
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<TownCreateResponse>>('/towns', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);

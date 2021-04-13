@@ -16,20 +16,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'flex-end',
     width: '100%',
     marginBottom: '30px',
+  },
+
+  bodyDiv: {
+    backgroundColor: '#87ceff',
   }
 }));
 
 export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>; setMediaError?(error: Error): void }) {
   const { buttonContainer } = useStyles();
+  const { bodyDiv } = useStyles();
   const { user, isAuthenticated } = useAuth0(); 
   let welcomeMessage = <div>Welcome, Guest!</div>;
   if(isAuthenticated){
     welcomeMessage = (<div>
-      {"Welcome, "} <Link to="/Profile">{`${user.given_name || user.nickname}!`}</Link>
+      {"Welcome, "} <Link to="/Profile" style={{color: '#87ceff'}} >{`${user.given_name || user.nickname}!`}</Link>
       </div>
       )
   }
   return (
+    <div className={bodyDiv}>
     <IntroContainer>
       <div className={buttonContainer}>
         <AuthHero />
@@ -43,5 +49,6 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
       <DeviceSelectionScreen setMediaError={props.setMediaError} />
       <TownSelection doLogin={props.doLogin} />
     </IntroContainer>
+    </div>
   );
 }
