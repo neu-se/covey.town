@@ -36,7 +36,7 @@ describe('CoveyTownController', () => {
   });
   afterAll(async () => {
     await db.destroy();
-  })
+  });
   it('constructor should set the coveyTownID property', () => { // Included in handout
     const townID = nanoid(30);
     const townController = new CoveyTownController(townID);
