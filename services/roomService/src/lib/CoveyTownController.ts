@@ -76,7 +76,7 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
-  private _censorer: Censorer = new Censorer;
+  private _censorer: Censorer = new Censorer();
 
   /** The list of AChatMessages that are sent between players in this town * */
   public messages: AChatMessage[] = [];

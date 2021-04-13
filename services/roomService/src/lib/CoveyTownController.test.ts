@@ -235,13 +235,13 @@ describe('CoveyTownController', () => {
       const message4 = new GlobalChatMessage('professor bell bell boyland', player1);
       testingTown.sendGlobalPlayerMessage(message4);
       mockListeners.forEach(listener => listener.onGlobalMessage(message1));
-      expect(message1.message).toEqual('professor **** icecream')
+      expect(message1.message).toEqual('professor **** icecream');
       mockListeners.forEach(listener => listener.onGlobalMessage(message2));
-      expect(message2.message).toEqual('****')
+      expect(message2.message).toEqual('****');
       mockListeners.forEach(listener => listener.onGlobalMessage(message3));
-      expect(message3.message).toEqual('professor boyland')
+      expect(message3.message).toEqual('professor boyland');
       mockListeners.forEach(listener => listener.onGlobalMessage(message4));
-      expect(message4.message).toEqual('professor **** **** boyland')
+      expect(message4.message).toEqual('professor **** **** boyland');
     });
 
     it('private messages should be censored appropriately', async () => {
@@ -259,13 +259,13 @@ describe('CoveyTownController', () => {
       const message4 = new PrivateChatMessage('professor bell bell boyland', player1, player2);
       testingTown.sendPrivatePlayerMessage(message4);
       mockListeners.forEach(listener => listener.onPrivateMessage(message1));
-      expect(message1.message).toEqual('professor **** icecream')
+      expect(message1.message).toEqual('professor **** icecream');
       mockListeners.forEach(listener => listener.onPrivateMessage(message2));
-      expect(message2.message).toEqual('****')
+      expect(message2.message).toEqual('****');
       mockListeners.forEach(listener => listener.onPrivateMessage(message3));
-      expect(message3.message).toEqual('professor boyland')
+      expect(message3.message).toEqual('professor boyland');
       mockListeners.forEach(listener => listener.onPrivateMessage(message4));
-      expect(message4.message).toEqual('professor **** **** boyland')
+      expect(message4.message).toEqual('professor **** **** boyland');
     });
   });
 
