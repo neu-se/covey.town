@@ -29,22 +29,22 @@ export default class TTLGameServiceClient {
     throw new Error(`Error processing request: ${response.data.message}`);
   }
 
-  async createTicGame(requestData: GameCreateRequest): Promise<GameCreateResponse> {
+  async createTTLGame(requestData: GameCreateRequest): Promise<GameCreateResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<GameCreateResponse>>('/ttl', requestData);
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async updateTicGame(requestData: GameUpdateRequest): Promise<void> {
+  async updateTTLGame(requestData: GameUpdateRequest): Promise<void> {
     const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameID}`, requestData);
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
-  async deleteTicGame(requestData: GameDeleteRequest): Promise<void> {
+  async deleteTTLGame(requestData: GameDeleteRequest): Promise<void> {
     const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/ttl-games/${requestData.gameID}`);
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
-  async listTicGames(): Promise<GameListResponse> {
+  async listTTLGames(): Promise<GameListResponse> {
     const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/ttl-games');
     return TTLGameServiceClient.unwrapOrThrowError(responseWrapper);
   }
