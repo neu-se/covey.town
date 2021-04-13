@@ -15,12 +15,12 @@ import {
 } from '@chakra-ui/react'
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import TTLGame from "./gamesService/TTLGame";
-import HangmanGame from "./gamesService/HangmanGame";
-import TTLDisplay from "./GameDisplays/TTLDisplay";
-import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
-import GameController from "./gamesService/GameController";
-import {GameCreateRequest} from "./gamesClient/Types";
+import TTLDisplay from "../GameDisplays/TTLDisplay";
+import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
+import {GameCreateRequest} from "../gamesClient/GameRequestTypes";
+import useCoveyAppState from "../../../hooks/useCoveyAppState";
+import TTLGame from "../gamesClient/TTLGame";
+import HangmanGame from "../gamesClient/HangmanGame";
 
 export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -30,18 +30,24 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const [truth2, setTruth2] = useState('')
   const [lie, setLie] = useState('')
   const [playing, setPlaying] = useState(false)
-  const [game, setGame] = useState<TTLGame | HangmanGame | null>(null)
-  const controller = GameController.getInstance()
+  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const { currentPlayer } = props
+  const { gamesClient } = useCoveyAppState();
   const toast = useToast()
 
   const getNewGame = async (requestData : GameCreateRequest) => {
-    const newGameID = await controller.createGame(requestData)
-      .then(response => response.response?.gameID);
-    if (newGameID !== undefined) {
-      return controller.findGameById(newGameID)
+    const newGameId = await gamesClient.createGame(requestData)
+      .then(response => response.gameId);
+    if (newGameId !== undefined) {
+      return newGameId
     }
     return undefined
+  }
+
+  const getCurrentGame = async (gameId: string) => {
+    setCurrentGameObject(await gamesClient.listGames()
+      .then(response => response.games.find(g => g.id === gameId)));
+      setPlaying(true);
   }
 
   return (
@@ -57,9 +63,9 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             New Game
           </ModalHeader>
           <ModalCloseButton onClick={async () => {
-            if (game) {
-              await controller.deleteGame({gameID: game.id});
-              setGame(null)
+            if (currentGameObject !== undefined && currentGameObject.id !== "") {
+              await gamesClient.deleteGame({gameId: currentGameObject.id});
+              setCurrentGameObject(undefined)
               setPlaying(false)
               setLie("")
               setTruth1("")
@@ -140,13 +146,13 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                 </>
             }
             {
-              playing && game && game.player2ID === "" &&
+              playing && currentGameObject !== undefined && currentGameObject.player2ID === "" &&
                 <div className="games-center-div">
                   Waiting for Player 2 to join...
                 </div>
             }
             {
-              playing && game && game.player2ID !== "" &&
+              playing && currentGameObject !== undefined && currentGameObject.player2ID !== "" &&
                 <>
                   <div className="col-12">
                     <h1 className="games-headline">
@@ -154,16 +160,16 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     </h1>
                     <ModalCloseButton />
                     <hr/>
-                    <p className="games-subhead">{game.player1Username} vs. {game.player2Username}</p>
+                    <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                     <br/>
                   </div>
 
                   <div className="games-border games-extra-padded">
                     {gameSelection === "ttl" &&
-                    <TTLDisplay game = {game as TTLGame}/>
+                    <TTLDisplay game = {currentGameObject as TTLGame}/>
                     }
                     {gameSelection === "Hangman" &&
-                    <HangmanDisplay game={game as HangmanGame}/>
+                    <HangmanDisplay game ={currentGameObject as HangmanGame}/>
                     }
                   </div>
                 </>
@@ -174,14 +180,14 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             <ModalFooter>
             <Button className="games-padded-asset" colorScheme="green"
                     onClick={async () => {
-                      // TODO: get correct player1 usernames and add tictactoe option
                       if (gameSelection === "ttl") {
-                        const newGame = await getNewGame({
+                        console.log("new ttl game")
+                        const newGameId = await getNewGame({
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}
                         });
-                        if (newGame !== undefined) {
-                          setGame(newGame);
+                        if (newGameId !== undefined) {
+                          await getCurrentGame(newGameId);
                         }
                         else {
                           toast({
@@ -191,12 +197,12 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                           });
                         }
                       } else if (gameSelection === "Hangman") {
-                        const newGame = await getNewGame({
+                        const newGameId = await getNewGame({
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {word: hangmanWord}
                         });
-                        if (newGame !== undefined) {
-                          setGame(newGame);
+                        if (newGameId !== undefined) {
+                          await getCurrentGame(newGameId);
                         }
                         else {
                           toast({
@@ -206,7 +212,6 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                           });
                         }
                       }
-                      setPlaying(true);
                     }}>
               Create Game
             </Button>

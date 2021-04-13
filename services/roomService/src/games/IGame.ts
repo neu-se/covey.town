@@ -1,4 +1,4 @@
-import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from '../client/Types';
+import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from '../client/GameTypes';
 
 export default interface IGame {
 
@@ -8,7 +8,11 @@ export default interface IGame {
 
   player1ID: string;
 
+  player1Username: string;
+
   player2ID : string;
+
+  player2Username: string;
 
 
   initializeGame(initialGameData?:string): string;

@@ -1,10 +1,10 @@
-import Express from 'express';
-import CORS from 'cors';
-import http from 'http';
-import { nanoid } from 'nanoid';
-import assert from 'assert';
+import * as http from 'http';
+import * as assert from 'assert';
 import { AddressInfo } from 'net';
 
+import { nanoid } from 'nanoid';
+import * as CORS from 'cors';
+import * as Express from 'express';
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
 

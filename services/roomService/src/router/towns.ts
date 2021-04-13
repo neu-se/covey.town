@@ -10,7 +10,9 @@ import {
   townSubscriptionHandler,
   townUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
+import { createGame, updateGame, findAllGames, deleteGame } from '../requestHandlers/GameRequestHandler';
 import { logError } from '../Utils';
+
 
 export default function addTownRoutes(http: Server, app: Express): io.Server {
   /*
@@ -107,6 +109,95 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         });
     }
   });
+  /**
+   * Games endpoints start here
+   *
+   * Create a new game session
+   */
+  app.post('/games', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await createGame(
+        {
+          player1Id: req.body.player1ID,
+          player1Username: req.body.player1Username,
+          gameType: req.body.gameType,
+          initialGameState: req.body.initialGameState,
+        },
+      );
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Update a game session after a player makes a move
+   */
+  app.patch('/games/:gameId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await updateGame(
+        {
+          gameId: req.params.gameId,
+          player: req.body.player,
+          move: req.body.move,
+          player2Username: req.body.player2Username,
+          player2Id: req.body.player2Id,
+        },
+      );
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Retrieve data for all game sessions
+   */
+  app.get('/games', BodyParser.json(), async (_req, res) => {
+    try {
+      const result = await findAllGames();
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Delete a specified game session from the server
+   */
+  app.delete('games/:gameId', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await deleteGame(
+        {
+          gameId: req.params.gameId,
+        },
+      );
+      res.status(200)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500)
+        .json({
+          message: 'Internal server error, please see log in server for details',
+        });
+    }
+  });
+
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

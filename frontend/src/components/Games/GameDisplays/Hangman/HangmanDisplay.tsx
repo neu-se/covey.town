@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import HangmanLetter from "./HangmanLetter";
-import HangmanGame from "../../gamesService/HangmanGame";
+import HangmanGame from "../../gamesClient/HangmanGame";
 
 interface HangmanDisplayProps {
   game: HangmanGame;
@@ -10,7 +10,10 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
   const [alreadyGuessedLetters, setAlreadyGuessedLetters] = useState<string[]>([])
 
   const updateAlreadyGuessedLetters = useCallback(() => {
-    const letters = game.alreadyGuessed.sort();
+    let letters: string[] = [];
+    if (game.alreadyGuessed !== undefined) {
+      letters = game.alreadyGuessed.sort();
+    }
     setAlreadyGuessedLetters(letters)
   }, [])
 
@@ -33,38 +36,38 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
       <br/>
       <div className="games-center-div">
         <div className="row">
-          <HangmanLetter game={game} letter="A"/>
-          <HangmanLetter game={game} letter="B"/>
-          <HangmanLetter game={game} letter="C"/>
-          <HangmanLetter game={game} letter="D"/>
-          <HangmanLetter game={game} letter="E"/>
-          <HangmanLetter game={game} letter="F"/>
-          <HangmanLetter game={game} letter="G"/>
+          <HangmanLetter gameId={game.id} letter="A"/>
+          <HangmanLetter gameId={game.id} letter="B"/>
+          <HangmanLetter gameId={game.id} letter="C"/>
+          <HangmanLetter gameId={game.id} letter="D"/>
+          <HangmanLetter gameId={game.id} letter="E"/>
+          <HangmanLetter gameId={game.id} letter="F"/>
+          <HangmanLetter gameId={game.id} letter="G"/>
         </div>
         <div className="row">
-          <HangmanLetter game={game} letter="H"/>
-          <HangmanLetter game={game} letter="I"/>
-          <HangmanLetter game={game} letter="J"/>
-          <HangmanLetter game={game} letter="K"/>
-          <HangmanLetter game={game} letter="L"/>
-          <HangmanLetter game={game} letter="M"/>
-          <HangmanLetter game={game} letter="N"/>
+          <HangmanLetter gameId={game.id} letter="H"/>
+          <HangmanLetter gameId={game.id} letter="I"/>
+          <HangmanLetter gameId={game.id} letter="J"/>
+          <HangmanLetter gameId={game.id} letter="K"/>
+          <HangmanLetter gameId={game.id} letter="L"/>
+          <HangmanLetter gameId={game.id} letter="M"/>
+          <HangmanLetter gameId={game.id} letter="N"/>
         </div>
         <div className="row">
-          <HangmanLetter game={game} letter="O"/>
-          <HangmanLetter game={game} letter="P"/>
-          <HangmanLetter game={game} letter="Q"/>
-          <HangmanLetter game={game} letter="R"/>
-          <HangmanLetter game={game} letter="S"/>
-          <HangmanLetter game={game} letter="T"/>
+          <HangmanLetter gameId={game.id} letter="O"/>
+          <HangmanLetter gameId={game.id} letter="P"/>
+          <HangmanLetter gameId={game.id} letter="Q"/>
+          <HangmanLetter gameId={game.id} letter="R"/>
+          <HangmanLetter gameId={game.id} letter="S"/>
+          <HangmanLetter gameId={game.id} letter="T"/>
         </div>
         <div className="row">
-          <HangmanLetter game={game} letter="U"/>
-          <HangmanLetter game={game} letter="V"/>
-          <HangmanLetter game={game} letter="W"/>
-          <HangmanLetter game={game} letter="X"/>
-          <HangmanLetter game={game} letter="Y"/>
-          <HangmanLetter game={game} letter="Z"/>
+          <HangmanLetter gameId={game.id} letter="U"/>
+          <HangmanLetter gameId={game.id} letter="V"/>
+          <HangmanLetter gameId={game.id} letter="W"/>
+          <HangmanLetter gameId={game.id} letter="X"/>
+          <HangmanLetter gameId={game.id} letter="Y"/>
+          <HangmanLetter gameId={game.id} letter="Z"/>
         </div>
       </div>
     </>
