@@ -13,9 +13,8 @@ import ToggleAudioButton from '../Buttons/ToggleAudioButton/ToggleAudioButton';
 import ToggleVideoButton from '../Buttons/ToggleVideoButton/ToggleVideoButton';
 import ToggleScreenShareButton from '../Buttons/ToogleScreenShareButton/ToggleScreenShareButton';
 import TownSettings from '../../../../Login/TownSettings';
-import MenuContainer from '@material-ui/core/Menu';
-import JoinGameModalDialog from "../../../../Games/JoinGameModalDialog";
-import CreateGameModalDialog from "../../../../Games/CreateGameModalDialog";
+import CreateGameModalDialog from "../../../../Games/GameModals/CreateGameModalDialog";
+import BrowseOpenGamesModal from "../../../../Games/GameModals/BrowseOpenGamesModal";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   container: {
@@ -95,7 +94,7 @@ export default function MenuBar(props: { setMediaError?(error: Error): void , pl
               <Grid container justify="flex-end">
                 <TownSettings />
                 {/*TODO: Remove these from menu bar!*/}
-                <JoinGameModalDialog currentPlayer={props.playerInfo} dialogType={"joining"} gameType={"Hangman"} gameId={"1"}/>
+                <BrowseOpenGamesModal currentPlayer={props.playerInfo}/>
                 <CreateGameModalDialog currentPlayer={props.playerInfo}/>
                 <Menu />
                 <EndCallButton />

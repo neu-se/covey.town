@@ -9,31 +9,39 @@ import {
   ModalCloseButton,
   Button, useDisclosure,
 } from '@chakra-ui/react'
-import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import GameController from "./gamesService/GameController";
-import TTLDisplay from "./GameDisplays/TTLDisplay";
-import TTLGame from "./gamesService/TTLGame";
-import HangmanDisplay from "./GameDisplays/Hangman/HangmanDisplay";
-import HangmanGame from "./gamesService/HangmanGame";
+import TTLDisplay from "../GameDisplays/TTLDisplay";
+import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
+import useCoveyAppState from "../../../hooks/useCoveyAppState";
+import HangmanGame from "../gamesClient/HangmanGame";
+import TTLGame from "../gamesClient/TTLGame";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
   dialogType: string;
   gameId: string;
   gameType: string;
+  player1: string;
 }
 
-export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
+export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType, player1}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const controller = GameController.getInstance()
-  const game = controller.findGameById(gameId)
+  const {gamesClient} = useCoveyAppState();
+  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
+
+  const getCurrentGame = async () => {
+    setCurrentGameObject(await gamesClient.listGames()
+      .then(response => response.games.find(g => g.id === gameId)));
+    setPlaying(true);
+  }
+
+
   return (
     <>
-      <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
+      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => onOpen()}>
         <Typography variant="body1">Join Game</Typography>
-      </MenuItem>
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -58,15 +66,20 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
             }
             {dialogType === "joining" &&
             <ModalBody>
-              Are you sure you want to join a {gameType} game with {game ? game.player1Username : "this player"}?
+              Are you sure you want to join a {gameType === "ttl" ? "Two Truths and a Lie" : gameType} game with {player1}?
             </ModalBody>
             }
             {dialogType === "joining" &&
             <ModalFooter>
               <Button className="games-padded-asset" colorScheme="green"
-                      onClick={() => {
-                        game?.playerJoin(currentPlayer.id, currentPlayer.username);
-                        setPlaying(true)
+                      onClick={async () => {
+                        await gamesClient.updateGame({
+                            gameId,
+                            player2Id: currentPlayer.id,
+                            player2Username: currentPlayer.username
+                          }
+                        );
+                        await getCurrentGame();
                       }
                       }>Join Game</Button>
               <Button className="games-padded-asset" colorScheme="blue" mr={3} onClick={onClose}>
@@ -78,9 +91,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
           </>
           }
           {
-            playing &&
-            //  TODO: Uncomment this when actually connected to game!
-            // game &&
+            playing && currentGameObject !== undefined &&
             <>
               <div className="col-12">
                 <h1 className="games-headline">
@@ -88,17 +99,16 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
                 </h1>
                 <ModalCloseButton/>
                 <hr/>
-                {/* TODO: remove null check when above like is uncommented */}
-                <p className="games-subhead">{game ? game.player1Username : "player1"} vs. {game ? game.player2Username : "player2"}</p>
+                <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                 <br/>
               </div>
 
               <div className="games-border games-extra-padded">
                 {gameType === "ttl" &&
-                <TTLDisplay game={game as TTLGame}/>
+                <TTLDisplay game={currentGameObject as TTLGame}/>
                 }
                 {gameType === "Hangman" &&
-                <HangmanDisplay game={game as HangmanGame}/>
+                <HangmanDisplay game={currentGameObject as HangmanGame}/>
                 }
               </div>
             </>

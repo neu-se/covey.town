@@ -1,14 +1,15 @@
 import React, {useState} from "react";
 import {Button} from "@chakra-ui/react";
-import HangmanGame from "../../gamesService/HangmanGame";
+import useCoveyAppState from "../../../../hooks/useCoveyAppState";
 
 interface HangmanLetterProps {
-  game: HangmanGame;
+  gameId: string;
   letter: string
 }
 
-export default function HangmanLetter({game, letter} : HangmanLetterProps) : JSX.Element {
+export default function HangmanLetter({gameId, letter} : HangmanLetterProps) : JSX.Element {
   const [disabled, setDisabled] = useState(false);
+  const { gamesClient } = useCoveyAppState();
 
   return (
     <>
@@ -16,9 +17,10 @@ export default function HangmanLetter({game, letter} : HangmanLetterProps) : JSX
       <Button classname="games-padded-asset"
               isDisabled={disabled}
               value={letter}
-              onClick={() => {
+              onClick={async () => {
                 setDisabled(true);
-                game.move({letter: letter.toLowerCase()})
+                await gamesClient.updateGame({
+                  gameId, move: {letter: letter.toLowerCase()}})
               }}>
         {letter}
       </Button>
