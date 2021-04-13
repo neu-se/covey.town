@@ -30,18 +30,9 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
 
-  const getNewGame = async (requestData : GameUpdateRequest) => {
-    const newGameId = await gamesClient.updateGame(requestData)
-      .then(response => response.gameId);
-    if (newGameId !== undefined) {
-      return newGameId
-    }
-    return undefined
-  }
-
-  const getCurrentGame = async (id: string) => {
+  const getCurrentGame = async () => {
     setCurrentGameObject(await gamesClient.listGames()
-      .then(response => response.games.find(g => g.id === id)));
+      .then(response => response.games.find(g => g.id === gameId)));
     setPlaying(true);
   }
 
@@ -82,15 +73,13 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
             <ModalFooter>
               <Button className="games-padded-asset" colorScheme="green"
                       onClick={async () => {
-                        const newGameId = await getNewGame({
+                        await gamesClient.updateGame({
                             gameId,
                             player2Id: currentPlayer.id,
                             player2Username: currentPlayer.username
                           }
                         );
-                        if (newGameId !== undefined) {
-                          await getCurrentGame(newGameId);
-                        }
+                        await getCurrentGame();
                       }
                       }>Join Game</Button>
               <Button className="games-padded-asset" colorScheme="blue" mr={3} onClick={onClose}>

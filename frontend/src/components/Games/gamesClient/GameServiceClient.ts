@@ -5,7 +5,7 @@ import {
   GameCreateResponse,
   GameDeleteRequest,
   GameListResponse,
-  GameUpdateRequest, GameUpdateResponse,
+  GameUpdateRequest,
   ResponseEnvelope,
 } from './GameRequestTypes';
 
@@ -34,9 +34,9 @@ export default class GameServiceClient {
     return GameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async updateGame(requestData: GameUpdateRequest): Promise<GameUpdateResponse> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<GameUpdateResponse>>(`/games/${requestData.gameId}`, requestData);
-    return GameServiceClient.unwrapOrThrowError(responseWrapper);
+  async updateGame(requestData: GameUpdateRequest): Promise<void> {
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/games/${requestData.gameId}`, requestData);
+    return GameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async deleteGame(requestData: GameDeleteRequest): Promise<void> {
