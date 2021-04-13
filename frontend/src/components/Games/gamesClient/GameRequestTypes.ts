@@ -1,3 +1,5 @@
+import {TTLPlayer1Move, TTLPlayer2Move, HangmanPlayer1Move, HangmanPlayer2Move, GameList} from "./GameTypes";
+
 export interface ResponseEnvelope<T> {
   isOK: boolean;
   message?: string;
@@ -26,21 +28,6 @@ export interface GameUpdateRequest {
   player2Username?: string;
 }
 
-export type TTLPlayer2Move = { guess: number };
-export type TTLPlayer1Move = { guessCorrect: boolean, correctAnswer?: string };
-export type HangmanPlayer2Move = { letter: string };
-export type HangmanPlayer1Move = { correct: boolean, finalWord?: string, limbLost: Limb };
-
-export enum Limb {
-  Head,
-  Back,
-  LeftArm,
-  RightArm,
-  LeftLeg,
-  RightLeg,
-}
-
-
 export interface GameDeleteRequest {
   gameId: string;
 }
@@ -48,10 +35,4 @@ export interface GameDeleteRequest {
 export interface GameListResponse {
   games: GameList;
 }
-
-export type GameList = { gameId: string; gameState: string; gameType: string; player1Username: string, player2ID: string }[];
-
-
-
-
 

@@ -1,12 +1,12 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { TTLPlayer2Move, TTLChoices } from '../gamesClient/Types';
+import { TTLPlayer2Move, TTLChoices } from './GameTypes';
 import IGame from './IGame';
 
 export default class TTLGame implements IGame {
 
   friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
-  private _id: string = this.friendlyNanoID();
+  id: string = this.friendlyNanoID();
 
   gameState: string;
 
@@ -27,16 +27,7 @@ export default class TTLGame implements IGame {
   correctOption: number;
 
 
-  alreadyGuessed : number[];
-
-
-  get id(): string {
-    return this._id;
-  }
-
-  set id(value: string) {
-    this._id = value;
-  }
+  alreadyGuessed : string[];
 
   constructor(player1ID:string, player1Username:string, initialGameData: TTLChoices ) {
     this.player1ID = player1ID;
@@ -63,7 +54,7 @@ export default class TTLGame implements IGame {
   }
 
   isGameOver(): boolean {
-    if (this.alreadyGuessed.find(e => e === this.correctOption)) {
+    if (this.alreadyGuessed.find(e => e === this.correctOption.toString())) {
       this.finishGame(this.player2ID);
       return true;
     }

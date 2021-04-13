@@ -3,10 +3,10 @@
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { nanoid } from 'nanoid';
+import * as Express from 'express';
 import CORS = require('cors');
-import Express = require('express');
-import HangmanServiceClient from '../client/HangmanServiceClient';
-import { GameListResponse, HangmanWord, TTLChoices } from '../client/Types';
+import HangmanServiceClient from '../client/GameServiceClient';
+import { GameListResponse, HangmanWord, TTLChoices } from '../client/GameTypes';
 import addTownRoutes from '../router/towns';
 import TTLGameServiceClient from '../client/TTLGameServiceClient';
 

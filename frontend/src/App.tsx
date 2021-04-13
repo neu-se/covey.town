@@ -25,6 +25,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import GameServiceClient from "./components/Games/gamesClient/GameServiceClient";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -37,6 +38,7 @@ type CoveyAppUpdate =
 
 function defaultAppState(): CoveyAppState {
   return {
+    gamesClient: new GameServiceClient(),
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     myPlayerID: '',
@@ -51,7 +53,7 @@ function defaultAppState(): CoveyAppState {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    apiClient: new TownsServiceClient()
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -68,6 +70,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     socket: state.socket,
     emitMovement: state.emitMovement,
     apiClient: state.apiClient,
+    gamesClient: state.gamesClient
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {

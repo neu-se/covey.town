@@ -14,19 +14,20 @@ import {
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import { ListItem } from '@material-ui/core';
-import {GameList} from "../gamesClient/Types";
-import {findAllGames} from "../gamesService/GameRequestHandler";
+import {GameList} from "../gamesClient/GameTypes";
 import JoinGameModalDialog from "./JoinGameModalDialog";
+import useCoveyAppState from "../../../hooks/useCoveyAppState";
 
 
 export default function BrowseOpenGamesModal(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gamesList, setGamesList] = useState<GameList>();
+  const { gamesClient } = useCoveyAppState();
 
   useEffect(() => {
     const fetchAllGames = async () => {
       console.info("Fetching games")
-      const games = (await findAllGames()).response?.games
+      const { games } = await gamesClient.listGames()
       setGamesList(games)
     }
     fetchAllGames()

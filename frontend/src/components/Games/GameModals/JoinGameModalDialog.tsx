@@ -11,10 +11,10 @@ import {
 } from '@chakra-ui/react'
 import Typography from "@material-ui/core/Typography";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
-import TTLGame from "../gamesService/TTLGame";
 import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
-import HangmanGame from "../gamesService/HangmanGame";
-import {findGameById} from "../../../../../services/roomService/src/requestHandlers/GameRequestHandler";
+import useCoveyAppState from "../../../hooks/useCoveyAppState";
+import HangmanGame from "../gamesClient/HangmanGame";
+import TTLGame from "../gamesClient/TTLGame";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
@@ -25,8 +25,23 @@ interface GameModalDialogProps {
 
 export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const game = findGameById(gameId)
+  const {gamesClient} = useCoveyAppState();
+  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | null>(null)
   const [playing, setPlaying] = useState(false);
+
+  const getCurrentGame = async () => {
+    const allGames = await gamesClient.listGames()
+      .then(response => response.games)
+    if (currentGameObject) {
+      const currentGame = allGames.find(g => g.id === gameId)
+      if (currentGame !== undefined) {
+        setCurrentGameObject(currentGame)
+      }
+      setCurrentGameObject(null)
+    }
+  }
+
+
   return (
     <>
       <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => onOpen()}>
@@ -56,14 +71,14 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
             }
             {dialogType === "joining" &&
             <ModalBody>
-              Are you sure you want to join a {gameType} game with {game ? game.player1Username : "this player"}?
+              Are you sure you want to join a {gameType} game with {currentGameObject ? currentGameObject.player1Username : "this player"}?
             </ModalBody>
             }
             {dialogType === "joining" &&
             <ModalFooter>
               <Button className="games-padded-asset" colorScheme="green"
                       onClick={() => {
-                        game?.playerJoin(currentPlayer.id, currentPlayer.username);
+                        gamesClient.updateGame({gameId, player2Id: currentPlayer.id, player2Username: currentPlayer.username});
                         setPlaying(true)
                       }
                       }>Join Game</Button>
@@ -76,9 +91,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
           </>
           }
           {
-            playing &&
-            //  TODO: Uncomment this when actually connected to game!
-            // game &&
+            playing && currentGameObject &&
             <>
               <div className="col-12">
                 <h1 className="games-headline">
@@ -86,17 +99,16 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
                 </h1>
                 <ModalCloseButton/>
                 <hr/>
-                {/* TODO: remove null check when above like is uncommented */}
-                <p className="games-subhead">{game ? game.player1Username : "player1"} vs. {game ? game.player2Username : "player2"}</p>
+                <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                 <br/>
               </div>
 
               <div className="games-border games-extra-padded">
                 {gameType === "ttl" &&
-                <TTLDisplay game={game as TTLGame}/>
+                <TTLDisplay game={currentGameObject as TTLGame}/>
                 }
                 {gameType === "Hangman" &&
-                <HangmanDisplay game={game as HangmanGame}/>
+                <HangmanDisplay game={currentGameObject as HangmanGame}/>
                 }
               </div>
             </>

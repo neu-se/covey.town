@@ -1,4 +1,4 @@
-import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from '../client/Types';
+import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from '../client/GameTypes';
 
 export default interface IGame {
 

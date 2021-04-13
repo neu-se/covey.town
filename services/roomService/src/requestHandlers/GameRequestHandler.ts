@@ -1,10 +1,12 @@
 import {
   GameCreateRequest,
-  GameCreateResponse, GameDeleteRequest, GameListResponse, GameUpdateRequest, HangmanPlayer2Move,
+  GameCreateResponse, GameDeleteRequest, GameListResponse, GameUpdateRequest, ResponseEnvelope,
+} from '../client/GameRequestTypes';
+import {
+  HangmanPlayer2Move,
   HangmanWord,
-  ResponseEnvelope,
   TTLChoices, TTLPlayer2Move,
-} from '../client/Types';
+} from '../client/GameTypes';
 import HangmanGame from '../games/HangmanGame';
 import TTLGame from '../games/TTLGame';
 import GameController from '../games/GameController';

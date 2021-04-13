@@ -1,6 +1,6 @@
 import HangmanGame from './HangmanGame';
 import TTLGame from './TTLGame';
-import { GameList } from '../client/Types';
+import { GameList } from '../client/GameTypes';
 
 
 export default class GameController {
@@ -17,13 +17,16 @@ export default class GameController {
     this._gamesList = value;
   }
 
-  getGames(): GameList {
+  getGames(): { gameId: string; gameType: string; alreadyGuessed: string[]; player2ID: string; player2Username: string;
+    gameState: string; player1Username: string }[] {
     return this._gamesList.map(game => ({
       gameId: game.id,
       gameState: game.gameState,
       gameType: (game.alreadyGuessed ? 'Hangman' : 'Two Truths and a Lie'),
       player1Username: game.player1Username,
       player2ID: game.player2ID,
+      player2Username: game.player2Username,
+      alreadyGuessed: (game.alreadyGuessed),
     }));
   }
 

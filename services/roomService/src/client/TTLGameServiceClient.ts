@@ -7,7 +7,7 @@ import {
   GameListResponse,
   GameUpdateRequest,
   ResponseEnvelope,
-} from './Types';
+} from './GameRequestTypes';
 
 export default class TTLGameServiceClient {
   private _axios: AxiosInstance;
