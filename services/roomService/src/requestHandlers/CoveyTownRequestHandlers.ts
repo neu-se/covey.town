@@ -86,7 +86,7 @@ export interface TownUpdateRequest {
 /**
  * Payload sent by the client to merge two towns
  */
- export interface TownMergeRequest {
+export interface TownMergeRequest {
   destinationCoveyTownID: string;
   requestedCoveyTownID: string;
   coveyTownPassword: string, 
@@ -134,7 +134,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
-      isMergeable: coveyTownController.isMergeable
+      isMergeable: coveyTownController.isMergeable,
     },
   };
 }
@@ -237,8 +237,8 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       newTownFriendlyName: string, newTownIsPubliclyListed: boolean, newTownIsMergeable: boolean) {
         
       socket.emit('roomsMerged', destinationTownID, requestedTownID, destinationFriendlyName, 
-        requestedFriendlyName, newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable)
-    }
+        requestedFriendlyName, newTownFriendlyName, newTownIsPubliclyListed, newTownIsMergeable);
+    },
   };
 }
 

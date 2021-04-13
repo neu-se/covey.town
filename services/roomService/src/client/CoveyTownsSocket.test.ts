@@ -24,7 +24,7 @@ describe('TownServiceApiSocket', () => {
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
-      isMergeable: true
+      isMergeable: true,
     });
     return {
       friendlyName,

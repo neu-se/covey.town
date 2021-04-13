@@ -142,7 +142,7 @@ export default class TownsServiceClient {
   }
 
   async mergeTowns(requestData: TownMergeRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns`, requestData);
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>('/towns', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
