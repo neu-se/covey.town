@@ -4,7 +4,15 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import { CoveyTownsStore, updateTown } from '../lib/CoveyTownsStore';
-import { updateUser, getTownByID, TownData } from '../database/databaseService';
+import {
+  deleteUser,
+  updateUser,
+  getTownByID,
+  saveTown,
+  unsaveTown,
+  getCurrentAvatar,
+  updateAvatar,
+} from '../database/databaseService';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -73,6 +81,24 @@ export interface CreateUserRequest {
   email: string;
 }
 
+export interface DeleteUserRequest {
+  email: string;
+}
+
+export interface SavedTownsRequest {
+  email: string;
+}
+
+export interface SaveTownRequest {
+  email: string;
+  coveyTownID: string;
+}
+
+export interface UnsaveTownRequest {
+  email: string;
+  coveyTownID: string;
+}
+
 /**
  * Payload sent by the client to update a Town.
  * N.B., JavaScript is terrible, so:
@@ -83,6 +109,15 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface GetAvatarRequest {
+  email: string;
+}
+
+export interface UpdateAvatarRequest {
+  email: string;
+  avatar: string;
 }
 
 /**
@@ -112,25 +147,52 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
-  const town: TownData = await getTownByID(requestData.coveyTownID);
+  const town = await getTownByID(requestData.coveyTownID);
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
+  if (town) {
+    return {
+      isOK: true,
+      response: {
+        coveyUserID: newPlayer.id,
+        coveySessionToken: newSession.sessionToken,
+        providerVideoToken: newSession.videoToken,
+        currentPlayers: coveyTownController.players,
+        friendlyName: town.friendlyName,
+        isPubliclyListed: town.isPublicallyListed,
+      },
+    };
+  }
+  return {
+    isOK: false,
+  };
+}
+
+export async function getAvatarHandler(requestData: GetAvatarRequest): Promise<ResponseEnvelope<string>>{
+  const currentAvatar = await getCurrentAvatar(requestData.email);
   return {
     isOK: true,
-    response: {
-      coveyUserID: newPlayer.id,
-      coveySessionToken: newSession.sessionToken,
-      providerVideoToken: newSession.videoToken,
-      currentPlayers: coveyTownController.players,
-      friendlyName: town.friendlyName,
-      isPubliclyListed: town.isPublicallyListed,
-    },
+    response: currentAvatar,
+  };
+}
+
+export async function updateAvatarHandler(requestData: UpdateAvatarRequest): Promise<ResponseEnvelope<void>> {
+  await updateAvatar(requestData.email, requestData.avatar);
+  return {
+    isOK: true,
   };
 }
 
 export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
   await updateUser(requestData.email);
+  return {
+    isOK: true,
+  };
+}
+
+export async function userDeleteHandler(requestData: DeleteUserRequest): Promise<ResponseEnvelope<void>> {
+  await deleteUser(requestData.email);
   return {
     isOK: true,
   };
@@ -142,6 +204,29 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   return {
     isOK: true,
     response: { towns: townList },
+  };
+}
+
+export async function savedTownHandler(requestData: SavedTownsRequest): Promise<ResponseEnvelope<TownListResponse>> {
+  const townsStore = await CoveyTownsStore.getInstance();
+  const townList: CoveyTownList = await townsStore.getSavedTowns(requestData.email);
+  return {
+    isOK: true,
+    response: { towns: townList },
+  };
+}
+
+export async function saveTownHandler(requestData: SaveTownRequest): Promise<ResponseEnvelope<void>> {
+  await saveTown(requestData.email, requestData.coveyTownID);
+  return {
+    isOK: true,
+  };
+}
+
+export async function deleteSavedTownHandler(requestData: UnsaveTownRequest): Promise<ResponseEnvelope<void>> {
+  await unsaveTown(requestData.email, requestData.coveyTownID);
+  return {
+    isOK: true,
   };
 }
 
@@ -216,13 +301,11 @@ export async function townSubscriptionHandler(socket: Socket): Promise<void> {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinTownHandler
   const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
-
   const townController = await CoveyTownsStore.getInstance()
     .then(instance => { 
       const s = instance.getControllerForTown(coveyTownID);
       return s;
     });
-
   // Retrieve our metadata about this player from the TownController
   const s = townController?.getSessionByToken(token);
   if (!s || !townController) {

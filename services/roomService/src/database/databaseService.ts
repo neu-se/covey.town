@@ -28,6 +28,13 @@ export type TownListingInfo = {
   friendlyName: string,
 };
 
+export type UserInfo = {
+  email: string,
+  username: string,
+  nickname: string,
+  currentAvatar: string,
+};
+
 // functions interacting with Users
 export async function updateUser(email: string): Promise<void>  {
   let count = 0;
@@ -43,6 +50,22 @@ export async function updateUser(email: string): Promise<void>  {
         'email': email,
       });
   }
+}
+
+export async function getAllUserInfo(email: string): Promise<UserInfo> {
+  return db('Users')
+    .where('email', email)
+    .then((rows: any[]) => {
+      const user = rows[0];
+      return { email: user.email, username: user.username, nickname: user.nickname, currentAvatar: user.currentAvatar };
+    });
+}
+
+export async function deleteUser(email: string): Promise<void> {
+  await db('Users')
+    .where('email', email)
+    .del();
+
 }
 
 // Functions interacting with Towns
@@ -67,19 +90,22 @@ export async function getAllTowns(): Promise<AllTownResponse[]> {
   return results;
 }
 
-export async function getTownByID(townID: string): Promise<TownData> {
+export async function getTownByID(townID: string): Promise<TownData | void> {
   const result = await db('Towns')
     .select('coveyTownID', 'coveyTownPassword', 'friendlyName', 'isPublicallyListed')
     .where('coveyTownID', townID)
     .then((rows: any[]) => {
       const row = rows[0];
-      const town = {
+      let town;
+      if (row !== undefined) {
+        town = {
 
-        coveyTownID: row.coveyTownID,
-        coveyTownPassword: row.coveyTownPassword,
-        friendlyName: row.friendlyName,
-        isPublicallyListed: row.isPublicallyListed,
-      };
+          coveyTownID: row.coveyTownID,
+          coveyTownPassword: row.coveyTownPassword,
+          friendlyName: row.friendlyName,
+          isPublicallyListed: row.isPublicallyListed,
+        };
+      }
       return town;
     });
   return result;
@@ -166,6 +192,16 @@ export async function updateAvatar(user: string, avatar: string): Promise<void> 
     .where('email', user)
     .update({
       'currentAvatar': avatar,
+    });
+}
+
+export async function getCurrentAvatar(user: string): Promise<string> {
+  return db('Users')
+    .select('currentAvatar')
+    .where('email', user)
+    .then((rows: any[]) => {
+      const response = rows[0];
+      return response.currentAvatar;
     });
 }
 
