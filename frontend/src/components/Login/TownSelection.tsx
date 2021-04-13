@@ -29,6 +29,13 @@ interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
+function getEmail(isAuthenticated: boolean, user: any): string {
+  if (isAuthenticated) {
+    return user.email;
+  }
+  return 'Guest';
+}
+
 function getDefaultUsername(isAuthenticated:boolean, user:any){
   if(!isAuthenticated) {
     return 'Guest';
@@ -46,6 +53,16 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+  const [userExists, setUserExists] = useState<boolean>(false);
+
+  const updateUser = () => {
+    // ISSUE-> user.email is undefined
+    // i tried with other user values and nothing seems to be defined
+    if (!userExists && isAuthenticated && user) {
+      apiClient.logUser({ email: user.email });
+    }
+    setUserExists(true);
+  }
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -57,6 +74,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
   }, [setCurrentPublicTowns, apiClient]);
   useEffect(() => {
+    updateUser();
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
     return () => {
@@ -118,7 +136,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     try {
       const newTownInfo = await apiClient.createTown({
         friendlyName: newTownName,
-        isPubliclyListed: newTownIsPublic
+        isPubliclyListed: newTownIsPublic,
+        creator: getEmail(isAuthenticated, user),
       });
       let privateMessage = <></>;
       if (!newTownIsPublic) {

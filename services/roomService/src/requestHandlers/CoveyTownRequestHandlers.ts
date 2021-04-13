@@ -3,7 +3,16 @@ import { Socket } from 'socket.io';
 import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
-import CoveyTownsStore from '../lib/CoveyTownsStore';
+import { CoveyTownsStore, updateTown } from '../lib/CoveyTownsStore';
+import {
+  deleteUser,
+  updateUser,
+  getTownByID,
+  saveTown,
+  unsaveTown,
+  getCurrentAvatar,
+  updateAvatar,
+} from '../database/databaseService';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -42,6 +51,7 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  creator: string;
 }
 
 /**
@@ -67,6 +77,28 @@ export interface TownDeleteRequest {
   coveyTownPassword: string;
 }
 
+export interface CreateUserRequest {
+  email: string;
+}
+
+export interface DeleteUserRequest {
+  email: string;
+}
+
+export interface SavedTownsRequest {
+  email: string;
+}
+
+export interface SaveTownRequest {
+  email: string;
+  coveyTownID: string;
+}
+
+export interface UnsaveTownRequest {
+  email: string;
+  coveyTownID: string;
+}
+
 /**
  * Payload sent by the client to update a Town.
  * N.B., JavaScript is terrible, so:
@@ -77,6 +109,15 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface GetAvatarRequest {
+  email: string;
+}
+
+export interface UpdateAvatarRequest {
+  email: string;
+  avatar: string;
 }
 
 /**
@@ -97,7 +138,7 @@ export interface ResponseEnvelope<T> {
  * @param requestData an object representing the player's request
  */
 export async function townJoinHandler(requestData: TownJoinRequest): Promise<ResponseEnvelope<TownJoinResponse>> {
-  const townsStore = CoveyTownsStore.getInstance();
+  const townsStore = await CoveyTownsStore.getInstance();
 
   const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
   if (!coveyTownController) {
@@ -106,51 +147,110 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
+  const town = await getTownByID(requestData.coveyTownID);
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
+  if (town) {
+    return {
+      isOK: true,
+      response: {
+        coveyUserID: newPlayer.id,
+        coveySessionToken: newSession.sessionToken,
+        providerVideoToken: newSession.videoToken,
+        currentPlayers: coveyTownController.players,
+        friendlyName: town.friendlyName,
+        isPubliclyListed: town.isPublicallyListed,
+      },
+    };
+  }
+  return {
+    isOK: false,
+  };
+}
+
+export async function getAvatarHandler(requestData: GetAvatarRequest): Promise<ResponseEnvelope<string>>{
+  const currentAvatar = await getCurrentAvatar(requestData.email);
   return {
     isOK: true,
-    response: {
-      coveyUserID: newPlayer.id,
-      coveySessionToken: newSession.sessionToken,
-      providerVideoToken: newSession.videoToken,
-      currentPlayers: coveyTownController.players,
-      friendlyName: coveyTownController.friendlyName,
-      isPubliclyListed: coveyTownController.isPubliclyListed,
-    },
+    response: currentAvatar,
+  };
+}
+
+export async function updateAvatarHandler(requestData: UpdateAvatarRequest): Promise<ResponseEnvelope<void>> {
+  await updateAvatar(requestData.email, requestData.avatar);
+  return {
+    isOK: true,
+  };
+}
+
+export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
+  await updateUser(requestData.email);
+  return {
+    isOK: true,
+  };
+}
+
+export async function userDeleteHandler(requestData: DeleteUserRequest): Promise<ResponseEnvelope<void>> {
+  await deleteUser(requestData.email);
+  return {
+    isOK: true,
   };
 }
 
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
-  const townsStore = CoveyTownsStore.getInstance();
+  const townsStore = await CoveyTownsStore.getInstance();
+  const townList: CoveyTownList = await townsStore.getTowns();
   return {
     isOK: true,
-    response: { towns: townsStore.getTowns() },
+    response: { towns: townList },
+  };
+}
+
+export async function savedTownHandler(requestData: SavedTownsRequest): Promise<ResponseEnvelope<TownListResponse>> {
+  const townsStore = await CoveyTownsStore.getInstance();
+  const townList: CoveyTownList = await townsStore.getSavedTowns(requestData.email);
+  return {
+    isOK: true,
+    response: { towns: townList },
+  };
+}
+
+export async function saveTownHandler(requestData: SaveTownRequest): Promise<ResponseEnvelope<void>> {
+  await saveTown(requestData.email, requestData.coveyTownID);
+  return {
+    isOK: true,
+  };
+}
+
+export async function deleteSavedTownHandler(requestData: UnsaveTownRequest): Promise<ResponseEnvelope<void>> {
+  await unsaveTown(requestData.email, requestData.coveyTownID);
+  return {
+    isOK: true,
   };
 }
 
 export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
-  const townsStore = CoveyTownsStore.getInstance();
+  const townsStore = await CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
       isOK: false,
       message: 'FriendlyName must be specified',
     };
   }
-  const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed);
+  const newTown = await townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed, requestData.creator);
   return {
     isOK: true,
     response: {
-      coveyTownID: newTown.coveyTownID,
-      coveyTownPassword: newTown.townUpdatePassword,
+      coveyTownID: newTown.coveyTownController.coveyTownID,
+      coveyTownPassword: newTown.coveyTownPassword,
     },
   };
 }
 
 export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
-  const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
+  const townsStore = await CoveyTownsStore.getInstance();
+  const success = await townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   return {
     isOK: success,
     response: {},
@@ -159,8 +259,7 @@ export async function townDeleteHandler(requestData: TownDeleteRequest): Promise
 }
 
 export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
-  const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
+  const success = await updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
   return {
     isOK: success,
     response: {},
@@ -198,14 +297,15 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
  *
  * @param socket the Socket object that we will use to communicate with the player
  */
-export function townSubscriptionHandler(socket: Socket): void {
+export async function townSubscriptionHandler(socket: Socket): Promise<void> {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinTownHandler
   const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
-
-  const townController = CoveyTownsStore.getInstance()
-    .getControllerForTown(coveyTownID);
-
+  const townController = await CoveyTownsStore.getInstance()
+    .then(instance => { 
+      const s = instance.getControllerForTown(coveyTownID);
+      return s;
+    });
   // Retrieve our metadata about this player from the TownController
   const s = townController?.getSessionByToken(token);
   if (!s || !townController) {

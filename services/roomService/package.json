@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/neu-se/covey.town#readme",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "start": "npm run build:live",
     "production": "npm run build && node build/server.js",
     "build": "tsc -p .",
@@ -25,7 +25,7 @@
   },
   "keywords": [],
   "devDependencies": {
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.22",
     "@types/node": "^14.14.13",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "eslint-config-airbnb-typescript": "^12.0.0",
@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@types/express": "^4.17.9",
+    "@types/mocha": "^8.2.2",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -55,7 +56,8 @@
     "graphql": "^15.5.0",
     "http-status-codes": "^2.1.4",
     "knex": "^0.95.4",
-    "nanoid": "^3.1.20",
+    "nanoid": "^3.1.22",
+    "pg": "^8.5.1",
     "socket.io": "^3.0.4",
     "twilio": "^3.54.2"
   }

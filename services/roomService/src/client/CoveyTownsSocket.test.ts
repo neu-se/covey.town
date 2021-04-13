@@ -8,6 +8,7 @@ import * as TestUtils from './TestUtils';
 import { UserLocation } from '../CoveyTypes';
 import TownsServiceClient from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
+import db from '../database/knexfile';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -24,6 +25,7 @@ describe('TownServiceApiSocket', () => {
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
+      creator: 'Guest',
     });
     return {
       friendlyName,
@@ -47,8 +49,9 @@ describe('TownServiceApiSocket', () => {
   afterAll(async () => {
     server.close();
     TestUtils.cleanupSockets();
+    await db.destroy();
   });
-  afterEach(() => {
+  afterEach(async () => {
     TestUtils.cleanupSockets();
   });
   it('Rejects invalid CoveyTownIDs, even if otherwise valid session token', async () => {
