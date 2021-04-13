@@ -21,6 +21,7 @@ import {GameCreateRequest} from "../gamesClient/GameRequestTypes";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import TTLGame from "../gamesClient/TTLGame";
 import HangmanGame from "../gamesClient/HangmanGame";
+import useMaybeVideo from "../../../hooks/useMaybeVideo";
 
 export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -34,6 +35,8 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const { currentPlayer } = props
   const { gamesClient } = useCoveyAppState();
   const toast = useToast()
+  const video = useMaybeVideo();
+
 
   const getNewGame = async (requestData : GameCreateRequest) => {
     const newGameId = await gamesClient.createGame(requestData)
@@ -52,7 +55,10 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
 
   return (
     <>
-      <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
+      <MenuItem data-testid='openMenuButton' onClick={() => {
+        onOpen();
+        video?.pauseGame()}
+      }>
         <Typography variant="body1">New Game</Typography>
       </MenuItem>
 
@@ -72,6 +78,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
               setTruth2("")
               setHangmanWord("")
             }
+            video?.unPauseGame();
           }} />
           <ModalBody>
             {

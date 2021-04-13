@@ -17,12 +17,15 @@ import { ListItem } from '@material-ui/core';
 import {GameList} from "../gamesClient/GameTypes";
 import JoinGameModalDialog from "./JoinGameModalDialog";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
+import useMaybeVideo from "../../../hooks/useMaybeVideo";
 
 
 export default function BrowseOpenGamesModal(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gamesList, setGamesList] = useState<GameList>();
   const { gamesClient } = useCoveyAppState();
+  const video = useMaybeVideo();
+
 
   useEffect(() => {
     const fetchAllGames = async () => {
@@ -46,7 +49,10 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
 
   return (
     <>
-      <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
+      <MenuItem data-testid='openMenuButton' onClick={() => {
+        onOpen();
+        video?.pauseGame()}
+      }>
         <Typography variant="body1">Browse Open Games</Typography>
       </MenuItem>
 
@@ -58,6 +64,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
           </ModalHeader>
           <ModalCloseButton onClick={() => {
             onClose();
+            video?.unPauseGame();
           }
           }/>
           <ModalBody>

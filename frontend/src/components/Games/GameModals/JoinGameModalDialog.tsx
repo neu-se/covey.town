@@ -15,6 +15,7 @@ import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import HangmanGame from "../gamesClient/HangmanGame";
 import TTLGame from "../gamesClient/TTLGame";
+import useMaybeVideo from "../../../hooks/useMaybeVideo";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
@@ -29,6 +30,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   const {gamesClient} = useCoveyAppState();
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
+  const video = useMaybeVideo();
 
   const getCurrentGame = async () => {
     setCurrentGameObject(await gamesClient.listGames()
@@ -39,7 +41,11 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
 
   return (
     <>
-      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => onOpen()}>
+      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green"
+              onClick={() => {
+                onOpen();
+                video?.pauseGame()}
+              }>
         <Typography variant="body1">Join Game</Typography>
       </Button>
 
@@ -97,7 +103,10 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
                 <h1 className="games-headline">
                   {gameType === "ttl" ? "Two Truths and a Lie" : gameType}
                 </h1>
-                <ModalCloseButton/>
+                <ModalCloseButton onClick={() => {
+                  video?.unPauseGame()
+                }
+                }/>
                 <hr/>
                 <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                 <br/>
