@@ -1,75 +1,95 @@
-import { Response, Request } from "express"
+import { Request, Response } from 'express';
+import User from '../client/userAccountSchema';
 import { IUserAccount } from '../types/UserAccount';
-import userAccountSchema from "../client/userAccountSchema";
 
+const getUsers = async (_: Request, res: Response): Promise<void> => {
+  try {
+    const users: IUserAccount[] = await User.find({});
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Error');
+  }
+};
 
 const getUser = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const users: IUserAccount[] = await userAccountSchema.find()
-        res.status(200).json({users})
-    } catch (error) {
-        throw error
+  try {
+    const user: IUserAccount | null = await User.findOne({
+      username: req.body.username,
+      password: req.body.password,
+    });
+    if (!user) {
+      res.status(200).json({ user: null, message: 'Could not find user with that combination' });
+    } else if (req.body.avatar) {
+      user.avatar = req.body.avatar;
+      await user?.save();
     }
-}
-
+    res.status(200).json({
+      user: {
+        userID: user?._id,
+        username: user?.username,
+        avatar: user?.avatar,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Error');
+  }
+};
 
 const addUser = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const body = req.body as Pick<IUserAccount, "username" | "password">
+  try {
+    const account: IUserAccount = new User({
+      username: req.body.username,
+      password: req.body.password,
+    });
+    const newAccount: IUserAccount = await account.save();
+    const allAccounts: IUserAccount[] = await User.find({});
 
-        const account: IUserAccount = new userAccountSchema({
-            username: body.username,
-            password: body.password,
-        })
-        const newAccount: IUserAccount = await account.save()
-        const allAccounts: IUserAccount[] = await userAccountSchema.find()
-    
-        res.status(201).json({message: "userAccount added", account: newAccount, accounts: allAccounts})
-        console.log("body.username");
-    } catch (error) {
-        throw error
-    }   
-}
+    res
+      .status(201)
+      .json({ message: 'userAccount added', account: newAccount, accounts: allAccounts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Error');
+  }
+};
 
-const updateUser = async (req: Request, res: Response): Promise <void> => {
-    try {
-        const {
-            params: { id },
-            body,
-        } = req
+const updateUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      params: { id },
+      body,
+    } = req;
 
-        const updateUsers: IUserAccount | null = await userAccountSchema.findByIdAndUpdate(
-            { _id: id },
-            body
-        )
+    const updateUsers: IUserAccount | null = await User.findByIdAndUpdate({ _id: id }, body);
 
-        const allUsers: IUserAccount[] = await userAccountSchema.find()
-        res.status(200).json({
-            message: "User updated",
-            account: updateUsers,
-            accounts: allUsers,
-        })
-    } catch (error) {
-        throw error
-    }
-}
+    const allUsers: IUserAccount[] = await User.find({});
+    res.status(200).json({
+      message: 'User updated',
+      account: updateUsers,
+      accounts: allUsers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Error');
+  }
+};
 
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const deletedUser: IUserAccount | null = await userAccountSchema.findByIdAndRemove(
-            req.params.id
-        )
+  try {
+    const deletedUser: IUserAccount | null = await User.findByIdAndRemove(req.params.id);
 
-        const allUsers: IUserAccount[] = await userAccountSchema.find()
-        res.status(200).json({
-            message: "user deleted",
-            account: deletedUser,
-            accounts: allUsers
-        })
+    const allUsers: IUserAccount[] = await User.find({});
+    res.status(200).json({
+      message: 'user deleted',
+      account: deletedUser,
+      accounts: allUsers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Error');
+  }
+};
 
-    } catch (error) {
-        throw error
-    }
-}
-
-export {getUser as getUsers, addUser as addUsers, updateUser as updateUsers, deleteUser}
+export { getUsers, getUser, addUser as addUsers, updateUser as updateUsers, deleteUser };
