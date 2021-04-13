@@ -12,7 +12,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   useDisclosure,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -68,8 +67,6 @@ const NavHeader: React.FunctionComponent = () => {
                   />
                 </MenuButton>
                 <MenuList>
-                  <MenuItem>Profile</MenuItem>
-                  <MenuDivider />
                   <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
                 </MenuList>
               </Menu>
