@@ -56,7 +56,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
           <ModalHeader>
             Browse Open Games
           </ModalHeader>
-          <ModalCloseButton onClick={async () => {
+          <ModalCloseButton onClick={() => {
             onClose();
           }
           }/>
@@ -66,7 +66,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
                 <ListItem key={game.id}>Play {game.id} with {game.player1Username}
                   <div className="float-right">
                     <JoinGameModalDialog currentPlayer={props.currentPlayer}
-                                         dialogType={game.player2ID !== '' ? 'joining' : 'unavailable'}
+                                         dialogType={game.player2ID === '' ? 'joining' : 'unavailable'}
                                          gameId={game.id} gameType={game.id} />
                   </div>
                 </ListItem>

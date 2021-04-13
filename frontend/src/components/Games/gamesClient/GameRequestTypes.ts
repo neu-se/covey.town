@@ -28,6 +28,10 @@ export interface GameUpdateRequest {
   player2Username?: string;
 }
 
+export interface GameUpdateResponse {
+  gameId: string;
+}
+
 export interface GameDeleteRequest {
   gameId: string;
 }

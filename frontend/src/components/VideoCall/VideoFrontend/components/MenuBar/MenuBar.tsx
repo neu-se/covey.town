@@ -13,8 +13,6 @@ import ToggleAudioButton from '../Buttons/ToggleAudioButton/ToggleAudioButton';
 import ToggleVideoButton from '../Buttons/ToggleVideoButton/ToggleVideoButton';
 import ToggleScreenShareButton from '../Buttons/ToogleScreenShareButton/ToggleScreenShareButton';
 import TownSettings from '../../../../Login/TownSettings';
-import MenuContainer from '@material-ui/core/Menu';
-import JoinGameModalDialog from "../../../../Games/GameModals/JoinGameModalDialog";
 import CreateGameModalDialog from "../../../../Games/GameModals/CreateGameModalDialog";
 import BrowseOpenGamesModal from "../../../../Games/GameModals/BrowseOpenGamesModal";
 

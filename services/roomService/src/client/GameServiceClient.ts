@@ -6,6 +6,7 @@ import {
   GameDeleteRequest,
   GameListResponse,
   GameUpdateRequest,
+  GameUpdateResponse,
   ResponseEnvelope,
 } from './GameRequestTypes';
 
@@ -13,9 +14,9 @@ export default class GameServiceClient {
   private _axios: AxiosInstance;
 
   constructor(serviceURL?: string) {
-    this._axios = axios.create({
-      baseURL: serviceURL,
-    });
+    const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
+    assert(baseURL);
+    this._axios = axios.create({ baseURL });
   }
 
   static unwrapOrThrowError<T>(response: AxiosResponse<ResponseEnvelope<T>>, ignoreResponse = false): T {
@@ -34,9 +35,9 @@ export default class GameServiceClient {
     return GameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async updateGame(requestData: GameUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/games/${requestData.gameId}`, requestData);
-    return GameServiceClient.unwrapOrThrowError(responseWrapper, true);
+  async updateGame(requestData: GameUpdateRequest): Promise<GameUpdateResponse> {
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<GameUpdateResponse>>(`/games/${requestData.gameId}`, requestData);
+    return GameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async deleteGame(requestData: GameDeleteRequest): Promise<void> {

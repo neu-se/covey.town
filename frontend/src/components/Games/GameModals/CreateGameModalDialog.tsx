@@ -30,7 +30,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const [truth2, setTruth2] = useState('')
   const [lie, setLie] = useState('')
   const [playing, setPlaying] = useState(false)
-  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | null>(null)
+  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const { currentPlayer } = props
   const { gamesClient } = useCoveyAppState();
   const toast = useToast()
@@ -45,15 +45,9 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   }
 
   const getCurrentGame = async (gameId: string) => {
-    const allGames = await gamesClient.listGames()
-      .then(response => response.games)
-    if (currentGameObject) {
-      const currentGame = allGames.find(g => g.id === gameId)
-      if (currentGame !== undefined) {
-        setCurrentGameObject(currentGame)
-      }
-      setCurrentGameObject(null)
-    }
+    setCurrentGameObject(await gamesClient.listGames()
+      .then(response => response.games.find(g => g.id === gameId)));
+      setPlaying(true);
   }
 
   return (
@@ -69,9 +63,9 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             New Game
           </ModalHeader>
           <ModalCloseButton onClick={async () => {
-            if (currentGameObject && currentGameObject.id !== "") {
+            if (currentGameObject !== undefined && currentGameObject.id !== "") {
               await gamesClient.deleteGame({gameId: currentGameObject.id});
-              setCurrentGameObject(null)
+              setCurrentGameObject(undefined)
               setPlaying(false)
               setLie("")
               setTruth1("")
@@ -152,13 +146,13 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                 </>
             }
             {
-              playing && currentGameObject && currentGameObject.player2ID === "" &&
+              playing && currentGameObject !== undefined && currentGameObject.player2ID === "" &&
                 <div className="games-center-div">
                   Waiting for Player 2 to join...
                 </div>
             }
             {
-              playing && currentGameObject && currentGameObject.player2ID !== "" &&
+              playing && currentGameObject !== undefined && currentGameObject.player2ID !== "" &&
                 <>
                   <div className="col-12">
                     <h1 className="games-headline">
@@ -217,7 +211,6 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                           });
                         }
                       }
-                      setPlaying(true);
                     }}>
               Create Game
             </Button>

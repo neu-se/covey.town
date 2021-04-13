@@ -15,6 +15,7 @@ import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import HangmanGame from "../gamesClient/HangmanGame";
 import TTLGame from "../gamesClient/TTLGame";
+import { GameUpdateRequest} from "../gamesClient/GameRequestTypes";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
@@ -26,19 +27,22 @@ interface GameModalDialogProps {
 export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {gamesClient} = useCoveyAppState();
-  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | null>(null)
+  const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
 
-  const getCurrentGame = async () => {
-    const allGames = await gamesClient.listGames()
-      .then(response => response.games)
-    if (currentGameObject) {
-      const currentGame = allGames.find(g => g.id === gameId)
-      if (currentGame !== undefined) {
-        setCurrentGameObject(currentGame)
-      }
-      setCurrentGameObject(null)
+  const getNewGame = async (requestData : GameUpdateRequest) => {
+    const newGameId = await gamesClient.updateGame(requestData)
+      .then(response => response.gameId);
+    if (newGameId !== undefined) {
+      return newGameId
     }
+    return undefined
+  }
+
+  const getCurrentGame = async (id: string) => {
+    setCurrentGameObject(await gamesClient.listGames()
+      .then(response => response.games.find(g => g.id === id)));
+    setPlaying(true);
   }
 
 
@@ -77,9 +81,16 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
             {dialogType === "joining" &&
             <ModalFooter>
               <Button className="games-padded-asset" colorScheme="green"
-                      onClick={() => {
-                        gamesClient.updateGame({gameId, player2Id: currentPlayer.id, player2Username: currentPlayer.username});
-                        setPlaying(true)
+                      onClick={async () => {
+                        const newGameId = await getNewGame({
+                            gameId,
+                            player2Id: currentPlayer.id,
+                            player2Username: currentPlayer.username
+                          }
+                        );
+                        if (newGameId !== undefined) {
+                          await getCurrentGame(newGameId);
+                        }
                       }
                       }>Join Game</Button>
               <Button className="games-padded-asset" colorScheme="blue" mr={3} onClick={onClose}>
@@ -91,7 +102,13 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
           </>
           }
           {
-            playing && currentGameObject &&
+            playing &&
+              <div>
+                playing
+              </div>
+          }
+          {
+            playing && currentGameObject !== undefined &&
             <>
               <div className="col-12">
                 <h1 className="games-headline">

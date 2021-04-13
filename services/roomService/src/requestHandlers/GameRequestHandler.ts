@@ -1,6 +1,6 @@
 import {
   GameCreateRequest,
-  GameCreateResponse, GameDeleteRequest, GameListResponse, GameUpdateRequest, ResponseEnvelope,
+  GameCreateResponse, GameDeleteRequest, GameListResponse, GameUpdateRequest, GameUpdateResponse, ResponseEnvelope,
 } from '../client/GameRequestTypes';
 import {
   HangmanPlayer2Move,
@@ -47,43 +47,58 @@ export async function createGame(requestData: GameCreateRequest): Promise<Respon
  *
  * @param requestData
  */
-export async function updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export async function updateGame(requestData: GameUpdateRequest): Promise<ResponseEnvelope<GameUpdateResponse>> {
   const controller = GameController.getInstance();
-  let success = true;
+  let targetGame;
   if (requestData.move) {
     const { move } = requestData;
-    const targetGame = controller.gamesList.find(game => game.id === requestData.gameId);
-    if (targetGame === undefined) {
+    targetGame = controller.gamesList.find(game => game.id === requestData.gameId);
+    if (targetGame !== undefined) {
+      if (targetGame instanceof TTLGame) {
+        targetGame.move(<TTLPlayer2Move>move);
+        return {
+          isOK: true,
+          response: {
+            gameId: targetGame.id,
+          },
+        };
+      }
+      if (targetGame instanceof HangmanGame) {
+        targetGame.move(<HangmanPlayer2Move>move);
+        return {
+          isOK: true,
+          response: {
+            gameId: targetGame.id,
+          },
+        };
+      }
       return {
         isOK: false,
-        message: 'Error: Target game not found',
+        message: 'Error: Game not found',
       };
-    }
-    if (targetGame instanceof TTLGame) {
-      targetGame.move(<TTLPlayer2Move>move);
-    } else if (targetGame instanceof HangmanGame) {
-      targetGame.move(<HangmanPlayer2Move>move);
-    } else {
-      success = false;
     }
   }
   if (requestData.player2Id && requestData.player2Username) {
     const { player2Id } = requestData;
     const { player2Username } = requestData;
-    const targetGame = controller.gamesList.find(game => game.id === requestData.gameId);
-    if (targetGame === undefined) {
-      success = false;
+    targetGame = controller.gamesList.find(game => game.id === requestData.gameId);
+    if (targetGame !== undefined) {
+      targetGame.playerJoin(player2Id, player2Username);
       return {
-        isOK: false,
-        message: 'Error: Target game not found',
+        isOK: true,
+        response: {
+          gameId: targetGame.id,
+        },
       };
     }
-    targetGame.playerJoin(player2Id, player2Username);
+    return {
+      isOK: false,
+      message: 'Error: Game not found',
+    };
   }
   return {
-    isOK: true,
-    response: {},
-    message: !success ? 'Invalid update values specified.' : undefined,
+    isOK: false,
+    message: 'Error: Game not found',
   };
 }
 

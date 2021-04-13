@@ -1,6 +1,5 @@
 import HangmanGame from './HangmanGame';
 import TTLGame from './TTLGame';
-import { GameList } from '../client/GameTypes';
 
 
 export default class GameController {
