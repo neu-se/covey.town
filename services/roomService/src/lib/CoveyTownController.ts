@@ -169,16 +169,18 @@ export default class CoveyTownController {
   }
 
   sendPrivatePlayerMessage(message: PrivateChatMessage): void {
-    message.message = this._censorer.censorMessage(message.message);
-    // message.message = emojify.replace(message.message);
-    this.messages.push(message);
-    this._listeners.forEach(listener => listener.onPrivateMessage(message));
+    const messageCensored = message;
+    messageCensored.message = this._censorer.censorMessage(messageCensored.message);
+    // messageCensored = emojify.replace(message.message);
+    this.messages.push(messageCensored);
+    this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
   }
 
   sendGlobalPlayerMessage(message: GlobalChatMessage): void {
-    message.message = this._censorer.censorMessage(message.message);
-    // message.message = emojify.replace(message.message);
-    this.messages.push(message);
-    this._listeners.forEach(listener => listener.onGlobalMessage(message));
+    const messageCensored = message;
+    messageCensored.message = this._censorer.censorMessage(messageCensored.message);
+    // messageCensored = emojify.replace(message.message);
+    this.messages.push(messageCensored);
+    this._listeners.forEach(listener => listener.onGlobalMessage(messageCensored));
   }
 }

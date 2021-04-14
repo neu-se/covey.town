@@ -5,12 +5,13 @@ import React from 'react';
 type MessageProps = {
   key: string;
   userName: string;
+  color: string;
   message: string;
 }
 
-export default function ChatMessage({key, userName, message}: MessageProps): JSX.Element {
+export default function ChatMessage({key, userName, color, message}: MessageProps): JSX.Element {
     return (
-          <Text key={key}>
+          <Text key={key} color={color}>
             {userName}: {message}
           </Text>
     );
