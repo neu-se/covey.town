@@ -93,7 +93,7 @@ export default class CoveyTownsStore {
       setTimeout(() => {
         destinationTown.disconnectAllPlayers();
         this.deleteTown(requestedTown.coveyTownID, requestedTown.townUpdatePassword);
-      }, 7000);
+      }, 10000);
         
       return destinationTown;
     }

@@ -149,7 +149,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       handleJoin(townIDToMerge, true);
       dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: ''});
     }
-  }, [townIDToMerge, handleJoin]);
+  // eslint-disable-next-line
+  }, [townIDToMerge]);
 
   return (
     <>

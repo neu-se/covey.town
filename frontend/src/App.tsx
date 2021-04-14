@@ -62,25 +62,32 @@ async function GameController(initData: TownJoinResponse,
     requestedFriendlyName: string , newTownFriendlyName: string, newTownIsPubliclyListed: boolean, newTownIsMergeable: boolean) => {
     dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: destinationTownID});
 
-    let coveyTownID;
-    let friendlyName;
+    let startingCoveyTownID;
+    let endingCoveyTownID;
+    let startingFriendlyName;
+    let endingFriendlyName;
     if (destinationTownID === video.coveyTownID) {
-      coveyTownID = requestedTownID;
-      friendlyName = requestedFriendlyName;
+      startingCoveyTownID = destinationTownID;
+      endingCoveyTownID = requestedTownID;
+      startingFriendlyName = destinationFriendlyName;
+      endingFriendlyName = requestedFriendlyName;
     } else {
-      coveyTownID = destinationTownID
-      friendlyName = destinationFriendlyName;
+      startingCoveyTownID = requestedTownID;
+      endingCoveyTownID = destinationTownID
+      startingFriendlyName = requestedFriendlyName;
+      endingFriendlyName = destinationFriendlyName;
     }
+    
     if (toast) {
       toast({
         title: 'Town is merging with another town',
-        description: `this town is merging with ${friendlyName} (${coveyTownID}) momentarily! 
-        The new town will be called "${newTownFriendlyName}", 
+        description: `Town ${startingFriendlyName} (${startingCoveyTownID}) is merging with town ${endingFriendlyName} 
+        (${endingCoveyTownID}) momentarily! The new town will be called "${newTownFriendlyName}", 
         ${newTownIsPubliclyListed ? '✓' : '✗'} Publicly Listed,
         and ${newTownIsMergeable ? '✓' : '✗'} Mergeable`,
         status: 'success',
         isClosable: true,
-        duration: 7000,
+        duration: 10000,
       }) 
     }
   })

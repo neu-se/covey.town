@@ -98,7 +98,7 @@ const TownMerging: React.FunctionComponent = () => {
       <ModalOverlay/>
       <ModalContent style={{ maxWidth:'40rem' }}>
         <Heading p="4" as="h2" size="lg">Merge { currentTownFriendlyName } with another town?</Heading>
-        <Text fontSize="sm" color="red.600" py="2" px="6">**All players from both rooms will be transported into a new room and the password for this new room will remain the same as the password for this current room**</Text>
+        <Text fontSize="sm" color="red.600" py="2" px="6">**All players from both rooms will be transported into a new room. The CoveyTownID and password for this current room will transfer over to the new room**</Text>
         <Text py="2" px="6" fontSize="md" fontWeight="bold"> Your Town Occupancy: {currentTownOccupancy}</Text>
         <ModalCloseButton/>
         <form onSubmit={(ev)=>{ev.preventDefault(); handleMergeRequest()}}>
