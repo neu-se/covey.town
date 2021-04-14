@@ -38,6 +38,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient, townIDToMerge } = useCoveyAppState();
+  // eslint-disable-next-line
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
   const toast = useToast();
 
@@ -148,7 +149,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       handleJoin(townIDToMerge, true);
       dispatchAppUpdate({ action: 'updateTownToMerge', newTownIDToMerge: ''});
     }
-  }, [townIDToMerge]);
+  }, [townIDToMerge, handleJoin]);
 
   return (
     <>

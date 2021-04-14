@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { ChakraProvider, useToast } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
@@ -27,6 +27,7 @@ import Video from './classes/Video/Video';
 import { CoveyAppUpdate, appStateReducer, defaultAppState } from './AppHelper'
 
 async function GameController(initData: TownJoinResponse,
+  // eslint-disable-next-line
   dispatchAppUpdate: (update: CoveyAppUpdate) => void, toast?: any) {
   // Now, set up the game sockets
   const gamePlayerID = initData.coveyUserID;
@@ -73,7 +74,7 @@ async function GameController(initData: TownJoinResponse,
     if (toast) {
       toast({
         title: 'Town is merging with another town',
-        description: `this town is merging with ${friendlyName} momentarily! 
+        description: `this town is merging with ${friendlyName} (${coveyTownID}) momentarily! 
         The new town will be called "${newTownFriendlyName}", 
         ${newTownIsPubliclyListed ? '✓' : '✗'} Publicly Listed,
         and ${newTownIsMergeable ? '✓' : '✗'} Mergeable`,
@@ -114,7 +115,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate, toast);
     return true;
-  }, [dispatchAppUpdate]);
+  }, [dispatchAppUpdate, toast]);
   const videoInstance = Video.instance();
 
   const { setOnDisconnect } = props;
