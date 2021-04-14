@@ -1,9 +1,8 @@
-/* eslint-disable import/first */
 
-import * as http from 'http';
+import http from 'http';
 import { AddressInfo } from 'net';
 import { nanoid } from 'nanoid';
-import * as Express from 'express';
+import Express from 'express';
 import CORS = require('cors');
 import { HangmanWord, TTLChoices } from '../client/GameTypes';
 import addTownRoutes from '../router/towns';

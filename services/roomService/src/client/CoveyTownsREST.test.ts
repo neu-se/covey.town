@@ -1,5 +1,5 @@
-import * as http from 'http';
-import * as assert from 'assert';
+import http from 'http';
+import assert from 'assert';
 import { AddressInfo } from 'net';
 
 import { nanoid } from 'nanoid';
