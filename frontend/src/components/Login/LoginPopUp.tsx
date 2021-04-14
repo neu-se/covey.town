@@ -76,6 +76,12 @@ const LoginPopUp: React.FunctionComponent = () => {
       });
       const { user } = response.data;
       if (user) {
+        toast({
+          title: `Hello ${loginUserName}`,
+          description: 'You are now logged in.',
+          duration: 3000,
+          status: 'success',
+        });
         resetValues();
         setUserProfile({ ...user, isLoggedIn: true });
         closeLoginMenu();

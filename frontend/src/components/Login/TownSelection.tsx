@@ -25,7 +25,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import AvatarSelection from './AvatarSelection';
 import useUserProfile from '../../hooks/useUserProfile';
-import { updateUser } from '../../classes/api'
+import { getUser, updateUser } from '../../classes/api'
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
@@ -37,7 +37,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
-  const [userPassword, setUserPassword] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
@@ -56,10 +55,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     return () => {
       clearInterval(timer);
     };
-  }, [updateTownListings, avatarID]);
+  }, [updateTownListings]);
 
   useEffect(() => {
-    setUserPassword('');
     if (userProfile)
       setUserName(userProfile.username);
     else
@@ -214,12 +212,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         });
         return;
       }
-    
-      const response = await updateUser({
-        username: 'test999',
-        password: 'pwd123',
+      
+      const updateResponse = await updateUser({
+        username: userName,
+        password: userProfile ? userProfile.password : '',
       });
-      const { status } = response.data;
+      // change type in updateUser?
+
+      const { status } = updateResponse.data;
       console.log(`STATUS: ${status}`)
       // if (user) {
       //   resetValues();
@@ -228,6 +228,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       // } else {
       //   setErrorMessage(response.data.message || '');
       // }
+
     } catch (err) {
       toast({
         title: 'Unable to update',
