@@ -46,6 +46,9 @@
     },
     "dependencies": {
         "@types/ramda": "^0.27.34",
+        "knex": "^0.95.4",
+        "pg": "^8.6.0",
+        "pg-mem": "^1.8.6",
         "ramda": "^0.27.1",
         "typescript-is": "^0.17.0"
     }

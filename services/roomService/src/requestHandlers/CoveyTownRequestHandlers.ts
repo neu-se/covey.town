@@ -13,6 +13,10 @@ export interface TownJoinRequest {
   userName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
+  /** Whether the player has previously logged into Covey.Town with auth0 */
+  isLoggedIn: boolean;
+  /** auth0 ID of the user if logged in */
+  userID?: string;
 }
 
 /**
@@ -106,7 +110,8 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
-  const newPlayer = new Player(requestData.userName);
+  // TODO: also need to pass userID
+  const newPlayer = new Player(requestData.userName, requestData.isLoggedIn, requestData.userID);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
   return {

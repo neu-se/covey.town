@@ -21,6 +21,8 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       const result = await townJoinHandler({
         userName: req.body.userName,
         coveyTownID: req.body.coveyTownID,
+        isLoggedIn: req.body.isLoggedIn,
+        userID: req.body.userID,
       });
       res.status(StatusCodes.OK)
         .json(result);
