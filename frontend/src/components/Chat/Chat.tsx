@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Input, useToast } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import AChatMessage from '../../classes/AChatMessage';
 import GlobalChatMessage from '../../classes/GlobalChatMessage';
 import PrivateChatMessage from '../../classes/PrivateChatMessage';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -25,9 +26,14 @@ function Chat(): JSX.Element {
     return 'black';
   };
 
+  const messageToProps = useCallback((msg: AChatMessage, type: string): MessageProps => 
+      ({key: nanoid(),
+      userName: msg.sender.userName,
+      color: setButtonColor(type),
+      message: msg.message,}), [])
+
   const handlePrivateMessage = async () => {
     if (input !== '') {
-
       try {
         const currPlayer = players.find(p => p.id === myPlayerID);
         const toPlayer = players.find(p => p.userName === privateUsername);
@@ -41,9 +47,11 @@ function Chat(): JSX.Element {
             status: 'error',
           });
         }
-
         if (privateMessage) {
-          await apiClient.sendPrivatePlayerMessage({ coveyTownID: '', message: privateMessage });
+          await apiClient.sendPrivatePlayerMessage({
+            coveyTownID: currentTownID,
+            message: privateMessage,
+          });
           setMessages([
             ...messages,
             {
@@ -63,7 +71,7 @@ function Chat(): JSX.Element {
       }
     } else {
       toast({
-        title: 'Message can\'t be blank',
+        title: "Message can't be blank",
         status: 'error',
       });
     }
@@ -79,7 +87,10 @@ function Chat(): JSX.Element {
         }
 
         if (globalMessage) {
-          await apiClient.sendGlobalPlayerMessage({ coveyTownID: '', message: globalMessage });
+          await apiClient.sendGlobalPlayerMessage({
+            coveyTownID: currentTownID,
+            message: globalMessage,
+          });
           setMessages([
             ...messages,
             { key: nanoid(), userName, color: setButtonColor('global'), message: input },
@@ -95,16 +106,20 @@ function Chat(): JSX.Element {
       }
     } else {
       toast({
-        title: 'Message can\'t be blank',
+        title: "Message can't be blank",
         status: 'error',
       });
     }
-
   };
 
+  const initMessages = useCallback(async () => {
+    const prevMessages = await apiClient.getMessages({ coveyTownID: currentTownID });
+    setMessages(prevMessages.messages.map(msg => messageToProps(msg, 'private')));
+  }, [setMessages, apiClient, currentTownID, messageToProps]);
+
   useEffect(() => {
-    apiClient.getMessages({ coveyTownID: currentTownID });
-  }, [apiClient, currentTownID]);
+    initMessages();
+  }, [initMessages]);
 
   return (
     <Flex minH='500px' maxH='768px' minW='500px' w='100%' px='2' pt='2'>
