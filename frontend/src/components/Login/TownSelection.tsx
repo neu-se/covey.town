@@ -23,7 +23,8 @@ import { CoveyTownInfo, TownJoinResponse } from '../../classes/TownsServiceClien
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
-import AvatarSelection from './AvatarSelection'; // MOVE
+import AvatarSelection from './AvatarSelection';
+import useUserProfile from '../../hooks/useUserProfile';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
@@ -39,6 +40,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+
+  const { userProfile } = useUserProfile();
 
   const updateTownListings = useCallback(() => {
     apiClient.listTowns().then(towns => {
@@ -201,11 +204,18 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Heading as='h2' size='lg'>
               Select a username
             </Heading>
+
+            {
+              userProfile !== null &&
+              <p>name: {userProfile.username}, pwr: {userProfile.password}, avatar: {userProfile.avatar}</p>
+            }
+
             <Button data-testid='quickJoin' onClick={() => handleQuickJoin()}>
               Quick join!
             </Button>
             <FormControl>
               <FormLabel htmlFor='name'>Name</FormLabel>
+              
               <Input
                 autoFocus
                 name='name'
