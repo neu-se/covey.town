@@ -26,8 +26,6 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
-  private _coveyUserID: string;
-
   pauseGame: () => void = ()=>{};
 
   unPauseGame: () => void = ()=>{};
