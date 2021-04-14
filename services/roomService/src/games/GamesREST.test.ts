@@ -1,9 +1,8 @@
-
 import http from 'http';
 import { AddressInfo } from 'net';
 import { nanoid } from 'nanoid';
 import Express from 'express';
-import CORS = require('cors');
+import CORS from 'cors';
 import { HangmanWord, TTLChoices } from '../client/GameTypes';
 import addTownRoutes from '../router/towns';
 import { GameListResponse } from '../client/GameRequestTypes';
