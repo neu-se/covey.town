@@ -7,67 +7,37 @@ import { Send } from "@material-ui/icons";
 import { Select } from '@chakra-ui/react';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import './ChatScreen.css';
+import { Message } from "../../CoveyTypes";
 
-const NEW_CHAT_MESSAGE_EVENT = "groupMessage"; // Name of the event
-// const SOCKET_SERVER_URL = "http://localhost:8081";
 
 const useChat = (coveyTownID: string, socket: Socket) => {
-  const [messages, setMessages] = useState<MsgFormat[]>([]); // Sent and received messages
   const socketRef = useRef(socket);
 
   const {
-    userName
+    userName,
+    messages,
+    myPlayerID
   } = useCoveyAppState();
 
-  useEffect(() => {
-
-    // Listens for incoming messages
-    socketRef?.current?.on(coveyTownID, (message: any) => {
-      const incomingMessage = {
-        ...message,
-        ownedByCurrentUser: message.senderId === socketRef.current?.id,
-      };
-      setMessages((msgs) => [...msgs, incomingMessage]);
-    });
-
-    // Destroys the socket reference
-    // when the connection is closed
-    // return () => {
-    //   socketRef.current.disconnect();
-    // };
-  }, [coveyTownID]);
-
-  // Sends a message to the server that
-  // forwards it to all users in the same room
-  const sendMessage = (messageBody: string) => {
-    socketRef.current.emit(coveyTownID, {
+  const sendMessage = (messageBody: string, isBroadcast: boolean, receiver: string) => {
+    socketRef.current.emit("playerChatted", {
       body: messageBody,
-      senderId: socketRef.current.id,
+      senderId: myPlayerID,
       ownedByCurrentUser: true,
       userName,
       dateCreated: new Date(),
-    });
-
-    // socketRef.current.emit(NEW_CHAT_MESSAGE_EVENT, messageBody) ;
-
+      isBroadcast,
+      receiverId: receiver,
+    }); 
   };
-
   return { messages, sendMessage };
 };
-
-type MsgFormat = {
-  body: string,
-  senderId: string,
-  ownedByCurrentUser: boolean,
-  userName: string,
-  dateCreated: Date,
-}
 
 
 const ChatScreen = () => {
 
   const {
-    players, myPlayerID, currentTownID, socket, userName
+    players, myPlayerID, currentTownID, socket, userName,
   } = useCoveyAppState();
 
   const [newMessage, setNewMessage] = useState('');
@@ -79,20 +49,15 @@ const ChatScreen = () => {
     sendIcon: { color: "white" },
   } as const;
 
-  console.log("messages", messages);
-
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    sendMessage(newMessage);
-    // if(receiver ===  'everyone') {
-    //   sendMessage(newMessage);
-    //     // send to all
-    // } else {
-    //   // send to receiver player id 
-    // }
-    // // reset message to empty once sent
+    if(receiver === "everyone"){
+      sendMessage(newMessage, true, "");
+    }
+    else{
+      sendMessage(newMessage, false, receiver);
+    }
     setNewMessage('');
-
   }
 
   const estyles = {
@@ -123,14 +88,6 @@ const ChatScreen = () => {
           </Select>
           <ol>
             {messages.map((message) => (
-              // <li
-              //   key={JSON.stringify(message)}
-              // // className={`message-item ${
-              // //   message.ownedByCurrentUser ? "my-message" : "received-message"
-              // // }`}
-              // >
-              //   {message.body}
-              // </li>
               <ListItem
                 key={JSON.stringify(message)}
                 style={estyles.listItem(message.ownedByCurrentUser)}>

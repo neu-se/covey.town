@@ -10,7 +10,7 @@ import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import ChatScreen from './components/Chat/ChatScreen';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
+import { CoveyAppState, NearbyPlayers, Message } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
@@ -34,6 +34,7 @@ type CoveyAppUpdate =
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
+  | { action: 'playerChatted'; message: Message }
   ;
 
 function defaultAppState(): CoveyAppState {
@@ -53,6 +54,7 @@ function defaultAppState(): CoveyAppState {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
+    messages: [],
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -69,6 +71,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     socket: state.socket,
     emitMovement: state.emitMovement,
     apiClient: state.apiClient,
+    messages: state.messages,
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
@@ -138,6 +141,23 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
       break;
+    case 'playerChatted':
+      console.log(state.messages, state.messages.length);
+      if(update.message.isBroadcast){
+        if(update.message.senderId !== nextState.myPlayerID){
+          update.message.ownedByCurrentUser = false; // eslint-disable-line no-param-reassign
+        }
+        nextState.messages.push(update.message);
+      }
+      else if(update.message.senderId === nextState.myPlayerID){
+          nextState.messages.push(update.message);
+      }
+      else if(update.message.receiverId === nextState.myPlayerID){
+          update.message.ownedByCurrentUser = false; // eslint-disable-line no-param-reassign
+          nextState.messages.push(update.message);
+      }
+      console.log(nextState.messages, nextState.messages.length);
+      break;
     case 'disconnect':
       state.socket?.disconnect();
       return defaultAppState();
@@ -172,6 +192,10 @@ async function GameController(initData: TownJoinResponse,
       dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player) });
     }
   });
+  socket.on('playerChatted', (message: Message) => {
+      dispatchAppUpdate({ action: 'playerChatted', message });
+    }
+  );
   socket.on('playerDisconnect', (player: ServerPlayer) => {
     dispatchAppUpdate({ action: 'playerDisconnect', player: Player.fromServerPlayer(player) });
   });

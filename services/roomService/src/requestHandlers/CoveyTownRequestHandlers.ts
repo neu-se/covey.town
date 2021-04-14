@@ -1,7 +1,7 @@
 import assert from 'assert';
 import io, { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { CoveyTownList, UserLocation, Message } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 
@@ -190,6 +190,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    onPlayerChatted(message: Message) {
+      socket.emit('playerChatted', message);
+    },
   };
 }
 
@@ -233,13 +236,9 @@ export function townSubscriptionHandler(socket: Socket, ioServer: io.Server): vo
     townController.updatePlayerLocation(s.player, movementData);
   });
 
-  // Listen for new messages
-  socket.on(coveyTownID, (msg) => {
-    console.log("msg", msg);
-    // ioServer.in(coveyTownID).emit("groupMessage", msg);
-    ioServer.emit(coveyTownID, msg);
+  // Register an event listener for the client socket: if the client receives a message
+  // inform the CoveyTownController
+  socket.on('playerChatted', (message: Message) => {
+    townController.updatePlayerChats(message);
   });
-
-  // console.log("ioServer", ioServer);
-  // console.log("socket", socket);
 }

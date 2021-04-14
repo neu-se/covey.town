@@ -28,10 +28,15 @@ export type CoveyAppState = {
   emitMovement: (location: UserLocation) => void,
   socket: Socket | null,
   apiClient: TownsServiceClient,
+  messages: Message[]
 };
 
 export type Message = {
-  author: string,
+  body: string,
+  senderId: string,
+  ownedByCurrentUser: boolean,
+  userName: string,
   dateCreated: Date,
-  body: string
+  receiverId: string, 
+  isBroadcast: boolean, 
 }
