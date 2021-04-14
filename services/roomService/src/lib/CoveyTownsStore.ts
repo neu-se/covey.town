@@ -78,26 +78,18 @@ export default class CoveyTownsStore {
     return false;
   }
 
-  sendPrivateMessage(
-    coveyTownID: string,
-    coveyTownPassword: string,
-    message: PrivateChatMessage,
-  ): boolean {
+  sendPrivateMessage(coveyTownID: string, message: PrivateChatMessage): boolean {
     const currentTown = this.getControllerForTown(coveyTownID);
-    if (currentTown && passwordMatches(coveyTownPassword, currentTown.townUpdatePassword)) {
+    if (currentTown) {
       currentTown.sendPrivatePlayerMessage(message);
       return true;
     }
     return false;
   }
 
-  sendGlobalMessage(
-    coveyTownID: string,
-    coveyTownPassword: string,
-    message: GlobalChatMessage,
-  ): boolean {
+  sendGlobalMessage(coveyTownID: string, message: GlobalChatMessage): boolean {
     const currentTown = this.getControllerForTown(coveyTownID);
-    if (currentTown && passwordMatches(coveyTownPassword, currentTown.townUpdatePassword)) {
+    if (currentTown) {
       currentTown.sendGlobalPlayerMessage(message);
       return true;
     }
