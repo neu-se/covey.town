@@ -201,7 +201,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
  *
  * @param socket the Socket object that we will use to communicate with the player
  */
-export function townSubscriptionHandler(socket: Socket, ioServer: io.Server): void {
+export function townSubscriptionHandler(socket: Socket): void {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinTownHandler
   const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
