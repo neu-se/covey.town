@@ -15,6 +15,7 @@ const mockToast = jest.fn();
 const mockUseDisclosure = {isOpen: true, onOpen: jest.fn(), onClose: jest.fn()};
 
 jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../components/Games/gamesClient/GameServiceClient');
 jest.mock('../../hooks/useCoveyAppState', () => ({
   __esModule: true, // this property makes it work
   default: () => (mockUseCoveyAppState)
