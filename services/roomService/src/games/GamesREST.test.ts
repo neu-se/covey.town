@@ -109,25 +109,25 @@ describe('GameServiceAPIREST', () => {
     });
   });
 
-  describe('GamesListAPI', () => {
-    it('Allows for multiple games with the same player1ID', async () => {
-      const game1 = await createGameForTesting('Hangman');
-      const game2 = await createGameForTesting('Hangman', game1.player1ID);
-
-      const games = await apiClient.listGames();
-      expectGameListMatches(games, game1);
-      expectGameListMatches(games, game2);
-    });
-    it('Allows for multiple games with the same player1Username', async () => {
-      const game1 = await createGameForTesting('hangman');
-      const game2 = await createGameForTesting('hangman', undefined, game1.player1Username);
-
-
-      const games = await apiClient.listGames();
-      expectGameListMatches(games, game1);
-      expectGameListMatches(games, game2);
-    });
-  });
+  // describe('GamesListAPI', () => {
+  //   it('Allows for multiple games with the same player1ID', async () => {
+  //     const game1 = await createGameForTesting('Hangman');
+  //     const game2 = await createGameForTesting('Hangman', game1.player1ID);
+  //
+  //     const games = await apiClient.listGames();
+  //     expectGameListMatches(games, game1);
+  //     expectGameListMatches(games, game2);
+  //   });
+  //   it('Allows for multiple games with the same player1Username', async () => {
+  //     const game1 = await createGameForTesting('hangman');
+  //     const game2 = await createGameForTesting('hangman', undefined, game1.player1Username);
+  //
+  //
+  //     const games = await apiClient.listGames();
+  //     expectGameListMatches(games, game1);
+  //     expectGameListMatches(games, game2);
+  //   });
+  // });
 //
 //   describe('HangmanGameDeleteAPI', () => {
 //     it('Deletes a game if given a valid gameId, no longer allowing it to be joined or listed', async () => {
