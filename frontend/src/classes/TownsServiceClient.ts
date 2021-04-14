@@ -194,7 +194,7 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async getMessages(requestData: ListMessagesRequest): Promise<void> {
+  async getMessages(requestData: ListMessagesRequest): Promise<ListMessagesResponse> {
     const responseWrapper = await this._axios.get(`/messages/${requestData.coveyTownID}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
