@@ -25,6 +25,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import AvatarSelection from './AvatarSelection';
 import useUserProfile from '../../hooks/useUserProfile';
+import { updateUser } from '../../classes/api'
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
@@ -36,11 +37,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
+  const [userPassword, setUserPassword] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
-
   const { userProfile } = useUserProfile();
 
   const updateTownListings = useCallback(() => {
@@ -57,6 +58,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     };
   }, [updateTownListings, avatarID]);
 
+  useEffect(() => {
+    setUserPassword('');
+    if (userProfile)
+      setUserName(userProfile.username);
+    else
+      setUserName('');
+  }, [userProfile])
 
   const handleQuickJoin = useCallback(async () => {
     try {
@@ -196,23 +204,71 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  const handleUpdate = async () => {
+    try {
+      if (userName.length === 0) {
+        toast({
+          title: 'Unable to update',
+          description: 'Please enter a username ',
+          status: 'error',
+        });
+        return;
+      }
+    
+      const response = await updateUser({
+        username: 'test999',
+        password: 'pwd123',
+      });
+      const { status } = response.data;
+      console.log(`STATUS: ${status}`)
+      // if (user) {
+      //   resetValues();
+      //   setUserProfile({ ...user, isLoggedIn: true });
+      //   closeLoginMenu();
+      // } else {
+      //   setErrorMessage(response.data.message || '');
+      // }
+    } catch (err) {
+      toast({
+        title: 'Unable to update',
+        description: err.toString(),
+        status: 'error',
+      });
+    }
+  };
+
   return (
     <>
       <form>
         <Stack>
+          {
+              !userProfile &&
+              <>
+                <Box p='4' borderWidth='1px' borderRadius='lg'>
+                  <Heading as='h2' size='lg'>
+                    Single click guest
+                  </Heading>
+                  <p>Join the bussiest available room. We will select your username and avatar</p>
+                  <Button width='200px' data-testid='quickJoin' onClick={() => handleQuickJoin()}>
+                    Quick join!
+                  </Button>
+                </Box>
+                <Heading p='4' as='h2' size='lg'>
+                  -or-
+                </Heading>
+              </>
+            }
+          
           <Box p='4' borderWidth='1px' borderRadius='lg'>
             <Heading as='h2' size='lg'>
-              Select a username
+              Select a username and avatar
             </Heading>
 
             {
-              userProfile !== null &&
+              userProfile &&
               <p>name: {userProfile.username}, pwr: {userProfile.password}, avatar: {userProfile.avatar}</p>
             }
 
-            <Button data-testid='quickJoin' onClick={() => handleQuickJoin()}>
-              Quick join!
-            </Button>
             <FormControl>
               <FormLabel htmlFor='name'>Name</FormLabel>
               
@@ -224,10 +280,15 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
+            <AvatarSelection setAvatarId={setAvatarID} />
+            {
+              userProfile &&
+             
+              <Button align='right' marginTop='10px' onClick={() => handleUpdate()}>
+                Update username and/or avatar
+              </Button>
+            }
           </Box>
-
-          {/* MOVE */}
-          <AvatarSelection setAvatarId={setAvatarID} />
 
           <Box borderWidth='1px' borderRadius='lg'>
             <Heading p='4' as='h2' size='lg'>

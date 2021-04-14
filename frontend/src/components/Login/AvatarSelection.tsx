@@ -33,7 +33,7 @@ const avatars: Avatar[] = [
   new Avatar('TYLER', 'tyler', 'https://i.ibb.co/DCMmgqz/tyler.png'),
   new Avatar('CLAIRE', 'claire', 'https://i.ibb.co/nk6XLR0/claire.png'),
   new Avatar('ED', 'ed', 'https://i.ibb.co/d4ZSt5P/ed.png'),
-  new Avatar('Devon', 'devon', 'https://i.ibb.co/7JQVXrH/devon.png'),
+  new Avatar('DEVON', 'devon', 'https://i.ibb.co/7JQVXrH/devon.png'),
 ];
 
 
@@ -54,10 +54,9 @@ export default function AvatarSelection({ setAvatarId }: AvatarSelectionProps): 
   };
   return (
     <>
-      <Box p='4' borderWidth='1px' borderRadius='lg'>
-        <Heading as='h2' size='lg'>
-          Avatar Selection
-        </Heading>
+        {/* <Heading as='h2' size='lg' marginTop='10px'>
+          Select an avatar
+        </Heading> */}
         <Text p='4'>Select your Covey avatar from the options below.</Text>
 
         <SimpleGrid columns={{ sm: 2, md: 3 }} bg='gray.50' borderWidth='1px' borderRadius='lg'>
@@ -81,7 +80,6 @@ export default function AvatarSelection({ setAvatarId }: AvatarSelectionProps): 
             </Box>
           ))}
         </SimpleGrid>
-      </Box>
     </>
   );
 }
