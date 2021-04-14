@@ -456,7 +456,7 @@ export default function WorldMap(): JSX.Element {
   const authInfo = useAuthInfo();
   const loggedInUser = authInfo.currentUser;
   const toast = useToast();
-  const { friendRequestSocket, setFriendRequestSocket } = useFriendRequestSocket();
+  const { friendRequestSocket } = useFriendRequestSocket();
 
   const {
     emitMovement, players,
