@@ -8,6 +8,7 @@ import TownsServiceClient from '../../classes/TownsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import GameServiceClient from "../Games/gamesClient/GameServiceClient";
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -99,6 +100,7 @@ function wrappedTownSelection() {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
+    gamesClient: new GameServiceClient()
   }}>
     <TownSelection doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }
