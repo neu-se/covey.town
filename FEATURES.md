@@ -7,21 +7,21 @@
 ![Login-Page](docs/login-page.png)
 Click Login on the top right which will direct you to Auth0.
 
-### Either sign up with a new account or use Google to authenticate. If you have an existing account, you may sign in.
+### You may either sign up with a new account or use Google to authenticate. If you have an existing account, you may sign in.
 
 ![Auth0-Page](docs/auth0-page.png)
 
-1. New Account (Enter email and new password.)
+1. New Account (Enter email and new password):
 
-   ![Signup-New-Account](docs/signup-new-account.png) ![Allow-For-Authorization](docs/allow-for-authorization.png)
+   ![Signup-New-Account](docs/signup-new-account.png)&nbsp;&nbsp;&nbsp;&nbsp;![Allow-For-Authorization](docs/allow-for-authorization.png)
 
-2. Existing Account (Click continue after entering email and password.)
+2. Existing Account (Click continue after entering email and password):
 
    ![Existing-Account](docs/signup-new-account.png)
 
-3. Google sign-in (You may see either)
+3. Google sign-in (You may see either the first image or the second image):
 
-   ![Google-Credentials](docs/google-credentials.png) Or: ![Email-List](docs/email-list.jpg)
+   ![Google-Credentials](docs/google-credentials.png)&nbsp;&nbsp;&nbsp;&nbsp;![Email-List](docs/email-list.jpg)
 
 ### After login, you should see the main page:
 
@@ -30,7 +30,7 @@ Click Login on the top right which will direct you to Auth0.
 ### Enter profile details
 
 Initial Profile is created when signing up or joining through Google with username and email immutable.
-You can create and update a profile seen below by clicking edit and then save.
+You can create and update a profile seen below by clicking edit and then save which will change back to the edit button.
 
 ![Updating-Profile](docs/updating-profile.png) ![Profile-Updated](docs/profile-updated.png)
 
@@ -42,7 +42,7 @@ Click delete if you want to delete your user/user profile.
 
 ![Overview-Page-2](docs/overview-page-2.png)
 
-### If you want to sign out, click your name on the top right corner, then click Logout.
+### If you want to sign out, click on your email on the top right corner, then click Logout.
 
 ![Logout](docs/logout.png)
 
