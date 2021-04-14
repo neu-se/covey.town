@@ -25,7 +25,7 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import AvatarSelection from './AvatarSelection';
 import useUserProfile from '../../hooks/useUserProfile';
-import { getUser, updateUser } from '../../classes/api'
+import { updateUser } from '../../classes/api'
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
@@ -42,6 +42,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
   const { userProfile } = useUserProfile();
+  const { setUserProfile } = useUserProfile();
 
   const updateTownListings = useCallback(() => {
     apiClient.listTowns().then(towns => {
@@ -58,8 +59,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [updateTownListings]);
 
   useEffect(() => {
-    if (userProfile)
+    if (userProfile) {
       setUserName(userProfile.username);
+      setAvatarID(userProfile?.avatar);
+    }
     else
       setUserName('');
   }, [userProfile])
@@ -203,6 +206,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   };
 
   const handleUpdate = async () => {
+
     try {
       if (userName.length === 0) {
         toast({
@@ -210,24 +214,27 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           description: 'Please enter a username ',
           status: 'error',
         });
+        setUserName(userProfile ? userProfile.username: '')
         return;
       }
       
-      const updateResponse = await updateUser({
+      const response = await updateUser({
         username: userName,
-        password: userProfile ? userProfile.password : '',
-      });
-      // change type in updateUser?
+        avatar: avatarID
+      }, userProfile ? userProfile.userID: '');
 
-      const { status } = updateResponse.data;
-      console.log(`STATUS: ${status}`)
-      // if (user) {
-      //   resetValues();
-      //   setUserProfile({ ...user, isLoggedIn: true });
-      //   closeLoginMenu();
-      // } else {
-      //   setErrorMessage(response.data.message || '');
-      // }
+      const {user} = response.data;
+
+      if (user) {        
+        setUserProfile({ ...user, isLoggedIn: true });
+      }
+      toast({
+        title: 'Account updated :)',
+        description: 'Remember: if you changed your name you will use the UPDATED one to log in again!',
+        status: 'success',
+        duration: null,
+        isClosable: true
+      })
 
     } catch (err) {
       toast({
@@ -264,11 +271,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Heading as='h2' size='lg'>
               Select a username and avatar
             </Heading>
-
-            {
-              userProfile &&
-              <p>name: {userProfile.username}, pwr: {userProfile.password}, avatar: {userProfile.avatar}</p>
-            }
 
             <FormControl>
               <FormLabel htmlFor='name'>Name</FormLabel>

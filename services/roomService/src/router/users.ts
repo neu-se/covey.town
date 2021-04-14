@@ -1,16 +1,18 @@
 import { Express } from 'express';
-import { addUsers, deleteUser, getUser, getUsers, updateUsers } from './UserAccountIndex';
+import { addUser, deleteUser, getUser, getAllUsers, findUser, updateUser } from './UserAccountIndex';
 
 const users = (app: Express): void => {
-  app.get('/accounts', getUsers);
+  app.get('/accounts', getAllUsers);
 
-  app.post('/account', getUser);
+  app.get('/accounts/:id', getUser);
 
-  app.post('/add-user', addUsers);
+  app.post('/accounts/login', findUser)
 
-  app.put('/edit-user/:id', updateUsers);
+  app.post('/accounts', addUser);
 
-  app.delete('/delete-user/:id', deleteUser);
+  app.put('/accounts/:id', updateUser);
+
+  app.delete('/accounts/:id', deleteUser);
 };
 
 export default users;

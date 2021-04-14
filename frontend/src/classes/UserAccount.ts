@@ -1,9 +1,10 @@
 export interface IUserAccountAuthStatus extends IUserAccountLogin {
   isLoggedIn: boolean;
+  userID: string;
 }
 export interface IUserAccount {
   username: string;
-  password: string;
+  password?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -21,7 +22,7 @@ export interface IApiResponseWithMessage {
 }
 
 export interface IApiLoginDataType extends IApiResponseWithMessage {
-  user: IUserAccountLogin | null;
+  user: IUserAccountAuthStatus | null;
 }
 
 export interface IApiRegisterDataType extends IApiResponseWithMessage {

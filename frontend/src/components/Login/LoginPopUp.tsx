@@ -18,7 +18,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { getUser } from '../../classes/api';
+import { findUser, getUser } from '../../classes/api';
 import useUserProfile from '../../hooks/useUserProfile';
 
 const LoginPopUp: React.FunctionComponent = () => {
@@ -69,15 +69,14 @@ const LoginPopUp: React.FunctionComponent = () => {
         setLoginUserName('');
         setUserPassword('');
       };
-      const response = await getUser({
+      const response = await findUser({
         username: loginUserName,
-        password: userPassword,
-        avatar: loginAvatar,
+        password: userPassword
       });
       const { user } = response.data;
       if (user) {
         toast({
-          title: `Hello ${loginUserName}`,
+          title: `Hello ${user.username}`,
           description: 'You are now logged in.',
           duration: 3000,
           status: 'success',
