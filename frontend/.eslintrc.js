@@ -17,7 +17,7 @@ module.exports = {
       version: '17.0.1',
     },
   },
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['/*.*'],
   rules: {
     'no-underscore-dangle': 0,
   },
