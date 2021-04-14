@@ -1,13 +1,13 @@
-import {nanoid} from 'nanoid';
-import {mock, mockReset} from 'jest-mock-extended';
-import {Socket} from 'socket.io';
+import { nanoid } from 'nanoid';
+import { mock, mockReset } from 'jest-mock-extended';
+import { Socket } from 'socket.io';
 import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
-import {UserLocation} from '../CoveyTypes';
+import { UserLocation } from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
-import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 
