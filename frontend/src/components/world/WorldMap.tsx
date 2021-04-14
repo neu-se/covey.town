@@ -95,9 +95,7 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location, player.avatar);
       this.players.push(myPlayer);
     }
-    console.log(this.id)
-    console.log(myPlayer.id)
-    console.log(myPlayer.avatar)
+
     if (this.id !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
