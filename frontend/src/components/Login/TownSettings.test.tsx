@@ -38,6 +38,7 @@ function wrappedTownSettings() {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     myPlayerID: '',
+    townIDToMerge: '',
     currentTownID: '',
     currentTownFriendlyName: '',
     currentTownIsPubliclyListed: false,
