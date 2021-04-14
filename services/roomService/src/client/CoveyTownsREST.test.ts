@@ -1,29 +1,27 @@
-import Express from 'express';
+import assert from 'assert';
 import CORS from 'cors';
+import Express from 'express';
 import http from 'http';
 import { nanoid } from 'nanoid';
-import assert from 'assert';
 import { AddressInfo } from 'net';
-
-import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
+import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 
 type TestTownData = {
-  friendlyName: string, coveyTownID: string,
-  isPubliclyListed: boolean, townUpdatePassword: string
+  friendlyName: string;
+  coveyTownID: string;
+  isPubliclyListed: boolean;
+  townUpdatePassword: string;
 };
 
 function expectTownListMatches(towns: TownListResponse, town: TestTownData) {
   const matching = towns.towns.find(townInfo => townInfo.coveyTownID === town.coveyTownID);
   if (town.isPubliclyListed) {
-    expect(matching)
-      .toBeDefined();
+    expect(matching).toBeDefined();
     assert(matching);
-    expect(matching.friendlyName)
-      .toBe(town.friendlyName);
+    expect(matching.friendlyName).toBe(town.friendlyName);
   } else {
-    expect(matching)
-      .toBeUndefined();
+    expect(matching).toBeUndefined();
   }
 }
 
@@ -31,9 +29,14 @@ describe('TownsServiceAPIREST', () => {
   let server: http.Server;
   let apiClient: TownsServiceClient;
 
-  async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
-    const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
-      `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
+  async function createTownForTesting(
+    friendlyNameToUse?: string,
+    isPublic = false,
+  ): Promise<TestTownData> {
+    const friendlyName =
+      friendlyNameToUse !== undefined
+        ? friendlyNameToUse
+        : `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
@@ -64,9 +67,7 @@ describe('TownsServiceAPIREST', () => {
     it('Allows for multiple towns with the same friendlyName', async () => {
       const firstTown = await createTownForTesting();
       const secondTown = await createTownForTesting(firstTown.friendlyName);
-      expect(firstTown.coveyTownID)
-        .not
-        .toBe(secondTown.coveyTownID);
+      expect(firstTown.coveyTownID).not.toBe(secondTown.coveyTownID);
     });
     it('Prohibits a blank friendlyName', async () => {
       try {
@@ -90,7 +91,6 @@ describe('TownsServiceAPIREST', () => {
       expectTownListMatches(towns, pubTown2);
       expectTownListMatches(towns, privTown1);
       expectTownListMatches(towns, privTown2);
-
     });
     it('Allows for multiple towns with the same friendlyName', async () => {
       const pubTown1 = await createTownForTesting(undefined, true);
@@ -221,20 +221,15 @@ describe('TownsServiceAPIREST', () => {
         userName: nanoid(),
         coveyTownID: pubTown1.coveyTownID,
       });
-      expect(res.coveySessionToken)
-        .toBeDefined();
-      expect(res.coveyUserID)
-        .toBeDefined();
+      expect(res.coveySessionToken).toBeDefined();
+      expect(res.coveyUserID).toBeDefined();
 
       const res2 = await apiClient.joinTown({
         userName: nanoid(),
         coveyTownID: privTown1.coveyTownID,
       });
-      expect(res2.coveySessionToken)
-        .toBeDefined();
-      expect(res2.coveyUserID)
-        .toBeDefined();
-
+      expect(res2.coveySessionToken).toBeDefined();
+      expect(res2.coveyUserID).toBeDefined();
     });
   });
 });
