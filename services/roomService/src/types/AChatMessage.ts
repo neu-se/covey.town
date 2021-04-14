@@ -1,31 +1,26 @@
-/* eslint-disable */
-import Player from "./Player";
+import Player from './Player';
 /**
  * TODO:
  */
-export default abstract class AChatMessage{
+export default abstract class AChatMessage {
+  private _message: string;
 
-    private _message: string
-    private readonly _sender: Player
+  private readonly _sender: Player;
 
-    constructor(message: string, sender: Player){
-        this._message = message;
-        this._sender = sender;
+  constructor(message: string, sender: Player) {
+    this._message = message;
+    this._sender = sender;
+  }
 
-    }
+  public get message(): string {
+    return this._message;
+  }
 
-    
+  public set message(message: string) {
+    this._message = message;
+  }
 
-    public get message(): string {
-        return this._message;
-      }
-
-    public set message(message: string) {
-        this._message = message;
-    }
-
-    public get sender(): Player {
-        return this._sender;
-    }
-    
+  public get sender(): Player {
+    return this._sender;
+  }
 }

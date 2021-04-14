@@ -1,53 +1,110 @@
-import { Box, Button, Flex, Input } from '@chakra-ui/react';
+import { Box, Button, Flex, Input, useToast } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
+import GlobalChatMessage from '../../classes/GlobalChatMessage';
+import PrivateChatMessage from '../../classes/PrivateChatMessage';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
-import ChatMessage from './ChatMessage';
-
-type MessageProps = {
-  id: string;
-  userName: string;
-  color: string;
-  message: string;
-};
+import ChatMessage, { MessageProps } from './ChatMessage';
 
 function Chat(): JSX.Element {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [input, setInput] = useState<string>('');
   const [privateUsername, setPrivateUsername] = useState<string>('');
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
+  const { userName, currentTownID, myPlayerID, players, apiClient } = useCoveyAppState();
+  const toast = useToast();
 
   const setButtonColor = (messageType: string) => {
-    if(messageType === 'global') {
+    if (messageType === 'global') {
       return '#38B2AC';
-    } 
+    }
     if (messageType === 'private') {
       return '#9F7AEA';
     }
     return 'black';
-  }
+  };
 
-  const handlePrivateMessage = () => {
+  const handlePrivateMessage = async () => {
     if (input !== '') {
-      setMessages([
-        ...messages,
-        { id: nanoid(), userName: `Me to ${privateUsername}`, color: setButtonColor('private'), message: input },
-      ]);
-      setInput('');
+
+      try {
+        const currPlayer = players.find(p => p.id === myPlayerID);
+        const toPlayer = players.find(p => p.userName === privateUsername);
+        let privateMessage;
+        if (currPlayer) {
+          if (toPlayer) {
+            privateMessage = new PrivateChatMessage(input, currPlayer, toPlayer);
+          }
+          toast({
+            title: 'Player does not exist',
+            status: 'error',
+          });
+        }
+
+        if (privateMessage) {
+          await apiClient.sendPrivatePlayerMessage({ coveyTownID: '', message: privateMessage });
+          setMessages([
+            ...messages,
+            {
+              key: nanoid(),
+              userName: `${userName} to ${privateUsername}`,
+              color: setButtonColor('private'),
+              message: input,
+            },
+          ]);
+          setInput('');
+        }
+      } catch (err) {
+        toast({
+          title: 'Message unable to send',
+          status: 'error',
+        });
+      }
+    } else {
+      toast({
+        title: 'Message can\'t be blank',
+        status: 'error',
+      });
     }
   };
 
   const handleGlobalMessage = async () => {
     if (input !== '') {
-      setMessages([...messages, { id: nanoid(), userName: 'Me', color: setButtonColor('global'), message: input }]);
-      setInput('');
+      try {
+        const currPlayer = players.find(p => p.id === myPlayerID);
+        let globalMessage;
+        if (currPlayer) {
+          globalMessage = new GlobalChatMessage(input, currPlayer);
+        }
+
+        if (globalMessage) {
+          await apiClient.sendGlobalPlayerMessage({ coveyTownID: '', message: globalMessage });
+          setMessages([
+            ...messages,
+            { key: nanoid(), userName, color: setButtonColor('global'), message: input },
+          ]);
+        }
+        // do toasts if message is not sent
+        setInput('');
+      } catch (err) {
+        toast({
+          title: 'Message unable to send',
+          status: 'error',
+        });
+      }
+    } else {
+      toast({
+        title: 'Message can\'t be blank',
+        status: 'error',
+      });
     }
+
   };
 
   useEffect(() => {
-  }, [messages]);
+    apiClient.getMessages({ coveyTownID: currentTownID });
+  }, [apiClient, currentTownID]);
 
   return (
     <Flex minH='500px' maxH='768px' minW='500px' w='100%' px='2' pt='2'>
@@ -75,7 +132,12 @@ function Chat(): JSX.Element {
           align='left'
           overflow='auto'>
           {messages.map(msg => (
-            <ChatMessage key={msg.id} userName={msg.userName} color={msg.color} message={msg.message} />
+            <ChatMessage
+              key={msg.key}
+              userName={msg.userName}
+              color={msg.color}
+              message={msg.message}
+            />
           ))}
         </Box>
         <Box w='100%' position='absolute' bottom='0' pb='1'>
@@ -87,7 +149,7 @@ function Chat(): JSX.Element {
               value={input}
             />
           </Box>
-          <Box pb = '2' pr = '4' align='center'>
+          <Box pb='2' pr='4' align='center'>
             <Button colorScheme='blue' onClick={handleGlobalMessage}>
               Send global
             </Button>

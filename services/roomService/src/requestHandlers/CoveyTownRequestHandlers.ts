@@ -95,7 +95,6 @@ export interface TownUpdateRequest {
  */
 export interface PrivateMessageRequest {
   coveyTownID: string;
-  coveyTownPassword: string;
   message: PrivateChatMessage;
 }
 
@@ -104,7 +103,6 @@ export interface PrivateMessageRequest {
  */
 export interface GlobalMessageRequest {
   coveyTownID: string;
-  coveyTownPassword: string;
   message: GlobalChatMessage;
 }
 /**
@@ -217,11 +215,7 @@ export async function privateMessageHandler(
   requestData: PrivateMessageRequest,
 ): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.sendPrivateMessage(
-    requestData.coveyTownID,
-    requestData.coveyTownPassword,
-    requestData.message,
-  );
+  const success = townsStore.sendPrivateMessage(requestData.coveyTownID, requestData.message);
   return {
     isOK: success,
     response: {},
@@ -233,11 +227,7 @@ export async function globalMessageHandler(
   requestData: GlobalMessageRequest,
 ): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.sendGlobalMessage(
-    requestData.coveyTownID,
-    requestData.coveyTownPassword,
-    requestData.message,
-  );
+  const success = townsStore.sendGlobalMessage(requestData.coveyTownID, requestData.message);
   return {
     isOK: success,
     response: {},
@@ -245,7 +235,9 @@ export async function globalMessageHandler(
   };
 }
 
-export async function listMessagesHandler(requestData: ListMessagesRequest) : Promise<ResponseEnvelope<ListMessagesResponse>> {
+export async function listMessagesHandler(
+  requestData: ListMessagesRequest,
+): Promise<ResponseEnvelope<ListMessagesResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   const currentTown = townsStore.getControllerForTown(requestData.coveyTownID);
   if (currentTown) {
@@ -257,7 +249,7 @@ export async function listMessagesHandler(requestData: ListMessagesRequest) : Pr
   return {
     isOK: false,
     message: 'Error: invalid town ID',
-  }
+  };
 }
 
 /**
