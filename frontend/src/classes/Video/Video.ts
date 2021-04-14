@@ -16,6 +16,8 @@ export default class Video {
 
   private _userName: string;
 
+  private _avatarID: string;
+
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
 
   private _coveyTownID: string;
@@ -24,13 +26,14 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
-  pauseGame: () => void = ()=>{};
+  pauseGame: () => void = () => {};
 
-  unPauseGame: () => void = ()=>{};
+  unPauseGame: () => void = () => {};
 
-  constructor(userName: string, coveyTownID: string) {
+  constructor(userName: string, coveyTownID: string, avatarID: string) {
     this._userName = userName;
     this._coveyTownID = coveyTownID;
+    this._avatarID = avatarID;
   }
 
   get isPubliclyListed(): boolean {
@@ -52,22 +55,28 @@ export default class Video {
     return this._coveyTownID;
   }
 
+  get avatarID(): string {
+    return this._avatarID;
+  }
+
   private async setup(): Promise<TownJoinResponse> {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
         // Request our token to join the town
-        this.townsServiceClient.joinTown({
-          coveyTownID: this._coveyTownID,
-          userName: this._userName,
-        })
-          .then((result) => {
+        this.townsServiceClient
+          .joinTown({
+            coveyTownID: this._coveyTownID,
+            userName: this._userName,
+            avatarID: this._avatarID,
+          })
+          .then(result => {
             this.sessionToken = result.coveySessionToken;
             this.videoToken = result.providerVideoToken;
             this._townFriendlyName = result.friendlyName;
             this._isPubliclyListed = result.isPubliclyListed;
             resolve(result);
           })
-          .catch((err) => {
+          .catch(err => {
             reject(err);
           });
       });
@@ -84,12 +93,17 @@ export default class Video {
           this.initialisePromise = null;
         };
 
-        this.teardownPromise = this.initialisePromise.then(async () => {
-          await doTeardown();
-        }).catch(async (err) => {
-          this.logger.warn("Ignoring video initialisation error as we're teraing down anyway.", err);
-          await doTeardown();
-        });
+        this.teardownPromise = this.initialisePromise
+          .then(async () => {
+            await doTeardown();
+          })
+          .catch(async err => {
+            this.logger.warn(
+              "Ignoring video initialisation error as we're teraing down anyway.",
+              err,
+            );
+            await doTeardown();
+          });
       } else {
         return Promise.resolve();
       }
@@ -98,11 +112,15 @@ export default class Video {
     return this.teardownPromise ?? Promise.resolve();
   }
 
-  public static async setup(username: string, coveyTownID: string): Promise<TownJoinResponse> {
+  public static async setup(
+    username: string,
+    coveyTownID: string,
+    avatarID: string,
+  ): Promise<TownJoinResponse> {
     let result = null;
 
     if (!Video.video) {
-      Video.video = new Video(username, coveyTownID);
+      Video.video = new Video(username, coveyTownID, avatarID);
     }
 
     try {
@@ -114,7 +132,6 @@ export default class Video {
       Video.video = null;
       throw err;
     }
-
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - JB TODO
