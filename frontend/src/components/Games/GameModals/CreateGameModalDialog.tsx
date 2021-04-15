@@ -116,7 +116,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                       <>
                         <FormLabel htmlFor="ttlChoices1">
                           Truth #1:
-                          <Input id="ttlChoices1" placeholder="Enter something true about yourself"
+                          <textarea id="ttlChoices1" placeholder="Enter something true about yourself"
                                  value={truth1}
                                  className="games-padded-asset"
                                  onChange={(e) =>
