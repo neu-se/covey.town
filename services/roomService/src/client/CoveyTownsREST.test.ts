@@ -5,13 +5,14 @@ import { nanoid } from 'nanoid';
 import assert from 'assert';
 import { AddressInfo } from 'net';
 import db from '../database/knexfile';
+import { logUser, deleteUser } from '../database/databaseService';
 
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
-  isPubliclyListed: boolean, townUpdatePassword: string
+  isPubliclyListed: boolean, townUpdatePassword: string, publicStatus?: string,
 };
 
 function expectTownListMatches(towns: TownListResponse, town: TestTownData) {
@@ -28,17 +29,28 @@ function expectTownListMatches(towns: TownListResponse, town: TestTownData) {
   }
 }
 
+function expectSavedTownListMatches(towns: TownListResponse, town: TestTownData) {
+  const matching = towns.towns.find(townInfo => townInfo.coveyTownID === town.coveyTownID);
+
+  expect(matching)
+    .toBeDefined();
+  assert(matching);
+  expect(matching.friendlyName)
+    .toBe(town.friendlyName);
+
+}
+
 describe('TownsServiceAPIREST', () => {
   let server: http.Server;
   let apiClient: TownsServiceClient;
 
-  async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
+  async function createTownForTesting(friendlyNameToUse?: string, isPublic = false, creator = 'TEST_USER'): Promise<TestTownData> {
     const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
       `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
-      creator: 'Guest',
+      creator,
     });
     return {
       friendlyName,
@@ -58,10 +70,101 @@ describe('TownsServiceAPIREST', () => {
     const address = server.address() as AddressInfo;
 
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+
+    await logUser('TEST_USER');
+    await logUser('TEST_USER_2');
   });
   afterAll(async () => {
     await server.close();
+    await deleteUser('TEST_USER');
+    await deleteUser('TEST_USER_2');
     await db.destroy();
+  });
+
+  describe('CoveyTownUserAPI', () => {
+    it('allows for users to be created only once', async () => {
+      await apiClient.logUser({ email: 'USER_TEST' });
+      await apiClient.logUser({ email: 'USER_TEST' });
+      const numUsers = await db('Users').where('email', 'USER_TEST').then((res: any[]) =>
+        res.length);
+      expect(numUsers)
+        .toBe(1);
+    });
+    it('allows for already created users to be deleted', async () => {
+      await apiClient.deleteUser({ email: 'USER_TEST' });
+      const numUsers = await db('Users').where('email', 'USER_TEST').then((res: any[]) =>
+        res.length);
+      expect(numUsers)
+        .toBe(0);
+    });
+    it('allows for getting all recorded info for user with given email', async () => {
+      await apiClient.logUser({ email: 'USER_INFO_TEST' });
+      const info = await apiClient.getUserInfo({ email: 'USER_INFO_TEST' });
+      expect(info.currentAvatar)
+        .toBe('misa'); // default avatar
+      expect(info.email)
+        .toBe('USER_INFO_TEST');
+    });
+    it('allows first/last names to be updated', async () => {
+      await apiClient.updateUser({
+        email: 'USER_INFO_TEST',
+        firstName: 'JOHN',
+        lastName: 'DOE',
+      });
+      const info = await apiClient.getUserInfo({ email: 'USER_INFO_TEST' });
+      expect(info.firstName)
+        .toBe('JOHN');
+      expect(info.lastName)
+        .toBe('DOE');
+    });
+    it('will accept undefined values for first/last name to update', async () => {
+      // first name undefined
+      await apiClient.updateUser({
+        email: 'USER_INFO_TEST',
+        lastName: 'SMITH',
+      });
+      let info = await apiClient.getUserInfo({ email: 'USER_INFO_TEST' });
+      expect(info.firstName)
+        .toBe('JOHN');
+      expect(info.lastName)
+        .toBe('SMITH');
+
+      // last name undefined
+      await apiClient.updateUser({
+        email: 'USER_INFO_TEST',
+        firstName: 'JANE',
+      });
+      info = await apiClient.getUserInfo({ email: 'USER_INFO_TEST' });
+      expect(info.firstName)
+        .toBe('JANE');
+      expect(info.lastName)
+        .toBe('SMITH');
+
+      // both undefined
+      await apiClient.updateUser({
+        email: 'USER_INFO_TEST',
+      });
+      info = await apiClient.getUserInfo({ email: 'USER_INFO_TEST' });
+      expect(info.firstName)
+        .toBe('JANE');
+      expect(info.lastName)
+        .toBe('SMITH');
+
+      // same as existing
+      await apiClient.updateUser({
+        email: 'USER_INFO_TEST',
+        firstName: 'JANE',
+        lastName: 'SMITH',
+      });
+      info = await apiClient.getUserInfo({ email: 'USER_INFO_TEST' });
+      expect(info.firstName)
+        .toBe('JANE');
+      expect(info.lastName)
+        .toBe('SMITH');
+
+      // clean up
+      await apiClient.deleteUser({ email: 'USER_INFO_TEST' });
+    });
   });
   describe('CoveyTownCreateAPI', () => {
     it('Allows for multiple towns with the same friendlyName', async () => {
@@ -78,6 +181,73 @@ describe('TownsServiceAPIREST', () => {
       } catch (err) {
         // OK
       }
+    });
+  });
+
+  describe('CoveyTownAvatarAPI', () => {
+    it('Allows access to a users current avatar', async () => {
+      const currentAvatar = await apiClient.getCurrentAvatar({ email: 'TEST_USER' });
+      expect(currentAvatar)
+        .toBe('misa');
+    });
+    it('Allows for a users avatar to be updated', async () => {
+      await apiClient.updateUserAvatar({ email: 'TEST_USER', avatar: 'catgirl' });
+      let currentAvatar = await apiClient.getCurrentAvatar({ email: 'TEST_USER' });
+      expect(currentAvatar)
+        .toBe('catgirl');
+      await apiClient.updateUserAvatar({ email: 'TEST_USER', avatar: 'childactor' });
+      currentAvatar = await apiClient.getCurrentAvatar({ email: 'TEST_USER' });
+      expect(currentAvatar)
+        .toBe('childactor');
+    });
+  });
+
+  describe('CoveyTownSaveTownAPI', () => {
+    it('Allows for both public and private towns to be saved', async () => {
+      const firstTown = await createTownForTesting(undefined, true);
+      const secondTown = await createTownForTesting(undefined, false);
+      await apiClient.saveTown({ email: 'TEST_USER', townID: firstTown.coveyTownID });
+      await apiClient.saveTown({ email: 'TEST_USER', townID: secondTown.coveyTownID });
+      const savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER' });
+      expectSavedTownListMatches(savedTowns, firstTown);
+      expectSavedTownListMatches(savedTowns, secondTown);
+    });
+    it('allows towns to be unsaved, and removes them from the list', async () => {
+      const firstTown = await createTownForTesting(undefined, true);
+      const secondTown = await createTownForTesting(undefined, false);
+      await apiClient.saveTown({ email: 'TEST_USER', townID: firstTown.coveyTownID });
+      await apiClient.saveTown({ email: 'TEST_USER', townID: secondTown.coveyTownID });
+      let savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER' });
+      expectSavedTownListMatches(savedTowns, firstTown);
+      expectSavedTownListMatches(savedTowns, secondTown);
+      await apiClient.deleteSavedTown({ email: 'TEST_USER', townID: firstTown.coveyTownID });
+      savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER' });
+      try {
+        expectSavedTownListMatches(savedTowns, firstTown);
+        fail('should not keep unsaved towns');
+      } catch (err) {
+        //  OK- error expected
+      }
+      expectSavedTownListMatches(savedTowns, secondTown);
+    });
+    it('only unsaves a town for the specified user', async () => {
+      const firstTown = await createTownForTesting();
+      await apiClient.saveTown({ email: 'TEST_USER', townID: firstTown.coveyTownID });
+      await apiClient.saveTown({ email: 'TEST_USER_2', townID: firstTown.coveyTownID });
+      let savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER' });
+      expectSavedTownListMatches(savedTowns, firstTown);
+      savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER_2' });
+      expectSavedTownListMatches(savedTowns, firstTown);
+      await apiClient.deleteSavedTown({ email: 'TEST_USER', townID: firstTown.coveyTownID });
+      savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER' });
+      try {
+        expectSavedTownListMatches(savedTowns, firstTown);
+        fail('should not keep unsaved towns');
+      } catch (err) {
+        // OK- error expected
+      }
+      savedTowns = await apiClient.listSavedTowns({ email: 'TEST_USER_2' });
+      expectSavedTownListMatches(savedTowns, firstTown);
     });
   });
 

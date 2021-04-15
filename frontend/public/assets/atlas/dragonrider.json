@@ -1,0 +1,172 @@
+{"frames": {
+
+"dragonrider-back-walk.000":
+{
+	"frame": {"x":86,"y":1,"w":30,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":19,"w":30,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-back-walk.001":
+{
+	"frame": {"x":53,"y":1,"w":31,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":17,"w":31,"h":46},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-back-walk.002":
+{
+	"frame": {"x":118,"y":1,"w":29,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":19,"w":29,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-back-walk.003":
+{
+	"frame": {"x":53,"y":1,"w":31,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":17,"w":31,"h":46},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-back":
+{
+	"frame": {"x":53,"y":1,"w":31,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":17,"w":31,"h":46},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-front-walk.000":
+{
+	"frame": {"x":286,"y":1,"w":31,"h":41},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":23,"w":31,"h":41},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-front-walk.001":
+{
+	"frame": {"x":253,"y":1,"w":31,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":31,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-front-walk.002":
+{
+	"frame": {"x":319,"y":1,"w":31,"h":41},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":31,"h":41},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-front-walk.003":
+{
+	"frame": {"x":253,"y":1,"w":31,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":31,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-front":
+{
+	"frame": {"x":253,"y":1,"w":31,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":31,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-left-walk.000":
+{
+	"frame": {"x":149,"y":1,"w":24,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":19,"w":24,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-left-walk.001":
+{
+	"frame": {"x":1,"y":1,"w":24,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":17,"w":24,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-left-walk.002":
+{
+	"frame": {"x":175,"y":1,"w":24,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":19,"w":24,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-left-walk.003":
+{
+	"frame": {"x":1,"y":1,"w":24,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":17,"w":24,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-left":
+{
+	"frame": {"x":1,"y":1,"w":24,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":17,"w":24,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-right-walk.000":
+{
+	"frame": {"x":201,"y":1,"w":24,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":19,"w":24,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-right-walk.001":
+{
+	"frame": {"x":27,"y":1,"w":24,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":17,"w":24,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-right-walk.002":
+{
+	"frame": {"x":227,"y":1,"w":24,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":19,"w":24,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-right-walk.003":
+{
+	"frame": {"x":27,"y":1,"w":24,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":17,"w":24,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"dragonrider-right":
+{
+	"frame": {"x":27,"y":1,"w":24,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":17,"w":24,"h":47},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "dragonrider.png",
+	"format": "RGBA8888",
+	"size": {"w":351,"h":49},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:04fbf9752add6a7f9665f5c18c81eedc:368d2be0cb86806a0392d2f2df4d3081:2fb87b34c2069d3cffa934d6435bde2f$"
+}
+}

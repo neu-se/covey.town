@@ -12,7 +12,6 @@ query GetBooks {
 
 export default function GQLExample() {
   const { loading, error, data } = useQuery(EXCHANGE_RATES);
-  console.log('HERE!', loading, data);
 
 
   if (loading) return <p>Loading...</p>;

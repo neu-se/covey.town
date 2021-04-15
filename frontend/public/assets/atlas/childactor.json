@@ -1,0 +1,172 @@
+{"frames": {
+
+"childactor-back-walk.000":
+{
+	"frame": {"x":1,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-back-walk.001":
+{
+	"frame": {"x":1,"y":71,"w":32,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-back-walk.002":
+{
+	"frame": {"x":1,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-back-walk.003":
+{
+	"frame": {"x":1,"y":104,"w":32,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-back":
+{
+	"frame": {"x":1,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-front-walk.000":
+{
+	"frame": {"x":1,"y":36,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-front-walk.001":
+{
+	"frame": {"x":1,"y":137,"w":32,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-front-walk.002":
+{
+	"frame": {"x":1,"y":36,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-front-walk.003":
+{
+	"frame": {"x":1,"y":170,"w":32,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-front":
+{
+	"frame": {"x":1,"y":36,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-left-walk.000":
+{
+	"frame": {"x":35,"y":1,"w":26,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":33,"w":26,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-left-walk.001":
+{
+	"frame": {"x":35,"y":133,"w":24,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":24,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-left-walk.002":
+{
+	"frame": {"x":35,"y":34,"w":26,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":33,"w":26,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-left-walk.003":
+{
+	"frame": {"x":35,"y":133,"w":24,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":24,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-left":
+{
+	"frame": {"x":35,"y":133,"w":24,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":24,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-right-walk.000":
+{
+	"frame": {"x":35,"y":168,"w":24,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":31,"w":24,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-right-walk.001":
+{
+	"frame": {"x":35,"y":67,"w":26,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":33,"w":26,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-right-walk.002":
+{
+	"frame": {"x":35,"y":168,"w":24,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":31,"w":24,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-right-walk.003":
+{
+	"frame": {"x":35,"y":100,"w":26,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":33,"w":26,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"childactor-right":
+{
+	"frame": {"x":35,"y":168,"w":24,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":31,"w":24,"h":33},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "childactor.png",
+	"format": "RGBA8888",
+	"size": {"w":62,"h":202},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:3ed73de032a18002c85013670692fa37:06eb2faed1471fd9a345b6889f0e80ab:7dcd5154a2900fc69891e35cd4a2ea4f$"
+}
+}

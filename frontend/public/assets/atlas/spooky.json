@@ -1,0 +1,172 @@
+{"frames": {
+
+"spooky-back-walk.000":
+{
+	"frame": {"x":1,"y":211,"w":30,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":30,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-back-walk.001":
+{
+	"frame": {"x":1,"y":1,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-back-walk.002":
+{
+	"frame": {"x":1,"y":252,"w":30,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":30,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-back-walk.003":
+{
+	"frame": {"x":1,"y":43,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-back":
+{
+	"frame": {"x":1,"y":1,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-front-walk.000":
+{
+	"frame": {"x":1,"y":293,"w":30,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":30,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-front-walk.001":
+{
+	"frame": {"x":1,"y":85,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-front-walk.002":
+{
+	"frame": {"x":1,"y":334,"w":30,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":30,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-front-walk.003":
+{
+	"frame": {"x":1,"y":127,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-front":
+{
+	"frame": {"x":1,"y":169,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-left-walk.000":
+{
+	"frame": {"x":1,"y":627,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-left-walk.001":
+{
+	"frame": {"x":1,"y":375,"w":28,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":23,"w":28,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-left-walk.002":
+{
+	"frame": {"x":1,"y":668,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-left-walk.003":
+{
+	"frame": {"x":1,"y":417,"w":28,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":23,"w":28,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-left":
+{
+	"frame": {"x":1,"y":459,"w":28,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":23,"w":28,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-right-walk.000":
+{
+	"frame": {"x":1,"y":709,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-right-walk.001":
+{
+	"frame": {"x":1,"y":501,"w":28,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":28,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-right-walk.002":
+{
+	"frame": {"x":1,"y":750,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-right-walk.003":
+{
+	"frame": {"x":1,"y":543,"w":28,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":28,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"spooky-right":
+{
+	"frame": {"x":1,"y":585,"w":28,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":28,"h":40},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "spooky.png",
+	"format": "RGBA8888",
+	"size": {"w":32,"h":790},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:5fef93f9c92309779d4e7036e8f6535e:fccf591190b0c5ecde272726e54f14b7:cb8e927d5803468412f780159aab8e08$"
+}
+}
