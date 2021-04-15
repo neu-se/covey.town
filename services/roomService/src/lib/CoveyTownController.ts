@@ -172,8 +172,8 @@ export default class CoveyTownController {
     const playerTo = this.players.find(p => p.id === userIDTo);
     if (playerTo) {
       const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
-      messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-      messageCensored.message = emojify(message.message);
+      messageCensored.message = emojify(this._censorer.censorMessage(messageCensored.message));
+      //messageCensored.message = emojify(messageCensored.message);
       this.messages.push(messageCensored);
       this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
     }
@@ -181,9 +181,9 @@ export default class CoveyTownController {
   }
 
   sendGlobalPlayerMessage(userID: string, message: string): void {
-    const messageCensor = this._censorer.censorMessage(message);
+    const messageCensor = emojify(this._censorer.censorMessage(message)) + emojify(':face_with_cowboy_hat');
     const messageCensored = new GlobalChatMessage(messageCensor, userID);
-    messageCensored.message = emojify(message.message);
+   // messageCensored.message = emojify(messageCensored.message);
     this.messages.push(messageCensored);
     this._listeners.forEach(listener => listener.onGlobalMessage(messageCensored));
   }
