@@ -7,7 +7,7 @@ interface HangmanFigureProps {
 export default function HangmanDisplay({game}: HangmanFigureProps): JSX.Element {
   const imageBasePath : string = "../../../../../public/assets/"
   return (
-    <>
+    <div>
       {
         game.limbList.length === 6 &&
         <img src={`${imageBasePath}noLimbs.jpg`} alt="gallowsOnly"/>
@@ -36,6 +36,6 @@ export default function HangmanDisplay({game}: HangmanFigureProps): JSX.Element 
         game.limbList.length === 6 &&
         <img src={`${imageBasePath}twoLegs.jpg`} alt="twoLegsAdded"/>
       }
-    </>
+    </div>
   )
 }

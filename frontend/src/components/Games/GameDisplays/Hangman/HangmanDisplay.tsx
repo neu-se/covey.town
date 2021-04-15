@@ -32,7 +32,7 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
           <span key={letter}>{letter}</span>
         )}
       </div>
-      {/* TODO: Hangman graphics go here */}
+      <HangmanDisplay game={game}/>
       <br/>
       <div className="games-center-div">
         <div className="row">
