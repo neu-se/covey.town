@@ -19,5 +19,5 @@
 
   - **Players can send emojis!** If a player wants to send an emoji, they need to send it in the form: ':name_of_emoji_here:'
     - Example: (:face_with_cowboy_hat: sends 🤠)
-  - [Link to the page for the emoji API] (https://github.com/omnidan/node-emoji/blob/master/README.md)
-  - [List of supported emoji's] (https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json)
+  - [Link to the page for the emoji API](https://github.com/omnidan/node-emoji/blob/master/README.md)
+  - [List of supported emoji's](https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json)
