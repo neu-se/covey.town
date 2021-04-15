@@ -244,7 +244,7 @@ export async function globalMessageHandler(
     isOK: success,
     response: {},
     message: !success
-      ? `Error: could not send global message with id: ${requestData.coveyTownID} and message: ${requestData.message}`
+      ? `Error: could not send global message with id: ${requestData.coveyTownID}, userid: ${requestData.coveyUserID} and message: ${requestData.message}`
       : undefined,
   };
 }

@@ -116,7 +116,6 @@ export interface GlobalMessageRequest {
   coveyUserID: string;
   message: string;
 }
-
 export default class TownsServiceClient {
   private _axios: AxiosInstance;
 
