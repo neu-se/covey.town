@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+
 const { Schema } = mongoose;
-export const userSchema = new Schema({
+const userSchema = new Schema({
   username: String,
   email: String,
   password: String,
@@ -12,6 +13,7 @@ export const userSchema = new Schema({
   linkedInLink: String,
   requests:[String],
   sentRequests:[String],
-  friends:[String]
-}, {collection:'User'});
+  friends:[String],
+}, { collection: 'User' });
+export default userSchema;
 
