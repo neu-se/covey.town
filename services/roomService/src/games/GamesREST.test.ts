@@ -10,6 +10,7 @@ import GameServiceClient from '../client/GameServiceClient';
 
 
 type TestGameData = {
+  townID: string,
   id: string,
   gameState: TTLChoices | HangmanWord,
   player1ID: string,
@@ -31,7 +32,9 @@ describe('GameServiceAPIREST', () => {
   let server: http.Server;
   let apiClient: GameServiceClient;
 
-  async function createGameForTesting(gameType: string, player1IDToUse?: string, player1UsernameToUse?: string, hangmanWordToUse?: HangmanWord, ttlChoicesToUse?: TTLChoices): Promise<TestGameData> {
+  async function createGameForTesting(gameType: string, player1IDToUse?: string, player1UsernameToUse?: string, townIDtoUse?: string, hangmanWordToUse?: HangmanWord, ttlChoicesToUse?: TTLChoices): Promise<TestGameData> {
+    const townID = townIDtoUse !== undefined ? townIDtoUse :
+      `town${nanoid()}`;
     const player1ID = player1IDToUse !== undefined ? player1IDToUse :
       `id${nanoid()}`;
     const player1Username = player1UsernameToUse !== undefined ? player1UsernameToUse :
@@ -47,6 +50,7 @@ describe('GameServiceAPIREST', () => {
       initialGameState = ttlChoices;
     }
     const ret = await apiClient.createGame({
+      townID,
       player1Id: player1ID,
       player1Username,
       gameType,
@@ -54,6 +58,7 @@ describe('GameServiceAPIREST', () => {
     });
     return {
       id: ret.gameId,
+      townID,
       gameState: initialGameState,
       player1ID,
       player1Username,
@@ -113,61 +118,56 @@ describe('GameServiceAPIREST', () => {
   describe('GamesListAPI', () => {
     it('Allows for multiple games with the same player1ID', async () => {
       const game1 = await createGameForTesting('Hangman');
-      const game2 = await createGameForTesting('Hangman', game1.player1ID);
+      const game2 = await createGameForTesting('Hangman', game1.player1ID, undefined, game1.townID);
 
-      const games = await apiClient.listGames();
+      const games = await apiClient.listGames({ townID: game1.townID });
       expectGameListMatches(games, game1);
       expectGameListMatches(games, game2);
     });
-    // it('Allows for multiple games with the same townID', async () => {
-    //   const game1 = await createGameForTesting('hangman');
-    //   const game2 = await createGameForTesting('hangman', undefined, game1.player1Username);
-    //
-    //
-    //   const games = await apiClient.listGames();
-    //   expectGameListMatches(games, game1);
-    //   expectGameListMatches(games, game2);
-    // });
   });
 
-  // describe('GameDeleteAPI', () => {
-  //   it('Deletes a game if given a valid gameId, no longer allowing it to be joined or listed', async () => {
-  //     const { id } = await createGameForTesting('Hangman');
-  //     await apiClient.deleteGame({
-  //       gameId: id,
-  //     });
-  //     try {
-  //       await apiClient.updateGame({
-  //         gameId: id,
-  //         player2Id: nanoid(),
-  //         player2Username: nanoid(),
-  //       });
-  //       fail('Expected updateGame to throw an error');
-  //     } catch (e) {
-  //       // Expected
-  //     }
-  //     try {
-  //       await apiClient.updateGame({
-  //         gameId: id,
-  //         move: { letter: 'a' },
-  //       });
-  //       fail('Expected updateGame to throw an error');
-  //     } catch (e) {
-  //       // Expected
-  //     }
-  //     const listedGames = await apiClient.listGames();
-  //     if (listedGames.games.find(r => r.id === id)) {
-  //       fail('Expected the deleted game to no longer be listed');
-  //     }
-  //   });
-  // });
+  describe('GameDeleteAPI', () => {
+    it('Deletes a game if given a valid gameId, no longer allowing it to be joined or listed', async () => {
+      const game = await createGameForTesting('Hangman');
+      await apiClient.deleteGame({
+        townID: game.townID,
+        gameId: game.id,
+      });
+      try {
+        await apiClient.updateGame({
+          townID: game.townID,
+          gameId: game.id,
+          player2Id: nanoid(),
+          player2Username: nanoid(),
+        });
+        fail('Expected updateGame to throw an error');
+      } catch (e) {
+        // Expected
+      }
+      try {
+        await apiClient.updateGame({
+          townID: game.townID,
+          gameId: game.id,
+          move: { letter: 'a' },
+        });
+        fail('Expected updateGame to throw an error');
+      } catch (e) {
+        // Expected
+      }
+      const listedGames = await apiClient.listGames({ townID: game.townID });
+      if (listedGames.games.find(r => r.id === game.id)) {
+        fail('Expected the deleted game to no longer be listed');
+      }
+    });
+  });
   describe('GameUpdateAPI', () => {
     it('Checks the gameId before updating any values', async () => {
       const game1 = await createGameForTesting('Hangman');
-      expectGameListMatches(await apiClient.listGames(), game1);
+      expectGameListMatches(await apiClient.listGames({ townID: game1.townID }), game1);
       try {
         await apiClient.updateGame({
           gameId: game1.id.concat('1'),
+          townID: game1.townID,
           player2Id: nanoid(),
           player2Username: nanoid(),
         });
@@ -177,32 +177,16 @@ describe('GameServiceAPIREST', () => {
       }
 
       // Make sure name or vis didn't change
-      expectGameListMatches(await apiClient.listGames(), game1);
+      expectGameListMatches(await apiClient.listGames({ townID: game1.townID }), game1);
     });
-    // it('Checks the townId before updating any values', async () => {
-    //   const game1 = await createGameForTesting('Hangman');
-    //   expectGameListMatches(await apiClient.listGames(), game1);
-    //   try {
-    //     await apiClient.updateGame({
-    //       gameId: game1.id.concat('1'),
-    //       player2Id: nanoid(),
-    //       player2Username: nanoid(),
-    //     });
-    //     fail('updateGame with an invalid gameId should throw an error');
-    //   } catch (err) {
-    //     // error
-    //   }
-    //
-    //   // Make sure name or vis didn't change
-    //   expectGameListMatches(await apiClient.listGames(), game1);
-    // });
     it('Updates the player2 info as requested', async () => {
       const game1 = await createGameForTesting('Hangman');
       const game2 = await createGameForTesting('ttl');
-      expectGameListMatches(await apiClient.listGames(), game1);
-      expectGameListMatches(await apiClient.listGames(), game2);
+      expectGameListMatches(await apiClient.listGames({ townID: game1.townID }), game1);
+      expectGameListMatches(await apiClient.listGames({ townID: game2.townID }), game2);
 
       await apiClient.updateGame({
+        townID: game1.townID,
         gameId: game1.id,
         player2Id: 'newId',
         player2Username: 'newName',
@@ -211,6 +195,7 @@ describe('GameServiceAPIREST', () => {
       game1.player2Username = 'newName';
 
       await apiClient.updateGame({
+        townID: game2.townID,
         gameId: game2.id,
         player2Id: 'newId',
         player2Username: 'newName',
@@ -218,8 +203,8 @@ describe('GameServiceAPIREST', () => {
       game2.player2ID = 'newId';
       game2.player2Username = 'newName';
 
-      expectGameListMatches(await apiClient.listGames(), game1);
-      expectGameListMatches(await apiClient.listGames(), game2);
+      expectGameListMatches(await apiClient.listGames({ townID: game1.townID }), game1);
+      expectGameListMatches(await apiClient.listGames({ townID: game2.townID }), game2);
 
     });
   });
