@@ -9,7 +9,7 @@ import PlayerSession from '../types/PlayerSession';
 import PrivateChatMessage from '../types/PrivateChatMessage';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
-// import emojify from 'emojify.js';
+import { emojify } from 'node-emoji';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -171,7 +171,7 @@ export default class CoveyTownController {
   sendPrivatePlayerMessage(message: PrivateChatMessage): void {
     const messageCensored = message;
     messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-    // messageCensored = emojify.replace(message.message);
+    messageCensored.message = emojify(message.message);
     this.messages.push(messageCensored);
     this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
   }
@@ -179,7 +179,7 @@ export default class CoveyTownController {
   sendGlobalPlayerMessage(message: GlobalChatMessage): void {
     const messageCensored = message;
     messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-    // messageCensored = emojify.replace(message.message);
+    messageCensored.message = emojify(message.message);
     this.messages.push(messageCensored);
     this._listeners.forEach(listener => listener.onGlobalMessage(messageCensored));
   }
