@@ -248,7 +248,6 @@ const resolvers = {
      */
     townCreateRequest: async (_: any, args: any, context: any) => {
       try {
-        console.log(context);
         const email = await context.user;
         return await townCreateHandler({
           friendlyName: args.input.friendlyName,
