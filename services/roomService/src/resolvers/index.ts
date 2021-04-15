@@ -94,23 +94,18 @@ const resolvers = {
      * @param args represents all the input parameters.
      * @returns the user profile.
      */
-    signUp: async (_: any, args: any, context: any) => {
-      try {
-        const email = await context.user;
-        const user = await User.findOne({ email: args.input.email });
-        if (user) {
-          throw new Error('User already in use');
-        }
-        const newUser = new User({
-          username: args.input.userName,
-          email: args.input.email,
-          password: args.input.password,
-        });
-        const result = newUser.save();
-        return result;
-      } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this');
+    signUp: async (_: any, args: any) => {
+      const user = await User.findOne({ email: args.input.email });
+      if (user) {
+        throw new Error('User already in use');
       }
+      const newUser = new User({
+        username: args.input.username,
+        email: args.input.email,
+        password: args.input.password,
+      });
+      const result = newUser.save();
+      return result;
     },
     updateUser: async (_: any, args: any, context: any) => {
       try {
@@ -254,7 +249,6 @@ const resolvers = {
     townCreateRequest: async (_: any, args: any, context: any) => {
       try {
         const email = await context.user;
-        console.log(email);
         return await townCreateHandler({
           friendlyName: args.input.friendlyName,
           isPubliclyListed: args.input.isPubliclyListed,
