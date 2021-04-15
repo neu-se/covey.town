@@ -169,15 +169,11 @@ export default class CoveyTownController {
   }
 
   sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
-    const playerTo = this.players.find(p => p.id === userIDTo);
-    if (playerTo) {
-      const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
-      messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-      // messageCensored = emojify.replace(message.message);
-      this.messages.push(messageCensored);
-      this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
-    }
-    throw new Error("Given player doesn't exist");
+    const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
+    messageCensored.message = this._censorer.censorMessage(messageCensored.message);
+    // messageCensored = emojify.replace(message.message);
+    this.messages.push(messageCensored);
+    this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
   }
 
   sendGlobalPlayerMessage(userID: string, message: string): void {

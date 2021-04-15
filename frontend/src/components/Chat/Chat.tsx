@@ -2,8 +2,6 @@ import { Box, Button, Flex, Input, useToast } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { useCallback, useEffect, useState } from 'react';
 import AChatMessage from '../../classes/AChatMessage';
-import GlobalChatMessage from '../../classes/GlobalChatMessage';
-import PrivateChatMessage from '../../classes/PrivateChatMessage';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import ChatMessage, { MessageProps } from './ChatMessage';
@@ -26,31 +24,28 @@ function Chat(): JSX.Element {
     return 'black';
   };
 
-  const messageToProps = useCallback((msg: AChatMessage, type: string): MessageProps => 
-      ({key: nanoid(),
-      userName: msg.sender.userName,
-      color: setButtonColor(type),
-      message: msg.message,}), [])
+  // const messageToProps = useCallback(
+  //   (msg: AChatMessage, type: string): MessageProps => ({
+  //     key: nanoid(),
+  //     userName: msg.sender.userName,
+  //     color: setButtonColor(type),
+  //     message: msg.message,
+  //   }),
+  //   [],
+  // );
 
   const handlePrivateMessage = async () => {
     if (input !== '') {
       try {
-        const currPlayer = players.find(p => p.id === myPlayerID);
         const toPlayer = players.find(p => p.userName === privateUsername);
-        if (currPlayer) {
           if (toPlayer) {
-          
-          toast({
-            title: 'Player does not exist',
-            status: 'error',
-          });
-        }
           await apiClient.sendPrivatePlayerMessage({
             coveyTownID: currentTownID,
-            userIDFrom: userName,
+            userIDFrom: myPlayerID,
             userIDTo: privateUsername,
             message: input,
           });
+
           setMessages([
             ...messages,
             {
@@ -61,8 +56,12 @@ function Chat(): JSX.Element {
             },
           ]);
           setInput('');
-  
-      }
+        } else {
+          toast({
+            title: 'Player does not exist',
+            status: 'error',
+          });
+        }
       } catch (err) {
         toast({
           title: 'Message unable to send',
@@ -80,25 +79,17 @@ function Chat(): JSX.Element {
   const handleGlobalMessage = async () => {
     if (input !== '') {
       try {
-        const currPlayer = players.find(p => p.id === myPlayerID);
-        let globalMessage;
-
-        if (currPlayer) {
-        
-        if (globalMessage) {
-          await apiClient.sendGlobalPlayerMessage({
-            coveyTownID: currentTownID,
-            coveyUserID: currPlayer?.id,
-            message: input,
-          });
-          setMessages([
-            ...messages,
-            { key: nanoid(), userName, color: setButtonColor('global'), message: input },
-          ]);
-        }
-        // do toasts if message is not sent
-        setInput('');
-      }
+            await apiClient.sendGlobalPlayerMessage({
+              coveyTownID: currentTownID,
+              coveyUserID: myPlayerID,
+              message: input,
+            });
+            setMessages([
+              ...messages,
+              { key: nanoid(), userName, color: setButtonColor('global'), message: input },
+            ]);
+          // do toasts if message is not sent
+          setInput('');
       } catch (err) {
         toast({
           title: 'Message unable to send',
@@ -114,14 +105,7 @@ function Chat(): JSX.Element {
     }
   };
 
-  const initMessages = useCallback(async () => {
-    const prevMessages = await apiClient.getMessages({ coveyTownID: currentTownID });
-    setMessages(prevMessages.messages.map(msg => messageToProps(msg, 'private')));
-  }, [setMessages, apiClient, currentTownID, messageToProps]);
-
-  useEffect(() => {
-    initMessages();
-  }, [initMessages]);
+  
 
   return (
     <Flex minH='500px' maxH='768px' minW='500px' w='100%' px='2' pt='2'>
