@@ -24,6 +24,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gamesList, setGamesList] = useState<GameList>();
   const { currentTownID, gamesClient } = useCoveyAppState();
+  const video = useMaybeVideo()
 
   useEffect(() => {
     const fetchAllGames = async () => {
