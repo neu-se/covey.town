@@ -15,6 +15,7 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
   const [currentGame, setCurrentGame] = useState<HangmanGame>(startingGame);
   const gameId = startingGame.id;
   const [wordState, setWordState] = useState('')
+  const finalWord = startingGame.finalWord.split('')
 
   const updateAlreadyGuessedLetters = () => {
     let letters: string[] = [];
@@ -24,20 +25,36 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
     return letters;
   }
 
-  const guessedWord = () => {
-    const word = currentGame.finalWord.split('');
-    const hiddenLetters = currentGame.splitWord;
-    const wordWithBlanks = [];
-    setWordState('');
-    for (let i = 0; i < word.length; i += 1) {
-      if (!hiddenLetters.find(letter => word[i] === letter)) {
-        wordWithBlanks.push(word[i]);
-      } else {
-        wordWithBlanks.push("_");
-      }
-    }
-    setWordState(wordWithBlanks.join(' '));
-  }
+  // const guessedWord = () => {
+  //   const word = startingGame.finalWord.split('');
+  //   const hiddenLetters = currentGame.splitWord;
+  //   const wordWithBlanks = [];
+  //   setWordState('');
+  //   for (let i = 0; i < word.length; i += 1) {
+  //     if (!hiddenLetters.find(letter => word[i] === letter)) {
+  //       wordWithBlanks.push(word[i]);
+  //     } else {
+  //       wordWithBlanks.push("_");
+  //     }
+  //   }
+  //   // setWordState(wordWithBlanks.join(' '));
+  //   return wordWithBlanks.join(' ');
+  // }
+
+  // const guessedWord = () => {
+  //   const word = currentGame.finalWord.split('');
+  //   const hiddenLetters = currentGame.splitWord;
+  //   const wordWithBlanks = [];
+  //   setWordState('');
+  //   for (let i = 0; i < word.length; i += 1) {
+  //     if (!hiddenLetters.find(letter => word[i] === letter)) {
+  //       wordWithBlanks.push(word[i]);
+  //     } else {
+  //       wordWithBlanks.push("_");
+  //     }
+  //   }
+  //   setWordState(wordWithBlanks.join(' '));
+  // }
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -46,9 +63,10 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
       setCurrentGame(game as HangmanGame)
     }
     fetchGame();
-    guessedWord();
+    // guessedWord();
     const timer = setInterval(async () => {
-      await fetchGame()
+      await fetchGame();
+      // await guessedWord();
     }, 500)
     return () => {
       if (timer) {
@@ -71,13 +89,15 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
           <>
             <div className="games-border">
               {updateAlreadyGuessedLetters().map(letter =>
-                <span key={letter}>{letter}</span>
+                <span key={letter}>{finalWord.includes(letter) ? "" : letter}</span>
               )}
             </div>
             <HangmanFigure game={currentGame}/>
             <br/>
-            <div>
-              <h3>{wordState}</h3>
+            <div className="games-center-div">
+              <h3>{finalWord.map(letter =>
+                <span key={letter}>{updateAlreadyGuessedLetters().includes(letter) ? letter : "_ "}</span>
+              )}</h3>
             </div>
             <br/>
             {
