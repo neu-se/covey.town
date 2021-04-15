@@ -49,7 +49,7 @@ describe('CoveyTownController', () => {
         expect(mockGetTokenForTown).toBeCalledWith(townController.coveyTownID, newPlayerSession.player.id);
       });
   });
-  describe('added Player has an avatar ID', () => { // Included in handout
+  describe('added Player has an avatar ID', () => {
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {
         const townName = `FriendlyNameTest-${nanoid()}`;
@@ -58,7 +58,7 @@ describe('CoveyTownController', () => {
         expect(townController.players[0].avatarID).toContain('testAvatar');
       });
   });
-  describe('added Player avatar defaults to misa', () => { // Included in handout
+  describe('added Player avatar defaults to misa', () => {
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {
         const townName = `FriendlyNameTest-${nanoid()}`;
