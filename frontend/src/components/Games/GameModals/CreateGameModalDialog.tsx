@@ -26,9 +26,10 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gameSelection, setGameSelection] = useState('')
   const [hangmanWord, setHangmanWord] = useState('')
-  const [truth1, setTruth1] = useState('')
-  const [truth2, setTruth2] = useState('')
-  const [lie, setLie] = useState('')
+  const [statement1, setStatement1] = useState('')
+  const [statement2, setStatement2] = useState('')
+  const [statement3, setStatement3] = useState('')
+  const [lie, setLie] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const { currentPlayer } = props
@@ -56,7 +57,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
         <Typography variant="body1">New Game</Typography>
       </MenuItem>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -67,10 +68,11 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
               await gamesClient.deleteGame({gameId: currentGameObject.id});
               setCurrentGameObject(undefined)
               setPlaying(false)
-              setLie("")
-              setTruth1("")
-              setTruth2("")
+              setStatement3("")
+              setStatement1("")
+              setStatement2("")
               setHangmanWord("")
+              setLie(0)
             }
           }} />
           <ModalBody>
@@ -83,10 +85,11 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                   <label htmlFor="hangman">
                     <input type="radio" id="hangman" name="gameChoice" value="hangman" className="games-padded-asset"
                            checked={gameSelection === 'Hangman'}
-                           onChange={() =>
-                             setGameSelection(
-                               "Hangman"
-                             )}/>
+                           onChange={() => {
+                             setGameSelection("Hangman")
+                             setLie(0)
+                           }
+                           }/>
                     Hangman
                   </label><br/>
                   <label htmlFor="ttl">
@@ -114,31 +117,51 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     {
                       gameSelection === 'ttl' &&
                       <>
+                        <p className="game-instructions">Write 3 statements about yourself: two truths, and one lie!</p>
                         <FormLabel htmlFor="ttlChoices1">
-                          Truth #1:
-                          <textarea id="ttlChoices1" placeholder="Enter something true about yourself"
-                                 value={truth1}
+                          Statement #1:
+                          <input id="ttlChoices1" placeholder="Enter statement"
+                                 value={statement1}
                                  className="games-padded-asset"
                                  onChange={(e) =>
-                                   setTruth1(e.target.value)}/>
+                                   setStatement1(e.target.value)}/>
                         </FormLabel>
                         <br/>
                         <FormLabel htmlFor="ttlChoices2">
-                          Truth #2:
-                          <Input id="ttlChoices2" placeholder="Enter something true about yourself"
-                                 value={truth2}
+                          Statement #2:
+                          <input id="ttlChoices2" placeholder="Enter statement"
+                                 value={statement2}
                                  className="games-padded-asset"
                                  onChange={(e) =>
-                                   setTruth2(e.target.value)}/>
+                                   setStatement2(e.target.value)}/>
                         </FormLabel>
                         <br/>
                         <FormLabel htmlFor="ttlChoices3">
-                          Lie:
-                          <Input id="ttlChoices3" placeholder="Enter a lie about yourself"
-                                 value={lie}
+                          Statement #3:
+                          <input id="ttlChoices3" placeholder="Enter statement"
+                                 value={statement3}
                                  className="games-padded-asset"
                                  onChange={(e) =>
-                                   setLie(e.target.value)}/>
+                                   setStatement3(e.target.value)}/>
+                        </FormLabel>
+                        <FormLabel htmlFor="lieRadios">
+                          <div className="control">
+                            <h3>Which is the lie?</h3>
+                            <label htmlFor="choice1" className="radio">
+                              <input type="radio" id="choice1" name="choices" onClick={() => setLie(1)}/>
+                              Choice 1
+                            </label>
+                            <br/>
+                            <label htmlFor="choice2" className="radio">
+                              <input type="radio" id="choice2" name="choices" onClick={() => setLie(2)}/>
+                              Choice 2
+                            </label>
+                            <br/>
+                            <label htmlFor="choice3" className="radio">
+                              <input type="radio" id="choice3" name="choices" onClick={() => setLie(3)}/>
+                              Choice 3
+                            </label>
+                          </div>
                         </FormLabel>
                       </>
                     }
@@ -182,34 +205,50 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     onClick={async () => {
                       if (gameSelection === "ttl") {
                         console.log("new ttl game")
-                        const newGameId = await getNewGame({
-                          player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
-                            {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}
-                        });
-                        if (newGameId !== undefined) {
-                          await getCurrentGame(newGameId);
-                        }
-                        else {
+                        if ( statement1 === "" || statement2 === "" || statement3 === "" || lie === 0) {
                           toast({
                             title: 'Unable to create game',
-                            description: 'Something went wrong, unable to create game',
+                            description: 'Make sure all fields are filled',
                             status: 'error',
                           });
+                        } else {
+                          const newGameId = await getNewGame({
+                            player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
+                              {choice1: statement1, choice2: statement2, choice3: statement3, correctLie: lie}
+                          });
+                          if (newGameId !== undefined) {
+                            await getCurrentGame(newGameId);
+                          }
+                          else {
+                            toast({
+                              title: 'Unable to create game',
+                              description: 'Something went wrong, unable to create game',
+                              status: 'error',
+                            });
+                          }
                         }
                       } else if (gameSelection === "Hangman") {
-                        const newGameId = await getNewGame({
-                          player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
-                            {word: hangmanWord}
-                        });
-                        if (newGameId !== undefined) {
-                          await getCurrentGame(newGameId);
-                        }
-                        else {
+                        if (hangmanWord === "") {
                           toast({
                             title: 'Unable to create game',
-                            description: 'Something went wrong, unable to create game',
+                            description: 'You must enter a hangman word',
                             status: 'error',
                           });
+                        } else {
+                          const newGameId = await getNewGame({
+                            player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
+                              {word: hangmanWord}
+                          });
+                          if (newGameId !== undefined) {
+                            await getCurrentGame(newGameId);
+                          }
+                          else {
+                            toast({
+                              title: 'Unable to create game',
+                              description: 'Something went wrong, unable to create game',
+                              status: 'error',
+                            });
+                          }
                         }
                       }
                     }}>

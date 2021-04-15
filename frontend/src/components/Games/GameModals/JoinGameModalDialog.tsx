@@ -7,7 +7,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button, useDisclosure,
+  Button, useDisclosure, useToast,
 } from '@chakra-ui/react'
 import Typography from "@material-ui/core/Typography";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
@@ -30,16 +30,28 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
 
+  const toast = useToast();
+
   const getCurrentGame = async () => {
     setCurrentGameObject(await gamesClient.listGames()
       .then(response => response.games.find(g => g.id === gameId)));
     setPlaying(true);
   }
 
+  const verifyAndOpen = () => {
+    if (currentGameObject?.player1ID !== currentPlayer.id) {
+    toast({
+      title: 'You cannot join a game you started',
+      description: 'Duplicate player',
+      status: 'error'
+    });
+    } else {onOpen();}
+  }
+
 
   return (
     <>
-      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => onOpen()}>
+      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => {verifyAndOpen();}}>
         <Typography variant="body1">Join Game</Typography>
       </Button>
 

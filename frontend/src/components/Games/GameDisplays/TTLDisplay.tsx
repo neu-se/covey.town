@@ -13,23 +13,7 @@ export default function TTLDisplay({game}: TTLProps): JSX.Element {
   const [selection, setSelection] = useState(0);
   const { gamesClient } = useCoveyAppState();
 
-  /* Randomize array in-place using Durstenfeld shuffle algorithm */
-  function shuffleArray(array: string[]): string[] {
-    const newArray = array;
-    for (let i = array.length - 1; i > 0; i-=1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      newArray[i] = array[j];
-      newArray[j] = temp;
-    }
-    return newArray
-  }
-
-  const originalList = [game.option1, game.option2, game.option3]
-  const lie = originalList[game.correctOption - 1]
-  const choicesList = shuffleArray(originalList);
-  const lieIndex = (choicesList.findIndex(choice => choice === lie) + 1)
-
+  const choicesList = [game.option1, game.option2, game.option3];
 
   // TODO: assign two truths and lie to choices 1-3 in random order
   return (
@@ -49,7 +33,7 @@ export default function TTLDisplay({game}: TTLProps): JSX.Element {
                        setSelection(
                          1
                        )}/>
-              1. {choicesList[0]}
+              1. {game.option1}
             </label>
           </div>
           <div className="row">
@@ -61,7 +45,7 @@ export default function TTLDisplay({game}: TTLProps): JSX.Element {
                        setSelection(
                          2
                        )}/>
-              2. {choicesList[1]}
+              2. {game.option2}
             </label>
           </div>
           <div className="row">
@@ -73,7 +57,7 @@ export default function TTLDisplay({game}: TTLProps): JSX.Element {
                        setSelection(
                          3
                        )}/>
-              3. {choicesList[2]}
+              3. {game.option3}
             </label>
           </div>
         </form>
@@ -90,12 +74,12 @@ export default function TTLDisplay({game}: TTLProps): JSX.Element {
       </>
       }
 
-      {!guessing && selection === lieIndex &&
+      {!guessing && selection === game.correctOption &&
       <h1>You guessed correctly!</h1>
       }
 
-      {!guessing && selection !== lieIndex &&
-      <h1>{`Oops, that wasn't right. The real lie was "${choicesList[lieIndex]}".`}</h1>
+      {!guessing && selection !== game.correctOption &&
+      <h1>{`Oops, that wasn't right. The real lie was "${choicesList[game.correctOption - 1]}".`}</h1>
       }
     </div>
   )

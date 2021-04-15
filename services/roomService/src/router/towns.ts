@@ -180,7 +180,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Delete a specified game session from the server
    */
-  app.delete('games/:gameId', BodyParser.json(), async (req, res) => {
+  app.delete('/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
       const result = await deleteGame(
         {
