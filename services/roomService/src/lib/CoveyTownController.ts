@@ -9,7 +9,7 @@ import PlayerSession from '../types/PlayerSession';
 import PrivateChatMessage from '../types/PrivateChatMessage';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
-import { emojify } from 'node-emoji';
+// import { emojify } from 'node-emoji';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -171,13 +171,13 @@ export default class CoveyTownController {
  sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
     const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
     messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-    // messageCensored = emojify.replace(message.message);
+    // messageCensored.message = emojify(messageCensored.message);
     this.messages.push(messageCensored);
     this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
   }
 
   sendGlobalPlayerMessage(userID: string, message: string): void {
-    const messageCensor = emojify(this._censorer.censorMessage(message)) + emojify(':face_with_cowboy_hat');
+    const messageCensor = this._censorer.censorMessage(message);
     const messageCensored = new GlobalChatMessage(messageCensor, userID);
    // messageCensored.message = emojify(messageCensored.message);
     this.messages.push(messageCensored);
