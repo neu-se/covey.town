@@ -132,7 +132,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                                value={hangmanWord}
                                className="games-padded-asset col-12"
                                onChange={(e) =>
-                                 setHangmanWord(e.target.value)}/>
+                                 setHangmanWord(e.target.value.toLowerCase())}/>
                       </FormLabel>
                     }
                     {
