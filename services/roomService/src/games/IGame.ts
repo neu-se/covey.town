@@ -4,6 +4,8 @@ export default interface IGame {
 
   id : string;
 
+  townID : string;
+
   gameState : string;
 
   player1ID: string;

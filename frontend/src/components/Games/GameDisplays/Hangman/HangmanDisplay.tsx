@@ -1,26 +1,32 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import HangmanLetter from "./HangmanLetter";
 import HangmanGame from "../../gamesClient/HangmanGame";
+import HangmanFigure from './HangmanFigure';
+import useCoveyAppState from "../../../../hooks/useCoveyAppState";
 
 interface HangmanDisplayProps {
-  game: HangmanGame;
+  startingGame: HangmanGame,
+  currentPlayerId: string,
 }
 
-export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element {
-  const [alreadyGuessedLetters, setAlreadyGuessedLetters] = useState<string[]>([])
+
+export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanDisplayProps): JSX.Element {
+  const {gamesClient, currentTownID} = useCoveyAppState();
+  const [currentGame, setCurrentGame] = useState<HangmanGame>(startingGame);
+  const gameId = startingGame.id;
   const [wordState, setWordState] = useState('')
 
-  const updateAlreadyGuessedLetters = useCallback(() => {
+  const updateAlreadyGuessedLetters = () => {
     let letters: string[] = [];
-    if (game.alreadyGuessed !== undefined) {
-      letters = game.alreadyGuessed.sort();
+    if (currentGame !== undefined && currentGame.alreadyGuessed !== undefined) {
+      letters = currentGame.alreadyGuessed.sort();
     }
-    setAlreadyGuessedLetters(letters)
-  }, [])
+    return letters;
+  }
 
   const guessedWord = () => {
-    const word = game.finalWord.split('');
-    const hiddenLetters = game.splitWord;
+    const word = currentGame.finalWord.split('');
+    const hiddenLetters = currentGame.splitWord;
     const wordWithBlanks = [];
     setWordState('');
     for (let i = 0; i < word.length; i += 1) {
@@ -34,61 +40,98 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
   }
 
   useEffect(() => {
-    updateAlreadyGuessedLetters();
+    const fetchGame = async () => {
+      const {games} = await gamesClient.listGames({townID: currentTownID})
+      const game = games.find(g => g.id === gameId)
+      setCurrentGame(game as HangmanGame)
+    }
+    fetchGame();
     guessedWord();
-    const timer = setInterval(updateAlreadyGuessedLetters, 500);
+    const timer = setInterval(async () => {
+      await fetchGame()
+    }, 500)
     return () => {
-      clearInterval(timer)
-    };
-  }, [guessedWord, updateAlreadyGuessedLetters]);
+      if (timer) {
+        clearInterval(timer);
+      }
+    }
+  }, []);
 
   return (
     <>
-      <div className="games-border">
-        {alreadyGuessedLetters.map(letter =>
-          <span key={letter}>{letter}</span>
-        )}
-      </div>
-      <br/>
-      <div>
-        <h3>{wordState}</h3>
-      </div>
-      <div className="games-center-div">
-        <div className="row">
-          <HangmanLetter gameId={game.id} letter="A"/>
-          <HangmanLetter gameId={game.id} letter="B"/>
-          <HangmanLetter gameId={game.id} letter="C"/>
-          <HangmanLetter gameId={game.id} letter="D"/>
-          <HangmanLetter gameId={game.id} letter="E"/>
-          <HangmanLetter gameId={game.id} letter="F"/>
-          <HangmanLetter gameId={game.id} letter="G"/>
-        </div>
-        <div className="row">
-          <HangmanLetter gameId={game.id} letter="H"/>
-          <HangmanLetter gameId={game.id} letter="I"/>
-          <HangmanLetter gameId={game.id} letter="J"/>
-          <HangmanLetter gameId={game.id} letter="K"/>
-          <HangmanLetter gameId={game.id} letter="L"/>
-          <HangmanLetter gameId={game.id} letter="M"/>
-          <HangmanLetter gameId={game.id} letter="N"/>
-        </div>
-        <div className="row">
-          <HangmanLetter gameId={game.id} letter="O"/>
-          <HangmanLetter gameId={game.id} letter="P"/>
-          <HangmanLetter gameId={game.id} letter="Q"/>
-          <HangmanLetter gameId={game.id} letter="R"/>
-          <HangmanLetter gameId={game.id} letter="S"/>
-          <HangmanLetter gameId={game.id} letter="T"/>
-        </div>
-        <div className="row">
-          <HangmanLetter gameId={game.id} letter="U"/>
-          <HangmanLetter gameId={game.id} letter="V"/>
-          <HangmanLetter gameId={game.id} letter="W"/>
-          <HangmanLetter gameId={game.id} letter="X"/>
-          <HangmanLetter gameId={game.id} letter="Y"/>
-          <HangmanLetter gameId={game.id} letter="Z"/>
-        </div>
-      </div>
+      {
+        currentGame === undefined &&
+          <div className="games-center-div">
+            <br/>
+            Oh no! Looks like Player 1 ended the game.
+            <br/>          </div>
+      }
+      {
+        currentGame !== undefined &&
+          <>
+            <div className="games-border">
+              {updateAlreadyGuessedLetters().map(letter =>
+                <span key={letter}>{letter}</span>
+              )}
+            </div>
+            <HangmanFigure game={currentGame}/>
+            <br/>
+            <div>
+              <h3>{wordState}</h3>
+            </div>
+            <br/>
+            {
+              currentPlayerId !== currentGame.player2ID &&
+              <div className="games-center-div">
+                <div className="row">
+                  Player 2 is guessing!
+                </div>
+                <br/>
+              </div>
+              }
+            {
+              currentPlayerId === currentGame.player2ID &&
+                <>
+                  <div className="games-center-div">
+                    <div className="row">
+                      <HangmanLetter gameId={gameId} letter="A"/>
+                      <HangmanLetter gameId={gameId} letter="B"/>
+                      <HangmanLetter gameId={gameId} letter="C"/>
+                      <HangmanLetter gameId={gameId} letter="D"/>
+                      <HangmanLetter gameId={gameId} letter="E"/>
+                      <HangmanLetter gameId={gameId} letter="F"/>
+                      <HangmanLetter gameId={gameId} letter="G"/>
+                    </div>
+                    <div className="row">
+                      <HangmanLetter gameId={gameId} letter="H"/>
+                      <HangmanLetter gameId={gameId} letter="I"/>
+                      <HangmanLetter gameId={gameId} letter="J"/>
+                      <HangmanLetter gameId={gameId} letter="K"/>
+                      <HangmanLetter gameId={gameId} letter="L"/>
+                      <HangmanLetter gameId={gameId} letter="M"/>
+                      <HangmanLetter gameId={gameId} letter="N"/>
+                    </div>
+                    <div className="row">
+                      <HangmanLetter gameId={gameId} letter="O"/>
+                      <HangmanLetter gameId={gameId} letter="P"/>
+                      <HangmanLetter gameId={gameId} letter="Q"/>
+                      <HangmanLetter gameId={gameId} letter="R"/>
+                      <HangmanLetter gameId={gameId} letter="S"/>
+                      <HangmanLetter gameId={gameId} letter="T"/>
+                    </div>
+                    <div className="row">
+                      <HangmanLetter gameId={gameId} letter="U"/>
+                      <HangmanLetter gameId={gameId} letter="V"/>
+                      <HangmanLetter gameId={gameId} letter="W"/>
+                      <HangmanLetter gameId={gameId} letter="X"/>
+                      <HangmanLetter gameId={gameId} letter="Y"/>
+                      <HangmanLetter gameId={gameId} letter="Z"/>
+                    </div>
+                  </div>
+                </>
+            }
+          </>
+      }
     </>
   )
 }

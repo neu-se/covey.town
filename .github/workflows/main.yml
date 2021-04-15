@@ -25,10 +25,10 @@ jobs:
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
-        run: cd services/roomService; npm install && npm test
+        run: cd services/roomService; npm install && npm run lint && npm test
 
       - name: Build and test frontend components
-        run: cd frontend; npm install && npm test
+        run: cd frontend; npm install && npm run lint && npm test
   deploy:
     if: github.ref == 'refs/heads/master'
     needs: build-and-test
@@ -40,7 +40,3 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
           heroku_email: ${{secrets.HEROKU_EMAIL}}
-      - uses: muinmomin/webhook-action@v1.0.0
-        with:
-          url: ${{ secrets.NETLIFY_BUILD_WEBHOOK }}
-          data: "{}"

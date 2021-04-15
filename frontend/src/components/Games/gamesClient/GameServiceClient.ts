@@ -3,7 +3,7 @@ import assert from 'assert';
 import {
   GameCreateRequest,
   GameCreateResponse,
-  GameDeleteRequest,
+  GameDeleteRequest, GameListRequest,
   GameListResponse,
   GameUpdateRequest,
   ResponseEnvelope,
@@ -30,22 +30,22 @@ export default class GameServiceClient {
   }
 
   async createGame(requestData: GameCreateRequest): Promise<GameCreateResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<GameCreateResponse>>('/games', requestData);
+    const responseWrapper = await this._axios.post<ResponseEnvelope<GameCreateResponse>>(`/towns/${requestData.townID}/games`, requestData);
     return GameServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async updateGame(requestData: GameUpdateRequest): Promise<void> {
-    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/games/${requestData.gameId}`, requestData);
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.townID}/games/${requestData.gameId}`, requestData);
     return GameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async deleteGame(requestData: GameDeleteRequest): Promise<void> {
-    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/games/${requestData.gameId}`);
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.townID}/games/${requestData.gameId}`);
     return GameServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
-  async listGames(): Promise<GameListResponse> {
-    const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>('/games');
+  async listGames(requestData: GameListRequest): Promise<GameListResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<GameListResponse>>(`/towns/${requestData.townID}/games`);
     return GameServiceClient.unwrapOrThrowError(responseWrapper);
 
   }

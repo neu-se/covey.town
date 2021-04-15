@@ -8,6 +8,8 @@ export default class TTLGame implements IGame {
 
   id: string = 'ttl'.concat(this.friendlyNanoID());
 
+  townID: string;
+
   gameState: string;
 
   player1ID: string;
@@ -29,7 +31,8 @@ export default class TTLGame implements IGame {
 
   alreadyGuessed : string[];
 
-  constructor(player1ID:string, player1Username:string, initialGameData: TTLChoices ) {
+  constructor(player1ID:string, player1Username:string, initialGameData: TTLChoices, townID: string ) {
+    this.townID = townID;
     this.player1ID = player1ID;
     this.player1Username = player1Username;
     this.option1 = initialGameData.choice1;
