@@ -115,32 +115,32 @@ const resolvers = {
           if (args.input.bio !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               bio: args.input.bio,
-            });
+            }, {new: true});
           }
           if (args.input.location !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               location: args.input.location,
-            });
+            }, {new: true});
           }
           if (args.input.occupation !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               occupation: args.input.occupation,
-            });
+            }, {new: true});
           }
           if (args.input.instagramLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               instagramLink: args.input.instagramLink,
-            });
+            }, {new: true});
           }
           if (args.input.facebookLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               facebookLink: args.input.facebookLink,
-            });
+            }, {new: true});
           }
           if (args.input.linkedInLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               linkedInLink: args.input.linkedInLink,
-            });
+            }, {new: true});
           }
         }
         return user;

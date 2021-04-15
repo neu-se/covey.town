@@ -34,26 +34,45 @@ describe('Testing queries', () => {
 
   it('delete user', async () => {
     const testUser = { username: 'testUser', email: 'testUser123@gmail.com', password: '1234' };
-    // const createUserResponse = await mutate({ mutation: createUser, variables: { input: testUser } });
-    // expect(createUserResponse.data.signUp.email).toBe('testUser123@gmail.com');
+    const createUserResponse = await mutate({ mutation: createUser, variables: { input: testUser } });
+    expect(createUserResponse.data.signUp.email).toBe('testUser123@gmail.com');
     const deleteUserInput = {
       email: testUser.email,
     };
     const deleteUserResponse = await mutate({ mutation: deleteUserMutation, variables: { input: deleteUserInput } });
     expect(deleteUserResponse).toBeTruthy();
   });
-
-  it('update user', async () => {
+  it('update only one field for user', async () => {
     const testUser = { username: 'testUser', email: 'testUser123@gmail.com', password: '1234' };
     const createUserResponse = await mutate({ mutation: createUser, variables: { input: testUser } });
-    expect(createUserResponse.data.signUp.email).toBe('testUser123@gmail.com');
-    console.log(createUserResponse.data.signUp.id);
     const updateUserInput = {
       id: createUserResponse.data.signUp.id,
       email: testUser.email,
       userName: testUser.username,
       password: testUser.password,
-      bio: 'I am a MSCS student at Northeastern University',
+      bio: 'MSCS student at Northeastern University',
+    };
+    
+    const updateUserResponse = await mutate({ mutation: updateUserMutation, variables: { input: updateUserInput } });
+    expect(updateUserResponse.data.updateUser.bio).toBe('MSCS student at Northeastern University');
+
+    expect(createUserResponse.data.signUp.email).toBe('testUser123@gmail.com');
+    const deleteUserInput = {
+      email: testUser.email,
+    };
+    const deleteUserResponse = await mutate({ mutation: deleteUserMutation, variables: { input: deleteUserInput } });
+    expect(deleteUserResponse).toBeTruthy();
+  });
+  it('update all fields for user', async () => {
+    const testUser = { username: 'testUser', email: 'testUser123@gmail.com', password: '1234' };
+    const createUserResponse = await mutate({ mutation: createUser, variables: { input: testUser } });
+    expect(createUserResponse.data.signUp.email).toBe('testUser123@gmail.com');
+    const updateUserInput = {
+      id: createUserResponse.data.signUp.id,
+      email: testUser.email,
+      userName: testUser.username,
+      password: testUser.password,
+      bio: 'MSCS student at Northeastern University',
       location: 'Boston',
       occupation: 'SDE',
       instagramLink: 'https://www.instagram.com/test.user/',
@@ -62,8 +81,8 @@ describe('Testing queries', () => {
     };
 
     const updateUserResponse = await mutate({ mutation: updateUserMutation, variables: { input: updateUserInput } });
-    console.log(updateUserResponse);
-    expect(updateUserResponse.data.updateUser.bio).toBe('I am a MSCS student at Northeastern University');
+
+    expect(updateUserResponse.data.updateUser.bio).toBe('MSCS student at Northeastern University');
     expect(updateUserResponse.data.updateUser.location).toBe('Boston');
     expect(updateUserResponse.data.updateUser.occupation).toBe('SDE');
     expect(updateUserResponse.data.updateUser.instagramLink).toBe('https://www.instagram.com/test.user/');
