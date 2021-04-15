@@ -1,4 +1,4 @@
-import { LocalVideoTrack, RemoteVideoTrack, TwilioError } from 'twilio-video';
+import {BandwidthProfileOptions, LocalTrack, LocalVideoTrack, RemoteVideoTrack, Track, TwilioError} from 'twilio-video';
 import { EventEmitter } from 'events';
 
 declare module 'twilio-video' {

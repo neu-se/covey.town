@@ -225,24 +225,14 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                             status: 'error',
                           });
                         } else {
-                          const newGameId = await getNewGame({
+                          await createNewGame({
                             townID: currentTownID,
-                            player1Id: currentPlayer.id, 
-                            player1Username: currentPlayer.username, 
-                            gameType: gameSelection, 
+                            player1Id: currentPlayer.id,
+                            player1Username: currentPlayer.username,
+                            gameType: gameSelection,
                             initialGameState:
                               {choice1: statement1, choice2: statement2, choice3: statement3, correctLie: lie}
                           });
-                          if (newGameId !== undefined) {
-                            await getCurrentGame(newGameId);
-                          }
-                          else {
-                            toast({
-                              title: 'Unable to create game',
-                              description: 'Something went wrong, unable to create game',
-                              status: 'error',
-                            });
-                          }
                         }
                       } else if (gameSelection === "Hangman") {
                         if (hangmanWord === "") {
@@ -252,24 +242,14 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                             status: 'error',
                           });
                         } else {
-                          const newGameId = await getNewGame({
+                          await createNewGame({
                             townID: currentTownID,
-                            player1Id: currentPlayer.id, 
-                            player1Username: currentPlayer.username, 
-                            gameType: gameSelection, 
+                            player1Id: currentPlayer.id,
+                            player1Username: currentPlayer.username,
+                            gameType: gameSelection,
                             initialGameState:
                               {word: hangmanWord}
                           });
-                          if (newGameId !== undefined) {
-                            await getCurrentGame(newGameId);
-                          }
-                          else {
-                            toast({
-                              title: 'Unable to create game',
-                              description: 'Something went wrong, unable to create game',
-                              status: 'error',
-                            });
-                          }
                         }
                       }
                     }}>
