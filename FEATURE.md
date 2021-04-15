@@ -1,6 +1,6 @@
 1. At the top of our updated Covey.Town interface, you'll see a Log In or Sign Up button
    a. This button will connect you to auth0 where you'll be able to login to a preexisting account or register a new one (User story 2)
-   I. These accounts will be saved in the database so that one you have an account all future saved settings will be recoverable through the account
+   I. These accounts will be saved in the database so that once you have an account all future saved settings will be recoverable through the account
    II. You can also edit email/password as well as recover password through our auth0 interface (User story 3)
    b. Auth0 does password checking and security so that your data is safe
    c. Once signed in, your UI will change
