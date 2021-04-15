@@ -1,11 +1,13 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { HangmanPlayer2Move, HangmanWord, Limb } from './GameTypes';
+import { HangmanPlayer2Move, HangmanWord, Limb } from "./GameTypes";
 import IGame from './IGame';
 
 export default class HangmanGame implements IGame {
   friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
   id: string = 'hangman'.concat(this.friendlyNanoID());
+
+  townID: string;
 
   gameState: string;
 
@@ -40,7 +42,8 @@ export default class HangmanGame implements IGame {
   rightLeg : string;
 
 
-  constructor(player1ID:string, player1Username:string, initialGameData: HangmanWord ) {
+  constructor(player1ID:string, player1Username:string, initialGameData: HangmanWord, townID: string ) {
+    this.townID = townID;
     this.gameStartMessage = 'Choose a letter!';
     this.gameState = this.initializeGame();
     this.player1ID = player1ID;

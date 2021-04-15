@@ -114,10 +114,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    *
    * Create a new game session
    */
-  app.post('/games', BodyParser.json(), async (req, res) => {
+  app.post('/towns/:townID/games', BodyParser.json(), async (req, res) => {
     try {
       const result = await createGame(
         {
+          townID: req.params.townID,
           player1Id: req.body.player1ID,
           player1Username: req.body.player1Username,
           gameType: req.body.gameType,
@@ -138,10 +139,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Update a game session after a player makes a move
    */
-  app.patch('/games/:gameId', BodyParser.json(), async (req, res) => {
+  app.patch('/towns/:townID/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
       const result = await updateGame(
         {
+          townID: req.params.townID,
           gameId: req.params.gameId,
           player: req.body.player,
           move: req.body.move,
@@ -163,9 +165,13 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Retrieve data for all game sessions
    */
-  app.get('/games', BodyParser.json(), async (_req, res) => {
+  app.get('/towns/:townID/games', BodyParser.json(), async (req, res) => {
     try {
-      const result = await findAllGames();
+      const result = await findAllGames(
+        {
+          townID : req.params.townID,
+        },
+      );
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -180,10 +186,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Delete a specified game session from the server
    */
-  app.delete('games/:gameId', BodyParser.json(), async (req, res) => {
+  app.delete('/towns/:townID/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
       const result = await deleteGame(
         {
+          townID: req.params.townID,
           gameId: req.params.gameId,
         },
       );

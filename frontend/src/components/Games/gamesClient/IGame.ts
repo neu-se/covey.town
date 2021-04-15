@@ -1,8 +1,10 @@
-import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from "./GameTypes"
+import { HangmanPlayer1Move, HangmanPlayer2Move, TTLPlayer1Move, TTLPlayer2Move } from './GameTypes';
 
 export default interface IGame {
 
   id : string;
+
+  townID : string;
 
   gameState : string;
 
