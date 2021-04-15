@@ -18,7 +18,6 @@ addUserRoutes(userServer);
 addTownRoutes(server, app);
 
 userServer.listen(8082, () => {
-  console.log('reeee');
 });
 
 
