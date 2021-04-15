@@ -48,6 +48,7 @@ export default class RealmAuth implements IAuth {
             setAuthState({
                 currentUser: starterCoveyUser
             });
+            await this._realmDBClient.saveUser(starterCoveyUser);
             return starterCoveyUser;
         }
         const coveyUser: CoveyUser = {
@@ -66,7 +67,7 @@ export default class RealmAuth implements IAuth {
         setAuthState({
             currentUser: coveyUser
         });
-
+        await this._realmDBClient.saveUser(coveyUser);
         return coveyUser;
     }
 
@@ -143,6 +144,7 @@ export default class RealmAuth implements IAuth {
         setAuthState({
             currentUser: coveyUser
         });
+        await this._realmDBClient.saveUser(coveyUser);
         return coveyUser;
     }
     

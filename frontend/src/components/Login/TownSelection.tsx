@@ -79,7 +79,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
   async function handleLogout(): Promise<void> {
     try {
+      // change user's login status to false and reset current town
+      const userToLogout = authInfo.currentUser;
+      assert(userToLogout);
+      userToLogout.isLoggedIn = false;
+      userToLogout.currentTown = null;
       await authInfo.actions.handleLogout();
+      await db.saveUser(userToLogout);
 
       friendRequestSocket?.disconnect();
       setFriendRequestSocket(undefined);
@@ -126,6 +132,13 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         if (loggedIn) {
           assert(initData.providerVideoToken);
           await connect(initData.providerVideoToken);
+          const userToJoin = authInfo.currentUser;
+          assert(userToJoin);
+          userToJoin.currentTown = { coveyTownID: coveyRoomID, friendlyName: initData.friendlyName};
+          authInfo.actions.setAuthState({
+            currentUser: userToJoin
+          })
+          await db.saveUser(userToJoin);
         }
       }
     } catch (err) {
@@ -135,7 +148,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [userName, loggedInUser.userID, doLogin, toast, connect]);
+  }, [userName, loggedInUser, toast, doLogin, connect, authInfo.currentUser, authInfo.actions, db]);
 
   const addFriendRequestToList = (request: CoveyUser) => {
     if (friendRequestList.filter(user => user.userID === request.userID).length === 0) {

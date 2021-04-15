@@ -123,7 +123,6 @@ export default function SimpleCard(): JSX.Element {
     const credential = { email, password };
     try {
       const coveyUser = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
-      
       // If login is successful, establish connection with friend request socket server
       if (coveyUser) {
         if(friendRequestSocketState) {
