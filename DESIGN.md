@@ -19,6 +19,7 @@
     - User A’s userID is removed from user B’s friend request array in the database and UI state (ie. the friend request is removed)
   - If user B rejects the request from user A,
     - User A’s userID is removed from user B’s friend request array in the database and UI state (ie. the friend request is removed)
+
 ![Add friend design diagram](docs/user-story-3/Addfrienddiagram.png)
 
 ## User Story 4:
