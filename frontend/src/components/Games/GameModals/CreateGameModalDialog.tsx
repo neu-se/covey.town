@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
   Button,
   FormControl,
@@ -30,25 +30,37 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const [truth2, setTruth2] = useState('')
   const [lie, setLie] = useState('')
   const [playing, setPlaying] = useState(false)
+  const [currentGameId, setCurrentGameId] = useState<string>("");
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const { currentPlayer } = props
   const { currentTownID, gamesClient } = useCoveyAppState();
   const toast = useToast()
 
-  const getNewGame = async (requestData : GameCreateRequest) => {
+  const createNewGame = async (requestData : GameCreateRequest) => {
     const newGameId = await gamesClient.createGame(requestData)
       .then(response => response.gameId);
     if (newGameId !== undefined) {
-      return newGameId
+      setCurrentGameId(newGameId)
     }
-    return undefined
+    setPlaying(true);
   }
 
-  const getCurrentGame = async (gameId: string) => {
-    setCurrentGameObject(await gamesClient.listGames({townID: currentTownID})
-      .then(response => response.games.find(g => g.id === gameId)));
-      setPlaying(true);
-  }
+  useEffect(() => {
+    const fetchGame = async () => {
+      const {games} = await gamesClient.listGames({townID: currentTownID})
+      const game = games.find(g => g.id === currentGameId)
+      setCurrentGameObject(game)
+    }
+    fetchGame();
+    const timer = setInterval(async () => {
+      await fetchGame()
+    }, 500)
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -181,38 +193,17 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             <Button className="games-padded-asset" colorScheme="green"
                     onClick={async () => {
                       if (gameSelection === "ttl") {
-                        console.log("new ttl game")
-                        const newGameId = await getNewGame({
+                        await createNewGame({
                           townID: currentTownID,
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}
                         });
-                        if (newGameId !== undefined) {
-                          await getCurrentGame(newGameId);
-                        }
-                        else {
-                          toast({
-                            title: 'Unable to create game',
-                            description: 'Something went wrong, unable to create game',
-                            status: 'error',
-                          });
-                        }
                       } else if (gameSelection === "Hangman") {
-                        const newGameId = await getNewGame({
+                        await createNewGame({
                           townID: currentTownID,
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {word: hangmanWord}
                         });
-                        if (newGameId !== undefined) {
-                          await getCurrentGame(newGameId);
-                        }
-                        else {
-                          toast({
-                            title: 'Unable to create game',
-                            description: 'Something went wrong, unable to create game',
-                            status: 'error',
-                          });
-                        }
                       }
                     }}>
               Create Game
@@ -221,7 +212,6 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
               Cancel
               </Button>
             </ModalFooter>
-
             }
         </ModalContent>
       </Modal>
