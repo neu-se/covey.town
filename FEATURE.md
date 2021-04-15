@@ -24,6 +24,7 @@
 ## User Story 4:
 ### Town User List:
 Once a user has joined a town, at the top of the screen (above the displayed “world map”), the user will see a list of all users in the town, excluding themselves. If they are alone in the town, the list will look as follows:
+
 ![Empty Town Users List](docs/user-story-4/empty_town_users_list.png)
 
 The profile picture and name for each town user are displayed on each row of the list. As new users join the town, they will be added to this list. If a user who is friends with both “nick” and “danny”, but not “brian” joins the room,they will see the below Town User list:

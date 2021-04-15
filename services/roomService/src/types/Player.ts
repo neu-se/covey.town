@@ -27,7 +27,6 @@ export default class Player {
     this._coveyUserId = coveyUserId;
     this._userName = userName;
     this._id = nanoid();
-    this._coveyUserID = coveyUserID;
   }
 
   get userName(): string {
