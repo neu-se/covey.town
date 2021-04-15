@@ -16,9 +16,10 @@ import './App.css';
 import AChatMessage from './classes/AChatMessage';
 import GlobalChatMessage from './classes/GlobalChatMessage';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
+import PrivateChatMessage from './classes/PrivateChatMessage';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
-import Chat from './components/Chat/Chat'
+import Chat from './components/Chat/Chat';
 import Login from './components/Login/Login';
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
 import UnsupportedBrowserWarning from './components/VideoCall/VideoFrontend/components/UnsupportedBrowserWarning/UnsupportedBrowserWarning';
@@ -55,7 +56,8 @@ type CoveyAppUpdate =
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
-  | { action: 'globalMessage'; message: GlobalChatMessage };
+  | { action: 'globalMessage'; message: GlobalChatMessage }
+  | { action: 'privateMessage'; message: PrivateChatMessage };
 
 function defaultAppState(): CoveyAppState {
   return {
@@ -159,7 +161,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       }
       break;
     case 'globalMessage':
-      // console.log(update.message.message);
+      nextState.messages = nextState.messages.concat([update.message]);
+      break;
+    case 'privateMessage':
       nextState.messages = nextState.messages.concat([update.message]);
       break;
     case 'playerDisconnect':
@@ -173,6 +177,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
       break;
+
     case 'disconnect':
       state.socket?.disconnect();
       return defaultAppState();
@@ -213,14 +218,29 @@ async function GameController(
     dispatchAppUpdate({ action: 'playerDisconnect', player: Player.fromServerPlayer(player) });
   });
 
-  socket.on('globalMessage', (msg: {_message: string, _senderID: string, _receiverID?: string}) => {
-    if (msg._senderID !== gamePlayerID) {
-      if(msg._receiverID){
-        // if its a private message
+  socket.on(
+    'globalMessage',
+    (msg: { _message: string; _senderID: string;}) => {
+      if (msg._senderID !== gamePlayerID) {
+          dispatchAppUpdate({
+            action: 'globalMessage',
+            message: new GlobalChatMessage(msg._message, msg._senderID),
+          });
       }
-      dispatchAppUpdate({action: 'globalMessage', message: new GlobalChatMessage(msg._message, msg._senderID)})
+    },
+  );
+
+  socket.on('privateMessage', 
+  (msg: { _message: string; _senderID: string; _receiverID: string }) => {
+    if (msg._senderID !== gamePlayerID) {
+      console.log(msg);
+        dispatchAppUpdate({
+          action: 'privateMessage',
+          message: new PrivateChatMessage(msg._message, msg._senderID, msg._receiverID),
+        });
     }
-  })
+  },
+  )
 
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });

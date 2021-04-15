@@ -19,5 +19,9 @@
     public get senderID(): string {
       return this._senderID;
     }
+
+    abstract getType(): string;
+
+    abstract getReceiverID(): string;
   }
   

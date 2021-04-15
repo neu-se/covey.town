@@ -1,6 +1,3 @@
-/**
- * TODO:
- */
 export default abstract class AChatMessage {
   private _message: string;
 
@@ -22,4 +19,8 @@ export default abstract class AChatMessage {
   public get senderID(): string {
     return this._senderID;
   }
+
+  abstract getType(): string;
+
+  abstract getReceiverID(): string;
 }

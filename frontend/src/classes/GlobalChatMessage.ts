@@ -1,10 +1,20 @@
 import AChatMessage from './AChatMessage';
-/**
- * TODO:
- */
+
 export default class GlobalChatMessage extends AChatMessage {
-  /* constructor(message: string, sender: Player, townID: string) {
-    super(message, sender, townID);
+
+  private _type: string;
+
+  constructor(message: string, senderID: string) {
+    super(message, senderID);
+    this._type = 'global';
   }
-  */
+
+  getType(): string {
+    return this._type;
+  }
+
+  getReceiverID(): string {
+    return this.senderID;
+  }
+  
 }

@@ -54,17 +54,31 @@ function Chat(): JSX.Element {
 
     if(messages.length !== 0) {
       const sender = players.find(p => p.id === messages[messages.length-1].senderID)
-      // console.log(sender?.userName)
-      // console.log(messages[messages.length-1].message)
-      setMessagesState([
-        ...messagesState,
-        {
-          key: nanoid(),
-          userName: `${sender?.userName}: `,
-          color: setButtonColor('global'),
-          message: messages[messages.length-1].message,
-        },
-      ])
+      if(messages[messages.length-1].getType() === 'global') {
+        setMessagesState([
+          ...messagesState,
+          {
+            key: nanoid(),
+            userName: `${sender?.userName}`,
+            color: setButtonColor('global'),
+            message: messages[messages.length-1].message,
+          },
+        ])
+      } else if (messages[messages.length-1].getType() === 'private') {
+        console.log(messages[messages.length-1].getReceiverID())
+        if(messages[messages.length-1].getReceiverID() === myPlayerID) {
+          setMessagesState([
+            ...messagesState,
+            {
+              key: nanoid(),
+              userName: `${sender?.userName}`,
+              color: setButtonColor('private'),
+              message: messages[messages.length-1].message,
+            },
+          ])
+        }
+      }
+      
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [players, userName, messages, toast])
@@ -77,7 +91,7 @@ function Chat(): JSX.Element {
           await apiClient.sendPrivatePlayerMessage({
             coveyTownID: currentTownID,
             userIDFrom: myPlayerID,
-            userIDTo: privateUsername,
+            userIDTo: toPlayer.id,
             message: input,
           });
 
