@@ -7,7 +7,7 @@ import jwksRsa from 'jwks-rsa';
 import {
   townSubscriptionHandler,
 } from './requestHandlers/CoveyTownRequestHandlers';
-import { connection } from './data/Utils/index';
+import connection from './data/Utils/index';
 import typeDefs from './typeDefs/index';
 import resolvers from './resolvers/index';
 
