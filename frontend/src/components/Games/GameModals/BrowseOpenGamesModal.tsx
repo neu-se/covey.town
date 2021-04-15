@@ -31,15 +31,15 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
       setGamesList(games)
     }
     fetchAllGames()
-    // const timer = setInterval(async () => {
-    //   await fetchAllGames()
-    // }, 5000)
-    //
-    // return () => {
-    //   if (timer) {
-    //     clearInterval(timer);
-    //   }
-    // }
+    const timer = setInterval(async () => {
+      await fetchAllGames()
+    }, 5000)
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    }
   },[])
 
   console.log('Games:',gamesList)
@@ -62,7 +62,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
           }/>
           <ModalBody>
             <UnorderedList>
-              {gamesList?.filter(game => game.player2ID === "").map(game =>
+              {gamesList?.map(game =>
                 <ListItem key={game.id}>Play {game.id.includes("ttl") ? "ttl" : "Hangman"} with {game.player1Username}
                   <div className="float-right">
                     <JoinGameModalDialog currentPlayer={props.currentPlayer}

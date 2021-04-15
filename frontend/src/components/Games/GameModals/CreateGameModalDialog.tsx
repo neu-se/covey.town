@@ -166,7 +166,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
 
                   <div className="games-border games-extra-padded">
                     {gameSelection === "ttl" &&
-                    <TTLDisplay game = {currentGameObject as TTLGame}/>
+                    <TTLDisplay startingGame = {currentGameObject as TTLGame}/>
                     }
                     {gameSelection === "Hangman" &&
                     <HangmanDisplay startingGame={currentGameObject as HangmanGame}/>

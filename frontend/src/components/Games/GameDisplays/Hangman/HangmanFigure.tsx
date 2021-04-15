@@ -14,35 +14,40 @@ interface HangmanFigureProps {
 
 export default function HangmanDisplay({game}: HangmanFigureProps): JSX.Element {
   return (
-    <div>
+    <>
       {
-        game.limbList.length === 6 &&
-        <img src={noLimbs} alt="gallowsOnly"/>
+        game !== undefined &&
+        <div>
+          {
+            game.limbList.length === 6 &&
+            <img src={noLimbs} alt="gallowsOnly"/>
+          }
+          {
+            game.limbList.length === 5 &&
+            <img src={head} alt="headAdded"/>
+          }
+          {
+            game.limbList.length === 4 &&
+            <img src={back} alt="backAdded"/>
+          }
+          {
+            game.limbList.length === 3 &&
+            <img src={oneArm} alt="oneArmAdded"/>
+          }
+          {
+            game.limbList.length === 2 &&
+            <img src={twoArms} alt="twoArmsAdded"/>
+          }
+          {
+            game.limbList.length === 1 &&
+            <img src={oneLeg} alt="oneLegAdded"/>
+          }
+          {
+            game.limbList.length === 0 &&
+            <img src={twoLegs} alt="twoLegsAdded"/>
+          }
+        </div>
       }
-      {
-        game.limbList.length === 5 &&
-        <img src={head} alt="headAdded"/>
-      }
-      {
-        game.limbList.length === 4 &&
-        <img src={back} alt="backAdded"/>
-      }
-      {
-        game.limbList.length === 3 &&
-        <img src={oneArm} alt="oneArmAdded"/>
-      }
-      {
-        game.limbList.length === 2 &&
-        <img src={twoArms} alt="twoArmsAdded"/>
-      }
-      {
-        game.limbList.length === 1 &&
-        <img src={oneLeg} alt="oneLegAdded"/>
-      }
-      {
-        game.limbList.length === 0 &&
-        <img src={twoLegs} alt="twoLegsAdded"/>
-      }
-    </div>
+    </>
   )
 }

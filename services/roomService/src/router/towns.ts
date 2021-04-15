@@ -114,7 +114,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    *
    * Create a new game session
    */
-  app.post('towns/:townID/games', BodyParser.json(), async (req, res) => {
+  app.post('/towns/:townID/games', BodyParser.json(), async (req, res) => {
     try {
       const result = await createGame(
         {
@@ -139,7 +139,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Update a game session after a player makes a move
    */
-  app.patch('towns/:townID/games/:gameId', BodyParser.json(), async (req, res) => {
+  app.patch('/towns/:townID/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
       const result = await updateGame(
         {
@@ -165,7 +165,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Retrieve data for all game sessions
    */
-  app.get('towns/:townID/games', BodyParser.json(), async (req, res) => {
+  app.get('/towns/:townID/games', BodyParser.json(), async (req, res) => {
     try {
       const result = await findAllGames(
         {
@@ -186,7 +186,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Delete a specified game session from the server
    */
-  app.delete('towns/:townID/games/:gameId', BodyParser.json(), async (req, res) => {
+  app.delete('/towns/:townID/games/:gameId', BodyParser.json(), async (req, res) => {
     try {
       const result = await deleteGame(
         {
