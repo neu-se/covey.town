@@ -1,8 +1,10 @@
 import assert from 'assert';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { UserLocation } from '../CoveyTypes';
-import GlobalChatMessage from '../types/GlobalChatMessage';
-import PrivateChatMessage from '../types/PrivateChatMessage';
+import {
+  ListMessagesRequest,
+  ListMessagesResponse,
+} from '../requestHandlers/CoveyTownRequestHandlers';
 
 export type ServerPlayer = { _id: string; _userName: string; location: UserLocation };
 
@@ -101,8 +103,9 @@ export type CoveyTownInfo = {
  */
 export interface PrivateMessageRequest {
   coveyTownID: string;
-  coveyTownPassword: string;
-  message: PrivateChatMessage;
+  userIDFrom: string;
+  userIDTo: string;
+  message: string;
 }
 
 /**
@@ -110,8 +113,8 @@ export interface PrivateMessageRequest {
  */
 export interface GlobalMessageRequest {
   coveyTownID: string;
-  coveyTownPassword: string;
-  message: GlobalChatMessage;
+  coveyUserID: string;
+  message: string;
 }
 
 export default class TownsServiceClient {
@@ -175,13 +178,18 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async sendPrivatePlayerMessage(requestData: PrivateChatMessage): Promise<void> {
-    const responseWrapper = await this._axios.post('/messages', requestData);
+  async sendPrivatePlayerMessage(requestData: PrivateMessageRequest): Promise<void> {
+    const responseWrapper = await this._axios.post('/privatemessages', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async sendGlobalPlayerMessage(requestData: GlobalMessageRequest): Promise<void> {
-    const responseWrapper = await this._axios.post('/messages', requestData);
+    const responseWrapper = await this._axios.post('/globalmessages', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async getMessages(requestData: ListMessagesRequest): Promise<ListMessagesResponse> {
+    const responseWrapper = await this._axios.get(`/messages/${requestData.coveyTownID}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 }

@@ -167,18 +167,22 @@ export default class CoveyTownController {
   disconnectAllPlayers(): void {
     this._listeners.forEach(listener => listener.onTownDestroyed());
   }
-
-  sendPrivatePlayerMessage(message: PrivateChatMessage): void {
-    const messageCensored = message;
-    messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-    messageCensored.message = emojify(message.message);
-    this.messages.push(messageCensored);
-    this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
+  
+  sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
+    const playerTo = this.players.find(p => p.id === userIDTo);
+    if (playerTo) {
+      const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
+      messageCensored.message = this._censorer.censorMessage(messageCensored.message);
+      messageCensored.message = emojify(message.message);
+      this.messages.push(messageCensored);
+      this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
+    }
+    throw new Error("Given player doesn't exist");
   }
 
-  sendGlobalPlayerMessage(message: GlobalChatMessage): void {
-    const messageCensored = message;
-    messageCensored.message = this._censorer.censorMessage(messageCensored.message);
+  sendGlobalPlayerMessage(userID: string, message: string): void {
+    const messageCensor = this._censorer.censorMessage(message);
+    const messageCensored = new GlobalChatMessage(messageCensor, userID);
     messageCensored.message = emojify(message.message);
     this.messages.push(messageCensored);
     this._listeners.forEach(listener => listener.onGlobalMessage(messageCensored));

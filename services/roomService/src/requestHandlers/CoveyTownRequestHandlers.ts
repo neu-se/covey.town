@@ -95,8 +95,9 @@ export interface TownUpdateRequest {
  */
 export interface PrivateMessageRequest {
   coveyTownID: string;
-  coveyTownPassword: string;
-  message: PrivateChatMessage;
+  userIDFrom: string;
+  userIDTo: string;
+  message: string;
 }
 
 /**
@@ -104,8 +105,8 @@ export interface PrivateMessageRequest {
  */
 export interface GlobalMessageRequest {
   coveyTownID: string;
-  coveyTownPassword: string;
-  message: GlobalChatMessage;
+  coveyUserID: string;
+  message: string;
 }
 /**
  * Envelope that wraps any response from the server
@@ -219,7 +220,8 @@ export async function privateMessageHandler(
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.sendPrivateMessage(
     requestData.coveyTownID,
-    requestData.coveyTownPassword,
+    requestData.userIDFrom,
+    requestData.userIDTo,
     requestData.message,
   );
   return {
@@ -235,17 +237,21 @@ export async function globalMessageHandler(
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.sendGlobalMessage(
     requestData.coveyTownID,
-    requestData.coveyTownPassword,
+    requestData.coveyUserID,
     requestData.message,
   );
   return {
     isOK: success,
     response: {},
-    message: !success ? 'Error: could not send global message.' : undefined,
+    message: !success
+      ? `Error: could not send global message with id: ${requestData.coveyTownID} and message: ${requestData.message}`
+      : undefined,
   };
 }
 
-export async function listMessagesHandler(requestData: ListMessagesRequest) : Promise<ResponseEnvelope<ListMessagesResponse>> {
+export async function listMessagesHandler(
+  requestData: ListMessagesRequest,
+): Promise<ResponseEnvelope<ListMessagesResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   const currentTown = townsStore.getControllerForTown(requestData.coveyTownID);
   if (currentTown) {
@@ -257,7 +263,7 @@ export async function listMessagesHandler(requestData: ListMessagesRequest) : Pr
   return {
     isOK: false,
     message: 'Error: invalid town ID',
-  }
+  };
 }
 
 /**
@@ -328,10 +334,10 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(s.player, movementData);
   });
 
-  socket.on('onGlobalMessage', (message: GlobalChatMessage) => {
-    townController.sendGlobalPlayerMessage(message);
+  socket.on('onGlobalMessage', (userID: string, message: string) => {
+    townController.sendGlobalPlayerMessage(userID, message);
   });
-  socket.on('onPrivateMessage', (message: PrivateChatMessage) => {
-    townController.sendPrivatePlayerMessage(message);
+  socket.on('onPrivateMessage', (userIDFrom: string, userIDTo: string, message: string) => {
+    townController.sendPrivatePlayerMessage(userIDFrom, userIDTo, message);
   });
 }

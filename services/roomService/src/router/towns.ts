@@ -105,11 +105,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Send public message
    */
-  app.post('/messages', BodyParser.json(), async (req, res) => {
+  app.post('/globalmessages', BodyParser.json(), async (req, res) => {
     try {
       const result = await globalMessageHandler({
-        coveyTownID: req.params.townID,
-        coveyTownPassword: req.body.coveyTownPassword,
+        coveyTownID: req.body.townID,
+        coveyUserID: req.body.coveyUserID,
         message: req.body.message,
       });
       res.status(StatusCodes.OK).json(result);
@@ -124,11 +124,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Send private message
    */
-  app.post('/messages', BodyParser.json(), async (req, res) => {
+  app.post('/privatemessages', BodyParser.json(), async (req, res) => {
     try {
       const result = await privateMessageHandler({
-        coveyTownID: req.params.townID,
-        coveyTownPassword: req.body.coveyTownPassword,
+        coveyTownID: req.body.townID,
+        userIDFrom: req.body.userIDFrom,
+        userIDTo: req.body.userIDTo,
         message: req.body.message,
       });
       res.status(StatusCodes.OK).json(result);
@@ -144,19 +145,18 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    * List all messages for a given town
    */
   app.get('/messages/:townID', BodyParser.json(), async (req, res) => {
-      try {
-        const result = await listMessagesHandler({
-          coveyTownID: req.params.townID,
-        });
-        res.status(StatusCodes.OK).json(result);
-      } catch (err) {
-        logError(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          message: 'Internal server error, please see log in server for more details',
-        });
-      }
+    try {
+      const result = await listMessagesHandler({
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
   });
-
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

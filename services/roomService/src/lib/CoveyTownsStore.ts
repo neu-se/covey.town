@@ -1,6 +1,4 @@
 import { CoveyTownList } from '../CoveyTypes';
-import GlobalChatMessage from '../types/GlobalChatMessage';
-import PrivateChatMessage from '../types/PrivateChatMessage';
 import CoveyTownController from './CoveyTownController';
 
 function passwordMatches(provided: string, expected: string): boolean {
@@ -80,25 +78,22 @@ export default class CoveyTownsStore {
 
   sendPrivateMessage(
     coveyTownID: string,
-    coveyTownPassword: string,
-    message: PrivateChatMessage,
+    userIDFrom: string,
+    userIDTo: string,
+    message: string,
   ): boolean {
     const currentTown = this.getControllerForTown(coveyTownID);
-    if (currentTown && passwordMatches(coveyTownPassword, currentTown.townUpdatePassword)) {
-      currentTown.sendPrivatePlayerMessage(message);
+    if (currentTown) {
+      currentTown.sendPrivatePlayerMessage(userIDFrom, userIDTo, message);
       return true;
     }
     return false;
   }
 
-  sendGlobalMessage(
-    coveyTownID: string,
-    coveyTownPassword: string,
-    message: GlobalChatMessage,
-  ): boolean {
+  sendGlobalMessage(coveyTownID: string, userID: string, message: string): boolean {
     const currentTown = this.getControllerForTown(coveyTownID);
-    if (currentTown && passwordMatches(coveyTownPassword, currentTown.townUpdatePassword)) {
-      currentTown.sendGlobalPlayerMessage(message);
+    if (currentTown) {
+      currentTown.sendGlobalPlayerMessage(userID, message);
       return true;
     }
     return false;
