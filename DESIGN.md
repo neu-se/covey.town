@@ -5,7 +5,7 @@
 ## User Story 2:
 
 ## User Story 3:
-# Add Friend:
+### Add Friend:
 - Upon sign in, user’s friendRequestSocket is connected and ready to listen to incoming friend requests. 
 - When user A sends a friend request to user B,
   - A ‘sendRequest’ message is emitted from user A’s friendRequestSocket
@@ -19,6 +19,7 @@
     - User A’s userID is removed from user B’s friend request array in the database and UI state (ie. the friend request is removed)
   - If user B rejects the request from user A,
     - User A’s userID is removed from user B’s friend request array in the database and UI state (ie. the friend request is removed)
+![Add friend design diagram](docs/user-story-3/Addfrienddiagram.png)
 
 ## User Story 4:
 TODO

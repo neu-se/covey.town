@@ -5,13 +5,16 @@
 ## User Story 2:
 
 ## User Story 3:
-# Friend List:
+### Friend List:
 - Upon sign-in, user can see a list of their friends on the landing page. Online and offline users are separated into two different lists.
 - If a friend is online but not in a town, they show up as “in lobby.” If they are in a specific town, user can choose to join their town.
-# Add Friend:
+### Add Friend:
 - To add friend, user needs to obtain the other user’s ID, which should be shown right below their add friend box. User will paste the userID into the “Add Friend” text box and press “Send friend request.” A confirmation toast should appear confirming the friend request was sent successfully. 
+![Add friend visual 3](docs/user-story-3/friend3.png)
 - Once a friend request is sent, the other user should see a pending friend request with options to accept or reject the request. 
+![Add friend visual 1](docs/user-story-3/friend1.png)
 - If the user accepts the request, the request should disappear and the requester should be added to their friend list. Friend relationship persists through the following sessions. 
+![Add friend visual 2](docs/user-story-3/friend2.png)
 
 ## User Story 4:
 ### Town User List:
