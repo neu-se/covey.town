@@ -39,9 +39,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const createNewGame = async (requestData : GameCreateRequest) => {
     const newGameId = await gamesClient.createGame(requestData)
       .then(response => response.gameId);
-    if (newGameId !== undefined) {
-      setCurrentGameId(newGameId)
-    }
+    setCurrentGameId(newGameId)
     setPlaying(true);
   }
 
@@ -50,6 +48,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
       const {games} = await gamesClient.listGames({townID: currentTownID})
       const game = games.find(g => g.id === currentGameId)
       setCurrentGameObject(game)
+      console.log(currentGameId)
     }
     fetchGame();
     const timer = setInterval(async () => {
@@ -60,7 +59,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
         clearInterval(timer);
       }
     }
-  }, []);
+  }, [currentGameId, currentTownID, gamesClient]);
 
   return (
     <>
@@ -71,9 +70,12 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>
-            New Game
-          </ModalHeader>
+          {
+            !playing &&
+            <ModalHeader>
+              New Game
+            </ModalHeader>
+          }
           <ModalCloseButton onClick={async () => {
             if (currentGameObject !== undefined && currentGameObject.id !== "") {
               await gamesClient.deleteGame({townID: currentTownID, gameId: currentGameObject.id});
@@ -178,10 +180,10 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
 
                   <div className="games-border games-extra-padded">
                     {gameSelection === "ttl" &&
-                    <TTLDisplay startingGame = {currentGameObject as TTLGame}/>
+                    <TTLDisplay currentPlayerId={currentPlayer.id} startingGame = {currentGameObject as TTLGame}/>
                     }
                     {gameSelection === "Hangman" &&
-                    <HangmanDisplay startingGame={currentGameObject as HangmanGame}/>
+                    <HangmanDisplay currentPlayerId={currentPlayer.id} startingGame={currentGameObject as HangmanGame}/>
                     }
                   </div>
                 </>

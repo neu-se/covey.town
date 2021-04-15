@@ -26,7 +26,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
 
   useEffect(() => {
     const fetchAllGames = async () => {
-      console.info("Fetching games")
+      // console.info("Fetching games")
       const { games } = await gamesClient.listGames({townID: currentTownID})
       setGamesList(games)
     }
@@ -42,7 +42,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
     }
   },[])
 
-  console.log('Games:',gamesList)
+  // console.log('Games:',gamesList)
 
   return (
     <>

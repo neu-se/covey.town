@@ -106,10 +106,10 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
 
               <div className="games-border games-extra-padded">
                 {gameType === "ttl" &&
-                <TTLDisplay startingGame={currentGameObject as TTLGame}/>
+                <TTLDisplay currentPlayerId={currentPlayer.id} startingGame={currentGameObject as TTLGame}/>
                 }
                 {gameType === "Hangman" &&
-                <HangmanDisplay startingGame={currentGameObject as HangmanGame}/>
+                <HangmanDisplay currentPlayerId={currentPlayer.id} startingGame={currentGameObject as HangmanGame}/>
                 }
               </div>
             </>

@@ -5,10 +5,11 @@ import TTLGame from "../gamesClient/TTLGame";
 
 
 interface TTLProps {
+  currentPlayerId: string,
   startingGame: TTLGame
 }
 
-export default function TTLDisplay({startingGame}: TTLProps): JSX.Element {
+export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): JSX.Element {
   const [guessing, setGuessing] = useState(true);
   const [selection, setSelection] = useState(0);
   const {currentTownID, gamesClient} = useCoveyAppState();
@@ -63,7 +64,8 @@ export default function TTLDisplay({startingGame}: TTLProps): JSX.Element {
         currentGame !== undefined &&
         <>
           <div>
-            {guessing &&
+            {
+              guessing && currentPlayerId === currentGame.player2ID &&
             <>
               <h1 className="games-container-title">Spot the Lie</h1>
               <p className="games-container-body">Select the statement that you think is a lie!</p>
@@ -123,8 +125,18 @@ export default function TTLDisplay({startingGame}: TTLProps): JSX.Element {
             </>
             }
 
+            {
+              guessing && currentPlayerId !== currentGame.player2ID &&
+              <div className="games-center-div">
+                <div className="row">
+                  Player 2 is guessing!
+                </div>
+                <br/>
+              </div>
+            }
+
             {!guessing && selection === lieIndex &&
-            <h1>You guessed correctly!</h1>
+            <h1>&{currentGame.player2Username} guessed correctly!</h1>
             }
 
             {!guessing && selection !== lieIndex &&
