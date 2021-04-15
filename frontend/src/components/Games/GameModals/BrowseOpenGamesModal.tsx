@@ -23,13 +23,11 @@ import useMaybeVideo from "../../../hooks/useMaybeVideo";
 export default function BrowseOpenGamesModal(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gamesList, setGamesList] = useState<GameList>();
-  const { gamesClient } = useCoveyAppState();
-  const video = useMaybeVideo();
-
+  const { currentTownID, gamesClient } = useCoveyAppState();
 
   useEffect(() => {
     const fetchAllGames = async () => {
-      const { games } = await gamesClient.listGames()
+      const { games } = await gamesClient.listGames({townID: currentTownID})
       setGamesList(games)
     }
     fetchAllGames()

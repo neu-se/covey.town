@@ -1,6 +1,6 @@
 import {
   GameCreateRequest,
-  GameCreateResponse, GameDeleteRequest, GameListResponse, GameUpdateRequest, ResponseEnvelope,
+  GameCreateResponse, GameDeleteRequest, GameListRequest, GameListResponse, GameUpdateRequest, ResponseEnvelope,
 } from '../client/GameRequestTypes';
 import {
   HangmanPlayer2Move,
@@ -20,11 +20,12 @@ export async function createGame(requestData: GameCreateRequest): Promise<Respon
   let newGame;
   const { player1Id } = requestData;
   const { player1Username } = requestData;
+  const { townID } = requestData;
   const initialState = requestData.initialGameState;
   if (requestData.gameType === 'Hangman') {
-    newGame = new HangmanGame(player1Id, player1Username, <HangmanWord>(initialState));
+    newGame = new HangmanGame(player1Id, player1Username, <HangmanWord>(initialState), townID);
   } else if (requestData.gameType === 'ttl') {
-    newGame = new TTLGame(player1Id, player1Username, <TTLChoices>(initialState));
+    newGame = new TTLGame(player1Id, player1Username, <TTLChoices>(initialState), townID);
   }
   if (newGame === undefined) {
     return {
@@ -91,11 +92,13 @@ export async function updateGame(requestData: GameUpdateRequest): Promise<Respon
  * Returns list of all games on the server
  *
  */
-export async function findAllGames(): Promise<ResponseEnvelope<GameListResponse>> {
+export async function findAllGames(requestData: GameListRequest): Promise<ResponseEnvelope<GameListResponse>> {
   const controller = GameController.getInstance();
+  const { townID } = requestData;
+  const games = controller.getGames().filter(game => game.townID === townID);
   return {
     isOK: true,
-    response: { games: controller.getGames() },
+    response: { games },
   };
 }
 

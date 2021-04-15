@@ -7,7 +7,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button, useDisclosure,
+  Button, useDisclosure, useToast,
 } from '@chakra-ui/react'
 import Typography from "@material-ui/core/Typography";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
@@ -27,16 +27,18 @@ interface GameModalDialogProps {
 
 export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, gameType, player1}: GameModalDialogProps): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const {gamesClient} = useCoveyAppState();
+  const { currentTownID, gamesClient } = useCoveyAppState();
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
   const video = useMaybeVideo();
 
+
   const getCurrentGame = async () => {
-    setCurrentGameObject(await gamesClient.listGames()
+    setCurrentGameObject(await gamesClient.listGames({townID: currentTownID})
       .then(response => response.games.find(g => g.id === gameId)));
     setPlaying(true);
   }
+
 
 
   return (
@@ -80,6 +82,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
               <Button className="games-padded-asset" colorScheme="green"
                       onClick={async () => {
                         await gamesClient.updateGame({
+                          townID: currentTownID,
                             gameId,
                             player2Id: currentPlayer.id,
                             player2Username: currentPlayer.username
@@ -114,10 +117,10 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
 
               <div className="games-border games-extra-padded">
                 {gameType === "ttl" &&
-                <TTLDisplay game={currentGameObject as TTLGame}/>
+                <TTLDisplay currentPlayerId={currentPlayer.id} startingGame={currentGameObject as TTLGame}/>
                 }
                 {gameType === "Hangman" &&
-                <HangmanDisplay game={currentGameObject as HangmanGame}/>
+                <HangmanDisplay currentPlayerId={currentPlayer.id} startingGame={currentGameObject as HangmanGame}/>
                 }
               </div>
             </>
