@@ -10,6 +10,7 @@ ReactDOM.render(
     domain = "dev-fse.us.auth0.com"
     clientId = "jgJh7ejkWNLMjNAv1oMKVtuBYsoaYcRh"
     redirectUri={window.location.origin}
+    audience= "https://dev-fse.us.auth0.com/api/v2/"
   >
   <React.StrictMode>
     <App />
