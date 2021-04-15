@@ -31,15 +31,15 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
       setGamesList(games)
     }
     fetchAllGames()
-    const timer = setInterval(async () => {
-      await fetchAllGames()
-    }, 5000)
-
-    return () => {
-      if (timer) {
-        clearInterval(timer);
-      }
-    }
+    // const timer = setInterval(async () => {
+    //   await fetchAllGames()
+    // }, 5000)
+    //
+    // return () => {
+    //   if (timer) {
+    //     clearInterval(timer);
+    //   }
+    // }
   },[])
 
   console.log('Games:',gamesList)
