@@ -26,12 +26,14 @@ To create an account and configure your local environment:
 2. Create an API key and secret (select "API Keys" on the left under "Settings")
 3. Create a `.env` file in the `services/roomService` directory, setting the values as follows:
 
-| Config Value            | Description                               |
-| ----------------------- | ----------------------------------------- |
-| `TWILIO_ACCOUNT_SID`    | Visible on your twilio account dashboard. |
-| `TWILIO_API_KEY_SID`    | The SID of the new API key you created.   |
-| `TWILIO_API_KEY_SECRET` | The secret for the API key you created.   |
-| `TWILIO_API_AUTH_TOKEN` | Visible on your twilio account dashboard. |
+| Config Value            | Description                                         |
+| ----------------------- | --------------------------------------------------- |
+| `TWILIO_ACCOUNT_SID`    | Visible on your twilio account dashboard.           |
+| `TWILIO_API_KEY_SID`    | The SID of the new API key you created.             |
+| `TWILIO_API_KEY_SECRET` | The secret for the API key you created.             |
+| `TWILIO_API_AUTH_TOKEN` | Visible on your twilio account dashboard.           |
+| `HASURA_SERVICE_URL`    | REST endpoint of Hasura available on the dashboard. |
+| `HASURA_ADMIN_SECRET`   | Visible in your Hasura application config.          |
 
 ### Starting the backend
 
