@@ -232,4 +232,42 @@ describe('TownsServiceAPIREST', () => {
       expect(res2.coveyUserID).toBeDefined();
     });
   });
+
+  describe('CoveyMessageAPI', () => {
+    it('Should list zero messages', async () => {
+      const pubTown1 = await createTownForTesting(undefined, true);
+      const privTown1 = await createTownForTesting(undefined, false);
+      const res = await apiClient.joinTown({
+        userName: nanoid(),
+        coveyTownID: pubTown1.coveyTownID,
+      });
+      const res2 = await apiClient.joinTown({
+        userName: nanoid(),
+        coveyTownID: pubTown1.coveyTownID,
+      });
+
+      const messages = await apiClient.getMessages({
+        coveyTownID: pubTown1.coveyTownID,
+      });
+      expect(messages.messages.length).toBe(0);
+    });
+    it('Able to send global message', async () => {
+      const pubTown1 = await createTownForTesting(undefined, true);
+      const privTown1 = await createTownForTesting(undefined, false);
+      const res = await apiClient.joinTown({
+        userName: nanoid(),
+        coveyTownID: pubTown1.coveyTownID,
+      });
+      const res2 = await apiClient.joinTown({
+        userName: nanoid(),
+        coveyTownID: pubTown1.coveyTownID,
+      });
+
+      await apiClient.sendGlobalPlayerMessage({
+        coveyTownID: pubTown1.coveyTownID,
+        coveyUserID: res.coveyUserID,
+        message: 'hello',
+      });
+    });
+  });
 });

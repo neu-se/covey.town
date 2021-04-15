@@ -108,7 +108,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   app.post('/globalmessages', BodyParser.json(), async (req, res) => {
     try {
       const result = await globalMessageHandler({
-        coveyTownID: req.body.townID,
+        coveyTownID: req.body.coveyTownID,
         coveyUserID: req.body.coveyUserID,
         message: req.body.message,
       });
@@ -127,7 +127,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   app.post('/privatemessages', BodyParser.json(), async (req, res) => {
     try {
       const result = await privateMessageHandler({
-        coveyTownID: req.body.townID,
+        coveyTownID: req.body.coveyTownID,
         userIDFrom: req.body.userIDFrom,
         userIDTo: req.body.userIDTo,
         message: req.body.message,

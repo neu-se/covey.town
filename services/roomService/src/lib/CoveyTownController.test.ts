@@ -148,8 +148,13 @@ describe('CoveyTownController', () => {
 
       await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
       const message = new PrivateChatMessage('hello', player1.id, player2.id);
-      mockListeners.forEach(listener => listener.onPrivateMessage(message));
+      testingTown.sendPrivatePlayerMessage(player1.id, player2.id, 'hello');
+      expect(testingTown.players.length).toBe(2);
+      expect(testingTown.messages.length).toBe(1);
+      expect(testingTown.messages[0].message).toBe('hello');
+      expect(testingTown.messages[0].senderID).toBe(player1.id);
     });
 
     it("should send a private message and other players can't see it", async () => {
@@ -160,6 +165,7 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
       const message = new PrivateChatMessage('hello', player1.id, player2.id);
       mockListeners.forEach(listener => listener.onPrivateMessage(message));
       expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
@@ -177,18 +183,21 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
 
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
+
       expect(testingTown.players.length).toBe(3);
 
-      // testingTown.sendGlobalPlayerMessage('hello', player1.id);
+      testingTown.sendGlobalPlayerMessage(player1.id, 'hello');
 
       const message = new GlobalChatMessage('hello', player1.id);
 
-      // expect(testingTown.messages.length).toBe(1);
-      // expect(testingTown.messages[0]).toBe(message);
+      expect(testingTown.messages.length).toBe(1);
+      expect(testingTown.messages[0].message).toBe('hello');
+      expect(testingTown.messages[0].senderID).toBe(player1.id);
 
-      // expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
-      // expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
-      // expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
+      expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
 
       // TODO players 1-3 should have gotten the message
     });
@@ -202,6 +211,7 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
       const message = new GlobalChatMessage('hello', player1.id);
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
@@ -218,6 +228,7 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player2);
       await testingTown.addPlayer(player3);
       const message = new GlobalChatMessage('hello', player1.id);
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
       mockListeners.forEach(listener => listener.onGlobalMessage(message));
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
