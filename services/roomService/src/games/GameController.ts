@@ -21,17 +21,16 @@ export default class GameController {
   }
 
   getGameByID(gameId: string): HangmanGame | TTLGame | undefined {
-    return this.gamesList.find(game => game.id === gameId);
+    return this.gamesList.find(game =>  game.id === gameId);
   }
 
   deleteGame(gameId: string): boolean {
-    const gameToDelete = this.getGameByID(gameId);
-    const newGamesList = this.gamesList.filter(game => game !== gameToDelete);
-    if (newGamesList.length < this.gamesList.length) {
-      this.gamesList = newGamesList;
-      return true;
+    const gameIndex = this.gamesList.findIndex( game => game.id === gameId);
+    if (gameIndex === -1) {
+      return false;
     }
-    return false;
+    this.gamesList.splice(gameIndex, 1);
+    return true;
   }
 
   static getInstance(): GameController {

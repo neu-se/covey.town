@@ -7,7 +7,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button, useDisclosure,
+  Button, useDisclosure, useToast,
 } from '@chakra-ui/react'
 import Typography from "@material-ui/core/Typography";
 import TTLDisplay from "../GameDisplays/TTLDisplay";
@@ -30,6 +30,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
 
+
   const getCurrentGame = async () => {
     setCurrentGameObject(await gamesClient.listGames({townID: currentTownID})
       .then(response => response.games.find(g => g.id === gameId)));
@@ -37,9 +38,10 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   }
 
 
+
   return (
     <>
-      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => onOpen()}>
+      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => {onOpen();}}>
         <Typography variant="body1">Join Game</Typography>
       </Button>
 

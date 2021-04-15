@@ -15,18 +15,8 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
   const {currentTownID, gamesClient} = useCoveyAppState();
   const [currentGame, setCurrentGame] = useState<TTLGame>(startingGame);
   const gameId = startingGame.id;
-
-  /* Randomize array in-place using Durstenfeld shuffle algorithm */
-  function shuffleArray(array: string[]): string[] {
-    const newArray = array;
-    for (let i = array.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      newArray[i] = array[j];
-      newArray[j] = temp;
-    }
-    return newArray
-  }
+  const choicesList = [currentGame.option1, currentGame.option2, currentGame.option3];
+ 
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -45,10 +35,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
     }
   }, []);
 
-  const originalList = [startingGame.option1, startingGame.option2, startingGame.option3]
-  const lie = originalList[startingGame.correctOption - 1]
-  const choicesList = shuffleArray(originalList);
-  const lieIndex = (choicesList.findIndex(choice => choice === lie) + 1)
+  const lieIndex = (currentGame.correctOption - 1);
 
   return (
     <>
@@ -80,7 +67,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
                              setSelection(
                                1
                              )}/>
-                    1. {choicesList[0]}
+                    1. {currentGame.option1}
                   </label>
                 </div>
                 <div className="row">
@@ -92,7 +79,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
                              setSelection(
                                2
                              )}/>
-                    2. {choicesList[1]}
+                    2. {currentGame.option2}
                   </label>
                 </div>
                 <div className="row">
@@ -104,7 +91,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
                              setSelection(
                                3
                              )}/>
-                    3. {choicesList[2]}
+                    3. {currentGame.option3}
                   </label>
                 </div>
               </form>
@@ -124,7 +111,6 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
               </Button>
             </>
             }
-
             {
               guessing && currentPlayerId !== currentGame.player2ID &&
               <div className="games-center-div">

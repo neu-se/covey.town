@@ -88,9 +88,9 @@ export default class HangmanGame implements IGame {
     if (this.alreadyGuessed.find(e => e === move.letter)) {
       return 'You already guessed that letter - make another guess!';
     }
-    if (this.alreadyGuessed.find(e => e === this.finalWord)) {
+    if (this.splitWord.find(e => e === move.letter)) {
       this.alreadyGuessed.push(move.letter);
-      this.splitWord.filter(letter => letter !== move.letter);
+      this.splitWord = this.splitWord.filter(letter => letter !== move.letter);
       this.isGameOver();
       return 'Good job - you got a letter!';
     }
