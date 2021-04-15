@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 export const createUser = gql`
   mutation signUp($input: signUpInput!) {
     signUp (input: $input){
+      id
       username
       email
     }
