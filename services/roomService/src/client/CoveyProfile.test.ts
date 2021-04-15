@@ -28,7 +28,7 @@ describe('signUp', () => {
         }
         const user = await resolvers.Mutation.signUp({
             
-        }, { input: userData}
+        }, { input: userData},{}
               
         );
         // console.log(user.email);
