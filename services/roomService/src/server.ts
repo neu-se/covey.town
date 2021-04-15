@@ -22,9 +22,6 @@ const options = { useNewUrlParser: true, useUnifiedTopology: true, useFindAndMod
 
 mongoose
   .connect(uri, options)
-  .then(() => {
-    console.log('Connected to DB');
-  })
   .catch(error => {
     throw error;
   });

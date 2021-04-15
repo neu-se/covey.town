@@ -6,7 +6,7 @@ const users = (app: Express): void => {
 
   app.get('/accounts/:id', getUser);
 
-  app.post('/accounts/login', findUser)
+  app.post('/accounts/login', findUser);
 
   app.post('/accounts', addUser);
 

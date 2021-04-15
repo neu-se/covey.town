@@ -8,7 +8,7 @@ export type ServerPlayer = { _id: string, _userName: string, location: UserLocat
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
- export interface AccountLoginRequest {
+export interface AccountLoginRequest {
   /** userName that the player has created an account for * */
   userName: string;
   /** password for that account * */
@@ -61,7 +61,7 @@ export type UserAccountInfo = {
 /**
  * Response from the server for a Town list request
  */
- export interface TownListResponse {
+export interface TownListResponse {
   towns: UserAccountInfo[];
 }
 
@@ -97,7 +97,7 @@ export default class AccountsServiceClient {
 
   
   async loginAccount(requestData: AccountLoginRequest): Promise<AccountLoginResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<UserAccountCreateResponse>>('/users', requestData);
+    const responseWrapper = await this._axios.post<ResponseEnvelope<AccountLoginResponse>>('/users', requestData);
     return AccountsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

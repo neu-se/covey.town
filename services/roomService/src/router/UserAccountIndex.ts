@@ -7,14 +7,13 @@ const getAllUsers = async (_: Request, res: Response): Promise<void> => {
     const users: IUserAccount[] = await User.find({});
     res.status(200).json({ users });
   } catch (error) {
-    console.error(error);
     res.status(500).send('Internal Error');
   }
 };
 
 const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userID = req.params['id'];
+    const userID = req.params.id;
     const user: IUserAccount | null = await User.findById(userID);
     if (!user) {
       res.status(404).json({ user: null, message: 'Could not find user with that id' });
@@ -27,7 +26,6 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).send('Internal Error');
   }
 };
@@ -52,7 +50,6 @@ const findUser = async (req: Request, res: Response): Promise<void> => {
       });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).send('Internal Error');
   }
 };
@@ -66,7 +63,7 @@ const addUser = async (req: Request, res: Response): Promise<void> => {
     if (userNameExists) {
       res
         .status(406)
-        .json({message: 'Username already exists'})
+        .json({message: 'Username already exists'});
     }
 
     const account: IUserAccount = new User({
@@ -80,23 +77,22 @@ const addUser = async (req: Request, res: Response): Promise<void> => {
       .status(201)
       .json({ message: 'userAccount added', account: newAccount, accounts: allAccounts });
   } catch (error) {
-    console.error(error);
     res.status(500).send('Internal Error');
   }
 };
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userID = req.params['id'];
+    const userID = req.params.id;
 
     const updatedUser: IUserAccount | null = await User
       .findByIdAndUpdate(
         userID,
         {
           username: req.body.username,
-          avatar: req.body.avatar
+          avatar: req.body.avatar,
         },
-        {new: true}
+        {new: true},
       );
 
     const allUsers: IUserAccount[] = await User.find({});
@@ -111,7 +107,6 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       accounts: allUsers,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).send('Internal Error');
   }
 };
@@ -127,7 +122,6 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       accounts: allUsers,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).send('Internal Error');
   }
 };
