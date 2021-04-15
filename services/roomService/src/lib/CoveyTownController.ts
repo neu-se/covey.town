@@ -167,8 +167,8 @@ export default class CoveyTownController {
   disconnectAllPlayers(): void {
     this._listeners.forEach(listener => listener.onTownDestroyed());
   }
-  
- sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
+
+  sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
     const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
     messageCensored.message = this._censorer.censorMessage(messageCensored.message);
     // messageCensored.message = emojify(messageCensored.message);

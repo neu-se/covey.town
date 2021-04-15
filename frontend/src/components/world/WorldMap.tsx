@@ -7,7 +7,8 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
-    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text,
+    message: Phaser.GameObjects.Text
   };
 
   private id?: string;
@@ -62,6 +63,7 @@ class CoveyGameScene extends Phaser.Scene {
       if (disconnectedPlayer.sprite) {
         disconnectedPlayer.sprite.destroy();
         disconnectedPlayer.label?.destroy();
+        disconnectedPlayer.message?.destroy();
       }
     });
     // Remove disconnected players from list
@@ -103,7 +105,12 @@ class CoveyGameScene extends Phaser.Scene {
           color: '#000000',
           backgroundColor: '#ffffff',
         });
+        const message = this.add.text(0, 0, '', {
+          font: '18px monospace',
+          color: '#FFFF00',
+        });
         myPlayer.label = label;
+        myPlayer.message = message;
         myPlayer.sprite = sprite;
       }
       if (!sprite.anims) return;
@@ -111,11 +118,68 @@ class CoveyGameScene extends Phaser.Scene {
       sprite.setY(player.location.y);
       myPlayer.label?.setX(player.location.x);
       myPlayer.label?.setY(player.location.y - 20);
+      myPlayer.message?.setX(player.location.x);
+      myPlayer.message?.setY(player.location.y - 40);
       if (player.location.moving) {
         sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
         sprite.setTexture('atlas', `misa-${player.location.rotation}`);
+      }
+    }
+  }
+
+  // TODO
+  updateMessages(players: Player[], msg: string) {
+    if (!this.ready) {
+      this.players = players;
+      return;
+    }
+    players.forEach((p) => {
+      this.newMessage(p, msg);
+    });
+  }
+
+  newMessage(player: Player, msg: string) {
+    let myPlayer = this.players.find((p) => p.id === player.id);
+    if (!myPlayer) {
+      let { location } = player;
+      if (!location) {
+        location = {
+          rotation: 'back',
+          moving: false,
+          x: 0,
+          y: 0,
+        };
+      }
+      myPlayer = new Player(player.id, player.userName, location);
+      this.players.push(myPlayer);
+    }
+    if (this.id !== myPlayer.id && this.physics && player.location) {
+      let { sprite } = myPlayer;
+      if (!sprite) {
+        sprite = this.physics.add
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore - JB todo
+          .sprite(0, 0, 'atlas', 'misa-front')
+          .setSize(30, 40)
+          .setOffset(0, 24);
+        const label = this.add.text(0, 0, myPlayer.userName, {
+          font: '18px monospace',
+          color: '#000000',
+          backgroundColor: '#ffffff',
+        });
+        const message = this.add.text(0, 0, msg, {
+          font: '18px monospace',
+          color: '#FFFF00',
+        });
+        setTimeout(()=> { 
+          message.setText('');
+        }, 5000);
+        
+        myPlayer.label = label;
+        myPlayer.message = message;
+        myPlayer.sprite = sprite;
       }
     }
   }
@@ -187,6 +251,8 @@ class CoveyGameScene extends Phaser.Scene {
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
+      this.player.message.setX(body.x);
+      this.player.message.setY(body.y - 40);
       if (!this.lastLocation
         || this.lastLocation.x !== body.x
         || this.lastLocation.y !== body.y || this.lastLocation.rotation !== primaryDirection
@@ -294,10 +360,23 @@ class CoveyGameScene extends Phaser.Scene {
       // padding: {x: 20, y: 10},
       backgroundColor: '#ffffff',
     });
+
+    const message = this.add.text(spawnPoint.x, spawnPoint.y - 40, '', {
+      font: '18px monospace',
+      color: '#FFFF00',
+      // padding: {x: 20, y: 10},
+    });
+
     this.player = {
       sprite,
-      label
+      label,
+      message,
     };
+
+    // just for testing, normally this will be blank
+    setTimeout(()=> { 
+      message.setText('');
+    }, 5000);
 
     /* Configure physics overlap behavior for when the player steps into
     a transporter area. If you enter a transporter and press 'space', you'll
@@ -468,5 +547,6 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
+  // TODO new useEffect for messages
   return <div id="map-container"/>;
 }

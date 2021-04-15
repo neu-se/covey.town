@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io-client';
+import AChatMessage from './classes/AChatMessage';
 import Player, { UserLocation } from './classes/Player';
 import TownsServiceClient from './classes/TownsServiceClient';
 
@@ -23,6 +24,7 @@ export type CoveyAppState = {
   currentTownIsPubliclyListed: boolean,
   myPlayerID: string,
   players: Player[],
+  messages: AChatMessage[],
   currentLocation: UserLocation,
   nearbyPlayers: NearbyPlayers,
   emitMovement: (location: UserLocation) => void,
