@@ -13,7 +13,6 @@ export default function HangmanLetter({gameId, letter} : HangmanLetterProps) : J
 
   return (
     <>
-      {/* TODO: connect onClick to game state */}
       <Button classname="games-padded-asset"
               isDisabled={disabled}
               value={letter}
