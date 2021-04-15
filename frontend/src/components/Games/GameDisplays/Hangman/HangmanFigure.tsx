@@ -1,40 +1,47 @@
-import HangmanGame from "../../gamesClient/HangmanGame";
+import React from 'react';
+import noLimbs from './HangmanAssets/noLimbs.jpg';
+import head from './HangmanAssets/head.jpg';
+import back from './HangmanAssets/back.jpg';
+import oneArm from './HangmanAssets/oneArm.jpg';
+import twoArms from './HangmanAssets/twArms.jpg';
+import oneLeg from './HangmanAssets/oneLeg.jpg';
+import twoLegs from './HangmanAssets/twoLegs.jpg';
 
 interface HangmanFigureProps {
-  game: HangmanGame;
+  limbListLength: number;
 }
 
-export default function HangmanDisplay({game}: HangmanFigureProps): JSX.Element {
-  const imageBasePath : string = "../../../../../public/assets/"
+export default function HangmanDisplay({limbListLength}: HangmanFigureProps): JSX.Element {
+  const imageBasePath = "../../../../../public/assets/"
   return (
     <div>
       {
-        game.limbList.length === 6 &&
-        <img src={`${imageBasePath}noLimbs.jpg`} alt="gallowsOnly"/>
+        limbListLength === 6 &&
+        <img src={noLimbs} alt="gallowsOnly"/>
       }
       {
-        game.limbList.length === 5 &&
-        <img src={`${imageBasePath}head.jpg`} alt="headAdded"/>
+        limbListLength === 5 &&
+        <img src={head} alt="headAdded"/>
       }
       {
-        game.limbList.length === 4 &&
-        <img src={`${imageBasePath}back.jpg`} alt="backAdded"/>
+        limbListLength === 4 &&
+        <img src={back} alt="backAdded"/>
       }
       {
-        game.limbList.length === 3 &&
-        <img src={`${imageBasePath}oneArm.jpg`} alt="oneArmAdded"/>
+        limbListLength === 3 &&
+        <img src={oneArm} alt="oneArmAdded"/>
       }
       {
-        game.limbList.length === 2 &&
-        <img src={`${imageBasePath}twArms.jpg`} alt="twoArmsAdded"/>
+        limbListLength === 2 &&
+        <img src={twoArms} alt="twoArmsAdded"/>
       }
       {
-        game.limbList.length === 1 &&
-        <img src={`${imageBasePath}oneLeg.jpg`} alt="oneLegAdded"/>
+        limbListLength === 1 &&
+        <img src={oneLeg} alt="oneLegAdded"/>
       }
       {
-        game.limbList.length === 6 &&
-        <img src={`${imageBasePath}twoLegs.jpg`} alt="twoLegsAdded"/>
+        limbListLength === 0 &&
+        <img src={twoLegs} alt="twoLegsAdded"/>
       }
     </div>
   )

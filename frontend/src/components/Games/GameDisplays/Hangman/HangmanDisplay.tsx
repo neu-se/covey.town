@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import HangmanLetter from "./HangmanLetter";
 import HangmanGame from "../../gamesClient/HangmanGame";
+import HangmanFigure from './HangmanFigure';
 
 interface HangmanDisplayProps {
   game: HangmanGame;
@@ -32,7 +33,7 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
           <span key={letter}>{letter}</span>
         )}
       </div>
-      <HangmanDisplay game={game}/>
+       <HangmanFigure limbListLength={game.limbList.length}/>
       <br/>
       <div className="games-center-div">
         <div className="row">
