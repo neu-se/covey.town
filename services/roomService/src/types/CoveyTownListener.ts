@@ -1,3 +1,4 @@
+import { Message } from '../CoveyTypes';
 import Player from './Player';
 
 /**
@@ -15,6 +16,12 @@ export default interface CoveyTownListener {
    * @param movedPlayer the player that moved
    */
   onPlayerMoved(movedPlayer: Player): void;
+
+  /**
+   * Called when a player sends a message
+   * @param message the message sent by the player
+   */
+   onPlayerChatted(message: Message): void;
 
   /**
    * Called when a player disconnects from the town

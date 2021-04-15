@@ -1,196 +1,122 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { Socket } from 'socket.io-client';
 import {
-  AppBar,
-  Backdrop,
-  CircularProgress,
-  Container,
-  CssBaseline,
-  Grid,
-  IconButton,
-  List,
-  TextField,
-  Toolbar,
-  Typography,
+  IconButton, ListItem, TextField,
 } from "@material-ui/core";
 import { Send } from "@material-ui/icons";
-import axios from "axios";
-import ChatItem from "./ChatItem";
+import { Select } from '@chakra-ui/react';
+import useCoveyAppState from "../../hooks/useCoveyAppState";
+import './ChatScreen.css';
 import { Message } from "../../CoveyTypes";
-import { Channel } from 'twilio-chat/lib/channel';
 
-interface ScreenProps{
-  town: string
-}
 
-const ChatScreen: React.FunctionComponent<ScreenProps> = (props) => {
-  const [playerName, setPlayerName] = useState<string>('');
-  const [text, setText] = useState<string>('');
-  const [messages, setMessages] = useState<Array<Message>>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [channel, setChannel] = useState<Channel>();
-  const Chat = require("twilio-chat");
+const useChat = (coveyTownID: string, socket: Socket) => {
+  const socketRef = useRef(socket);
+
+  const {
+    userName,
+    messages,
+    myPlayerID
+  } = useCoveyAppState();
+
+  const sendMessage = (messageBody: string, isBroadcast: boolean, receiver: string) => {
+    socketRef.current.emit("playerChatted", {
+      body: messageBody,
+      senderId: myPlayerID,
+      ownedByCurrentUser: true,
+      userName,
+      dateCreated: new Date(),
+      isBroadcast,
+      receiverId: receiver,
+    }); 
+  };
+  return { messages, sendMessage };
+};
+
+
+const ChatScreen = () => {
+
+  const {
+    players, myPlayerID, currentTownID, socket, userName,
+  } = useCoveyAppState();
+
+  const [newMessage, setNewMessage] = useState('');
+  const [receiver, setReceiver] = useState('everyone');
+  const { messages, sendMessage } = useChat(currentTownID, socket as Socket);
   const styles = {
     textField: { width: "100%", borderWidth: 0, borderColor: "transparent" },
-    textFieldContainer: { flex: 1, marginRight: 12 },
-    gridItem: { paddingTop: 12, paddingBottom: 12 },
-    gridItemChatList: { overflow: "auto", height: "70vh" },
-    gridItemMessage: { marginTop: 12, marginBottom: 12 },
     sendButton: { backgroundColor: "#3f51b5" },
     sendIcon: { color: "white" },
-    mainGrid: { paddingTop: 100, borderWidth: 1 },
   } as const;
-  const town: string = props.town;
-  const scrollDiv = React.useRef(document.createElement("div"));
 
-  useEffect(() => {
-    const helper = async() => {
-      // location
-      let token: string = '';
-      setLoading(true);
-      try{
-        token = await getToken(playerName);
-      } catch {
-        throw new Error("Unable to get token");
-      }
-
-      const client = await Chat.Client.create(token);
-
-      client.on("tokenAboutToExpire", async() => {
-        const token = await getToken(playerName);
-        client.updateToken(token);
-      })
-
-      client.on("tokenExpired", async() => {
-        const token = await getToken(playerName);
-        client.updateToken(token);
-      })
-
-      client.on("channelJoined", async (channel: Channel) => {
-        const existingMessages = await channel.getMessages();
-        setMessages(existingMessages.items || []);
-        scrollToBottom();
-      })
-
-      try{
-        const channel = await client.getChannelByUniqueName(town);
-        await joinChannel(channel);
-        setChannel(channel);
-        setLoading(false);
-      } catch {
-        try{
-          const channel = await client.createChannel({
-            uniqueName: town,
-            friendlyName: town
-          });
-          await joinChannel(channel);
-          setChannel(channel);
-          setLoading(false);
-        } catch {
-          throw new Error("Unable to create channel");
-        }
-      }
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if(receiver === "everyone"){
+      sendMessage(newMessage, true, "");
     }
-    helper();
-  });
-
-  // Utility functions 
-  const joinChannel = async (channel: Channel) => {
-    if (channel.status !== "joined") {
-      await channel.join();
+    else{
+      sendMessage(newMessage, false, receiver);
     }
-    channel.on("messageAdded", handleMessageAdded);
+    setNewMessage('');
+  }
+
+  const estyles = {
+    listItem: (isOwnMessage: boolean) => ({
+      flexDirection: "column",
+      alignItems: isOwnMessage ? "flex-end" : "flex-start",
+    }) as const,
+    container: (isOwnMessage: boolean) => ({
+      maxWidth: "75%",
+      borderRadius: 12,
+      padding: 16,
+      color: "white",
+      fontSize: 12,
+      backgroundColor: isOwnMessage ? "#054740" : "#262d31",
+    }),
+    author: { fontSize: 10, color: "gray" },
+    timestamp: { fontSize: 8, color: "white", textAlign: "right", paddingTop: 4 } as const,
   };
 
-  const handleMessageAdded = (message: any) => {
-      setMessages(!!messages ? [...messages, message]: [message]);
-      scrollToBottom();
-  };
-
-  const scrollToBottom = () => {
-      const height = scrollDiv.current.clientHeight;
-      const maxScrollTop = scrollDiv.current.scrollHeight - height;
-      scrollDiv.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
-  };
-  
-  const getToken = async (playerName: string) => {
-    const response = await axios.get(`http://localhost:5000/token/${playerName}`);
-    const { data } = response;
-    return data.token;
-  };
-
-  const sendMessage = () => {
-    if (text && String(text).trim()) {
-      setLoading(true);
-      channel && channel.sendMessage(text);
-      setText("");
-      setLoading(false);
-    }
- };
-
- return <>
-  <Container component="main" maxWidth="md">
-    <Backdrop open={loading} style={{ zIndex: 99999 }}>
-      <CircularProgress style={{ color: "white" }} />
-    </Backdrop>
-    <AppBar elevation={10}>
-      <Toolbar>
-        <Typography variant="h6">
-          {`Town: ${town}, User: ${playerName}`}
-        </Typography>
-      </Toolbar>
-    </AppBar>
-    <CssBaseline />
-      <Grid container direction="column" style={styles.mainGrid}>
-        <Grid item style={styles.gridItemChatList} ref={scrollDiv}>
-          <List dense={true}>
-            {messages &&
-              messages.map((message) => (
-                <ChatItem
-                  key={message.author}
-                  message={message}
-                  playerName={playerName}
-                />
+  return (
+    <div>
+      <body>
+        <div className='heading'>Chat Box</div>
+        <div className='mbox'>
+          <Select onChange={(e) => setReceiver(e.target.value)}>
+            <option value="everyone">Everyone</option>
+            {players.filter(player => player.id !== myPlayerID).map(player => <option key={player.userName} value={player.id}> {player.userName} </option>)}
+          </Select>
+          <ol>
+            {messages.map((message) => (
+              <ListItem
+                key={JSON.stringify(message)}
+                style={estyles.listItem(message.ownedByCurrentUser)}>
+                <div style={estyles.author}>{message.userName}</div>
+                <div style={estyles.container(message.ownedByCurrentUser)}>
+                  {message.body}
+                  {/* <div style={estyles.timestamp}>
+                  {message.dateCreated.toISOString()}
+                </div> */}
+                </div>
+              </ListItem>
             ))}
-          </List>
-        </Grid>
-      <Grid item style={styles.gridItemMessage}>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-        >
-        <Grid item style={styles.textFieldContainer}>
-        <TextField
-          required
-          style={styles.textField}
-          placeholder="Enter message"
-          variant="outlined"
-          multiline
-          rows={2}
-          value={text}
-          disabled={!channel}
-          onChange={(event) => {
-              setText(event.target.value);
-            }
-          }
-        />
-      </Grid>
-      <Grid item>
-        <IconButton
-          style={styles.sendButton}
-          onClick={sendMessage}
-          disabled={!channel || !text}
-        >
-      <Send style={styles.sendIcon} />
-      </IconButton>
-      </Grid>
-    </Grid>
-    </Grid>
-  </Grid>
-  </Container>
-</>
-  
-}
-
+          </ol>
+        </div>
+        <form id="form">
+          <input id="input"
+            placeholder="Write message..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)} />
+          {/* <button type='submit' onClick={(e)=> handleSubmit(e)}>Send</button> */}
+          <IconButton
+            style={styles.sendButton}
+            onClick={(e) => handleSubmit(e)}
+          >
+            <Send style={styles.sendIcon} />
+          </IconButton>
+        </form>
+      </body>
+    </div>
+  );
+};
 export default ChatScreen;
