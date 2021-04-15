@@ -1,9 +1,11 @@
 import { Box, Button, Flex, Input, useToast } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
+import { emojify } from 'node-emoji';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import ChatMessage, { MessageProps } from './ChatMessage';
+import Censorer from '../../classes/censorship/Censorer';
 
 function Chat(): JSX.Element {
   const [messagesState, setMessagesState] = useState<MessageProps[]>([]);
@@ -65,13 +67,13 @@ function Chat(): JSX.Element {
           },
         ])
       } else if (messages[messages.length-1].getType() === 'private') {
-        console.log(messages[messages.length-1].getReceiverID())
+        const receiver = players.find(p => p.id === myPlayerID)
         if(messages[messages.length-1].getReceiverID() === myPlayerID) {
           setMessagesState([
             ...messagesState,
             {
               key: nanoid(),
-              userName: `${sender?.userName}`,
+              userName: `${sender?.userName} to ${receiver?.userName}`,
               color: setButtonColor('private'),
               message: messages[messages.length-1].message,
             },
@@ -81,10 +83,12 @@ function Chat(): JSX.Element {
       
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [players, userName, messages, toast])
+  }), [userName, messages, toast])
 
   const handlePrivateMessage = async () => {
     if (input !== '') {
+      const censoredInput = Censorer.censorMessage(input);
+      const emojifiedInput = emojify(censoredInput);
       try {
         const toPlayer = players.find(p => p.userName === privateUsername);
           if (toPlayer) {
@@ -92,7 +96,7 @@ function Chat(): JSX.Element {
             coveyTownID: currentTownID,
             userIDFrom: myPlayerID,
             userIDTo: toPlayer.id,
-            message: input,
+            message: emojifiedInput,
           });
 
           setMessagesState([
@@ -101,7 +105,7 @@ function Chat(): JSX.Element {
               key: nanoid(),
               userName: `${userName} to ${privateUsername}`,
               color: setButtonColor('private'),
-              message: input,
+              message: emojifiedInput,
             },
           ]);
           setInput('');
@@ -127,15 +131,17 @@ function Chat(): JSX.Element {
 
   const handleGlobalMessage = async () => {
     if (input !== '') {
+      const censoredInput = Censorer.censorMessage(input);
+      const emojifiedInput = emojify(censoredInput);
       try {
             await apiClient.sendGlobalPlayerMessage({
               coveyTownID: currentTownID,
               coveyUserID: myPlayerID,
-              message: input,
+              message: emojifiedInput,
             });
             setMessagesState([
               ...messagesState,
-              { key: nanoid(), userName, color: setButtonColor('global'), message: input },
+              { key: nanoid(), userName, color: setButtonColor('global'), message: emojifiedInput },
             ]);
           // do toasts if message is not sent
           setInput('');
