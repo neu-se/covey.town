@@ -8,6 +8,7 @@ interface HangmanDisplayProps {
 
 export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element {
   const [alreadyGuessedLetters, setAlreadyGuessedLetters] = useState<string[]>([])
+  const [wordState, setWordState] = useState('')
 
   const updateAlreadyGuessedLetters = useCallback(() => {
     let letters: string[] = [];
@@ -17,13 +18,29 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
     setAlreadyGuessedLetters(letters)
   }, [])
 
+  const guessedWord = () => {
+    const word = game.finalWord.split('');
+    const hiddenLetters = game.splitWord;
+    const wordWithBlanks = [];
+    setWordState('');
+    for (let i = 0; i < word.length; i += 1) {
+      if (!hiddenLetters.find(letter => word[i] === letter)) {
+        wordWithBlanks.push(word[i]);
+      } else {
+        wordWithBlanks.push("_");
+      }
+    }
+    setWordState(wordWithBlanks.join(' '));
+  }
+
   useEffect(() => {
     updateAlreadyGuessedLetters();
+    guessedWord();
     const timer = setInterval(updateAlreadyGuessedLetters, 500);
     return () => {
       clearInterval(timer)
     };
-  }, [updateAlreadyGuessedLetters]);
+  }, [guessedWord, updateAlreadyGuessedLetters]);
 
   return (
     <>
@@ -32,8 +49,10 @@ export default function HangmanDisplay({game}: HangmanDisplayProps): JSX.Element
           <span key={letter}>{letter}</span>
         )}
       </div>
-      {/* TODO: Hangman graphics go here */}
       <br/>
+      <div>
+        <h3>{wordState}</h3>
+      </div>
       <div className="games-center-div">
         <div className="row">
           <HangmanLetter gameId={game.id} letter="A"/>
