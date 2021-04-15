@@ -45,13 +45,19 @@
         "npm": "7.3.x"
     },
     "dependencies": {
+        "@twuni/emojify": "^1.0.2",
         "@types/ramda": "^0.27.34",
         "axios": "^0.21.1",
+        "emojify": "^1.0.0",
+        "emojify-js": "^0.1.2",
         "emojify.js": "^1.1.0",
+        "jest": "^24.0.0",
         "jest-mock-extended": "^1.0.13",
         "nanoid": "^3.1.22",
+        "node-emoji": "^1.10.0",
         "ramda": "^0.27.1",
         "react-chatbox-component": "0.0.5",
+        "react-dom": "^16.3.3",
         "socket.io": "^4.0.1",
         "typescript-dotnet-commonjs": "^4.11.2",
         "typescript-is": "^0.17.0"
