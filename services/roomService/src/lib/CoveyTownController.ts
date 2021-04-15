@@ -166,6 +166,13 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onTownDestroyed());
   }
 
+  /**
+   * Sends a private message to the Player with the given ID in this town.
+   * 
+   * @param userIDFrom The ID of the Player sending the message.
+   * @param userIDTo   The ID of the Player receiving the message.
+   * @param message    The message the Player is sending.
+   */
   sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
     var messageAltered : PrivateChatMessage;
     messageAltered = new PrivateChatMessage(emojify(Censorer.censorMessage(message)), userIDTo, userIDFrom);
@@ -173,6 +180,12 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onPrivateMessage(messageAltered));
   }
 
+  /**
+   * Sends a global message to all Players in this town.
+   * 
+   * @param userID  The ID of the Player sending the message.
+   * @param message The message the Player is sending.
+   */
   sendGlobalPlayerMessage(userID: string, message: string): void {
     var messageAltered : GlobalChatMessage;
     messageAltered = new GlobalChatMessage(emojify(Censorer.censorMessage(message)), userID);

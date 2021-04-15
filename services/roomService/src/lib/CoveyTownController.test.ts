@@ -248,6 +248,8 @@ describe('CoveyTownController', () => {
       testingTown.sendGlobalPlayerMessage(player1.id, message3.message);
       const message4 = new GlobalChatMessage('professor bell bell boyland', player1.id);
       testingTown.sendGlobalPlayerMessage(player1.id, message4.message);
+      //mockListeners.forEach(listener => listener.onGlobalMessage(message1));
+      //expect(message1.message).toEqual('professor **** icecream');
       // TODO check the arrays and listeners
     });
 
@@ -258,17 +260,13 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       const message1 = new PrivateChatMessage('professor bell icecream', player1.id, player2.id);
-      // testingTown.sendPrivatePlayerMessage(message1.message, player1.id, player2.id);
+      testingTown.sendPrivatePlayerMessage(message1.message, player1.id, player2.id);
       const message2 = new PrivateChatMessage('bell', player1.id, player2.id);
-      // testingTown.sendPrivatePlayerMessage(message2.message, player1.id, player2.id);
+      testingTown.sendPrivatePlayerMessage(message2.message, player1.id, player2.id);
       const message3 = new PrivateChatMessage('professor boyland', player1.id, player2.id);
-      // testingTown.sendPrivatePlayerMessage(message3.message, player1.id, player2.id);
-      const message4 = new PrivateChatMessage(
-        'professor bell bell boyland',
-        player1.id,
-        player2.id,
-      );
-      // testingTown.sendPrivatePlayerMessage(message4.message, player1.id, player2.id);
+      testingTown.sendPrivatePlayerMessage(message3.message, player1.id, player2.id);
+      const message4 = new PrivateChatMessage('professor bell bell boyland', player1.id, player2.id);
+      testingTown.sendPrivatePlayerMessage(message4.message, player1.id, player2.id);
       // todo check the arrays and listeners
     });
 /*

@@ -76,6 +76,15 @@ export default class CoveyTownsStore {
     return false;
   }
 
+  /**
+   * Sends a private message between two specified Players in the given town.
+   * 
+   * @param coveyTownID The ID of the town the sending Player is sending the message in. The receiving Player should also be in this town.
+   * @param userIDFrom  The ID of the Player sending the message.
+   * @param userIDTo    The ID of the Player receiving the message.
+   * @param message     The message being sent.
+   * @returns           True if the message is sent in the given town, false if the town doesn't exist.
+   */
   sendPrivateMessage(
     coveyTownID: string,
     userIDFrom: string,
@@ -90,6 +99,14 @@ export default class CoveyTownsStore {
     return false;
   }
 
+  /**
+   * Sends a global message from the given Player to all of the Players in the given town.
+   * 
+   * @param coveyTownID The ID of the town the sending Player is sending the message in.
+   * @param userID      The ID of the Player sending the message.
+   * @param message     The message being sent.
+   * @returns           True if the message is sent in the given town, false if the town doesn't exist.
+   */
   sendGlobalMessage(coveyTownID: string, userID: string, message: string): boolean {
     const currentTown = this.getControllerForTown(coveyTownID);
     if (currentTown) {

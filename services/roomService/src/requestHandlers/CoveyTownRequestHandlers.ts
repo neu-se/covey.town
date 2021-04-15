@@ -334,9 +334,14 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(s.player, movementData);
   });
 
+  // Register an event listener for the client socket: if the client sends a global
+  // message, inform the CoveyTownController
   socket.on('onGlobalMessage', (userID: string, message: string) => {
     townController.sendGlobalPlayerMessage(userID, message);
   });
+
+  // Register an event listener for the client socket: if the client sends a private
+  // message, inform the CoveyTownController
   socket.on('onPrivateMessage', (userIDFrom: string, userIDTo: string, message: string) => {
     townController.sendPrivatePlayerMessage(userIDFrom, userIDTo, message);
   });
