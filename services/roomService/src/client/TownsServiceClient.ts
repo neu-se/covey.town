@@ -1,9 +1,10 @@
 import assert from 'assert';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { UserLocation } from '../CoveyTypes';
-import { ListMessagesRequest } from '../requestHandlers/CoveyTownRequestHandlers';
-import GlobalChatMessage from '../types/GlobalChatMessage';
-import PrivateChatMessage from '../types/PrivateChatMessage';
+import {
+  ListMessagesRequest,
+  ListMessagesResponse,
+} from '../requestHandlers/CoveyTownRequestHandlers';
 
 export type ServerPlayer = { _id: string; _userName: string; location: UserLocation };
 
@@ -102,7 +103,9 @@ export type CoveyTownInfo = {
  */
 export interface PrivateMessageRequest {
   coveyTownID: string;
-  message: PrivateChatMessage;
+  userIDFrom: string;
+  userIDTo: string;
+  message: string;
 }
 
 /**
@@ -110,7 +113,8 @@ export interface PrivateMessageRequest {
  */
 export interface GlobalMessageRequest {
   coveyTownID: string;
-  message: GlobalChatMessage;
+  coveyUserID: string;
+  message: string;
 }
 
 export default class TownsServiceClient {
@@ -175,16 +179,16 @@ export default class TownsServiceClient {
   }
 
   async sendPrivatePlayerMessage(requestData: PrivateMessageRequest): Promise<void> {
-    const responseWrapper = await this._axios.post('/messages', requestData);
+    const responseWrapper = await this._axios.post('/privatemessages', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async sendGlobalPlayerMessage(requestData: GlobalMessageRequest): Promise<void> {
-    const responseWrapper = await this._axios.post('/messages', requestData);
+    const responseWrapper = await this._axios.post('/globalmessages', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
-  async getMessages(requestData: ListMessagesRequest): Promise<void> {
+  async getMessages(requestData: ListMessagesRequest): Promise<ListMessagesResponse> {
     const responseWrapper = await this._axios.get(`/messages/${requestData.coveyTownID}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
