@@ -6,18 +6,28 @@
 
 .heading {
   text-align: center;
-  border: 3px solid green;
   width: 25rem;
   font-weight: bold;
+  background: #333;
+  color: white;
 }
 
 .mbox {
-  border: 3px solid green;
+  border: 3px solid black;
   width: 25rem;
-  height: 43rem;
+  height: 40.6rem;
+  background-color: white;
+  overflow: scroll;
+  border-top-color: white;
+  border-bottom-color: white;
+}
+
+.selectPlayer {
+  border: 3px solid black;
 }
 
 #form {
+  border: 3px solid black;
   background: rgba(0, 0, 0, 0.15);
   padding: 0.25rem;
   position: absolute;
