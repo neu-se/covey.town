@@ -9,5 +9,15 @@
   - The message, its sender, and its receiver will be displayed in the chat box and should only be visible to the sender and receiver. Private messages are purple and do NOT appear above the player's name.
   - Please note that if there are multiple players with the same username, their message may not go through to the player they have in mind, so players should try to have unique usernames for the optimal player experience.
 - **User Story 3:** Players that send inappropriate messages will have the inappropriate words in their messages censored.
+
   - If a player tries to send an inappropriate message, the "bad" words in the message will be automatically censored by replacing every letter in the word with a '\*'.
   - For example, if a player wanted to send the message "I love Professor Bell!", the message everyone would see is "I love Professor \*\*\*\*!" (we used "bell" as a test word so testing wouldn't be full of more colorful language)
+
+  ## Other Features
+
+  ### Emoji's:
+
+  - **Players can send emojis!** If a player wants to send an emoji, they need to send it in the form: ':name_of_emoji_here:'
+    - Example: (:face_with_cowboy_hat: sends 🤠)
+  - [Link to the page for the emoji API] (https://github.com/omnidan/node-emoji/blob/master/README.md)
+  - [List of supported emoji's] (https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json)
