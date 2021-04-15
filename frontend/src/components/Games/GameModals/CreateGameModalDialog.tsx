@@ -202,7 +202,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     <h1 className="games-headline">
                       {gameSelection === "ttl" ? "Two Truths and a Lie" : gameSelection}
                     </h1>
-                    <ModalCloseButton />
+                    { /* <ModalCloseButton /> */ }
                     <hr/>
                     <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                     <br/>
