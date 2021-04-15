@@ -335,7 +335,8 @@ describe('CoveyTownController', () => {
       expect(message5.message).toEqual(':fae_with_cowboy_hat:');
       mockListeners.forEach(listener => listener.onPrivateMessage(message6));
       expect(message6.message).toEqual('hey howdy hey 🤠 🤠 my names Woody');
-    });*/
+    });
+    */
   });
 
   describe('townSubscriptionHandler', () => {
