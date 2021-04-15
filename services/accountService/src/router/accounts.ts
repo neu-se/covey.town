@@ -15,7 +15,7 @@ export default function addAccountRoutes(http: Server, app: Express): io.Server 
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: 'Internal server error, please see account server for more details'
+        message: 'Internal server error, please see account server for more details',
       });
     }
   });

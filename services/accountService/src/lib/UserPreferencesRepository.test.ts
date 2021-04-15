@@ -131,7 +131,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
 
     // Checks to see if the user was properly added to the database
     const userInfo = await getUserByID(userID);
-    expect(userInfo).toStrictEqual(jeminInfo)
+    expect(userInfo).toStrictEqual(jeminInfo);
 
     // Updates the given user
     const updateUser = await upsertUser(jeminInfoUpdate); 
@@ -142,7 +142,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
     expect(updatedUserInfo).toStrictEqual(jeminInfoUpdate);
 
     // delete the user from the database
-    const deletedUser = await deleteUser(userID)
+    const deletedUser = await deleteUser(userID);
     expect(deletedUser).toBe(true);
   });
 
@@ -178,7 +178,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
 
     // Checks to see if the user was properly added to the database
     const userInfo = await getUserByID(userID);
-    expect(userInfo).toStrictEqual(tatiInfo)
+    expect(userInfo).toStrictEqual(tatiInfo);
 
     // Updates the given user
     const updateUser = await upsertUser(tatiInfoUpdate); 
@@ -189,7 +189,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
     expect(updatedUserInfo).toStrictEqual(tatiInfo);
 
     // delete the user from the database
-    const deletedUser = await deleteUser(userID)
+    const deletedUser = await deleteUser(userID);
     expect(deletedUser).toBe(true);
   });
 });

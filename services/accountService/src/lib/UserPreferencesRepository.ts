@@ -40,12 +40,12 @@ export async function upsertUser(userInfo: SavedUserInfoRequest): Promise<boolea
                 use_audio = COALESCE($4, up.use_audio),
                 use_video = COALESCE($5, up.use_video)
               WHERE up.user_id = $1;`,
-      values: [userInfo.userID, userInfo.email, userInfo.username, userInfo.useAudio, userInfo.useVideo]
+      values: [userInfo.userID, userInfo.email, userInfo.username, userInfo.useAudio, userInfo.useVideo],
     };
 
     await client.query(userPreferencesQuery);
 
-    let townsQueries: any[] = [];
+    const townsQueries: any[] = [];
     userInfo.towns?.forEach(town => {
       const townsQuery = {
         name: 'UpsertTowns',
@@ -57,7 +57,7 @@ export async function upsertUser(userInfo: SavedUserInfoRequest): Promise<boolea
                   position_x = $3,
                   position_y = $4
                 WHERE t.user_id = $1 AND t.town_id = $2;`,
-        values: [userInfo.userID, town.townID, town.positionX, town.positionY]
+        values: [userInfo.userID, town.townID, town.positionX, town.positionY],
       };
       townsQueries.push(client.query(townsQuery));
     });

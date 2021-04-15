@@ -3,8 +3,8 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 export type JoinedTown = {
   townID: string,
-  locationX: number,
-  locationY: number,
+  positionX: number,
+  positionY: number,
 };
 
 /**
@@ -25,7 +25,6 @@ export interface SaveUserRequest {
 export interface GetUserRequest {
   userID: string;
 }
-
 
 /**
  * Response from the server for a get user request

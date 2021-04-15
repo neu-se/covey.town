@@ -4,7 +4,7 @@ import { getUserByID, upsertUser, SavedUserInfoRequest } from '../lib/UserPrefer
 /**
  * Payload sent by client to save a user in Covey.Town
  */
- export interface SaveUserRequest {
+export interface SaveUserRequest {
   userID: string;
   email?: string;
   username?: string;
@@ -30,15 +30,6 @@ export interface GetUserResponse {
   useAudio: boolean;
   useVideo: boolean;
   towns: JoinedTown[];
-}
-
-/**
- * Envelope that wraps any response from the server
- */
-export interface ResponseEnvelope<T> {
-  isOK: boolean;
-  message?: string;
-  response?: T;
 }
 
 /**
