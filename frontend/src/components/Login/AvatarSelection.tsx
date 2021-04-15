@@ -1,4 +1,4 @@
-import { Box, Center, Heading, Image, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Center, Image, SimpleGrid, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
 class Avatar {
