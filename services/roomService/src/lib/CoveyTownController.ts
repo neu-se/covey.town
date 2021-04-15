@@ -177,7 +177,7 @@ export default class CoveyTownController {
   }
 
   sendGlobalPlayerMessage(userID: string, message: string): void {
-    const messageCensor = emojify(this._censorer.censorMessage(message)) + emojify(':face_with_cowboy_hat');
+    const messageCensor = emojify(this._censorer.censorMessage(message));
     const messageCensored = new GlobalChatMessage(messageCensor, userID);
    // messageCensored.message = emojify(messageCensored.message);
     this.messages.push(messageCensored);
