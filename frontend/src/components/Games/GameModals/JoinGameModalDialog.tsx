@@ -108,7 +108,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
                 <TTLDisplay game={currentGameObject as TTLGame}/>
                 }
                 {gameType === "Hangman" &&
-                <HangmanDisplay game={currentGameObject as HangmanGame}/>
+                <HangmanDisplay startingGame={currentGameObject as HangmanGame}/>
                 }
               </div>
             </>

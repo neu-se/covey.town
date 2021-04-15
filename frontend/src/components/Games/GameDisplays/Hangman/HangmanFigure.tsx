@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import noLimbs from './HangmanAssets/noLimbs.jpg';
 import head from './HangmanAssets/head.jpg';
 import back from './HangmanAssets/back.jpg';
@@ -6,41 +6,42 @@ import oneArm from './HangmanAssets/oneArm.jpg';
 import twoArms from './HangmanAssets/twArms.jpg';
 import oneLeg from './HangmanAssets/oneLeg.jpg';
 import twoLegs from './HangmanAssets/twoLegs.jpg';
+import useCoveyAppState from "../../../../hooks/useCoveyAppState";
+import HangmanGame from "../../gamesClient/HangmanGame";
 
 interface HangmanFigureProps {
-  limbListLength: number;
+  game: HangmanGame;
 }
 
-export default function HangmanDisplay({limbListLength}: HangmanFigureProps): JSX.Element {
-  const imageBasePath = "../../../../../public/assets/"
+export default function HangmanDisplay({game}: HangmanFigureProps): JSX.Element {
   return (
     <div>
       {
-        limbListLength === 6 &&
+        game.limbList.length === 6 &&
         <img src={noLimbs} alt="gallowsOnly"/>
       }
       {
-        limbListLength === 5 &&
+        game.limbList.length === 5 &&
         <img src={head} alt="headAdded"/>
       }
       {
-        limbListLength === 4 &&
+        game.limbList.length === 4 &&
         <img src={back} alt="backAdded"/>
       }
       {
-        limbListLength === 3 &&
+        game.limbList.length === 3 &&
         <img src={oneArm} alt="oneArmAdded"/>
       }
       {
-        limbListLength === 2 &&
+        game.limbList.length === 2 &&
         <img src={twoArms} alt="twoArmsAdded"/>
       }
       {
-        limbListLength === 1 &&
+        game.limbList.length === 1 &&
         <img src={oneLeg} alt="oneLegAdded"/>
       }
       {
-        limbListLength === 0 &&
+        game.limbList.length === 0 &&
         <img src={twoLegs} alt="twoLegsAdded"/>
       }
     </div>
