@@ -1,11 +1,12 @@
-import { userInfo } from 'os';
-import { userModel as User } from '../data/models/users/user.model.server';
+import { AuthenticationError } from 'apollo-server-express';
+import User from '../data/models/users/user.model.server';
 import {
   townCreateHandler,
   townJoinHandler,
   townDeleteHandler,
-  townListHandler
+  townListHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
+
 /**
  * All the resolvers are defined here.
  */
@@ -17,32 +18,57 @@ const resolvers = {
      * @param args contains all input arguments
      * @returns user profile matching to the id.
      */
-    searchUserById: async (_: any, args: any) => {
-      const user = await User.findOne((id: string) => id === args.id);
-      return user;
+    searchUserById: async (_: any, args: any, context:any) => {
+      try {
+        const email = await context.user;
+        const user = await User.findOne((id: string) => id === args.id);
+        return user;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     },
     /**
      * Resolver to find all the users in Covey Town.
      * @returns all the users in Covey Town
      */
-    users: async () => {
-      const users = User.find();
-      return users;
+    users: async (_: any, __: any, context: any) => {
+      try {
+        const email = await context.user;
+        const users = User.find();
+        return users;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     },
 
-    searchUserByUserName: async (_: any, args: any) => {
-      const response = await User.find({
-        username: { $regex: args.username, $options: 'i' },
-      });
-      return response;
+    searchUserByUserName: async (_: any, args: any, context:any) => {
+      try {
+        const email = await context.user;
+        const response = await User.find({
+          username: { $regex: args.username, $options: 'i' },
+        });
+        return response;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     },
-    searchUserByName: async (_: any, args: any) => {
-      const user = await User.findOne({ username: args.username });
-      return user;
+    searchUserByName: async (_: any, args: any, context:any) => {
+      try {
+        const email = await context.user;
+        const user = await User.findOne({ username: args.username });
+        return user;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');      
+      }
     },
-    townList: async () => {
-      const response = await townListHandler();
-      return response;
+    townList: async (_: any, __: any, context: any) => {
+      try {
+        const email = await context.user;
+        const response = await townListHandler();
+        return response;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     },
     /**
      * Resolver to find a user by email
@@ -50,9 +76,14 @@ const resolvers = {
      * @param args contains all input arguments
      * @returns user profile matching to the id.
      */
-    searchUserByEmail: async (_: any, args: any) => {
-      const user = await User.findOne({ email: args.email });
-      return user;
+    searchUserByEmail: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        const user = await User.findOne({ email: args.email });
+        return user;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
     },
   },
 
@@ -63,58 +94,68 @@ const resolvers = {
      * @param args represents all the input parameters.
      * @returns the user profile.
      */
-    signUp: async (_: any, args: any) => {
-      const user = await User.findOne({ email: args.input.email });
-      if (user) {
-        throw new Error('User already in use');
+    signUp: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        const user = await User.findOne({ email: args.input.email });
+        if (user) {
+          throw new Error('User already in use');
+        }
+        const newUser = new User({
+          username: args.input.userName,
+          email: args.input.email,
+          password: args.input.password,
+        });
+        const result = newUser.save();
+        return result;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
       }
-      const newUser = new User({
-        username: args.input.userName,
-        email: args.input.email,
-        password: args.input.password,
-      });
-      const result = newUser.save();
-      return result;
     },
-    updateUser: async (_: any, args: any) => {
-      let user = await User.findOne({ id: args.input.id });
-      if (user !== undefined) {
-        if (args.input.bio !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            bio: args.input.bio,
-          });
-        }
-        if (args.input.location !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            location: args.input.location,
-          });
-        }
-        if (args.input.occupation !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            occupation: args.input.occupation,
-          });
-        }
-        if (args.input.instagramLink !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            instagramLink: args.input.instagramLink,
-          });
-        }
-        if (args.input.facebookLink !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            facebookLink: args.input.facebookLink,
-          });
-        }
-        if (args.input.linkedInLink !== undefined) {
-          user = await User.findByIdAndUpdate(args.input.id, {
-            linkedInLink: args.input.linkedInLink,
-          });
+    updateUser: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        let user = await User.findOne({ id: args.input.id });
+        if (user !== undefined) {
+          if (args.input.bio !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, {
+              bio: args.input.bio,
+            });
+          }
+          if (args.input.location !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, {
+              location: args.input.location,
+            });
+          }
+          if (args.input.occupation !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, {
+              occupation: args.input.occupation,
+            });
+          }
+          if (args.input.instagramLink !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, {
+              instagramLink: args.input.instagramLink,
+            });
+          }
+          if (args.input.facebookLink !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, {
+              facebookLink: args.input.facebookLink,
+            });
+          }
+          if (args.input.linkedInLink !== undefined) {
+            user = await User.findByIdAndUpdate(args.input.id, {
+              linkedInLink: args.input.linkedInLink,
+            });
+          }
         }
         return user;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
       }
-      throw new Error('User does not exist');
     },
-    acceptFriend: async (_: any, args: any) => {
+    acceptFriend: async (_: any, args: any, context: any) => {
       try {
+        const email = await context.user;
         const query = { username: args.input.userNameTo };
         const updateDocument = {
           $pull: { requests: args.input.userNameFrom },
@@ -135,12 +176,12 @@ const resolvers = {
         );
         return true;
       } catch (error) {
-        console.log(error);
-        throw error;
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    rejectFriend: async (_: any, args: any) => {
+    rejectFriend: async (_: any, args: any, context: any) => {
       try {
+        const email = await context.user;        
         const query = { username: args.input.userNameTo };
         const updateDocument = {
           $pull: { requests: args.input.userNameFrom },
@@ -152,12 +193,12 @@ const resolvers = {
         };
         return true;
       } catch (error) {
-        console.log(error);
-        throw error;
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    addFriend: async (_: any, args: any) => {
+    addFriend: async (_: any, args: any, context: any) => {
       try {
+        const email = await context.user;        
         await User.updateOne(
           { username: args.input.userNameTo },
           { $push: { requests: args.input.userNameFrom } },
@@ -168,17 +209,21 @@ const resolvers = {
         );
         return true;
       } catch (error) {
-        console.log(error);
-        throw error;
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    deleteUser: async (_: any, args: any) => {
-      const user = await User.findOne({ email: args.input.email });
-      if (user !== undefined) {
-        await User.remove({ email: args.input.email });
-        return true;
+    deleteUser: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;        
+        const user = await User.findOne({ email: args.input.email });
+        if (user !== undefined) {
+          await User.remove({ email: args.input.email });
+          return true;
+        }
+        return false;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
       }
-      return false;
     },
     // Below are functions already existing and refactored.
     /**
@@ -187,10 +232,18 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownJoinResponse
      */
-    townJoinRequest: async (_: any, args: any) => await townJoinHandler({
-      userName: args.input.userName,
-      coveyTownID: args.input.coveyTownID,
-    }),
+    townJoinRequest: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;        
+        const response = await townJoinHandler({
+          userName: args.input.userName,
+          coveyTownID: args.input.coveyTownID,
+        });
+        return response;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
+    },
 
     /**
      *  Resolver to handle town create request.
@@ -198,17 +251,29 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownCreateResponse
      */
-    townCreateRequest: async (_: any, args: any) => await townCreateHandler({
-      friendlyName: args.input.friendlyName,
-      isPubliclyListed: args.input.isPubliclyListed,
-    }),
-
-    townDeleteRequest: async (_: any, args: any) => {
-      const response = await townDeleteHandler({
-        coveyTownID: args.input.coveyTownID,
-        coveyTownPassword: args.input.coveyTownPassword,
-      });
-      return response;
+    townCreateRequest: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        console.log(email);
+        return await townCreateHandler({
+          friendlyName: args.input.friendlyName,
+          isPubliclyListed: args.input.isPubliclyListed,
+        });
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
+      }
+    },
+    townDeleteRequest: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;        
+        const response = await townDeleteHandler({
+          coveyTownID: args.input.coveyTownID,
+          coveyTownPassword: args.input.coveyTownPassword,
+        });
+        return response;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this'); 
+      }
     },
   },
 };

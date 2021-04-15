@@ -18,7 +18,6 @@ import {
   AcceptFriendRequest, rejectFriend,
   RejectFriendRequest,
   searchUserByEmail,
-  searchUserByUserName,
 } from '../../graphql/queries';
 
 
