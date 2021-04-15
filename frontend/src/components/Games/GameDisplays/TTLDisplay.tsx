@@ -11,7 +11,7 @@ interface TTLProps {
 export default function TTLDisplay({game}: TTLProps): JSX.Element {
   const [guessing, setGuessing] = useState(true);
   const [selection, setSelection] = useState(0);
-  const { gamesClient } = useCoveyAppState();
+  const { currentTownID, gamesClient } = useCoveyAppState();
 
   /* Randomize array in-place using Durstenfeld shuffle algorithm */
   function shuffleArray(array: string[]): string[] {
@@ -82,7 +82,7 @@ export default function TTLDisplay({game}: TTLProps): JSX.Element {
                 colorScheme="green"
                 onClick={async () => {
                   setGuessing(false);
-                  await gamesClient.updateGame({gameId: game.id, move: {guess: selection.toString()}})
+                  await gamesClient.updateGame({townID: currentTownID, gameId: game.id, move: {guess: selection.toString()}})
                 }
                 }>
           Guess!

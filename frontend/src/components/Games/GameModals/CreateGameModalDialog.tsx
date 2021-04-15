@@ -32,7 +32,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const [playing, setPlaying] = useState(false)
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const { currentPlayer } = props
-  const { gamesClient } = useCoveyAppState();
+  const { currentTownID, gamesClient } = useCoveyAppState();
   const toast = useToast()
 
   const getNewGame = async (requestData : GameCreateRequest) => {
@@ -45,7 +45,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   }
 
   const getCurrentGame = async (gameId: string) => {
-    setCurrentGameObject(await gamesClient.listGames()
+    setCurrentGameObject(await gamesClient.listGames({townID: currentTownID})
       .then(response => response.games.find(g => g.id === gameId)));
       setPlaying(true);
   }
@@ -64,7 +64,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
           </ModalHeader>
           <ModalCloseButton onClick={async () => {
             if (currentGameObject !== undefined && currentGameObject.id !== "") {
-              await gamesClient.deleteGame({gameId: currentGameObject.id});
+              await gamesClient.deleteGame({townID: currentTownID, gameId: currentGameObject.id});
               setCurrentGameObject(undefined)
               setPlaying(false)
               setLie("")
@@ -183,6 +183,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                       if (gameSelection === "ttl") {
                         console.log("new ttl game")
                         const newGameId = await getNewGame({
+                          townID: currentTownID,
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {choice1: truth1, choice2: truth2, choice3: lie, correctLie: 3}
                         });
@@ -198,6 +199,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                         }
                       } else if (gameSelection === "Hangman") {
                         const newGameId = await getNewGame({
+                          townID: currentTownID,
                           player1Id: currentPlayer.id, player1Username: currentPlayer.username, gameType: gameSelection, initialGameState:
                             {word: hangmanWord}
                         });

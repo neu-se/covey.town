@@ -22,12 +22,12 @@ import useCoveyAppState from "../../../hooks/useCoveyAppState";
 export default function BrowseOpenGamesModal(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [gamesList, setGamesList] = useState<GameList>();
-  const { gamesClient } = useCoveyAppState();
+  const { currentTownID, gamesClient } = useCoveyAppState();
 
   useEffect(() => {
     const fetchAllGames = async () => {
       console.info("Fetching games")
-      const { games } = await gamesClient.listGames()
+      const { games } = await gamesClient.listGames({townID: currentTownID})
       setGamesList(games)
     }
     fetchAllGames()

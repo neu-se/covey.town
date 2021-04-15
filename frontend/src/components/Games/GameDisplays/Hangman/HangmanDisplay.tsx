@@ -9,7 +9,7 @@ interface HangmanDisplayProps {
 }
 
 export default function HangmanDisplay({startingGame}: HangmanDisplayProps): JSX.Element {
-  const {gamesClient} = useCoveyAppState();
+  const {gamesClient, currentTownID} = useCoveyAppState();
   const [currentGame, setCurrentGame] = useState<HangmanGame>(startingGame);
   const gameId = startingGame.id;
 
@@ -23,7 +23,7 @@ export default function HangmanDisplay({startingGame}: HangmanDisplayProps): JSX
 
   useEffect(() => {
     const fetchGame = async () => {
-      const {games} = await gamesClient.listGames()
+      const {games} = await gamesClient.listGames({townID: currentTownID})
       const game = games.find(g => g.id === gameId)
       setCurrentGame(game as HangmanGame)
     }

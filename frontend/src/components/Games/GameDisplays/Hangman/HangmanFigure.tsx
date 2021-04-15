@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import noLimbs from './HangmanAssets/noLimbs.jpg';
 import head from './HangmanAssets/head.jpg';
 import back from './HangmanAssets/back.jpg';
@@ -6,7 +6,6 @@ import oneArm from './HangmanAssets/oneArm.jpg';
 import twoArms from './HangmanAssets/twArms.jpg';
 import oneLeg from './HangmanAssets/oneLeg.jpg';
 import twoLegs from './HangmanAssets/twoLegs.jpg';
-import useCoveyAppState from "../../../../hooks/useCoveyAppState";
 import HangmanGame from "../../gamesClient/HangmanGame";
 
 interface HangmanFigureProps {

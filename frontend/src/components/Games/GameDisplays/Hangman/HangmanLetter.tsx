@@ -9,7 +9,7 @@ interface HangmanLetterProps {
 
 export default function HangmanLetter({gameId, letter} : HangmanLetterProps) : JSX.Element {
   const [disabled, setDisabled] = useState(false);
-  const { gamesClient } = useCoveyAppState();
+  const { currentTownID, gamesClient } = useCoveyAppState();
 
   return (
     <>
@@ -19,6 +19,7 @@ export default function HangmanLetter({gameId, letter} : HangmanLetterProps) : J
               onClick={async () => {
                 setDisabled(true);
                 await gamesClient.updateGame({
+                  townID: currentTownID,
                   gameId, move: {letter: letter.toLowerCase()}})
               }}>
         {letter}
