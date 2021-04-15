@@ -24,13 +24,15 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { UserInfo } from '../../CoveyTypes';
 
 interface TownSelectionProps {
   username: string;
-  doLogin: (initData: TownJoinResponse) => Promise<boolean>
+  doLogin: (initData: TownJoinResponse) => Promise<boolean>;
+  setUserInfo?(userInfo: UserInfo): void;
 }
 
-export default function TownSelection({ username, doLogin }: TownSelectionProps): JSX.Element {
+export default function TownSelection({ username, doLogin, setUserInfo }: TownSelectionProps): JSX.Element {
   const [userName, setUserName] = useState<string>('');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
@@ -38,7 +40,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
+  const { apiClient, accountApiClient } = useCoveyAppState();
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
@@ -92,14 +94,27 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
     }
   }, [doLogin, userName, connect, toast]);
 
-  const handleSaveUsername = () => {
-    // TODO call api to saveUser!
+  const handleSaveUsername = async (userID: string, newUsername: string) => {
     try {
-      toast({
-        title: 'Successfully saved username!',
-        description: 'Any time you log into Covey.Town in the future, you can click the \'Saved Name\' button to apply these settings.',
-        status: 'success',
-      });
+      if (newUsername.length === 0) {
+        toast({
+          title: 'You can only save a non-empty username',
+          description: 'Please enter a non-empty username.',
+          status: 'error',
+        });
+      }
+      else {
+        await accountApiClient.saveUser({ userID,  username: newUsername });
+        const getResponse = await accountApiClient.getUser({ userID });
+        if (setUserInfo) {
+          setUserInfo(getResponse as UserInfo);
+        }
+        toast({
+          title: 'Successfully saved username!',
+          description: 'Any time you log into Covey.Town in the future, you can click the \'Saved Name\' button to apply these settings.',
+          status: 'success',
+        });
+      }
     } catch (err) {
       toast({
         title: 'Unable to connect to Account Service',
@@ -156,7 +171,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
     }
   };
 
-  const { isAuthenticated } = useAuth0();
+  const auth0 = useAuth0();
 
   // white-space attribute to nowrap
 
@@ -177,7 +192,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
                 />
 
               </FormControl>
-              {isAuthenticated &&
+              {auth0.isAuthenticated &&
                 <>
                   <Box>
                     <FormControl>
@@ -189,7 +204,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
                         }} />
                     </FormControl>
                   </Box>
-                  <Button isDisabled={useSavedUserName} onClick={handleSaveUsername}>Save</Button>
+                  <Button isDisabled={useSavedUserName} onClick={async () => { await handleSaveUsername(auth0.user.sub, userName)}}>Save</Button>
                 </>
               }
             </Flex>
@@ -258,3 +273,7 @@ export default function TownSelection({ username, doLogin }: TownSelectionProps)
     </>
   );
 }
+
+TownSelection.defaultProps = {
+  setUserInfo() {},
+};

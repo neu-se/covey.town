@@ -10,14 +10,15 @@ import useLocalVideoToggle from '../../../hooks/useLocalVideoToggle/useLocalVide
 export default function ToggleVideoButton(props: {
   disabled?: boolean;
   className?: string;
+  useSavedVideo?: boolean;
   setMediaError?(error: Error): void;
-  savedVideoEnabled?: boolean;
+  setShowVideo?(showVideo: boolean): void;
 }) {
   // @ts-ignore
   const { isEnabled: isVideoEnabled, toggleVideoEnabled } = useLocalVideoToggle();
   const lastClickTimeRef = useRef(0);
   const hasVideoDevices = useHasVideoInputDevices();
-  const showVideo = props.savedVideoEnabled !== undefined ? props.savedVideoEnabled : isVideoEnabled;
+  const shouldShowVideo = props.useSavedVideo !== undefined ? props.useSavedVideo : isVideoEnabled;
 
   const toggleVideo = useCallback(async () => {
     if (Date.now() - lastClickTimeRef.current > 200) {
@@ -32,8 +33,11 @@ export default function ToggleVideoButton(props: {
     }
   }, [props, toggleVideoEnabled]);
 
-  if (showVideo !== isVideoEnabled && hasVideoDevices) {
+  if (shouldShowVideo !== isVideoEnabled && hasVideoDevices) {
     toggleVideo();
+  }
+  if (props.setShowVideo) {
+    props.setShowVideo(shouldShowVideo);
   }
 
   return (
@@ -41,9 +45,9 @@ export default function ToggleVideoButton(props: {
       className={props.className}
       onClick={toggleVideo}
       disabled={!hasVideoDevices || props.disabled}
-      startIcon={showVideo ? <VideoOnIcon /> : <VideoOffIcon />}
+      startIcon={shouldShowVideo ? <VideoOnIcon /> : <VideoOffIcon />}
     >
-      {!hasVideoDevices ? 'No video devices' : showVideo ? 'Stop Video' : 'Start Video'}
+      {!hasVideoDevices ? 'No video devices' : shouldShowVideo ? 'Stop Video' : 'Start Video'}
     </Button>
   );
 }

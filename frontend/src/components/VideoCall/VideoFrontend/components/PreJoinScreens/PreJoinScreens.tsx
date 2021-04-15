@@ -7,30 +7,41 @@ import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import TownSelection from '../../../../Login/TownSelection';
 import { UserInfo } from '../../../../../CoveyTypes';
 import { useAuth0 } from '@auth0/auth0-react';
+import { SaveUserRequest } from '../../../../../classes/AccountsServiceClient';
+import useCoveyAppState from '../../../../../hooks/useCoveyAppState';
 
 export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>; setMediaError?(error: Error): void }) {
   const auth0 = useAuth0();
+  const { accountApiClient } = useCoveyAppState();
 
-  const loggedOutUser = { userID: '', email: '', username: '', useAudio: false, useVideo: false, maps: [] };
-  const getData = { userID: 'test123', username: 'testuser123', email: 'testuser123@email.com', useAudio: true, useVideo: false, maps: [] };
+  const loggedOutUser = { userID: '', email: '', username: '', useAudio: false, useVideo: false, towns: [] };
   const [loggedIn, setLoggedIn] = useState<boolean>(auth0.isAuthenticated);
-  const [userInfo, setUserInfo] = useState<UserInfo>(auth0.isAuthenticated ? getData : loggedOutUser);
+  const [userInfo, setUserInfo] = useState<UserInfo>(loggedOutUser);
 
   if (auth0.isAuthenticated !== loggedIn) {
     setLoggedIn(auth0.isAuthenticated);
   }
 
+  async function updateUserInfo(userID: string) {
+    const getResponse = await accountApiClient.getUser({ userID });
+    setUserInfo(getResponse as UserInfo);
+  }
+
+  async function saveUserInfo(request: SaveUserRequest) {
+    try {
+      await accountApiClient.saveUser(request);
+      updateUserInfo(request.userID);
+    } catch (err) {
+      console.log(err.toString());
+      // Do nothing
+    }
+  }
+
   useEffect(() => {
     if (loggedIn) {
-      const userID = auth0.user.sub;
-      // TODO actually call API
-      // MOCK API CALL for get RETURNS:
-      const saveData = { success: true }
-      const getData = { userID: 'test123', username: 'testuser123', email: 'testuser123@email.com', useAudio: true, useVideo: true, maps: [] }
-      setUserInfo({ userID: getData.userID, email: getData.email, username: getData.username, useAudio: getData.useAudio, useVideo: getData.useVideo, maps: getData.maps });
+      saveUserInfo({ userID: auth0.user.sub, email: auth0.user.email });
     }
     else {
-      // set to default value
       setUserInfo(loggedOutUser);
     }
   }, [loggedIn]);
@@ -47,13 +58,16 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
         to hang out in, or join an existing one.
       </Text>
       <DeviceSelectionScreen
-        useAudio={userInfo.useAudio}
-        useVideo={userInfo.useVideo}
+        savedAudioPreference={userInfo.useAudio}
+        savedVideoPreference={userInfo.useVideo}
         setMediaError={props.setMediaError}
+        setUserInfo={setUserInfo}
       />
       <TownSelection
         username={userInfo.username}
-        doLogin={props.doLogin} />
+        doLogin={props.doLogin} 
+        setUserInfo={setUserInfo}
+      />
     </IntroContainer>
   );
 }

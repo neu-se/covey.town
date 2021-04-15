@@ -14,13 +14,6 @@ import { getUserByID, upsertUser, SavedUserInfoRequest } from '../lib/UserPrefer
 }
 
 /**
- * Response from the server for a save user request
- */
-export interface SaveUserResponse {
-  userID: string;
-}
-
-/**
  * Payload sent by client to request information for a user's ID
  */
 export interface GetUserRequest {
@@ -57,29 +50,24 @@ export interface ResponseEnvelope<T> {
   response?: T;
 }
 
-export async function saveUserHandler(
-  requestData: SaveUserRequest,
-): Promise<ResponseEnvelope<Record<string, null>>> {
+export async function saveUserHandler(requestData: SaveUserRequest): Promise<ResponseEnvelope<Record<string, null>>> {
   if (requestData.userID.length === 0) {
     return {
       isOK: false,
       message: 'User ID must be specified when saving a user',
     };
   }
-  const response = await upsertUser(requestData as SavedUserInfoRequest);
+  const success = await upsertUser(requestData as SavedUserInfoRequest);
 
   return {
-    isOK: response,
-    message: !response
-      ? `Failed to save user preferences for user ID: ${requestData.userID}`
-      : undefined,
+    isOK: success,
+    response: {},
+    message: !success ? `Failed to save user preferences for user ID: ${requestData.userID}` : undefined,
   };
 }
 
-export async function getUserHandler(
-  requestData: GetUserRequest,
-): Promise<ResponseEnvelope<GetUserResponse>> {
-  if (requestData.userID.length == 0) {
+export async function getUserHandler(requestData: GetUserRequest): Promise<ResponseEnvelope<GetUserResponse>> {
+  if (requestData.userID.length === 0) {
     return {
       isOK: false,
       message: 'User id must be specified when retrieving user details',

@@ -31,17 +31,18 @@ export async function upsertUser(userInfo: SavedUserInfoRequest): Promise<boolea
     const userPreferencesQuery = {
       name: 'UpsertUserPreferences',
       text: `INSERT INTO user_preferences AS up (user_id, email, username, use_audio, use_video)
-            VALUES ($1, $2, COALESCE($3, ''), COALESCE($4, false), COALESCE($5, false))
+            VALUES ($1, COALESCE($2, ''), COALESCE($3, ''), COALESCE($4, false), COALESCE($5, false))
             ON CONFLICT ON CONSTRAINT user_preferences_pkey
             DO
               UPDATE SET
+                email = COALESCE($2, up.email),
                 username = COALESCE($3, up.username),
                 use_audio = COALESCE($4, up.use_audio),
                 use_video = COALESCE($5, up.use_video)
               WHERE up.user_id = $1;`,
       values: [userInfo.userID, userInfo.email, userInfo.username, userInfo.useAudio, userInfo.useVideo]
     };
-    
+
     await client.query(userPreferencesQuery);
 
     let townsQueries: any[] = [];
@@ -65,6 +66,7 @@ export async function upsertUser(userInfo: SavedUserInfoRequest): Promise<boolea
 
     return true;
   } catch (err) {
+    console.log(err);
     return false;
   }
 }

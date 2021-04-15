@@ -9,7 +9,7 @@ export default function addAccountRoutes(http: Server, app: Express): io.Server 
   /*
    * Create or update a user for Covey.Town
    */
-  app.post('/user', BodyParser.json(), async (req, res) => {
+  app.put('/user', BodyParser.json(), async (req, res) => {
     try {
       const result = await saveUserHandler(req.body as SaveUserRequest);
       res.status(StatusCodes.OK).json(result);

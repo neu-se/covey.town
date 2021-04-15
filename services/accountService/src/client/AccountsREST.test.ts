@@ -3,7 +3,7 @@ import Express from 'express';
 import http from 'http';
 import { AddressInfo } from 'net';
 import addAccountRoutes from '../router/accounts';
-import AccountsServiceClient, { SaveUserResponse } from './AccountsServiceClient';
+import AccountsServiceClient from './AccountsServiceClient';
 
 type TestGetUserData = {
   userID: string;
