@@ -9,7 +9,7 @@ import PlayerSession from '../types/PlayerSession';
 import PrivateChatMessage from '../types/PrivateChatMessage';
 import IVideoClient from './IVideoClient';
 import TwilioVideo from './TwilioVideo';
-// import { emojify } from 'node-emoji';
+import { emojify } from 'node-emoji';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -75,8 +75,6 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
-
-  private _censorer: Censorer = new Censorer();
 
   /** The list of AChatMessages that are sent between players in this town * */
   public messages: AChatMessage[] = [];
@@ -169,18 +167,16 @@ export default class CoveyTownController {
   }
 
   sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
-    const messageCensored = new PrivateChatMessage(message, userIDFrom, userIDTo);
-    messageCensored.message = this._censorer.censorMessage(messageCensored.message);
-    // messageCensored.message = emojify(messageCensored.message);
-    this.messages.push(messageCensored);
-    this._listeners.forEach(listener => listener.onPrivateMessage(messageCensored));
+    var messageAltered : PrivateChatMessage;
+    messageAltered = new PrivateChatMessage(emojify(Censorer.censorMessage(message)), userIDTo, userIDFrom);
+    this.messages.push(messageAltered);
+    this._listeners.forEach(listener => listener.onPrivateMessage(messageAltered));
   }
 
   sendGlobalPlayerMessage(userID: string, message: string): void {
-    const messageCensor = this._censorer.censorMessage(message);
-    const messageCensored = new GlobalChatMessage(messageCensor, userID);
-   // messageCensored.message = emojify(messageCensored.message);
-    this.messages.push(messageCensored);
-    this._listeners.forEach(listener => listener.onGlobalMessage(messageCensored));
+    var messageAltered : GlobalChatMessage;
+    messageAltered = new GlobalChatMessage(emojify(Censorer.censorMessage(message)), userID);
+    this.messages.push(messageAltered);
+    this._listeners.forEach(listener => listener.onGlobalMessage(messageAltered));
   }
 }
