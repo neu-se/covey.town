@@ -23,7 +23,7 @@ function mockCoveyListener(): CoveyTownListener {
     },
     onPlayerChatted(message: Message) {
       mockCoveyListenerOtherFns(message);
-    }
+    },
   };
 }
 

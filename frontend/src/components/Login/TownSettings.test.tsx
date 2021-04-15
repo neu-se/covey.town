@@ -53,6 +53,7 @@ function wrappedTownSettings() {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
+    messages: [],
   }}>
     <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
 }

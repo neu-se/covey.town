@@ -142,7 +142,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       }
       break;
     case 'playerChatted':
-      console.log(state.messages, state.messages.length);
       if(update.message.isBroadcast){
         if(update.message.senderId !== nextState.myPlayerID){
           update.message.ownedByCurrentUser = false; // eslint-disable-line no-param-reassign
@@ -156,7 +155,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
           update.message.ownedByCurrentUser = false; // eslint-disable-line no-param-reassign
           nextState.messages.push(update.message);
       }
-      console.log(nextState.messages, nextState.messages.length);
       break;
     case 'disconnect':
       state.socket?.disconnect();

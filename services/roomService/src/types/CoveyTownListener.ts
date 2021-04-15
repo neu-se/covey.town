@@ -21,7 +21,7 @@ export default interface CoveyTownListener {
    * Called when a player sends a message
    * @param message the message sent by the player
    */
-   onPlayerChatted(message: Message): void;
+  onPlayerChatted(message: Message): void;
 
   /**
    * Called when a player disconnects from the town

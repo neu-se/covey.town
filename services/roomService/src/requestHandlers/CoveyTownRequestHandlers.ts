@@ -1,5 +1,5 @@
 import assert from 'assert';
-import io, { Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import Player from '../types/Player';
 import { CoveyTownList, UserLocation, Message } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';

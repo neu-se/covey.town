@@ -4,7 +4,8 @@ import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
-  townCreateHandler, townDeleteHandler,
+  townCreateHandler, 
+  townDeleteHandler,
   townJoinHandler,
   townListHandler,
   townSubscriptionHandler,
@@ -110,7 +111,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
 
   const ioServer: io.Server = new io.Server(http, { cors: { origin: '*' } });
   ioServer.on('connection', (socket) => {
-    townSubscriptionHandler(socket)
+    townSubscriptionHandler(socket);
   });
   return ioServer;
 }

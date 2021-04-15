@@ -15,4 +15,4 @@ export type Message = {
   dateCreated: Date,
   receiverId: string, 
   isBroadcast: boolean, 
-}
+};
