@@ -55,17 +55,13 @@ const CreateAccountPopUp: React.FunctionComponent = () => {
         password: newUserPassword,
       };
 
-      const response = await addUser(newUser);
+      await addUser(newUser);
 
-      const { user } = response.data;
-
-      if(user){
-        toast({
-          title: 'User created',
-          description: 'You can log in now!',
-          status: 'success',
-        });
-      }
+      toast({
+        title: 'User created',
+        description: 'You can log in now!',
+        status: 'success',
+      });
     } catch (err) {
       toast({
         title: 'Unable to create account with entered info',
