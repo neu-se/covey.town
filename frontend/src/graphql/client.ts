@@ -6,7 +6,17 @@ import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost'
 /** Corresponds to http URL */
 const httpUrl = process.env.NODE_ENV === 'development'?'http://localhost:8081/graphql':`${process.env.REACT_APP_TOWNS_SERVICE_URL}/graphql`;
 
-const httpLink = ApolloLink.from([new HttpLink({ uri: httpUrl })]);
+const httpLink = ApolloLink.from(
+  [
+  new ApolloLink((operation, forward) => {
+    const token = window.sessionStorage.getItem("accessToken");
+    if (token) {
+      /** Passing the properties to be used in the request for authentication */
+      operation.setContext({ headers: { 'authorization': `${token}` } });
+    }
+    return forward(operation);
+  }),
+    new HttpLink({ uri: httpUrl })]);
 
 /** Creating instance for apollo client */
 const client = new ApolloClient({

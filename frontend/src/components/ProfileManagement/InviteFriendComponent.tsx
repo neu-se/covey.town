@@ -147,8 +147,6 @@ function InviteFriendComponent() : JSX.Element {
             </Box>
           </Flex>
         </Box>
-
-
       </Box>
     </Flex>
 
