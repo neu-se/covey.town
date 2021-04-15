@@ -13,6 +13,8 @@ import React, {
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import './App.css';
+import AChatMessage from './classes/AChatMessage';
+import GlobalChatMessage from './classes/GlobalChatMessage';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
@@ -44,6 +46,7 @@ type CoveyAppUpdate =
         myPlayerID: string;
         socket: Socket;
         players: Player[];
+        messages: AChatMessage[];
         emitMovement: (location: UserLocation) => void;
       };
     }
@@ -51,12 +54,14 @@ type CoveyAppUpdate =
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
-  | { action: 'disconnect' };
+  | { action: 'disconnect' }
+  | { action: 'globalMessage'; message: GlobalChatMessage };
 
 function defaultAppState(): CoveyAppState {
   return {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
+    messages: [],
     myPlayerID: '',
     currentTownFriendlyName: '',
     currentTownID: '',
@@ -82,6 +87,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     currentTownIsPubliclyListed: state.currentTownIsPubliclyListed,
     myPlayerID: state.myPlayerID,
     players: state.players,
+    messages: state.messages,
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
@@ -122,6 +128,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.emitMovement = update.data.emitMovement;
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
+      nextState.messages = update.data.messages;
       break;
     case 'addPlayer':
       nextState.players = nextState.players.concat([update.player]);
@@ -150,7 +157,10 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
-
+      break;
+    case 'globalMessage':
+      // console.log(update.message.message);
+      nextState.messages = nextState.messages.concat([update.message]);
       break;
     case 'playerDisconnect':
       nextState.players = nextState.players.filter(player => player.id !== update.player.id);
@@ -202,6 +212,16 @@ async function GameController(
   socket.on('playerDisconnect', (player: ServerPlayer) => {
     dispatchAppUpdate({ action: 'playerDisconnect', player: Player.fromServerPlayer(player) });
   });
+
+  socket.on('globalMessage', (msg: {_message: string, _senderID: string, _receiverID?: string}) => {
+    if (msg._senderID !== gamePlayerID) {
+      if(msg._receiverID){
+        // if its a private message
+      }
+      dispatchAppUpdate({action: 'globalMessage', message: new GlobalChatMessage(msg._message, msg._senderID)})
+    }
+  })
+
   socket.on('disconnect', () => {
     dispatchAppUpdate({ action: 'disconnect' });
   });
@@ -222,6 +242,7 @@ async function GameController(
       emitMovement,
       socket,
       players: initData.currentPlayers.map(sp => Player.fromServerPlayer(sp)),
+      messages: [],
     },
   });
   return true;

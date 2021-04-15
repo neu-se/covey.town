@@ -1,17 +1,16 @@
 import { Box, Button, Flex, Input, useToast } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
-import React, { useCallback, useEffect, useState } from 'react';
-import AChatMessage from '../../classes/AChatMessage';
+import React, { useEffect, useState } from 'react';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import ChatMessage, { MessageProps } from './ChatMessage';
 
 function Chat(): JSX.Element {
-  const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [messagesState, setMessagesState] = useState<MessageProps[]>([]);
   const [input, setInput] = useState<string>('');
   const [privateUsername, setPrivateUsername] = useState<string>('');
-  const { connect } = useVideoContext();
-  const { userName, currentTownID, myPlayerID, players, apiClient } = useCoveyAppState();
+  useVideoContext();
+  const { userName, currentTownID, myPlayerID, players, apiClient, messages } = useCoveyAppState();
   const toast = useToast();
 
   const setButtonColor = (messageType: string) => {
@@ -24,15 +23,51 @@ function Chat(): JSX.Element {
     return 'black';
   };
 
-  // const messageToProps = useCallback(
-  //   (msg: AChatMessage, type: string): MessageProps => ({
-  //     key: nanoid(),
-  //     userName: msg.sender.userName,
-  //     color: setButtonColor(type),
-  //     message: msg.message,
-  //   }),
-  //   [],
-  // );
+  // const messageToProps = (message: AChatMessage): MessageProps => {
+  //   if(message) {
+  //     const sender = players.find(p => p.id === message.senderID)
+  //     console.log(sender?.userName)
+  //     console.log(messages[messages.length-1].message)
+  //     return {
+  //       key: nanoid(),
+  //       userName: `${sender?.userName}: `,
+  //       color: setButtonColor('global'),
+  //       message: messages[messages.length-1].message,
+  //     }
+  //   }
+  //   throw new Error();
+  // }
+
+  // const getMessages = useCallback((async ()=> {
+  //   const messagesCurrent = (await apiClient.getMessages({coveyTownID: currentTownID})).messages;
+  //   setMessagesState(messagesCurrent.map(msg => messageToProps(msg)))
+  // }), [apiClient, currentTownID, messageToProps])
+
+  useEffect((()=> {
+    if(!messages) {
+      toast({
+        title: 'Messages is undefined',
+        status: 'error',
+      });
+      return;
+    }
+
+    if(messages.length !== 0) {
+      const sender = players.find(p => p.id === messages[messages.length-1].senderID)
+      // console.log(sender?.userName)
+      // console.log(messages[messages.length-1].message)
+      setMessagesState([
+        ...messagesState,
+        {
+          key: nanoid(),
+          userName: `${sender?.userName}: `,
+          color: setButtonColor('global'),
+          message: messages[messages.length-1].message,
+        },
+      ])
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [players, userName, messages, toast])
 
   const handlePrivateMessage = async () => {
     if (input !== '') {
@@ -46,8 +81,8 @@ function Chat(): JSX.Element {
             message: input,
           });
 
-          setMessages([
-            ...messages,
+          setMessagesState([
+            ...messagesState,
             {
               key: nanoid(),
               userName: `${userName} to ${privateUsername}`,
@@ -84,8 +119,8 @@ function Chat(): JSX.Element {
               coveyUserID: myPlayerID,
               message: input,
             });
-            setMessages([
-              ...messages,
+            setMessagesState([
+              ...messagesState,
               { key: nanoid(), userName, color: setButtonColor('global'), message: input },
             ]);
           // do toasts if message is not sent
@@ -132,7 +167,7 @@ function Chat(): JSX.Element {
           p='4'
           align='left'
           overflow='auto'>
-          {messages.map(msg => (
+          {messagesState.map(msg => (
             <ChatMessage
               key={msg.key}
               userName={msg.userName}

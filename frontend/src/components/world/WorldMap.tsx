@@ -129,6 +129,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
+  // TODO
   updateMessages(players: Player[], msg: string) {
     if (!this.ready) {
       this.players = players;
@@ -546,5 +547,6 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
+  // TODO new useEffect for messages
   return <div id="map-container"/>;
 }
