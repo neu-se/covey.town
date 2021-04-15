@@ -1,9 +1,7 @@
 import assert from 'assert';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import AChatMessage from './AChatMessage';
-import GlobalChatMessage from './GlobalChatMessage';
 import { UserLocation } from './Player';
-import PrivateChatMessage from './PrivateChatMessage';
 
 export type ServerPlayer = { _id: string; _userName: string; location: UserLocation };
 
@@ -100,17 +98,19 @@ export type CoveyTownInfo = {
 /**
  * Payload sent by the client to send a private message between users.
  */
-export interface PrivateMessageRequest {
+ export interface PrivateMessageRequest {
   coveyTownID: string;
-  message: PrivateChatMessage;
+  userIDFrom: string;
+  userIDTo: string;
+  message: string;
 }
-
 /**
  * Payload sent by the client to send a global message between users.
  */
-export interface GlobalMessageRequest {
+ export interface GlobalMessageRequest {
   coveyTownID: string;
-  message: GlobalChatMessage;
+  coveyUserID: string;
+  message: string;
 }
 
 
@@ -185,12 +185,12 @@ export default class TownsServiceClient {
   }
 
   async sendPrivatePlayerMessage(requestData: PrivateMessageRequest): Promise<void> {
-    const responseWrapper = await this._axios.post('/messages', requestData);
+    const responseWrapper = await this._axios.post('/privatemessages', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async sendGlobalPlayerMessage(requestData: GlobalMessageRequest): Promise<void> {
-    const responseWrapper = await this._axios.post('/messages', requestData);
+    const responseWrapper = await this._axios.post('/globalmessages', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

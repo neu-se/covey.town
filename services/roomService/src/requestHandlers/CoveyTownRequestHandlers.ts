@@ -95,7 +95,9 @@ export interface TownUpdateRequest {
  */
 export interface PrivateMessageRequest {
   coveyTownID: string;
-  message: PrivateChatMessage;
+  userIDFrom: string;
+  userIDTo: string;
+  message: string;
 }
 
 /**
@@ -103,7 +105,8 @@ export interface PrivateMessageRequest {
  */
 export interface GlobalMessageRequest {
   coveyTownID: string;
-  message: GlobalChatMessage;
+  coveyUserID: string;
+  message: string;
 }
 /**
  * Envelope that wraps any response from the server
@@ -215,7 +218,12 @@ export async function privateMessageHandler(
   requestData: PrivateMessageRequest,
 ): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.sendPrivateMessage(requestData.coveyTownID, requestData.message);
+  const success = townsStore.sendPrivateMessage(
+    requestData.coveyTownID,
+    requestData.userIDFrom,
+    requestData.userIDTo,
+    requestData.message,
+  );
   return {
     isOK: success,
     response: {},
@@ -227,11 +235,17 @@ export async function globalMessageHandler(
   requestData: GlobalMessageRequest,
 ): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
-  const success = townsStore.sendGlobalMessage(requestData.coveyTownID, requestData.message);
+  const success = townsStore.sendGlobalMessage(
+    requestData.coveyTownID,
+    requestData.coveyUserID,
+    requestData.message,
+  );
   return {
     isOK: success,
     response: {},
-    message: !success ? 'Error: could not send global message.' : undefined,
+    message: !success
+      ? `Error: could not send global message with id: ${requestData.coveyTownID} and message: ${requestData.message}`
+      : undefined,
   };
 }
 
@@ -320,10 +334,10 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(s.player, movementData);
   });
 
-  socket.on('onGlobalMessage', (message: GlobalChatMessage) => {
-    townController.sendGlobalPlayerMessage(message);
+  socket.on('onGlobalMessage', (userID: string, message: string) => {
+    townController.sendGlobalPlayerMessage(userID, message);
   });
-  socket.on('onPrivateMessage', (message: PrivateChatMessage) => {
-    townController.sendPrivatePlayerMessage(message);
+  socket.on('onPrivateMessage', (userIDFrom: string, userIDTo: string, message: string) => {
+    townController.sendPrivatePlayerMessage(userIDFrom, userIDTo, message);
   });
 }

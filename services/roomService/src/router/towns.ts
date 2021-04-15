@@ -105,10 +105,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Send public message
    */
-  app.post('/messages', BodyParser.json(), async (req, res) => {
+  app.post('/globalmessages', BodyParser.json(), async (req, res) => {
     try {
       const result = await globalMessageHandler({
         coveyTownID: req.body.townID,
+        coveyUserID: req.body.coveyUserID,
         message: req.body.message,
       });
       res.status(StatusCodes.OK).json(result);
@@ -123,10 +124,12 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Send private message
    */
-  app.post('/messages', BodyParser.json(), async (req, res) => {
+  app.post('/privatemessages', BodyParser.json(), async (req, res) => {
     try {
       const result = await privateMessageHandler({
         coveyTownID: req.body.townID,
+        userIDFrom: req.body.userIDFrom,
+        userIDTo: req.body.userIDTo,
         message: req.body.message,
       });
       res.status(StatusCodes.OK).json(result);

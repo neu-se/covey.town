@@ -37,20 +37,19 @@ function Chat(): JSX.Element {
       try {
         const currPlayer = players.find(p => p.id === myPlayerID);
         const toPlayer = players.find(p => p.userName === privateUsername);
-        let privateMessage;
         if (currPlayer) {
           if (toPlayer) {
-            privateMessage = new PrivateChatMessage(input, currPlayer, toPlayer);
-          }
+          
           toast({
             title: 'Player does not exist',
             status: 'error',
           });
         }
-        if (privateMessage) {
           await apiClient.sendPrivatePlayerMessage({
             coveyTownID: currentTownID,
-            message: privateMessage,
+            userIDFrom: userName,
+            userIDTo: privateUsername,
+            message: input,
           });
           setMessages([
             ...messages,
@@ -62,7 +61,8 @@ function Chat(): JSX.Element {
             },
           ]);
           setInput('');
-        }
+  
+      }
       } catch (err) {
         toast({
           title: 'Message unable to send',
@@ -82,14 +82,14 @@ function Chat(): JSX.Element {
       try {
         const currPlayer = players.find(p => p.id === myPlayerID);
         let globalMessage;
-        if (currPlayer) {
-          globalMessage = new GlobalChatMessage(input, currPlayer);
-        }
 
+        if (currPlayer) {
+        
         if (globalMessage) {
           await apiClient.sendGlobalPlayerMessage({
             coveyTownID: currentTownID,
-            message: globalMessage,
+            coveyUserID: currPlayer?.id,
+            message: input,
           });
           setMessages([
             ...messages,
@@ -98,9 +98,11 @@ function Chat(): JSX.Element {
         }
         // do toasts if message is not sent
         setInput('');
+      }
       } catch (err) {
         toast({
           title: 'Message unable to send',
+          description: err.toString(),
           status: 'error',
         });
       }
