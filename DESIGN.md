@@ -5,6 +5,12 @@
 ## User Story 2:
 
 ## User Story 3:
+### Friend List
+- Upon sign in, user's friend list is fetched from the database and populated in the UI.
+- Friend list is filtered into an online and an offline list. 
+- User can join a friend's room if he/she is currently online and in a room.
+  - Joining a friend's room calls the same handler as joining a room.
+
 ### Add Friend:
 - Upon sign in, user’s friendRequestSocket is connected and ready to listen to incoming friend requests. 
 - When user A sends a friend request to user B,
