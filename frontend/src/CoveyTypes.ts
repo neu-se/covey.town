@@ -9,8 +9,8 @@ export type VideoRoom = {
   id: string
 };
 export type UserProfile = {
-  displayName: string,
-  id: string
+  id: string,
+  displayName: string
 };
 export type NearbyPlayers = {
   nearbyPlayers: Player[]
@@ -29,3 +29,74 @@ export type CoveyAppState = {
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };
+export type EmailPasswordCredential = {
+  email: string,
+  password: string
+}
+
+export type AuthState = {
+  currentUser: CoveyUser | null,
+}
+
+export type AuthInfo = {
+  currentUser: CoveyUser | null,
+  actions: AuthActions
+}
+
+export type AuthActions = {
+  handleLogout: () => Promise<void>,
+  setAuthState: React.Dispatch<React.SetStateAction<AuthState>>
+}
+
+export type CoveyUserProfile = {
+  username: string,
+  email:string,
+  pfpURL?: string,
+  bio?: string,
+}
+
+
+export type CoveyUser = {
+  userID: string,
+  isLoggedIn: boolean
+  profile: CoveyUserProfile,
+  currentTown?: CoveyTownInfo | null,
+  friendIDs: string[],
+  actions: CoveyUserActions,
+}
+
+export type CoveyTownInfo = {
+  coveyTownID: string,
+  friendlyName: string
+}
+
+export type CoveyUserActions = {
+  logout: () => Promise<void>
+}
+
+export type SocketState = {
+  friendRequestSocket: Socket | undefined | null,
+  setFriendRequestSocket: React.Dispatch<React.SetStateAction<Socket | undefined>>
+}
+
+export type FriendRequest = {
+  userID: string,
+  // requesters' userID
+  requests: string[]
+}
+
+export type GoogleAuthInfo = {
+  idToken: string,
+  token: string
+}
+
+export type GoogleUserInfo = {
+  sub: string,
+  name:string,
+  given_name:string,
+  family_name:string,
+  picture: string,
+  email:string,
+  email_verified: boolean,
+  locale: string
+}

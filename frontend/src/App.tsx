@@ -2,14 +2,14 @@ import React, {
   Dispatch, SetStateAction, useCallback, useEffect, useMemo, useReducer, useState,
 } from 'react';
 import './App.css';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
+import { CoveyAppState, NearbyPlayers, SocketState } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
@@ -25,9 +25,16 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import SignUp from "./components/SignUp/SignUp";
+import LoginPage from "./components/LoginPage/LoginPage";
+import AuthGuard from './components/Authentication/AuthGuard';
+import useAuthInfo from './hooks/useAuthInfo';
+import UserProfile from './components/Profile/UserProfile';
+import FriendRequestSocketContext from './contexts/FriendRequestSocketContext';
+import RedirectPage from './components/LoginPage/RedirectPage';
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
   | { action: 'addPlayer'; player: Player }
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
@@ -199,15 +206,52 @@ async function GameController(initData: TownJoinResponse,
   return true;
 }
 
+type RoutesProps = {
+  appState: CoveyAppState,
+  page: JSX.Element
+}
+function Routes(props: RoutesProps) {
+  const { appState, page } = props;
+  // need to define user after AuthGuard
+  const user = useAuthInfo();
+  return (
+    <Switch>
+      <Route path="/login">
+        <LoginPage />
+      </Route>
+      <Route path='/signup'>
+        <SignUp />
+      </Route>
+      <Route path='/redirect'>
+        <RedirectPage />
+      </Route>
+      {!user.currentUser && <Redirect push to="/login" />}
+      <Route path='/profile'>
+        <UserProfile/>
+      </Route>
+      <Route exact path="/">
+        <CoveyAppContext.Provider value={appState}>
+          <VideoContext.Provider value={Video.instance()}>
+            <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
+              {page}
+            </NearbyPlayersContext.Provider>
+          </VideoContext.Provider>
+        </CoveyAppContext.Provider>
+      </Route>
+
+    </Switch>
+  );
+};
+
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
-
+  const [friendRequestSocket, setFriendRequestSocket] = useState<Socket>();
+  const friendRequestSocketState: SocketState = { friendRequestSocket, setFriendRequestSocket};
   const setupGameController = useCallback(async (initData: TownJoinResponse) => {
     await GameController(initData, dispatchAppUpdate);
     return true;
   }, [dispatchAppUpdate]);
   const videoInstance = Video.instance();
-
   const { setOnDisconnect } = props;
   useEffect(() => {
     setOnDisconnect(() => async () => { // Here's a great gotcha: https://medium.com/swlh/how-to-store-a-function-with-the-usestate-hook-in-react-8a88dd4eede1
@@ -230,17 +274,18 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     );
   }, [setupGameController, appState.sessionToken, videoInstance]);
   return (
+    <BrowserRouter>
+        <AuthGuard>
+          <FriendRequestSocketContext.Provider value={ friendRequestSocketState }>
+            <Routes appState={appState} page={page} />
+          </FriendRequestSocketContext.Provider>
+        </AuthGuard>
+    </BrowserRouter>
 
-    <CoveyAppContext.Provider value={appState}>
-      <VideoContext.Provider value={Video.instance()}>
-        <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
-          {page}
-        </NearbyPlayersContext.Provider>
-      </VideoContext.Provider>
-    </CoveyAppContext.Provider>
 
   );
 }
+
 
 function EmbeddedTwilioAppWrapper() {
   const { error, setError } = useAppState();

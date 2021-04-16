@@ -1,3 +1,4 @@
+
 export type Direction = 'front' | 'back' | 'left' | 'right';
 export type UserLocation = {
   x: number;
@@ -7,3 +8,12 @@ export type UserLocation = {
 };
 export type CoveyTownList = { friendlyName: string; coveyTownID: string; currentOccupancy: number; maximumOccupancy: number }[];
 
+export type CoveyTown = {
+  coveyTownID: string,
+  friendlyName: string,
+  townUpdatePassword: string,
+  isPubliclyListed: boolean,
+  occupancy: number,
+  capacity: number,
+  players: string[]
+};
