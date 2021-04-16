@@ -47,7 +47,7 @@ function ProfileComponent(): JSX.Element {
   }
 
   const history = useHistory();
-  const { user, isLoading, logout } = useAuth0();
+  const { user, isLoading, logout, getAccessTokenSilently } = useAuth0();
   const [userName, setUserName] = useState<string>("");
   const [id, setId] = useState<string>("");
   const [bio, setBio] = useState<string>("");
@@ -70,6 +70,8 @@ function ProfileComponent(): JSX.Element {
 
   useEffect(() => {
     const findUser = async () => {
+      const accessToken = await getAccessTokenSilently();
+      window.sessionStorage.setItem("accessToken", accessToken);
       const userInfo = await searchUserByEmail(user.email);
       setUserName(userInfo.username);
       setBio(userInfo.bio);
@@ -94,7 +96,7 @@ function ProfileComponent(): JSX.Element {
     }
     findUser();
     findAllUsers();
-  },[]);
+  },[getAccessTokenSilently,user.email]);
 
   const updateUserCall = async () => {
 
@@ -122,7 +124,7 @@ function ProfileComponent(): JSX.Element {
 
   }
   const handleDelete = async (email: string) => {
-    
+
     setIsAlertOpen(false);
     const payload: DeleteUserRequest = { email };
     const success = await deleteUser(payload);
@@ -131,7 +133,7 @@ function ProfileComponent(): JSX.Element {
 
   const handleAlertDialog = () => {
     setIsAlertOpen(true);
-    
+
   }
 
 
