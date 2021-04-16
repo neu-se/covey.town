@@ -36,7 +36,7 @@ export type Message = {
   senderId: string,
   ownedByCurrentUser: boolean,
   userName: string,
-  dateCreated: Date,
+  dateCreated: string,
   receiverId: string, 
   isBroadcast: boolean, 
 }

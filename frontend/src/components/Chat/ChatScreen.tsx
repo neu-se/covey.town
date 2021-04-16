@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Socket } from 'socket.io-client';
+import Moment from 'moment';
 import { IconButton, ListItem } from "@material-ui/core";
 import { Send } from "@material-ui/icons";
 import { Select, Button, Stack } from '@chakra-ui/react';
@@ -22,7 +23,7 @@ const useChat = (coveyTownID: string, socket: Socket) => {
       senderId: myPlayerID,
       ownedByCurrentUser: true,
       userName,
-      dateCreated: new Date(),
+      dateCreated: new Date().toISOString(),
       isBroadcast,
       receiverId: receiver,
     }); 
@@ -73,6 +74,7 @@ const ChatScreen: any = () => {
       backgroundColor: isOwnMessage ? "teal" : "black",
     }),
     author: { fontSize: 10, color: "gray" },
+    private: { fontSize: 10, color: "red" },
     timestamp: { fontSize: 8, color: "white", textAlign: "right", paddingTop: 4 } as const,
   };
 
@@ -123,11 +125,11 @@ const ChatScreen: any = () => {
               <ListItem
                 key={JSON.stringify(message)}
                 style={estyles.listItem(message.ownedByCurrentUser)}>
-                <div style={estyles.author}>{message.userName}</div>
+                <div style={message.isBroadcast ? estyles.author : estyles.private}>{message.userName}{message.isBroadcast ? '' : '(Private)'}</div>
                 <div style={estyles.container(message.ownedByCurrentUser)}>
                   {message.body}
                 </div>
-                <div style={estyles.author}>{message.dateCreated}</div>
+                <div style={estyles.author}>{Moment(message.dateCreated).format('DD MMM hh:mm')}</div>
               </ListItem>
             ))}
           </ol>

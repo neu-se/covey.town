@@ -5,7 +5,7 @@ import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
-import {UserLocation} from '../CoveyTypes';
+import { UserLocation, Message } from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
 import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
@@ -67,6 +67,20 @@ describe('CoveyTownController', () => {
       testingTown.updatePlayerLocation(player, newLocation);
       mockListeners.forEach(listener => expect(listener.onPlayerMoved).toBeCalledWith(player));
     });
+    it('should notify added listeners of player chats when updatePlayerChats is called', async () => {
+      const message: Message = {
+        body: 'test message', 
+        senderId: nanoid(), 
+        ownedByCurrentUser: true,
+        userName: nanoid(),
+        dateCreated: new Date(),
+        isBroadcast: true,
+        receiverId: '',
+      };
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
+      testingTown.updatePlayerChats(message);
+      mockListeners.forEach(listener => expect(listener.onPlayerChatted).toBeCalledWith(message));
+    });
     it('should notify added listeners of player disconnections when destroySession is called', async () => {
       const player = new Player('test player');
       const session = await testingTown.addPlayer(player);
@@ -102,6 +116,22 @@ describe('CoveyTownController', () => {
       testingTown.removeTownListener(listenerRemoved);
       testingTown.updatePlayerLocation(player, newLocation);
       expect(listenerRemoved.onPlayerMoved).not.toBeCalled();
+    });
+    it('should not notify removed listeners of player chats when updatePlayerChats is called', async () => {
+      const message: Message = {
+        body: 'test message', 
+        senderId: nanoid(), 
+        ownedByCurrentUser: true,
+        userName: nanoid(),
+        dateCreated: new Date(),
+        isBroadcast: true,
+        receiverId: '',
+      };
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
+      const listenerRemoved = mockListeners[1];
+      testingTown.removeTownListener(listenerRemoved);
+      testingTown.updatePlayerChats(message);
+      expect(listenerRemoved.onPlayerChatted).not.toBeCalled();
     });
     it('should not notify removed listeners of player disconnections when destroySession is called', async () => {
       const player = new Player('test player');
@@ -171,7 +201,21 @@ describe('CoveyTownController', () => {
         townSubscriptionHandler(mockSocket);
         testingTown.updatePlayerLocation(player, generateTestLocation());
         expect(mockSocket.emit).toBeCalledWith('playerMoved', player);
-
+      });
+      it('should add a town listener, which should emit "playerChatted" to the socket when a player chats', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+        const message: Message = {
+          body: 'test message', 
+          senderId: nanoid(), 
+          ownedByCurrentUser: true,
+          userName: nanoid(),
+          dateCreated: new Date(),
+          isBroadcast: true,
+          receiverId: '',
+        };
+        testingTown.updatePlayerChats(message);
+        expect(mockSocket.emit).toBeCalledWith('playerChatted', message);
       });
       it('should add a town listener, which should emit "playerDisconnect" to the socket when a player disconnects', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
@@ -234,6 +278,29 @@ describe('CoveyTownController', () => {
           expect(mockListener.onPlayerMoved).toHaveBeenCalledWith(player);
         } else {
           fail('No playerMovement handler registered');
+        }
+      });
+      it('should forward playerChatted events from the socket to subscribed listeners', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+        const mockListener = mock<CoveyTownListener>();
+        testingTown.addTownListener(mockListener);
+        // find the 'playerChatted' event handler for the socket, which should have been registered after the socket was connected
+        const playerChatHandler = mockSocket.on.mock.calls.find(call => call[0] === 'playerChatted');
+        if (playerChatHandler && playerChatHandler[1]) {
+          const message: Message = {
+            body: 'test message', 
+            senderId: nanoid(), 
+            ownedByCurrentUser: true,
+            userName: nanoid(),
+            dateCreated: new Date(),
+            isBroadcast: true,
+            receiverId: '',
+          };
+          playerChatHandler[1](message);
+          expect(mockListener.onPlayerChatted).toHaveBeenCalledWith(message);
+        } else {
+          fail('No playerChatted handler registered');
         }
       });
     });
