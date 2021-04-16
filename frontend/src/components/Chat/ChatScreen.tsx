@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import { Socket } from 'socket.io-client';
 import { IconButton, ListItem } from "@material-ui/core";
 import { Send } from "@material-ui/icons";
-import { Select } from '@chakra-ui/react';
+import { ChatIcon } from '@chakra-ui/icons'
+import { Select, Button, Stack } from '@chakra-ui/react';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import './ChatScreen.css';
 import useMaybeVideo from "../../hooks/useMaybeVideo";
@@ -34,7 +35,7 @@ const useChat = (coveyTownID: string, socket: Socket) => {
 const ChatScreen: any = () => {
 
   const {
-    players, myPlayerID, currentTownID, socket,
+    players, myPlayerID, currentTownID, socket, nearbyPlayers
   } = useCoveyAppState();
 
   const [newMessage, setNewMessage] = useState('');
@@ -53,7 +54,8 @@ const ChatScreen: any = () => {
       sendMessage(newMessage, true, "");
     }
     else{
-      sendMessage(newMessage, false, receiver);
+      const currReceiver = players.find(player => player.userName === receiver);
+      sendMessage(newMessage, false, currReceiver?.id as string);
     }
     setNewMessage('');
   }
@@ -79,10 +81,18 @@ const ChatScreen: any = () => {
     <div>
       <body>
         <div className='heading'>Chat Box</div>
+        {nearbyPlayers?.nearbyPlayers.length !== 0 &&
+          <>
+            <h1 style={{paddingTop: 5, paddingBottom: 5, textAlign: "center", fontWeight: "bold"}}>Chat with nearby players: </h1>
+            <Stack style={{paddingBottom: 5, paddingLeft: 5}} direction="row" spacing={3} align="center">
+              {nearbyPlayers.nearbyPlayers.map(player => <Button rightIcon={<ChatIcon/>} colorScheme="teal" size="sm" key={player.userName} onClick={() => setReceiver(player.userName)}> {player.userName} </Button>)}
+            </Stack>
+          </>
+        }
         <div className='selectPlayer'>
-          <Select onChange={(e) => setReceiver(e.target.value)}>
+          <Select onChange={(e) => setReceiver(e.target.value)} value={receiver}>
             <option value="everyone">Everyone</option>
-            {players.filter(player => player.id !== myPlayerID).map(player => <option key={player.userName} value={player.id}> {player.userName} </option>)}
+            {players.filter(player => player.id !== myPlayerID).map(player => <option key={player.userName} value={player.userName}> {player.userName} </option>)}
           </Select>
         </div>
         <div className='mbox'>
