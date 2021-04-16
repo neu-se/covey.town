@@ -371,7 +371,7 @@ export default class GraphqlServiceClient {
     throw new Error(`Error processing request: ${data.townJoinRequest.message}`);
   };
 
-  deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
+  deleteTown = async (payload: TownDeleteRequest): Promise<any> => {
     const { data } = await this.graphqlClient.mutate({
       mutation: deleteTownMutation,
       variables: { input: payload },
@@ -379,15 +379,17 @@ export default class GraphqlServiceClient {
     if (!data.townDeleteRequest.isOK) {
       throw new Error(`Error processing request: ${data.townDeleteRequest.message}`);
     }
+    return data.townDeleteRequest;
   }
 
-  updateTown = async (payload: TownUpdateRequest): Promise<void> => {
+  updateTown = async (payload: TownUpdateRequest): Promise<any> => {
   const { data } = await client.mutate({
     mutation: updateTownMutation,
     variables: { input: payload },
   });
   if (!data.townUpdateRequest.isOK) {
     throw new Error(`Error processing request: ${ data.townUpdateRequest.message}`);
-  }
+    }
+  return data.townUpdateRequest;
 };
 }

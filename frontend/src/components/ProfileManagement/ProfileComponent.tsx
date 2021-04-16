@@ -87,8 +87,6 @@ function ProfileComponent(): JSX.Element {
       setLocation1(userInfo.location);
       setOccupation1(userInfo.occupation);
       setBio1(userInfo.bio);
-
-
     }
     const findAllUsers = async () => {
       const userProfiles = await findAllUserProfiles();
