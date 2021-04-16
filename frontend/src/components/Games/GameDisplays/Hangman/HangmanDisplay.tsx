@@ -32,14 +32,6 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
       const {games} = await gamesClient.listGames({townID: currentTownID})
       const game = games.find(g => g.id === gameId)
       setCurrentGame(game as HangmanGame)
-      if(currentGame.splitWord.length === 0) {
-        setWinner(2);
-        setPlaying(false);
-      }
-      if(currentGame.limbList.length === 0) {
-        setWinner(1);
-        setPlaying(false);
-      }
     }
     fetchGame();
     const timer = setInterval(async () => {
@@ -61,6 +53,22 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
             Oh no! Looks like the other player ended the game.
             <br/>
           </div>
+      }
+      {
+        currentGame.limbList.length === 0 &&
+        <>
+          <div>
+            <h1>Game is over! {currentGame.player1Username} won!</h1>
+          </div>
+        </>
+      }
+      {
+        currentGame.splitWord.length === 0 &&
+        <>
+          <div>
+            <h1>Game is over! {currentGame.player2Username} won!</h1>
+          </div>
+        </>
       }
       {
         currentGame !== undefined &&
@@ -127,12 +135,6 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
                     </div>
                   </div>
                 </>
-            }
-            {
-              !playing &&
-              <div>
-                <h5>Game is over! Player {winner} won!</h5>
-              </div>
             }
           </>
       }
