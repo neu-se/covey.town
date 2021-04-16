@@ -18,14 +18,13 @@ import {
 } from '@chakra-ui/react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
-import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
-import { deleteTown, updateTown } from '../../graphql/queries';
+import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 const TownSettings: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
-  const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed} = useCoveyAppState();
+  const {currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed,graphqlClient} = useCoveyAppState();
   const [friendlyName, setFriendlyName] = useState<string>(currentTownFriendlyName);
   const [isPubliclyListed, setIsPubliclyListed] = useState<boolean>(currentTownIsPubliclyListed);
   const [roomUpdatePassword, setRoomUpdatePassword] = useState<string>('');
@@ -44,7 +43,7 @@ const TownSettings: React.FunctionComponent = () => {
   const processUpdates = async (action: string) =>{
     if(action === 'delete'){
       try{
-        await deleteTown({coveyTownID: currentTownID,
+        await graphqlClient.deleteTown({coveyTownID: currentTownID,
           coveyTownPassword: roomUpdatePassword});
         toast({
           title: 'Town deleted',
@@ -60,8 +59,12 @@ const TownSettings: React.FunctionComponent = () => {
       }
     }else {
       try {
-        await updateTown({coveyTownID: currentTownID,
-          coveyTownPassword: roomUpdatePassword, friendlyName, isPubliclyListed});
+        await graphqlClient.updateTown({
+          coveyTownID: currentTownID,
+          coveyTownPassword: roomUpdatePassword,
+          friendlyName,
+          isPubliclyListed
+        });
         toast({
           title: 'Town updated',
           description: 'To see the updated town, please exit and re-join this town',

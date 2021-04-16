@@ -127,8 +127,9 @@ const resolvers = {
               linkedInLink: args.input.linkedInLink,
             }, {new: true});
           }
+          return user;
         }
-        return user;
+        throw new Error('User does not exist');
       } catch (error) {
         throw new AuthenticationError('You must be logged in to do this');
       }

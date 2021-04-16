@@ -87,8 +87,6 @@ function ProfileComponent(): JSX.Element {
       setLocation1(userInfo.location);
       setOccupation1(userInfo.occupation);
       setBio1(userInfo.bio);
-
-
     }
     const findAllUsers = async () => {
       const userProfiles = await findAllUserProfiles();
@@ -100,8 +98,7 @@ function ProfileComponent(): JSX.Element {
 
   const updateUserCall = async () => {
 
-      const ids = id;
-      console.log(occupation1)
+    const ids = id;
     const findUser = async () => {
       const userInfo = await searchUserByEmail(user.email);
       setUserName(userInfo.username);
@@ -113,21 +110,21 @@ function ProfileComponent(): JSX.Element {
       setLocation(userInfo.location);
       setOccupation(userInfo.occupation);
     }
-      const payload : UpdateUserRequest =
-          { id: ids, userName: user.name, bio : bio1,
-          email: user.email, facebookLink: facebookLink1,
-          linkedInLink: linkedInLink1, instagramLink: instagramLink1,
-          location: location1, occupation: occupation1, password: user.password}
+    const payload : UpdateUserRequest =
+      { id: ids, userName: user.name, bio : bio1,
+        email: user.email, facebookLink: facebookLink1,
+        linkedInLink: linkedInLink1, instagramLink: instagramLink1,
+      location: location1, occupation: occupation1, password: user.password
+      }
 
-          const userInfo =  await updateUser(payload);
-      findUser();
-
+    await updateUser(payload);
+    findUser();
   }
   const handleDelete = async (email: string) => {
 
     setIsAlertOpen(false);
     const payload: DeleteUserRequest = { email };
-    const success = await deleteUser(payload);
+    await deleteUser(payload);
     logout({ returnTo: window.location.origin });
   }
 

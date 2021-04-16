@@ -24,7 +24,8 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import { createTown, searchUserByEmail, listTown} from '../../graphql/queries';
+
+/*  import { searchUserByEmail} from '../../graphql/queries';  */
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -38,38 +39,32 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
   const toast = useToast();
+  const { graphqlClient } = useCoveyAppState();
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
-    listTown()
+    graphqlClient.listTown()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
           .sort((a: { currentOccupancy: number; }, b: { currentOccupancy: number; }) => b.currentOccupancy - a.currentOccupancy)
         );
       })
-  }, [setCurrentPublicTowns, apiClient]);
+  }, [setCurrentPublicTowns,graphqlClient]);
 
   useEffect(() => {
-    const findUser = async () => {
-      const userInfo = await searchUserByEmail(user.email);
-      setUserName(userInfo.username);
-    }
     updateTownListings();
-    findUser();
     const timer = setInterval(updateTownListings, 2000);
     return () => {
       clearInterval(timer)
     };
-  }, [updateTownListings,user.email]);
+  }, [updateTownListings, graphqlClient]);
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
       if (!userName || userName.length === 0) {
         toast({
           title: 'Unable to join town',
-          description: 'Please update your username in user profile',
+          description: 'Please select a username',
           status: 'error',
         });
         return;
@@ -102,7 +97,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     if (!userName || userName.length === 0) {
       toast({
         title: 'Unable to create town',
-        description: 'Please update your username before creating a town',
+        description: 'Please select a username before creating a town',
         status: 'error',
       });
       return;
@@ -116,7 +111,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       return;
     }
     try {
-      const newTownInfo = await createTown({
+      const newTownInfo = await graphqlClient.createTown({
         friendlyName: newTownName,
         isPubliclyListed: newTownIsPublic
       });
@@ -156,7 +151,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
                 value={userName}
-                disabled
+                onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
           </Box>

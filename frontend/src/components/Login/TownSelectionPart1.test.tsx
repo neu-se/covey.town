@@ -4,20 +4,21 @@ import '@testing-library/jest-dom'
 import { ChakraProvider } from '@chakra-ui/react'
 import { render, waitFor, within } from '@testing-library/react'
 import { nanoid } from 'nanoid';
-import TownsServiceClient from '../../classes/TownsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import GraphqlServiceClient from '../../graphql/queries';
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
 const mockToast = jest.fn();
-jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../graphql/queries');
 jest.mock('../../classes/Video/Video');
 jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts', () => ({
   __esModule: true, // this property makes it work
   default: () => ({ connect: mockConnect })
 }));
+
 jest.mock("@chakra-ui/react", () => {
   const ui = jest.requireActual("@chakra-ui/react");
   const mockUseToast = () => (mockToast);
@@ -26,12 +27,17 @@ jest.mock("@chakra-ui/react", () => {
     useToast: mockUseToast,
   };
 })
+jest.mock('../../graphql/client', () => {
+  const client = jest.fn()
+  return client;
+});
 const doLoginMock = jest.fn();
 const mocklistTowns = jest.fn();
 const mockCreateTown = jest.fn();
 const mockVideoSetup = jest.fn();
-TownsServiceClient.prototype.listTowns = mocklistTowns;
-TownsServiceClient.prototype.createTown = mockCreateTown;
+GraphqlServiceClient.prototype.listTown = mocklistTowns;
+GraphqlServiceClient.prototype.createTown = mockCreateTown;
+
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({
   towns: [
@@ -98,7 +104,7 @@ function wrappedTownSelection() {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    graphqlClient: new GraphqlServiceClient(),
   }}>
     <TownSelection doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }
@@ -107,6 +113,7 @@ describe('Part 1 - Public room listing', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     mocklistTowns.mockReset();
+
   })
   it('is called when rendering (hopefully by a useeffect, this will be checked manually)', async () => {
     jest.useRealTimers();

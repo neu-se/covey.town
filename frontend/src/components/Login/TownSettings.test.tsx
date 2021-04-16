@@ -6,18 +6,18 @@ import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react
 import { nanoid } from 'nanoid';
 import { TargetElement } from '@testing-library/user-event';
 import TownSettings from './TownSettings';
-import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import GraphqlServiceClient from '../../graphql/queries';
 
 const mockUseCoveyAppState = jest.fn(() => (Promise.resolve()));
 const mockToast = jest.fn();
 const mockUseDisclosure = {isOpen: true, onOpen: jest.fn(), onClose: jest.fn()};
 
-jest.mock('../../classes/TownsServiceClient');
 jest.mock('../../hooks/useCoveyAppState', () => ({
   __esModule: true, // this property makes it work
   default: () => (mockUseCoveyAppState)
 }));
+jest.mock('../../graphql/queries');
 jest.mock("@chakra-ui/react", () => {
   const ui = jest.requireActual("@chakra-ui/react");
   return {
@@ -26,13 +26,16 @@ jest.mock("@chakra-ui/react", () => {
     useDisclosure: ()=>(mockUseDisclosure),
   };
 })
+jest.mock('../../graphql/client', () => {
+  const client = jest.fn()
+  return client;
+});
 const mockUpdateTown = jest.fn();
 const mockDeleteTown = jest.fn();
-TownsServiceClient.prototype.updateTown = mockUpdateTown;
-TownsServiceClient.prototype.deleteTown = mockDeleteTown;
+GraphqlServiceClient.prototype.updateTown = mockUpdateTown;
+GraphqlServiceClient.prototype.deleteTown = mockDeleteTown;
 // @ts-ignore
-mockUseCoveyAppState.apiClient = new TownsServiceClient();
-
+mockUseCoveyAppState.graphqlClient = new GraphqlServiceClient();
 function wrappedTownSettings() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
     nearbyPlayers: { nearbyPlayers: [] },
@@ -52,7 +55,7 @@ function wrappedTownSettings() {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    graphqlClient: new GraphqlServiceClient(),
   }}>
     <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
 }
