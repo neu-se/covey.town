@@ -1,16 +1,18 @@
 import { Box, Button, Flex, Input, useToast } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
-import React, { useEffect, useState } from 'react';
 import { emojify } from 'node-emoji';
+import React, { useEffect, useState } from 'react';
+import Censorer from '../../classes/censorship/Censorer';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import useMaybeVideo from '../../hooks/useMaybeVideo';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import ChatMessage, { MessageProps } from './ChatMessage';
-import Censorer from '../../classes/censorship/Censorer';
 
 function Chat(): JSX.Element {
   const [messagesState, setMessagesState] = useState<MessageProps[]>([]);
   const [input, setInput] = useState<string>('');
   const [privateUsername, setPrivateUsername] = useState<string>('');
+  const video = useMaybeVideo();
   useVideoContext();
   const { userName, currentTownID, myPlayerID, players, apiClient, messages } = useCoveyAppState();
   const toast = useToast();
@@ -25,28 +27,8 @@ function Chat(): JSX.Element {
     return 'black';
   };
 
-  // const messageToProps = (message: AChatMessage): MessageProps => {
-  //   if(message) {
-  //     const sender = players.find(p => p.id === message.senderID)
-  //     console.log(sender?.userName)
-  //     console.log(messages[messages.length-1].message)
-  //     return {
-  //       key: nanoid(),
-  //       userName: `${sender?.userName}: `,
-  //       color: setButtonColor('global'),
-  //       message: messages[messages.length-1].message,
-  //     }
-  //   }
-  //   throw new Error();
-  // }
-
-  // const getMessages = useCallback((async ()=> {
-  //   const messagesCurrent = (await apiClient.getMessages({coveyTownID: currentTownID})).messages;
-  //   setMessagesState(messagesCurrent.map(msg => messageToProps(msg)))
-  // }), [apiClient, currentTownID, messageToProps])
-
-  useEffect((()=> {
-    if(!messages) {
+  useEffect(() => {
+    if (!messages) {
       toast({
         title: 'Messages is undefined',
         status: 'error',
@@ -54,37 +36,35 @@ function Chat(): JSX.Element {
       return;
     }
 
-    if(messages.length !== 0) {
-      const sender = players.find(p => p.id === messages[messages.length-1].senderID)
-      if(messages[messages.length-1].getType() === 'global') {
+    if (messages.length !== 0) {
+      const sender = players.find(p => p.id === messages[messages.length - 1].senderID);
+      if (messages[messages.length - 1].getType() === 'global') {
         setMessagesState([
           ...messagesState,
           {
             key: nanoid(),
             userName: `${sender?.userName}`,
             color: setButtonColor('global'),
-            message: messages[messages.length-1].message,
+            message: messages[messages.length - 1].message,
           },
-        ])
-      }
-      else if (messages[messages.length-1].getType() === 'private') {
-        const receiver = players.find(p => p.id === messages[messages.length-1].getReceiverID())        
-        if(messages[messages.length-1].getReceiverID() === myPlayerID) {
+        ]);
+      } else if (messages[messages.length - 1].getType() === 'private') {
+        const receiver = players.find(p => p.id === messages[messages.length - 1].getReceiverID());
+        if (messages[messages.length - 1].getReceiverID() === myPlayerID) {
           setMessagesState([
             ...messagesState,
             {
               key: nanoid(),
               userName: `${sender?.userName} to ${receiver?.userName}`,
               color: setButtonColor('private'),
-              message: messages[messages.length-1].message,
+              message: messages[messages.length - 1].message,
             },
-          ])
+          ]);
         }
       }
-      
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [userName, messages, toast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userName, messages]);
 
   const handlePrivateMessage = async () => {
     if (input !== '') {
@@ -92,7 +72,7 @@ function Chat(): JSX.Element {
       const emojifiedInput = emojify(censoredInput);
       try {
         const toPlayer = players.find(p => p.userName === privateUsername);
-          if (toPlayer) {
+        if (toPlayer) {
           await apiClient.sendPrivatePlayerMessage({
             coveyTownID: currentTownID,
             userIDFrom: myPlayerID,
@@ -135,17 +115,17 @@ function Chat(): JSX.Element {
       const censoredInput = Censorer.censorMessage(input);
       const emojifiedInput = emojify(censoredInput);
       try {
-            await apiClient.sendGlobalPlayerMessage({
-              coveyTownID: currentTownID,
-              coveyUserID: myPlayerID,
-              message: emojifiedInput,
-            });
-            setMessagesState([
-              ...messagesState,
-              { key: nanoid(), userName, color: setButtonColor('global'), message: emojifiedInput },
-            ]);
-          // do toasts if message is not sent
-          setInput('');
+        await apiClient.sendGlobalPlayerMessage({
+          coveyTownID: currentTownID,
+          coveyUserID: myPlayerID,
+          message: emojifiedInput,
+        });
+        setMessagesState([
+          ...messagesState,
+          { key: nanoid(), userName, color: setButtonColor('global'), message: emojifiedInput },
+        ]);
+        // do toasts if message is not sent
+        setInput('');
       } catch (err) {
         toast({
           title: 'Message unable to send',
@@ -160,8 +140,6 @@ function Chat(): JSX.Element {
       });
     }
   };
-
-  
 
   return (
     <Flex minH='500px' maxH='768px' minW='500px' w='100%' px='2' pt='2'>
@@ -204,6 +182,8 @@ function Chat(): JSX.Element {
               onChange={event => setInput(event.target.value)}
               placeholder='Enter message here'
               value={input}
+              onFocus={video?.pauseGame}
+              onBlur={video?.unPauseGame}
             />
           </Box>
           <Box pb='2' pr='4' align='center'>
@@ -215,6 +195,8 @@ function Chat(): JSX.Element {
               onChange={event => setPrivateUsername(event.target.value)}
               placeholder='Enter username here'
               value={privateUsername}
+              onFocus={video?.pauseGame}
+              onBlur={video?.unPauseGame}
             />
             <Button colorScheme='blue' onClick={handlePrivateMessage}>
               Send private
