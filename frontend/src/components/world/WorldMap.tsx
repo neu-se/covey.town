@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import React, { useEffect, useState } from 'react';
+import AChatMessage from '../../classes/AChatMessage';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -130,7 +131,8 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  updateMessages(players: Player[], msg: string) {
+  // update messages for everyone
+  updateMessages(players: Player[], msg: AChatMessage) {
     if (!this.ready) {
       this.players = players;
       return;
@@ -141,16 +143,16 @@ class CoveyGameScene extends Phaser.Scene {
     });
   }
 
-  newMessage(player: Player, msg: string) {
-    // the msg is being passed in
+  newMessage(player: Player, msg: AChatMessage) {
     const myPlayer = this.players.find(p => p.id === player.id);
     if (!myPlayer) {
       return;
     }
-    if (this.id !== myPlayer.id && this.physics && player.location) {
+    
+    if (this.id !== myPlayer.id && myPlayer.id === msg.senderID && this.physics && player.location) {
       let { message } = myPlayer;
       if (!message) {
-        message = this.add.text(0, -20, msg, {
+        message = this.add.text(0, -20, msg.message, {
           font: '18px monospace',
           color: '#FFFF00',
         });
@@ -158,13 +160,12 @@ class CoveyGameScene extends Phaser.Scene {
         myPlayer.message = message;
       }
 
-      message = this.add.text(player.location.x, player.location.y - 40, msg, {
-        font: '18px monospace',
-        color: '#FFFF00',
-      });
+      myPlayer.message?.setX(player.location.x);
+      myPlayer.message?.setY(player.location.y - 40);
+      myPlayer.message?.setText(msg.message);
 
       setTimeout(() => {
-        message?.setText('');
+        myPlayer.message?.setText('');
       }, 5000);
     }
   }
@@ -258,11 +259,6 @@ class CoveyGameScene extends Phaser.Scene {
         this.lastLocation.moving = isMoving;
         this.emitMovement(this.lastLocation);
       }
-
-      // console.log(`last message: ${this.lastMessage}`)
-      // if (!this.lastMessage || this.player.message.text !== this.lastMessage) {
-      //   this.player.message.setText(message.text);
-      // }
     }
   }
 
@@ -539,15 +535,16 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
+
   useEffect(() => {
     if (messages && messages.length !== 0) {
       if (messages[messages.length - 1].getType() === 'global') {
-        gameScene?.updateMessages(players, messages[messages.length - 1].message);
+        gameScene?.updateMessages(players, messages[messages.length - 1]);
       }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages]);
+  }, [gameScene, messages]);
 
   return <div id='map-container' />;
 }
