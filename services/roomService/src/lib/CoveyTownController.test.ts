@@ -30,6 +30,9 @@ function generateTestLocation(): UserLocation {
   };
 }
 
+/**
+ * Tests are successful when run individually
+ */
 describe('CoveyTownController', () => {
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
@@ -56,7 +59,7 @@ describe('CoveyTownController', () => {
       const townName = `FriendlyNameTest-${nanoid()}`;
       const townController = new CoveyTownController(townName, false);
       townController.setDBClient(mockDB);
-      const newPlayerSession = await townController.addPlayer(new Player(nanoid(), nanoid()));
+      await townController.addPlayer(new Player(nanoid(), nanoid()));
 
       expect((await mockDB).saveTown).toBeCalled();
     });

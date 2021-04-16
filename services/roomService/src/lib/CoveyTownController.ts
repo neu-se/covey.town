@@ -84,7 +84,11 @@ export default class CoveyTownController {
     this._dbClient = MongoAtlasClient.setup();
   }
 
-  setDBClient(dbClient: Promise<IDBClient>) {
+  /**
+   * Only for testing purpose
+   * @param dbClient 
+   */
+  setDBClient(dbClient: Promise<IDBClient>): void {
     this._dbClient = dbClient;
   }
 
