@@ -13,21 +13,6 @@ import {
 const resolvers = {
   Query: {
     /**
-     * Resolver to find a user by id
-     * @param _ parent is not used here
-     * @param args contains all input arguments
-     * @returns user profile matching to the id.
-     */
-    searchUserById: async (_: any, args: any, context:any) => {
-      try {
-        const email = await context.user;
-        const user = await User.findOne((id: string) => id === args.id);
-        return user;
-      } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this');
-      }
-    },
-    /**
      * Resolver to find all the users in Covey Town.
      * @returns all the users in Covey Town
      */
@@ -40,7 +25,6 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-
     searchUserByUserName: async (_: any, args: any, context:any) => {
       try {
         const email = await context.user;
@@ -115,32 +99,32 @@ const resolvers = {
           if (args.input.bio !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               bio: args.input.bio,
-            });
+            }, {new: true});
           }
           if (args.input.location !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               location: args.input.location,
-            });
+            }, {new: true});
           }
           if (args.input.occupation !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               occupation: args.input.occupation,
-            });
+            }, {new: true});
           }
           if (args.input.instagramLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               instagramLink: args.input.instagramLink,
-            });
+            }, {new: true});
           }
           if (args.input.facebookLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               facebookLink: args.input.facebookLink,
-            });
+            }, {new: true});
           }
           if (args.input.linkedInLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               linkedInLink: args.input.linkedInLink,
-            });
+            }, {new: true});
           }
         }
         return user;
