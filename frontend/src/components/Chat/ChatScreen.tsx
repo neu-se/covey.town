@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import { Socket } from 'socket.io-client';
 import { IconButton, ListItem } from "@material-ui/core";
 import { Send } from "@material-ui/icons";
-import { ChatIcon } from '@chakra-ui/icons'
 import { Select, Button, Stack } from '@chakra-ui/react';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import './ChatScreen.css';
@@ -71,7 +70,7 @@ const ChatScreen: any = () => {
       padding: 8,
       color: "white",
       fontSize: 14,
-      backgroundColor: isOwnMessage ? "#054740" : "#262d31",
+      backgroundColor: isOwnMessage ? "teal" : "black",
     }),
     author: { fontSize: 10, color: "gray" },
     timestamp: { fontSize: 8, color: "white", textAlign: "right", paddingTop: 4 } as const,
@@ -81,14 +80,6 @@ const ChatScreen: any = () => {
     <div>
       <body>
         <div className='heading'>Chat Box</div>
-        {nearbyPlayers?.nearbyPlayers.length !== 0 &&
-          <>
-            <h1 style={{paddingTop: 5, paddingBottom: 5, textAlign: "center", fontWeight: "bold"}}>Chat with nearby players: </h1>
-            <Stack style={{paddingBottom: 5, paddingLeft: 5}} direction="row" spacing={3} align="center">
-              {nearbyPlayers.nearbyPlayers.map(player => <Button rightIcon={<ChatIcon/>} colorScheme="teal" size="sm" key={player.userName} onClick={() => setReceiver(player.userName)}> {player.userName} </Button>)}
-            </Stack>
-          </>
-        }
         <div className='selectPlayer'>
           <Select onChange={(e) => setReceiver(e.target.value)} value={receiver}>
             <option value="everyone">Everyone</option>
@@ -96,6 +87,37 @@ const ChatScreen: any = () => {
           </Select>
         </div>
         <div className='mbox'>
+          <div>
+            {nearbyPlayers?.nearbyPlayers.length !== 0 &&
+              <div className='nearBy'>
+                <h1 style={{paddingTop: 0, paddingBottom: 5, textAlign: "center", fontWeight: "bold"}}>Chat with nearby players: </h1>
+                <div className='nearByBtn'>
+                <Stack style={{paddingBottom: 5, paddingLeft: 5}} direction="row" spacing={3} align="center">
+                  {
+                  nearbyPlayers.nearbyPlayers.map(player => 
+                    <Button variant="outline" 
+                            colorScheme="teal" 
+                            size="sm" 
+                            key={player.userName} 
+                            onClick={() => setReceiver(player.userName)}
+                            style={{
+                                  whiteSpace: "normal",
+                                  wordWrap: "break-word",
+                                  padding: "5px 5px",
+                                  overflow: "auto",
+                                  width: "auto",
+                                  height: "auto",
+                            }}
+                    >
+                      {player.userName}
+                    </Button>
+                    )
+                  }
+                </Stack>
+                </div>
+              </div>
+            }
+          </div>
           <ol>
             {messages.map((message) => (
               <ListItem

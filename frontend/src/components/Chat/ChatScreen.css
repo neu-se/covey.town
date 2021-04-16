@@ -17,9 +17,21 @@
   width: 25rem;
   height: 40.6rem;
   background-color: white;
-  overflow: scroll;
+  overflow: auto;
   border-top-color: white;
   border-bottom-color: white;
+}
+
+.nearBy {
+  border: 3px solid black;
+  border-top-color: white;
+  border-right-color: white;
+  border-left-color: white;
+}
+
+.nearByBtn {
+  font-weight: bold;
+  overflow-wrap: break-word;
 }
 
 .selectPlayer {
