@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
-import { Client } from 'pg';
 import { JoinedTown } from '../AccountTypes';
+
+// eslint-disable-next-line
+const { Client } = require('pg');
 
 dotenv.config();
 const client = new Client({
