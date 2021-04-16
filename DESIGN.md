@@ -17,7 +17,7 @@ We added new types such as CoveyUser and CoveyUserProfile as abstraction for ent
 
 ## User Story 2:
 
-![Login Google Sequence](docs/user-story-1/google-login.png)
+![Login Google Sequence](docs/user-story-2/google-login.png)
 ## User Story 3:
 ### Friend List
 - Upon sign in, user's friend list is fetched from the database and populated in the UI.
