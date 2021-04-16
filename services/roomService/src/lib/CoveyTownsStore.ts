@@ -18,18 +18,13 @@ export default class CoveyTownsStore {
 
   private _towns: CoveyTownController[] = [];
 
-  private _dbClient: Promise<IDBClient>;
+  private _dbClient: Promise<IDBClient> = MongoAtlasClient.setup();
 
-  private constructor() {
-    this._dbClient = MongoAtlasClient.setup();
-  }
-
-
-  static async getInstance(pdbClient?: Promise<IDBClient>): Promise<CoveyTownsStore> {
+  static async getInstance(): Promise<CoveyTownsStore> {
     if (CoveyTownsStore._instance === undefined) {
       CoveyTownsStore._instance = new CoveyTownsStore();
       try {
-        const dbClient = await pdbClient ?? await CoveyTownsStore._instance._dbClient;
+        const dbClient = await this._instance._dbClient;
         const dbTowns = await dbClient.getTowns();
         dbTowns.forEach(async town => {
           dbClient.deleteTown(town.coveyTownID);
