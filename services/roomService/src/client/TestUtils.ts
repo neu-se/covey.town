@@ -4,7 +4,7 @@ import {Socket as ServerSocket} from 'socket.io';
 
 import {AddressInfo} from 'net';
 import http from 'http';
-import { UserLocation } from '../CoveyTypes';
+import { UserLocation, Message } from '../CoveyTypes';
 
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
@@ -29,8 +29,9 @@ export function cleanupSockets() : void {
 /**
  * A handy test helper that will create a socket client that is properly configured to connect to the testing server.
  * This function also creates promises that will be resolved only once the socket is connected/disconnected/a player moved/
- * a new player has joined/a player has disconnected. These promises make it much easier to write a test that depends on
- * some action being fired on the socket, since you can simply write `await socketConnected;` (for any of these events).
+ * a new player has joined/a player has disconnected/a player has chatted. These promises make it much easier to write a 
+ * test that depends on some action being fired on the socket, since you can simply write `await socketConnected;
+ * ` (for any of these events).
  *
  * Feel free to use, not use, or modify this code as you feel fit.
  *
@@ -45,6 +46,7 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
   playerMoved: Promise<RemoteServerPlayer>,
   newPlayerJoined: Promise<RemoteServerPlayer>,
   playerDisconnected: Promise<RemoteServerPlayer>,
+  playerChatted: Promise<Message>,
 } {
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
@@ -66,6 +68,11 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
       resolve(player);
     });
   });
+  const playerChattedPromise = new Promise<Message>((resolve) => {
+    socket.on('playerChatted', (message: Message) => {
+      resolve(message);
+    });
+  });
   const newPlayerPromise = new Promise<RemoteServerPlayer>((resolve) => {
     socket.on('newPlayer', (player: RemoteServerPlayer) => {
       resolve(player);
@@ -84,6 +91,7 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
     playerMoved: playerMovedPromise,
     newPlayerJoined: newPlayerPromise,
     playerDisconnected: playerDisconnectPromise,
+    playerChatted: playerChattedPromise,
   };
 }
 export function setSessionTokenAndTownID(coveyTownID: string, sessionToken: string, socket: ServerSocket):void {

@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import * as TestUtils from './TestUtils';
 
-import { UserLocation } from '../CoveyTypes';
+import { UserLocation, Message } from '../CoveyTypes';
 import TownsServiceClient from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
 
@@ -76,6 +76,25 @@ describe('TownServiceApiSocket', () => {
     const [movedPlayer, otherMovedPlayer]= await Promise.all([playerMoved, playerMoved2]);
     expect(movedPlayer.location).toMatchObject(newLocation);
     expect(otherMovedPlayer.location).toMatchObject(newLocation);
+  });
+  it('Dispatches chat updates to all clients in the same town', async () => {
+    const town = await createTownForTesting();
+    const joinData = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid()});
+    const joinData2 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid()});
+    const socketSender = TestUtils.createSocketClient(server, joinData.coveySessionToken, town.coveyTownID).socket;
+    const {playerChatted} = TestUtils.createSocketClient(server, joinData2.coveySessionToken, town.coveyTownID);
+    const message: Message = {
+      body: 'test message', 
+      senderId: nanoid(), 
+      userName: nanoid(),
+      dateCreated: new Date(),
+      isBroadcast: true,
+      receiverId: nanoid(),
+    };
+    socketSender.emit('playerChatted', message);
+    const [returnedMessage] = await Promise.all([playerChatted]);
+    returnedMessage.dateCreated = new Date(returnedMessage.dateCreated);
+    expect(message).toMatchObject(returnedMessage);
   });
   it('Invalidates the user session after disconnection', async () => {
     // This test will timeout if it fails - it will never reach the expectation
