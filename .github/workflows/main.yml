@@ -25,6 +25,8 @@ jobs:
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
+          HASURA_SERVICE_URL: ${{ secrets.HASURA_SERVICE_URL }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
         run: cd services/roomService; npm install && npm run lint && npm test
 
       - name: Build and test frontend components
