@@ -41,6 +41,6 @@ export type UserInfo = {
 };
 export type JoinedTown = {
   townID: string,
-  locationX: number,
-  locationY: number,
+  positionX: number,
+  positionY: number,
 };

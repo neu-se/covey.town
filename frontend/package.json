@@ -25,6 +25,7 @@
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.2",
     "d3-timer": "^1.0.10",
+    "dotenv": "^8.2.0",
     "enzyme": "^3.11.0",
     "framer-motion": "^3.2.0",
     "fscreen": "^1.0.2",
@@ -50,7 +51,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env DEBUG_PRINT_LIMIT=0 jest",
+    "test": "cross-env DEBUG_PRINT_LIMIT=0 jest --forceExit",
     "eject": "react-scripts eject",
     "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx "

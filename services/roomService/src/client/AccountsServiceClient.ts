@@ -1,5 +1,6 @@
 import assert from 'assert';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import dotenv from 'dotenv';
 
 export type JoinedTown = {
   townID: string,
@@ -52,11 +53,12 @@ export default class AccountsServiceClient {
 
   /**
    * Construct a new Accounts Service API client. Specify a serviceURL for testing, or otherwise
-   * defaults to the URL at the environmental variable REACT_APP_ACCOUNTS_SERVICE_URL
+   * defaults to the URL at the environmental variable REACT_APP_TOWNS_SERVICE_URL
    * @param serviceURL
    */
   constructor(serviceURL?: string) {
-    const baseURL = serviceURL || 'http://localhost:8080';// process.env.REACT_APP_ACCOUNTS_SERVICE_URL;
+    dotenv.config();
+    const baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
     assert(baseURL);
     this._axios = axios.create({ baseURL });
   }

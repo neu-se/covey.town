@@ -13,6 +13,10 @@ export interface TownJoinRequest {
   userName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
+  /** whether user is logged in or not */
+  isLoggedIn: boolean;
+  /** ID of the user if they are logged in */
+  userID?: string;
 }
 
 /**

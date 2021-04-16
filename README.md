@@ -25,13 +25,15 @@ To create an account and configure your local environment:
 2. Create an API key and secret (select "API Keys" on the left under "Settings")
 3. Create a `.env` file in the `services/roomService` directory, setting the values as follows:
 
-| Config Value            | Description                               |
-| ----------------------- | ----------------------------------------- |
-| `TWILIO_ACCOUNT_SID`    | Visible on your twilio account dashboard. |
-| `TWILIO_API_KEY_SID`    | The SID of the new API key you created.   |
-| `TWILIO_API_KEY_SECRET` | The secret for the API key you created.   |
-| `TWILIO_API_AUTH_TOKEN` | Visible on your twilio account dashboard. |
+| Config Value              | Description                               |
+| -----------------------      | ----------------------------------------- |
+| `TWILIO_ACCOUNT_SID`         | Visible on your twilio account dashboard. |
+| `TWILIO_API_KEY_SID`         | The SID of the new API key you created.   |
+| `TWILIO_API_KEY_SECRET`      | The secret for the API key you created.   |
+| `TWILIO_API_AUTH_TOKEN`      | Visible on your twilio account dashboard. |
 
+### Configuring the Database
+In the `.env` file, add the `DATABASE_CONNECTION_STRING` 
 ### Starting the backend
 
 Once your backend is configured, you can start it by running `npm start` in the `services/roomService` directory (the first time you run it, you will also need to run `npm install`).

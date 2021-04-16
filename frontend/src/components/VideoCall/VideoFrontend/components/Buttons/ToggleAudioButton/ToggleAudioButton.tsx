@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import Button from '@material-ui/core/Button';
 import MicIcon from '../../../icons/MicIcon';
@@ -13,7 +13,7 @@ export default function ToggleAudioButton(props: {
   className?: string;
   useSavedAudio?: boolean;
   setMediaError?(error: Error): void;
-  setMuted?(muted: boolean): void;
+  setUnmuted?(muted: boolean): void;
 }) {
   const { isEnabled: isAudioEnabled, toggleAudioEnabled } = useLocalAudioToggle();
   const lastClickTimeRef = useRef(0);
@@ -36,9 +36,11 @@ export default function ToggleAudioButton(props: {
   if (shouldUnmute !== isAudioEnabled && hasAudioDevices) {
     toggleAudio();
   }
-  if (props.setMuted) {
-    props.setMuted(shouldUnmute);
-  }
+  useEffect(() => {
+    if (props.setUnmuted) {
+      props.setUnmuted(shouldUnmute);
+    }
+  }, [props, shouldUnmute]);
 
   return (
     <Button

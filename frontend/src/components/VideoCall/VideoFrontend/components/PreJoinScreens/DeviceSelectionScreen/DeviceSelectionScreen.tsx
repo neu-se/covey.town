@@ -1,20 +1,16 @@
-import React, { useCallback, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Grid, Hidden, makeStyles, Theme, } from '@material-ui/core';
+import { Button, Checkbox, FormLabel, Text, useToast } from '@chakra-ui/react';
+import { Grid, Hidden, makeStyles, Theme } from '@material-ui/core';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Checkbox, FormLabel, useToast } from '@chakra-ui/react';
-import assert from 'assert';
-import LocalVideoPreview from './LocalVideoPreview/LocalVideoPreview';
-import SettingsMenu from './SettingsMenu/SettingsMenu';
+import { UserInfo } from '../../../../../../CoveyTypes';
+import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
+import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
+import { useAppState } from '../../../state';
 import ToggleAudioButton from '../../Buttons/ToggleAudioButton/ToggleAudioButton';
 import ToggleVideoButton from '../../Buttons/ToggleVideoButton/ToggleVideoButton';
-import { useAppState } from '../../../state';
-import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import { UserInfo, VideoRoom } from '../../../../../../CoveyTypes';
-
-import Video from '../../../../../../classes/Video/Video';
-import { TownJoinResponse } from '../../../../../../classes/TownsServiceClient';
-import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
+import LocalVideoPreview from './LocalVideoPreview/LocalVideoPreview';
+import SettingsMenu from './SettingsMenu/SettingsMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   gutterBottom: {
@@ -24,10 +20,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: '1em',
   },
   deviceButton: {
-    color: 'black',
-    width: '100%',
-    border: '2px solid #aaa',
-    margin: '1em 0',
+    'color': 'black',
+    'width': '100%',
+    'border': '2px solid #aaa',
+    'margin': '1em 0',
     '&:hover': {
       color: 'black',
     },
@@ -42,14 +38,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column-reverse',
-      width: '100%',
+      'flexDirection': 'column-reverse',
+      'width': '100%',
       '& button': {
         margin: '0.5em 0',
       },
     },
   },
   mobileButtonBar: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      margin: '1.5em 0 1em',
+    },
+  },
+  mobileSavedMedia: {
     [theme.breakpoints.down('sm')]: {
       display: 'flex',
       justifyContent: 'space-between',
@@ -69,7 +72,12 @@ interface DeviceSelectionScreenProps {
   setMediaError?(error: Error): void;
 }
 
-export default function DeviceSelectionScreen({ savedAudioPreference, savedVideoPreference, setUserInfo, setMediaError }: DeviceSelectionScreenProps) {
+export default function DeviceSelectionScreen({
+  savedAudioPreference,
+  savedVideoPreference,
+  setUserInfo,
+  setMediaError,
+}: DeviceSelectionScreenProps) {
   const classes = useStyles();
   const [useSavedDevicePreferences, setUseSavedDevicePreferences] = useState<boolean>(false);
   const [currentlyUnmuted, setCurrentlyUnmuted] = useState<boolean>(false);
@@ -79,12 +87,14 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
 
   const { getToken, isFetching } = useAppState();
   const {
-    connect, isAcquiringLocalTracks, isConnecting, localAudioTrack, localVideoTrack,
+    connect,
+    isAcquiringLocalTracks,
+    isConnecting,
+    localAudioTrack,
+    localVideoTrack,
   } = useVideoContext();
   const disableButtons = isFetching || isAcquiringLocalTracks || isConnecting;
-  const {
-    handleSubmit, errors, register, formState,
-  } = useForm();
+  const { handleSubmit, errors, register, formState } = useForm();
 
   const toast = useToast();
   const handleSaveDevices = async (userID: string, newUseAudio: boolean, newUseVideo: boolean) => {
@@ -96,7 +106,8 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
       }
       toast({
         title: 'Successfully saved device settings!',
-        description: 'Any time you log into Covey.Town in the future, you can click the \'Saved Media\' button to apply these settings.',
+        description:
+          "Any time you log into Covey.Town in the future, you can click the 'Saved Media' button to apply these settings.",
         status: 'success',
       });
     } catch (err) {
@@ -110,10 +121,10 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
 
   return (
     <>
-      <Grid container justify="center" aria-label="join video room form">
+      <Grid container justify='center' aria-label='join video room form'>
         <Grid item md={7} sm={12} xs={12}>
           <div className={classes.localPreviewContainer}>
-            <LocalVideoPreview identity="" />
+            <LocalVideoPreview identity='' />
           </div>
           <div className={classes.mobileButtonBar}>
             <Hidden mdUp>
@@ -122,7 +133,7 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
                 disabled={useSavedDevicePreferences || disableButtons}
                 setMediaError={setMediaError}
                 useSavedAudio={useSavedDevicePreferences ? savedAudioPreference : undefined} // only want to pass down when checked
-                setMuted={setCurrentlyUnmuted}
+                setUnmuted={setCurrentlyUnmuted}
               />
               <ToggleVideoButton
                 className={classes.mobileButton}
@@ -131,28 +142,38 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
                 useSavedVideo={useSavedDevicePreferences ? savedVideoPreference : undefined}
                 setShowVideo={setCurrentlyShowVideo}
               />
-              {auth0.isAuthenticated &&
+              {auth0.isAuthenticated && (
                 <>
-                  <FormLabel whiteSpace="nowrap" htmlFor="savedUserName">Saved Media</FormLabel>
-                  <Checkbox id="savedDevicePreferences" name="savedDevicePreferences" isChecked={useSavedDevicePreferences}
-                    onChange={(e) => {
+                  {/* <FormLabel whiteSpace='nowrap' size='small' htmlFor='savedUserName'>
+                    Saved Media
+                  </FormLabel> */}
+                  <Text className={classes.mobileSavedMedia} fontSize='sm'>
+                    Saved Media
+                  </Text>
+                  <Checkbox
+                    id='savedDevicePreferences'
+                    name='savedDevicePreferences'
+                    isChecked={useSavedDevicePreferences}
+                    onChange={e => {
                       setUseSavedDevicePreferences(e.target.checked);
-                    }} 
+                    }}
                   />
-                  <Button 
+                  <Button
                     float='right'
-                    isDisabled={useSavedDevicePreferences} 
-                    onClick={async () => { await handleSaveDevices(auth0.user.sub, currentlyUnmuted, currentlyShowVideo); }}>
-                      Save
+                    isDisabled={useSavedDevicePreferences}
+                    onClick={async () => {
+                      await handleSaveDevices(auth0.user.sub, currentlyUnmuted, currentlyShowVideo);
+                    }}>
+                    Save
                   </Button>
                 </>
-              }
+              )}
             </Hidden>
             <SettingsMenu mobileButtonClass={classes.mobileButton} />
           </div>
         </Grid>
         <Grid item md={5} sm={12} xs={12}>
-          <Grid container direction="column" justify="space-between" style={{ height: '100%' }}>
+          <Grid container direction='column' justify='space-between' style={{ height: '100%' }}>
             <div>
               <Hidden smDown>
                 <ToggleAudioButton
@@ -160,7 +181,7 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
                   disabled={useSavedDevicePreferences || disableButtons}
                   setMediaError={setMediaError}
                   useSavedAudio={useSavedDevicePreferences ? savedAudioPreference : undefined}
-                  setMuted={setCurrentlyUnmuted}
+                  setUnmuted={setCurrentlyUnmuted}
                 />
                 <ToggleVideoButton
                   className={classes.deviceButton}
@@ -169,22 +190,33 @@ export default function DeviceSelectionScreen({ savedAudioPreference, savedVideo
                   useSavedVideo={useSavedDevicePreferences ? savedVideoPreference : undefined}
                   setShowVideo={setCurrentlyShowVideo}
                 />
-                {auth0.isAuthenticated &&
+                {auth0.isAuthenticated && (
                   <>
-                    <FormLabel whiteSpace="nowrap" htmlFor="savedUserName">Saved Media</FormLabel>
-                    <Checkbox id="savedDevicePreferences" name="savedDevicePreferences" isChecked={useSavedDevicePreferences}
-                      onChange={(e) => {
+                    <FormLabel whiteSpace='nowrap' htmlFor='savedUserName'>
+                      Saved Media
+                    </FormLabel>
+                    <Checkbox
+                      id='savedDevicePreferences'
+                      name='savedDevicePreferences'
+                      isChecked={useSavedDevicePreferences}
+                      onChange={e => {
                         setUseSavedDevicePreferences(e.target.checked);
                       }}
                     />
-                    <Button 
+                    <Button
                       float='right'
-                      isDisabled={useSavedDevicePreferences} 
-                      onClick={async () => { await handleSaveDevices(auth0.user.sub, currentlyUnmuted, currentlyShowVideo); }}>
-                        Save
+                      isDisabled={useSavedDevicePreferences}
+                      onClick={async () => {
+                        await handleSaveDevices(
+                          auth0.user.sub,
+                          currentlyUnmuted,
+                          currentlyShowVideo,
+                        );
+                      }}>
+                      Save
                     </Button>
                   </>
-                }
+                )}
               </Hidden>
             </div>
           </Grid>

@@ -39,6 +39,8 @@ export default class TwilioVideo implements IVideoClient {
         'Environmental variable TWILIO_API_KEY_SID must be set');
       assert(process.env.TWILIO_API_KEY_SECRET,
         'Environmental variable TWILIO_API_KEY_SECRET must be set');
+      assert(process.env.DATABASE_CONNECTION_STRING,
+        'Environment variable DATABASE_CONNECTION_STRING must be set');
       TwilioVideo._instance = new TwilioVideo(
         process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_API_AUTH_TOKEN,
         process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET,

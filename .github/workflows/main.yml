@@ -20,15 +20,16 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build and test backend service
-        env: # Pass the Twilio secrets into environmental variables for the backend tests to use
+        env: # Pass the Twilio and database secrets into environmental variables for the backend tests to use
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
+          DATABASE_CONNECTION_STRING: ${{ secrets.DATABASE_CONNECTION_STRING }}          
         run: cd services/roomService; npm install && npm run lint && npm test
 
       - name: Build and test frontend components
-        run: cd frontend; npm install && npm run lint && npm test
+        run: cd frontend; npm install && npm install dotenv --save && npm run lint && npm test
   deploy:
     if: github.ref == 'refs/heads/master'
     needs: build-and-test

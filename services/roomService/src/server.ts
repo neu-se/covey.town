@@ -4,11 +4,13 @@ import CORS from 'cors';
 import { AddressInfo } from 'net';
 import addTownRoutes from './router/towns';
 import CoveyTownsStore from './lib/CoveyTownsStore';
+import addAccountRoutes from './router/accounts';
 
 const app = Express();
 app.use(CORS());
 const server = http.createServer(app);
 
+addAccountRoutes(server, app);
 addTownRoutes(server, app);
 
 server.listen(process.env.PORT || 8081, () => {

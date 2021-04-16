@@ -42,6 +42,7 @@ export default function TownSelection({ username, doLogin, setUserInfo }: TownSe
   const { connect } = useVideoContext();
   const { apiClient, accountApiClient } = useCoveyAppState();
   const toast = useToast();
+  const auth0 = useAuth0();
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -78,7 +79,7 @@ export default function TownSelection({ username, doLogin, setUserInfo }: TownSe
         });
         return;
       }
-      const initData = await Video.setup(userName, coveyRoomID);
+      const initData = await Video.setup(userName, coveyRoomID, auth0.isAuthenticated, auth0.user?.sub);
 
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
@@ -170,10 +171,6 @@ export default function TownSelection({ username, doLogin, setUserInfo }: TownSe
       })
     }
   };
-
-  const auth0 = useAuth0();
-
-  // white-space attribute to nowrap
 
   return (
     <>

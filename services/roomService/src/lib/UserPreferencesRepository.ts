@@ -1,10 +1,10 @@
+import dotenv from 'dotenv';
+import { Client } from 'pg';
 import { JoinedTown } from '../AccountTypes';
 
-const { Client } = require('pg');
-
+dotenv.config();
 const client = new Client({
-  connectionString:
-    'postgres://kisvchxzkztlyx:02c7828881c5e71290f509916361926b80923b88c0dddeaf170cb111cdbb4c51@ec2-18-204-101-137.compute-1.amazonaws.com:5432/d46idgb6list1r',
+  connectionString: process.env.DATABASE_CONNECTION_STRING,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -66,7 +66,6 @@ export async function upsertUser(userInfo: SavedUserInfoRequest): Promise<boolea
 
     return true;
   } catch (err) {
-    console.log(err);
     return false;
   }
 }

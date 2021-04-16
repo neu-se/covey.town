@@ -4,6 +4,9 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+// import AccountsServiceClient from '../client/AccountsServiceClient';
+import { saveUserHandler } from './AccountRequestHandlers';
+
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -110,8 +113,13 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       message: 'Error: No such town',
     };
   }
-  // TODO: also need to pass userID
-  const newPlayer = new Player(requestData.userName, requestData.isLoggedIn, requestData.userID);
+  let newPlayer: Player;
+  if (requestData.isLoggedIn) {
+    assert(requestData.userID);
+    newPlayer = new Player(requestData.userName, requestData.isLoggedIn, requestData.userID);
+  } else {
+    newPlayer = new Player(requestData.userName);
+  }
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
   return {
@@ -227,10 +235,17 @@ export function townSubscriptionHandler(socket: Socket): void {
   // Register an event listener for the client socket: if the client disconnects,
   // clean up our listener adapter, and then let the CoveyTownController know that the
   // player's session is disconnected
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
+    try {
+      if (s.player.isLoggedIn) {
+        const lastTownPosition = { townID: coveyTownID, positionX: s.player.location.x, positionY: s.player.location.y };
+        await saveUserHandler({ userID: s.player.id, towns: [lastTownPosition]});
+      }
+    } catch {
+      // Do nothing, unable to save most recent town
+    }
     townController.removeTownListener(listener);
     townController.destroySession(s);
-    // TODO call API here to save player's location after they disconnect
   });
 
   // Register an event listener for the client socket: if the client updates their

@@ -1,3 +1,6 @@
+import { doesNotMatch } from 'assert';
+import dotenv from 'dotenv';
+import { Client } from 'pg';
 import { JoinedTown, UserInfo } from '../AccountTypes';
 import {
   deleteUser,
@@ -5,20 +8,13 @@ import {
   upsertUser,
 } from './UserPreferencesRepository';
 
-/**
- * Connection to the database used for the tests
- */
-const { Client } = require('pg');
-
+dotenv.config();
 const testClient = new Client({
-  connectionString:
-    'postgres://kisvchxzkztlyx:02c7828881c5e71290f509916361926b80923b88c0dddeaf170cb111cdbb4c51@ec2-18-204-101-137.compute-1.amazonaws.com:5432/d46idgb6list1r',
+  connectionString: process.env.DATABASE_CONNECTION_STRING,
   ssl: {
     rejectUnauthorized: false,
   },
 });
-
-testClient.connect();
 
 /**
  * Mock TownInfo used throughout the tests
@@ -45,7 +41,7 @@ const town3: JoinedTown = {
  * Mock User Info used throughout the tests
  */
 const jeminInfo: UserInfo = {
-  userID: 'jemin',
+  userID: 'jemin1',
   username: 'jem1',
   email: 'jemin@test.com',
   useAudio: false,
@@ -54,7 +50,7 @@ const jeminInfo: UserInfo = {
 };
 
 const jeminInfoUpdate: UserInfo = {
-  userID: 'jemin',
+  userID: 'jemin1',
   username: 'jem1',
   email: 'jemin@test.com',
   useAudio: false,
@@ -63,7 +59,7 @@ const jeminInfoUpdate: UserInfo = {
 };
 
 const kyleInfo: UserInfo = {
-  userID: 'kyle',
+  userID: 'kyle1',
   username: 'kyle1',
   email: 'kyle@test.com',
   useAudio: true,
@@ -72,7 +68,7 @@ const kyleInfo: UserInfo = {
 };
 
 const johnInfo: UserInfo = {
-  userID: 'john',
+  userID: 'john1',
   username: 'john1',
   email: 'john@test.com',
   useAudio: false,
@@ -81,7 +77,7 @@ const johnInfo: UserInfo = {
 };
 
 const johnInfoUpdate: UserInfo = {
-  userID: 'john',
+  userID: 'john1',
   username: 'john1',
   email: 'john@test.com',
   useAudio: true,
@@ -90,7 +86,7 @@ const johnInfoUpdate: UserInfo = {
 };
 
 const tatiInfo: UserInfo = {
-  userID: 'tatiana',
+  userID: 'tatiana1',
   username: 'tati1',
   email: 'tati@test.com',
   useAudio: true,
@@ -99,7 +95,7 @@ const tatiInfo: UserInfo = {
 };
 
 const tatiInfoUpdate: UserInfo = {
-  userID: 'tatiana',
+  userID: 'tatiana1',
   username: 'tati1',
   email: 'tati@test.com',
   useAudio: true,
@@ -108,8 +104,16 @@ const tatiInfoUpdate: UserInfo = {
 };
 
 describe('upsertUser, getUserById, deleteUser', () => {
+  beforeAll(done => {
+    done();
+    testClient.connect();
+  });
+  afterAll(done => {
+    testClient.end();
+    done();
+  });
   it('inserts, retrieve, and deletes a user (that has no joined town) when given a user in the database', async () => {
-    const userID = 'kyle';
+    const userID = 'kyle1';
     // Inserts the user into the user_preferences table of the database
     const insertUser = await upsertUser(kyleInfo);
     expect(insertUser).toBe(true);
@@ -124,7 +128,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
   });
 
   it('inserts, updates, retrieve, and deletes a user (that has no joined town) when given a user in the database', async () => {
-    const userID = 'jemin';
+    const userID = 'jemin1';
     // Inserts the user into the user_preferences table of the database
     const insertUser = await upsertUser(jeminInfo);
     expect(insertUser).toBe(true);
@@ -147,7 +151,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
   });
 
   it('inserts, updates, retrieve, and deletes a user (that has joined town) when given a user in the database', async () => {
-    const userID = 'john';
+    const userID = 'john1';
 
     // Inserts the user into the user_preferences table of the database
     const insertUser = await upsertUser(johnInfo);
@@ -171,7 +175,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
   });
 
   it('inserts, updates, retrieve, and deletes a user (that has joined town) when given a user in the database', async () => {
-    const userID = 'tatiana';
+    const userID = 'tatiana1';
     // Inserts the user into the user_preferences table of the database
     const insertUser = await upsertUser(tatiInfo);
     expect(insertUser).toBe(true);

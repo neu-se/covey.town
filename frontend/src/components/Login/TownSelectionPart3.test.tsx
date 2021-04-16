@@ -206,7 +206,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: true
+              isPubliclyListed: true,
             }));
         });
 
@@ -224,7 +224,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: false
+              isPubliclyListed: false,
             }));
 
         });
@@ -243,7 +243,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: false
+              isPubliclyListed: false,
             }));
           await waitFor(() => expect(mockToast)
             .toBeCalledWith(expect.objectContaining({
@@ -277,7 +277,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
 
           // Check for call sequence
           await waitFor(() => expect(mockVideoSetup)
-            .toBeCalledWith(userName, townID));
+            .toBeCalledWith(userName, townID, false, undefined));
           await waitFor(() => expect(doLoginMock)
             .toBeCalledWith({ providerVideoToken: videoToken }));
           await waitFor(() => expect(mockConnect)
@@ -295,7 +295,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockCreateTown)
             .toBeCalledWith({
               friendlyName: townName,
-              isPubliclyListed: true
+              isPubliclyListed: true,
             }));
           await waitFor(() => expect(mockToast)
             .toBeCalledWith({

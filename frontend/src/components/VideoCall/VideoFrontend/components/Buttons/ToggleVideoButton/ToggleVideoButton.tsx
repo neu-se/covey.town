@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import Button from '@material-ui/core/Button';
 import VideoOffIcon from '../../../icons/VideoOffIcon';
@@ -36,9 +36,12 @@ export default function ToggleVideoButton(props: {
   if (shouldShowVideo !== isVideoEnabled && hasVideoDevices) {
     toggleVideo();
   }
-  if (props.setShowVideo) {
-    props.setShowVideo(shouldShowVideo);
-  }
+
+  useEffect(() => {
+    if (props.setShowVideo) {
+      props.setShowVideo(shouldShowVideo);
+    }
+  }, [props, shouldShowVideo]);
 
   return (
     <Button

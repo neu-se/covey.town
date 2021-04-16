@@ -1,3 +1,4 @@
+import AccountsServiceClient from '../AccountsServiceClient';
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
 
@@ -18,7 +19,13 @@ export default class Video {
 
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
 
+  private accountsServiceClient: AccountsServiceClient = new AccountsServiceClient();
+
   private _coveyTownID: string;
+
+  private _loggedInUser: boolean;
+
+  private _userID: string | undefined;
 
   private _townFriendlyName: string | undefined;
 
@@ -28,9 +35,11 @@ export default class Video {
 
   unPauseGame: () => void = ()=>{};
 
-  constructor(userName: string, coveyTownID: string) {
+  constructor(userName: string, coveyTownID: string, loggedInUser = false, userID?: string) {
     this._userName = userName;
     this._coveyTownID = coveyTownID;
+    this._loggedInUser = loggedInUser;
+    this._userID = userID;
   }
 
   get isPubliclyListed(): boolean {
@@ -59,6 +68,8 @@ export default class Video {
         this.townsServiceClient.joinTown({
           coveyTownID: this._coveyTownID,
           userName: this._userName,
+          isLoggedIn: this._loggedInUser,
+          userID: this._userID,
         })
           .then((result) => {
             this.sessionToken = result.coveySessionToken;
@@ -98,11 +109,11 @@ export default class Video {
     return this.teardownPromise ?? Promise.resolve();
   }
 
-  public static async setup(username: string, coveyTownID: string): Promise<TownJoinResponse> {
+  public static async setup(username: string, coveyTownID: string, loggedInUser: boolean, userID?: string): Promise<TownJoinResponse> {
     let result = null;
 
     if (!Video.video) {
-      Video.video = new Video(username, coveyTownID);
+      Video.video = new Video(username, coveyTownID, loggedInUser, userID);
     }
 
     try {
