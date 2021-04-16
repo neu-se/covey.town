@@ -64,7 +64,10 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
 
   });
 
-  // retrieves information about a user
+  /**
+   * retrieves information about a user
+   */
+
   app.get('/users/:email', BodyParser.json(), async (req, res) => {
     try {
       const result = await getUserInfoHandler({
@@ -82,7 +85,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
 
   });
 
-  // updates first and last names for user
+  /**
+  * updates a user's first and last names
+  */
   app.patch('/users/:email', BodyParser.json(), async (req, res) => {
     try {
       const result = await updateUserInfoHandler({
@@ -100,7 +105,10 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         });
     }
   });
- 
+
+  /**
+  * deletes a user
+  */
 
   app.delete('/users/:email', BodyParser.json(), async (req, res) => {
     try {
@@ -252,6 +260,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         });
     }
   });
+  /**
+  * retrieves a users currentAvatar
+  */
 
   app.get('/avatars/:user', BodyParser.json(), async (req, res) => {
     try {
@@ -268,7 +279,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         });
     }
   });
-
+  /**
+  * updates a user's current avatar
+  */
   app.patch('/avatars/:user', BodyParser.json(), async (req, res) => {
     try {
       const result = await updateAvatarHandler({

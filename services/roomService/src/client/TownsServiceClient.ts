@@ -53,25 +53,35 @@ export interface TownCreateResponse {
   coveyTownID: string;
   coveyTownPassword: string;
 }
-
+/**
+ * Payload sent by client to create a new user
+ */
 export interface UserCreateRequest {
   email: string;
 }
-
+/**
+ * Payload sent by client to delete a user account
+ */
 export interface UserDeleteRequest {
   email: string;
 }
-
+/**
+ * Payload sent by client to update a user's names
+ */
 export interface UpdateUserRequest {
   email: string;
   firstName?: string;
   lastName?: string;
 }
-
+/**
+ * Payload sent by client to request information about a user
+ */
 export interface UserInfoRequest {
   email: string;
 }
-
+/**
+ * Response from the server for a user info request
+ */
 export interface UserInfoResponse {
   email: string;
   firstName?: string;
@@ -85,16 +95,22 @@ export interface UserInfoResponse {
 export interface TownListResponse {
   towns: CoveyTownInfo[];
 }
-
+/**
+ * Payload sent by client to retrieve a list of a user's saved towns
+ */
 export interface SavedTownsRequest {
   email: string;
 }
-
+/**
+ * Payload sent by client to save a town to a user's saved towns
+ */
 export interface SaveTownRequest {
   email: string;
   townID: string;
 }
-
+/**
+ * Payload sent by client to delete a town from a user's Saved towns
+ */
 export interface DeleteTownRequest {
   email: string;
   townID: string;
@@ -107,11 +123,8 @@ export interface TownDeleteRequest {
   coveyTownID: string;
   coveyTownPassword: string;
 }
-
 /**
- * Payload sent by the client to update a Town.
- * N.B., JavaScript is terrible, so:
- * if(!isPubliclyListed) -> evaluates to true if the value is false OR undefined, use ===
+ * Payload sent by client to update a Town in Covey.Town
  */
 export interface TownUpdateRequest {
   coveyTownID: string;
@@ -119,11 +132,15 @@ export interface TownUpdateRequest {
   friendlyName?: string;
   isPubliclyListed?: boolean;
 }
-
+/**
+ * Payload sent by client to request a user's current avatar
+ */
 export interface CurrentAvatarRequest {
   email: string;
 }
-
+/**
+ * Payload sent by client to update a user's current avatar
+ */
 export interface UpdateAvatarRequest {
   email: string;
   avatar: string;
