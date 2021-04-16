@@ -4,7 +4,7 @@ import http from 'http';
 import { AddressInfo } from 'net';
 import addAccountRoutes from '../router/accounts';
 
-import AccountsServiceClient, { GetUserResponse, JoinedTown, SaveUserRequest } from './AccountsServiceClient';
+import CoveyServicesClient, { ResetUserRequest, GetUserResponse, JoinedTown, SaveUserRequest, DeleteUserRequest } from './CoveyServicesClient';
 import { GetUserRequest } from '../requestHandlers/AccountRequestHandlers';
 
 /**
@@ -82,9 +82,46 @@ const jeminUserIDGetUser: GetUserRequest = {
 };
 
 /**
+ * Example data for ResetUserRequest
+ */
+const jeminResetUser: ResetUserRequest = {
+  userID: 'jemin',
+};
+
+const tatiResetUser: ResetUserRequest = {
+  userID: 'tatiana',
+};
+
+const johnResetUser: ResetUserRequest = {
+  userID: 'john',
+};
+
+const jeminUserIDResetUser: ResetUserRequest = {
+  userID: 'jay',
+};
+
+/**
+ * Example data for DeleteUserRequest
+ */
+const jeminDeleteUser: DeleteUserRequest = {
+  userID: 'jemin',
+};
+
+const tatiDeleteUser: DeleteUserRequest = {
+  userID: 'tatiana',
+};
+
+const johnDeleteUser: DeleteUserRequest = {
+  userID: 'john',
+};
+
+const jeminUserIDDeleteUser: DeleteUserRequest = {
+  userID: 'jay',
+};
+
+/**
  * example data for return of GetUserResponse
  */
-
 const jeminUserResponse: GetUserResponse = {
   userID: 'jay',
   email: '',
@@ -94,9 +131,9 @@ const jeminUserResponse: GetUserResponse = {
   towns: [],
 };
 
-describe('AccountsServiceAPIREST', () => {
+describe('AccountsServicesAPIREST', () => {
   let server: http.Server;
-  let apiClient: AccountsServiceClient;
+  let apiClient: CoveyServicesClient;
 
   beforeAll(async () => {
     const app = Express();
@@ -107,7 +144,7 @@ describe('AccountsServiceAPIREST', () => {
     await server.listen();
     const address = server.address() as AddressInfo;
 
-    apiClient = new AccountsServiceClient(`http://127.0.0.1:${address.port}`);
+    apiClient = new CoveyServicesClient(`http://127.0.0.1:${address.port}`);
   });
   afterAll(async () => {
     await server.close();
@@ -117,8 +154,12 @@ describe('AccountsServiceAPIREST', () => {
     it('Allows and retrieves user created with fully formatted SaveUserRequest without any joined towns', async () => {
       try {
         await apiClient.saveUser(jeminSaveUser);
-        const res = await apiClient.getUser(jeminGetUser);
-        expect(res).toStrictEqual(jeminSaveUser);
+
+        const getUserResult = await apiClient.getUser(jeminGetUser);
+        expect(getUserResult).toStrictEqual(jeminSaveUser);
+
+        await apiClient.resetUser(jeminResetUser);
+        await apiClient.deleteUser(jeminDeleteUser);
       } catch (err){
         // shouldn't fail here
         fail(err.toString());
@@ -127,8 +168,12 @@ describe('AccountsServiceAPIREST', () => {
     it('Allows and retrieves user created with just userID with one joined town', async () => {
       try {
         await apiClient.saveUser(johnSaveUser);
-        const res = await apiClient.getUser(johnGetUser);
-        expect(res).toStrictEqual(johnSaveUser);
+
+        const getUserResult = await apiClient.getUser(johnGetUser);
+        expect(getUserResult).toStrictEqual(johnSaveUser);
+
+        await apiClient.resetUser(johnResetUser);
+        await apiClient.deleteUser(johnDeleteUser);
       } catch (err) {
         // shouldn't fail here
         fail(err.toString());
@@ -137,9 +182,12 @@ describe('AccountsServiceAPIREST', () => {
     it('Allows and retrieves user created with just userID with multiple joined town', async () => {
       try {
         await apiClient.saveUser(tatiSaveUser);
-        const res = await apiClient.getUser(tatiGetUser);
-        expect(res).toStrictEqual(tatiSaveUser);
 
+        const getUserResult = await apiClient.getUser(tatiGetUser);
+        expect(getUserResult).toStrictEqual(tatiSaveUser);
+
+        await apiClient.resetUser(tatiResetUser);
+        await apiClient.deleteUser(tatiDeleteUser);
       } catch (err) {
         // shouldn't fail here
         fail(err.toString());
@@ -148,8 +196,12 @@ describe('AccountsServiceAPIREST', () => {
     it('Allows and retrieves user created with just userID', async () => {
       try {
         await apiClient.saveUser(jeminUserIDSaveUser);
-        const res = await apiClient.getUser(jeminUserIDGetUser);
-        expect(res).toStrictEqual(jeminUserResponse);
+
+        const getUserResult = await apiClient.getUser(jeminUserIDGetUser);
+        expect(getUserResult).toStrictEqual(jeminUserResponse);
+
+        await apiClient.resetUser(jeminUserIDResetUser);
+        await apiClient.deleteUser(jeminUserIDDeleteUser);
       } catch (err) {
         // shouldn't fail here
         fail(err.toString());

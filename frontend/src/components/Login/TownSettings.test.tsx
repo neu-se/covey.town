@@ -6,14 +6,14 @@ import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react
 import { nanoid } from 'nanoid';
 import { TargetElement } from '@testing-library/user-event';
 import TownSettings from './TownSettings';
-import TownsServiceClient from '../../classes/TownsServiceClient';
+import CoveyServicesClient from '../../classes/CoveyServicesClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 
 const mockUseCoveyAppState = jest.fn(() => (Promise.resolve()));
 const mockToast = jest.fn();
 const mockUseDisclosure = {isOpen: true, onOpen: jest.fn(), onClose: jest.fn()};
 
-jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../classes/CoveyServicesClient');
 jest.mock('../../hooks/useCoveyAppState', () => ({
   __esModule: true, // this property makes it work
   default: () => (mockUseCoveyAppState)
@@ -28,10 +28,10 @@ jest.mock("@chakra-ui/react", () => {
 })
 const mockUpdateTown = jest.fn();
 const mockDeleteTown = jest.fn();
-TownsServiceClient.prototype.updateTown = mockUpdateTown;
-TownsServiceClient.prototype.deleteTown = mockDeleteTown;
+CoveyServicesClient.prototype.updateTown = mockUpdateTown;
+CoveyServicesClient.prototype.deleteTown = mockDeleteTown;
 // @ts-ignore
-mockUseCoveyAppState.apiClient = new TownsServiceClient();
+mockUseCoveyAppState.apiClient = new CoveyServicesClient();
 
 function wrappedTownSettings() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
@@ -52,7 +52,7 @@ function wrappedTownSettings() {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    apiClient: new CoveyServicesClient(),
   }}>
     <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
 }

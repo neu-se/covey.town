@@ -3,7 +3,7 @@ import { Express } from 'express';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import io from 'socket.io';
-import { saveUserHandler, getUserHandler, SaveUserRequest } from '../requestHandlers/AccountRequestHandlers';
+import { saveUserHandler, getUserHandler, resetUserHandler, SaveUserRequest, deleteUserHandler } from '../requestHandlers/AccountRequestHandlers';
 
 export default function addAccountRoutes(http: Server, app: Express): io.Server {
   /*
@@ -23,9 +23,41 @@ export default function addAccountRoutes(http: Server, app: Express): io.Server 
   /**
    * Get a user's setting preferences from Covey.Town
    */
-  app.get('/user/:userID', BodyParser.json(), async (req, res) => {
+  app.get('/users/:userID', BodyParser.json(), async (req, res) => {
     try {
       const result = await getUserHandler({
+        userID: req.params.userID,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see account server for more details',
+      });
+    }
+  });
+
+  /**
+   * Resets a user's setting preferences from Covey.Town
+   */
+  app.patch('/users/:userID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await resetUserHandler({
+        userID: req.params.userID,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see account server for more details',
+      });
+    }
+  });
+
+  /**
+  * Delete a user's setting preferences from Covey.Town
+  */
+  app.delete('/users/:userID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await deleteUserHandler({
         userID: req.params.userID,
       });
       res.status(StatusCodes.OK).json(result);

@@ -1,9 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { UserLocation } from '../CoveyTypes';
-
-
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+import { ServerPlayer } from './Player';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -83,6 +80,58 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
+export type JoinedTown = {
+  townID: string,
+  positionX: number,
+  positionY: number,
+};
+
+/**
+ * Payload sent by client to save a user in Covey.Town
+ */
+export interface SaveUserRequest {
+  userID: string;
+  email?: string;
+  username?: string;
+  useAudio?: boolean;
+  useVideo?: boolean;
+  towns?: JoinedTown[];
+}
+
+/**
+ * Payload sent by client to request information for a user's email
+ */
+export interface GetUserRequest {
+  userID: string;
+}
+
+
+/**
+ * Response from the server for a get user request
+ */
+export interface GetUserResponse {
+  userID: string;
+  email: string;
+  username: string;
+  useAudio: boolean;
+  useVideo: boolean;
+  towns: JoinedTown[];
+}
+
+/**
+ * Payload sent by client to delete a user specified by a certain ID
+ */
+export interface ResetUserRequest {
+  userID: string;
+}
+
+/**
+ * Payload sent by client to a user specified by a certain ID
+ */
+export interface DeleteUserRequest {
+  userID: string;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -99,7 +148,7 @@ export type CoveyTownInfo = {
   maximumOccupancy: number
 };
 
-export default class TownsServiceClient {
+export default class CoveyServicesClient {
   private _axios: AxiosInstance;
 
   /**
@@ -126,27 +175,46 @@ export default class TownsServiceClient {
 
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<TownCreateResponse>>('/towns', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper);
   }
 
   async updateTown(requestData: TownUpdateRequest): Promise<void> {
     const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}`, requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async deleteTown(requestData: TownDeleteRequest): Promise<void> {
     const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/${requestData.coveyTownPassword}`);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async listTowns(): Promise<TownListResponse> {
     const responseWrapper = await this._axios.get<ResponseEnvelope<TownListResponse>>('/towns');
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper);
   }
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
-    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async saveUser(requestData: SaveUserRequest): Promise<void> {
+    const responseWrapper = await this._axios.put<ResponseEnvelope<void>>('/user', requestData);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper, true);
+  }
+
+  async getUser(requestData: GetUserRequest): Promise<GetUserResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<GetUserResponse>>(`/users/${requestData.userID}`);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async resetUser(requestData: ResetUserRequest): Promise<void> {
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/users/${requestData.userID}`);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper, true);
+  }
+
+    async deleteUser(requestData: DeleteUserRequest): Promise<void> {
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/users/${requestData.userID}`);
+    return CoveyServicesClient.unwrapOrThrowError(responseWrapper, true);  
+  }
 }

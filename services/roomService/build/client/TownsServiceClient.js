@@ -138,13 +138,13 @@ var __importDefault =
 Object.defineProperty(exports, '__esModule', { value: true });
 var axios_1 = __importDefault(require('axios'));
 var assert_1 = __importDefault(require('assert'));
-var TownsServiceClient = (function () {
-  function TownsServiceClient(serviceURL) {
+var CoveyServicesClient = (function () {
+  function CoveyServicesClient(serviceURL) {
     var baseURL = serviceURL || process.env.REACT_APP_TOWNS_SERVICE_URL;
     assert_1.default(baseURL);
     this._axios = axios_1.default.create({ baseURL: baseURL });
   }
-  TownsServiceClient.unwrapOrThrowError = function (response, ignoreResponse) {
+  CoveyServicesClient.unwrapOrThrowError = function (response, ignoreResponse) {
     if (ignoreResponse === void 0) {
       ignoreResponse = false;
     }
@@ -157,7 +157,7 @@ var TownsServiceClient = (function () {
     }
     throw new Error('Error processing request: ' + response.data.message);
   };
-  TownsServiceClient.prototype.createTown = function (requestData) {
+  CoveyServicesClient.prototype.createTown = function (requestData) {
     return __awaiter(this, void 0, void 0, function () {
       var responseWrapper;
       return __generator(this, function (_a) {
@@ -166,12 +166,12 @@ var TownsServiceClient = (function () {
             return [4, this._axios.post('/towns', requestData)];
           case 1:
             responseWrapper = _a.sent();
-            return [2, TownsServiceClient.unwrapOrThrowError(responseWrapper)];
+            return [2, CoveyServicesClient.unwrapOrThrowError(responseWrapper)];
         }
       });
     });
   };
-  TownsServiceClient.prototype.updateTown = function (requestData) {
+  CoveyServicesClient.prototype.updateTown = function (requestData) {
     return __awaiter(this, void 0, void 0, function () {
       var responseWrapper;
       return __generator(this, function (_a) {
@@ -180,12 +180,12 @@ var TownsServiceClient = (function () {
             return [4, this._axios.patch('/towns/' + requestData.coveyTownID, requestData)];
           case 1:
             responseWrapper = _a.sent();
-            return [2, TownsServiceClient.unwrapOrThrowError(responseWrapper, true)];
+            return [2, CoveyServicesClient.unwrapOrThrowError(responseWrapper, true)];
         }
       });
     });
   };
-  TownsServiceClient.prototype.deleteTown = function (requestData) {
+  CoveyServicesClient.prototype.deleteTown = function (requestData) {
     return __awaiter(this, void 0, void 0, function () {
       var responseWrapper;
       return __generator(this, function (_a) {
@@ -199,12 +199,12 @@ var TownsServiceClient = (function () {
             ];
           case 1:
             responseWrapper = _a.sent();
-            return [2, TownsServiceClient.unwrapOrThrowError(responseWrapper, true)];
+            return [2, CoveyServicesClient.unwrapOrThrowError(responseWrapper, true)];
         }
       });
     });
   };
-  TownsServiceClient.prototype.listTowns = function () {
+  CoveyServicesClient.prototype.listTowns = function () {
     return __awaiter(this, void 0, void 0, function () {
       var responseWrapper;
       return __generator(this, function (_a) {
@@ -213,12 +213,12 @@ var TownsServiceClient = (function () {
             return [4, this._axios.get('/towns')];
           case 1:
             responseWrapper = _a.sent();
-            return [2, TownsServiceClient.unwrapOrThrowError(responseWrapper)];
+            return [2, CoveyServicesClient.unwrapOrThrowError(responseWrapper)];
         }
       });
     });
   };
-  TownsServiceClient.prototype.joinTown = function (requestData) {
+  CoveyServicesClient.prototype.joinTown = function (requestData) {
     return __awaiter(this, void 0, void 0, function () {
       var responseWrapper;
       return __generator(this, function (_a) {
@@ -227,12 +227,12 @@ var TownsServiceClient = (function () {
             return [4, this._axios.post('/sessions', requestData)];
           case 1:
             responseWrapper = _a.sent();
-            return [2, TownsServiceClient.unwrapOrThrowError(responseWrapper)];
+            return [2, CoveyServicesClient.unwrapOrThrowError(responseWrapper)];
         }
       });
     });
   };
-  return TownsServiceClient;
+  return CoveyServicesClient;
 })();
-exports.default = TownsServiceClient;
+exports.default = CoveyServicesClient;
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiVG93bnNTZXJ2aWNlQ2xpZW50LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL2NsaWVudC9Ub3duc1NlcnZpY2VDbGllbnQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQSxnREFBNEQ7QUFDNUQsa0RBQTRCO0FBZ0c1QjtJQVFFLDRCQUFZLFVBQW1CO1FBQzdCLElBQU0sT0FBTyxHQUFHLFVBQVUsSUFBSSxPQUFPLENBQUMsR0FBRyxDQUFDLDJCQUEyQixDQUFDO1FBQ3RFLGdCQUFNLENBQUMsT0FBTyxDQUFDLENBQUM7UUFDaEIsSUFBSSxDQUFDLE1BQU0sR0FBRyxlQUFLLENBQUMsTUFBTSxDQUFDLEVBQUUsT0FBTyxTQUFBLEVBQUUsQ0FBQyxDQUFDO0lBQzFDLENBQUM7SUFFTSxxQ0FBa0IsR0FBekIsVUFBNkIsUUFBNEMsRUFBRSxjQUFzQjtRQUF0QiwrQkFBQSxFQUFBLHNCQUFzQjtRQUMvRixJQUFJLFFBQVEsQ0FBQyxJQUFJLENBQUMsSUFBSSxFQUFFO1lBQ3RCLElBQUksY0FBYyxFQUFFO2dCQUNsQixPQUFPLEVBQU8sQ0FBQzthQUNoQjtZQUNELGdCQUFNLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxRQUFRLENBQUMsQ0FBQztZQUMvQixPQUFPLFFBQVEsQ0FBQyxJQUFJLENBQUMsUUFBUSxDQUFDO1NBQy9CO1FBQ0QsTUFBTSxJQUFJLEtBQUssQ0FBQywrQkFBNkIsUUFBUSxDQUFDLElBQUksQ0FBQyxPQUFTLENBQUMsQ0FBQztJQUN4RSxDQUFDO0lBRUssdUNBQVUsR0FBaEIsVUFBaUIsV0FBOEI7Ozs7OzRCQUNyQixXQUFNLElBQUksQ0FBQyxNQUFNLENBQUMsSUFBSSxDQUF1QyxRQUFRLEVBQUUsV0FBVyxDQUFDLEVBQUE7O3dCQUFyRyxlQUFlLEdBQUcsU0FBbUY7d0JBQzNHLFdBQU8sa0JBQWtCLENBQUMsa0JBQWtCLENBQUMsZUFBZSxDQUFDLEVBQUM7Ozs7S0FDL0Q7SUFFSyx1Q0FBVSxHQUFoQixVQUFpQixXQUE4Qjs7Ozs7NEJBQ3JCLFdBQU0sSUFBSSxDQUFDLE1BQU0sQ0FBQyxLQUFLLENBQXlCLFlBQVUsV0FBVyxDQUFDLFdBQWEsRUFBRSxXQUFXLENBQUMsRUFBQTs7d0JBQW5ILGVBQWUsR0FBRyxTQUFpRzt3QkFDekgsV0FBTyxrQkFBa0IsQ0FBQyxrQkFBa0IsQ0FBQyxlQUFlLEVBQUUsSUFBSSxDQUFDLEVBQUM7Ozs7S0FDckU7SUFFSyx1Q0FBVSxHQUFoQixVQUFpQixXQUE4Qjs7Ozs7NEJBQ3JCLFdBQU0sSUFBSSxDQUFDLE1BQU0sQ0FBQyxNQUFNLENBQXlCLFlBQVUsV0FBVyxDQUFDLFdBQVcsU0FBSSxXQUFXLENBQUMsaUJBQW1CLENBQUMsRUFBQTs7d0JBQXhJLGVBQWUsR0FBRyxTQUFzSDt3QkFDOUksV0FBTyxrQkFBa0IsQ0FBQyxrQkFBa0IsQ0FBQyxlQUFlLEVBQUUsSUFBSSxDQUFDLEVBQUM7Ozs7S0FDckU7SUFFSyxzQ0FBUyxHQUFmOzs7Ozs0QkFDMEIsV0FBTSxJQUFJLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBcUMsUUFBUSxDQUFDLEVBQUE7O3dCQUFyRixlQUFlLEdBQUcsU0FBbUU7d0JBQzNGLFdBQU8sa0JBQWtCLENBQUMsa0JBQWtCLENBQUMsZUFBZSxDQUFDLEVBQUM7Ozs7S0FDL0Q7SUFFSyxxQ0FBUSxHQUFkLFVBQWUsV0FBNEI7Ozs7OzRCQUNqQixXQUFNLElBQUksQ0FBQyxNQUFNLENBQUMsSUFBSSxDQUFDLFdBQVcsRUFBRSxXQUFXLENBQUMsRUFBQTs7d0JBQWxFLGVBQWUsR0FBRyxTQUFnRDt3QkFDeEUsV0FBTyxrQkFBa0IsQ0FBQyxrQkFBa0IsQ0FBQyxlQUFlLENBQUMsRUFBQzs7OztLQUMvRDtJQUVILHlCQUFDO0FBQUQsQ0FBQyxBQWxERCxJQWtEQyJ9

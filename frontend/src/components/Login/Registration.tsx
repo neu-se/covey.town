@@ -1,7 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import { Auth0ContextInterface } from '@auth0/auth0-react';
-import { Button, Image } from '@chakra-ui/react';
+import { Button, Image, useToast } from '@chakra-ui/react';
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+import { UserInfo } from '../../CoveyTypes';
 
 const useStyles = makeStyles(() => ({
     registration: {
@@ -13,6 +15,10 @@ const useStyles = makeStyles(() => ({
     registrationButton: {
       float: 'left',
     },
+    deleteAccountButton: {
+      float: 'right',
+      marginRight: '.5em',
+    },
     userEmail: {
       display: 'block',
       textAlign: 'right',
@@ -21,13 +27,34 @@ const useStyles = makeStyles(() => ({
 
 interface RegistrationProps {
     auth0: Auth0ContextInterface;
+    setUserInfo(userInfo: UserInfo): void;
 }
 
-export default function Registration({ auth0 }: RegistrationProps): JSX.Element {
+export default function Registration({ auth0, setUserInfo }: RegistrationProps): JSX.Element {
     const classes = useStyles();
+    const { apiClient } = useCoveyAppState();
+    const toast = useToast();
 
     if (auth0.isLoading) {
         return <div>Authentication Loading ...</div>;
+    }
+
+    const deleteAccountHandler = async (userID: string) => {
+      try {
+        await apiClient.resetUser({ userID });
+        toast({
+          title: 'Successfully cleared account preferences.',
+          status: 'success',
+        });
+        const getResponse = await apiClient.getUser({ userID });
+        setUserInfo(getResponse);
+      } catch (err) {
+        toast({
+          title: 'Unable to connect to Account Service',
+          description: err.toString(),
+          status: 'error',
+        });
+      }
     }
 
     if (auth0.isAuthenticated) {
@@ -45,11 +72,18 @@ export default function Registration({ auth0 }: RegistrationProps): JSX.Element 
                 onClick={() => auth0.logout({ returnTo: window.location.origin })}>
                   Log Out
               </Button>
+              <Button
+                className={classes.deleteAccountButton}
+                onClick={() => {
+                  deleteAccountHandler(auth0.user.sub);
+                }}>
+                  Reset Settings
+              </Button>
             </div>
           </>
       );
     }
-
+    
     return (
       <>
         <div className={classes.registration}>

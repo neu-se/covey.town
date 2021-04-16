@@ -1,5 +1,5 @@
 import DebugLogger from '../DebugLogger';
-import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
+import CoveyServicesClient, { TownJoinResponse } from '../CoveyServicesClient';
 
 export default class Video {
   private static video: Video | null = null;
@@ -16,7 +16,7 @@ export default class Video {
 
   private _userName: string;
 
-  private townsServiceClient: TownsServiceClient = new TownsServiceClient();
+  private coveyServicesClient: CoveyServicesClient = new CoveyServicesClient();
 
   private _coveyTownID: string;
 
@@ -62,7 +62,7 @@ export default class Video {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
         // Request our token to join the town
-        this.townsServiceClient.joinTown({
+        this.coveyServicesClient.joinTown({
           coveyTownID: this._coveyTownID,
           userName: this._userName,
           isLoggedIn: this._loggedInUser,

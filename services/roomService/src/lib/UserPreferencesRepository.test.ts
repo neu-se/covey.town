@@ -1,11 +1,11 @@
-import { doesNotMatch } from 'assert';
 import dotenv from 'dotenv';
 import { Client } from 'pg';
 import { JoinedTown, UserInfo } from '../AccountTypes';
 import {
-  deleteUser,
+  resetUser,
   getUserByID,
   upsertUser,
+  deleteUser,
 } from './UserPreferencesRepository';
 
 dotenv.config();
@@ -103,7 +103,7 @@ const tatiInfoUpdate: UserInfo = {
   towns: [],
 };
 
-describe('upsertUser, getUserById, deleteUser', () => {
+describe('upsertUser, getUserById, resetUser', () => {
   beforeAll(done => {
     done();
     testClient.connect();
@@ -112,7 +112,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
     testClient.end();
     done();
   });
-  it('inserts, retrieve, and deletes a user (that has no joined town) when given a user in the database', async () => {
+  it('inserts, retrieves, and deletes a user (that has no joined town) when given a user in the database', async () => {
     const userID = 'kyle1';
     // Inserts the user into the user_preferences table of the database
     const insertUser = await upsertUser(kyleInfo);
@@ -123,8 +123,12 @@ describe('upsertUser, getUserById, deleteUser', () => {
     expect(userInfo).toStrictEqual(kyleInfo);
 
     // delete the user from the database
-    const result = await deleteUser(userID);
-    expect(result).toBe(true);
+    const resettedUser = await resetUser(userID);
+    expect(resettedUser).toBe(true);
+
+    // delete the user from the database
+    const deletedUser = await deleteUser(userID);
+    expect(deletedUser).toBe(true);
   });
 
   it('inserts, updates, retrieve, and deletes a user (that has no joined town) when given a user in the database', async () => {
@@ -144,6 +148,10 @@ describe('upsertUser, getUserById, deleteUser', () => {
     // Checks to see if the user was properly updated in the database
     const updatedUserInfo = await getUserByID(userID);
     expect(updatedUserInfo).toStrictEqual(jeminInfoUpdate);
+
+    // reset the user's saved preferences from the database
+    const resettedUser = await resetUser(userID);
+    expect(resettedUser).toBe(true);
 
     // delete the user from the database
     const deletedUser = await deleteUser(userID);
@@ -169,12 +177,16 @@ describe('upsertUser, getUserById, deleteUser', () => {
     const updatedUserInfo = await getUserByID(userID);
     expect(updatedUserInfo).toStrictEqual(johnInfoUpdate);
 
+    // reset the user's saved preferences from the database
+    const resettedUser = await resetUser(userID);
+    expect(resettedUser).toBe(true);
+
     // delete the user from the database
     const deletedUser = await deleteUser(userID);
     expect(deletedUser).toBe(true);
   });
 
-  it('inserts, updates, retrieve, and deletes a user (that has joined town) when given a user in the database', async () => {
+  it('inserts, updates, retrieves, and deletes a user (that has joined town) when given a user in the database', async () => {
     const userID = 'tatiana1';
     // Inserts the user into the user_preferences table of the database
     const insertUser = await upsertUser(tatiInfo);
@@ -193,7 +205,7 @@ describe('upsertUser, getUserById, deleteUser', () => {
     expect(updatedUserInfo).toStrictEqual(tatiInfo);
 
     // delete the user from the database
-    const deletedUser = await deleteUser(userID);
+    const deletedUser = await resetUser(userID);
     expect(deletedUser).toBe(true);
   });
 });

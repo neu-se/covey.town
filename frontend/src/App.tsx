@@ -23,7 +23,7 @@ import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDi
 import theme from './components/VideoCall/VideoFrontend/theme';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
-import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
+import CoveyServicesClient, { TownJoinResponse } from './classes/CoveyServicesClient';
 import Video from './classes/Video/Video';
 
 type CoveyAppUpdate =
@@ -51,7 +51,7 @@ function defaultAppState(): CoveyAppState {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    apiClient: new CoveyServicesClient(),
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {

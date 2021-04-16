@@ -6,7 +6,7 @@ import { AddressInfo } from 'net';
 import * as TestUtils from './TestUtils';
 
 import { UserLocation } from '../CoveyTypes';
-import TownsServiceClient from './TownsServiceClient';
+import CoveyServicesClient from './CoveyServicesClient';
 import addTownRoutes from '../router/towns';
 
 type TestTownData = {
@@ -16,7 +16,7 @@ type TestTownData = {
 
 describe('TownServiceApiSocket', () => {
   let server: http.Server;
-  let apiClient: TownsServiceClient;
+  let apiClient: CoveyServicesClient;
 
   async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
     const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
@@ -42,7 +42,7 @@ describe('TownServiceApiSocket', () => {
     server.listen();
     const address = server.address() as AddressInfo;
 
-    apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+    apiClient = new CoveyServicesClient(`http://127.0.0.1:${address.port}`);
   });
   afterAll(async () => {
     server.close();

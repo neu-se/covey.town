@@ -5,7 +5,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 import userEvent, { TargetElement } from '@testing-library/user-event'
 import { nanoid } from 'nanoid';
-import TownsServiceClient from '../../classes/TownsServiceClient';
+import CoveyServicesClient from '../../classes/CoveyServicesClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
@@ -13,7 +13,7 @@ import CoveyAppContext from '../../contexts/CoveyAppContext';
 const mockConnect = jest.fn(() => Promise.resolve());
 
 const mockToast = jest.fn();
-jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../classes/CoveyServicesClient');
 jest.mock('../../classes/Video/Video');
 jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts', () => ({
   __esModule: true, // this property makes it work
@@ -31,8 +31,8 @@ const doLoginMock = jest.fn();
 const mocklistTowns = jest.fn();
 const mockCreateTown = jest.fn();
 const mockVideoSetup = jest.fn();
-TownsServiceClient.prototype.listTowns = mocklistTowns;
-TownsServiceClient.prototype.createTown = mockCreateTown;
+CoveyServicesClient.prototype.listTowns = mocklistTowns;
+CoveyServicesClient.prototype.createTown = mockCreateTown;
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({
   towns: [
@@ -99,7 +99,7 @@ function wrappedTownSelection() {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    apiClient: new CoveyServicesClient(),
   }}>
     <TownSelection username='test username' doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }

@@ -1,5 +1,5 @@
 import { JoinedTown, UserInfo } from '../AccountTypes';
-import { getUserByID, upsertUser, SavedUserInfoRequest } from '../lib/UserPreferencesRepository';
+import { getUserByID, upsertUser, resetUser, deleteUser, SavedUserInfoRequest } from '../lib/UserPreferencesRepository';
 
 /**
  * Payload sent by client to save a user in Covey.Town
@@ -33,6 +33,20 @@ export interface GetUserResponse {
 }
 
 /**
+ * Payload sent by client to reset a user's saved preferences specified by a certain ID
+ */
+export interface ResetUserRequest {
+  userID: string;
+}
+
+/**
+ * Payload sent by client to delete a user specified by a certain ID
+ */
+export interface DeleteUserRequest {
+  userID: string;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -53,7 +67,7 @@ export async function saveUserHandler(requestData: SaveUserRequest): Promise<Res
   return {
     isOK: success,
     response: {},
-    message: !success ? `Failed to save user preferences for user ID: ${requestData.userID}` : undefined,
+    message: !success ? 'Failed to save user preferences for user' : undefined,
   };
 }
 
@@ -76,6 +90,38 @@ export async function getUserHandler(requestData: GetUserRequest): Promise<Respo
 
   return {
     isOK: false,
-    message: `Failed to get user information for user ID: ${requestData.userID}`,
+    message: 'Failed to get user information',
+  };
+}
+
+export async function resetUserHandler(requestData: ResetUserRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  if (requestData.userID.length === 0) {
+    return {
+      isOK: false,
+      message: 'User ID must be specified when deleting a user',
+    };
+  }
+  const success = await resetUser(requestData.userID);
+
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? 'Failed to delete user' : undefined,
+  };
+}
+
+export async function deleteUserHandler(requestData: DeleteUserRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+  if (requestData.userID.length === 0) {
+    return {
+      isOK: false,
+      message: 'User ID must be specified when deleting a user',
+    };
+  }
+  const success = await deleteUser(requestData.userID);
+
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? 'Failed to delete user' : undefined,
   };
 }

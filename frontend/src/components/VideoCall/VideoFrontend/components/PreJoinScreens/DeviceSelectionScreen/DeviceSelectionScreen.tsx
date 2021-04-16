@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button, Checkbox, FormLabel, Text, useToast } from '@chakra-ui/react';
+import { Button, Checkbox, FormControl, FormLabel, Text, useToast } from '@chakra-ui/react';
 import { Grid, Hidden, makeStyles, Theme } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -144,9 +144,6 @@ export default function DeviceSelectionScreen({
               />
               {auth0.isAuthenticated && (
                 <>
-                  {/* <FormLabel whiteSpace='nowrap' size='small' htmlFor='savedUserName'>
-                    Saved Media
-                  </FormLabel> */}
                   <Text className={classes.mobileSavedMedia} fontSize='sm'>
                     Saved Media
                   </Text>
@@ -192,17 +189,19 @@ export default function DeviceSelectionScreen({
                 />
                 {auth0.isAuthenticated && (
                   <>
-                    <FormLabel whiteSpace='nowrap' htmlFor='savedUserName'>
-                      Saved Media
-                    </FormLabel>
-                    <Checkbox
-                      id='savedDevicePreferences'
-                      name='savedDevicePreferences'
-                      isChecked={useSavedDevicePreferences}
-                      onChange={e => {
-                        setUseSavedDevicePreferences(e.target.checked);
-                      }}
-                    />
+                    <FormControl>
+                      <FormLabel whiteSpace='nowrap' htmlFor='savedDevicePreferences'>
+                        Saved Media
+                      </FormLabel>
+                      <Checkbox
+                        id='savedDevicePreferences'
+                        name='savedDevicePreferences'
+                        isChecked={useSavedDevicePreferences}
+                        onChange={e => {
+                          setUseSavedDevicePreferences(e.target.checked);
+                        }}
+                      />
+                    </FormControl>
                     <Button
                       float='right'
                       isDisabled={useSavedDevicePreferences}

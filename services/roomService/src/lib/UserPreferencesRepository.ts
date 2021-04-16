@@ -124,7 +124,22 @@ export async function getUserByID(userID: string): Promise<SavedUserInfoRequest 
 }
 
 /**
- * deletes a user, specified by their email
+ * removes all of a user's information, specified by their userID
+ * RETURN type: {success: true/false}
+ */
+export async function resetUser(userID: string): Promise<boolean> {
+  try {
+    await client.query(`DELETE FROM towns WHERE user_id = '${userID}';`);
+    await client.query(`UPDATE user_preferences SET username = '', use_audio = false, use_video = false WHERE user_id = '${userID}';`);
+
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
+ * deletes a user, specified by their userID
  * RETURN type: {success: true/false}
  */
 export async function deleteUser(userID: string): Promise<boolean> {

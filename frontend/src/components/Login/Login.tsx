@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PreJoinScreens from '../VideoCall/VideoFrontend/components/PreJoinScreens/PreJoinScreens';
 import MediaErrorSnackbar
   from '../VideoCall/VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
-import { TownJoinResponse } from '../../classes/TownsServiceClient';
+import { TownJoinResponse } from '../../classes/CoveyServicesClient';
 
 interface LoginProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>

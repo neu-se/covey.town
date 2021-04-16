@@ -22,7 +22,7 @@ import {
 import { useAuth0 } from '@auth0/auth0-react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
-import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
+import { CoveyTownInfo, TownJoinResponse, } from '../../classes/CoveyServicesClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import { UserInfo } from '../../CoveyTypes';
 

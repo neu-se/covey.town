@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import assert from 'assert';
 import { AddressInfo } from 'net';
 
-import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
+import CoveyServicesClient, { TownListResponse } from './CoveyServicesClient';
 import addTownRoutes from '../router/towns';
 
 type TestTownData = {
@@ -29,7 +29,7 @@ function expectTownListMatches(towns: TownListResponse, town: TestTownData) {
 
 describe('TownsServiceAPIREST', () => {
   let server: http.Server;
-  let apiClient: TownsServiceClient;
+  let apiClient: CoveyServicesClient;
 
   async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<TestTownData> {
     const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
@@ -55,7 +55,7 @@ describe('TownsServiceAPIREST', () => {
     await server.listen();
     const address = server.address() as AddressInfo;
 
-    apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+    apiClient = new CoveyServicesClient(`http://127.0.0.1:${address.port}`);
   });
   afterAll(async () => {
     await server.close();

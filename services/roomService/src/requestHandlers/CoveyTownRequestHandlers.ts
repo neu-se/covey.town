@@ -4,7 +4,6 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-// import AccountsServiceClient from '../client/AccountsServiceClient';
 import { saveUserHandler } from './AccountRequestHandlers';
 
 
