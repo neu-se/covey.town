@@ -1,12 +1,15 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
 import {
+  GraphQLResponse,
+} from 'apollo-server-types';
+import {
   createUser,
   addFriendMutation,
   deleteUserMutation,
   acceptFriendMutation,
   rejectFriendMutation,
-  searchUserByUserNameQuery, findAllUsers,
+  searchUserByUserNameQuery, findAllUsers, searchUserByEmailQuery,
 } from './TestQueries';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
@@ -34,12 +37,14 @@ describe('Testing queries', () => {
 
   let testUserOne : { email: string; username: string; password?: string; };
   let testUserTwo : { email: string; username: string; password?: string; };
+  let testUserOneResponse : GraphQLResponse;
+  let testUserTwoResponse: GraphQLResponse;
 
   beforeEach(async () => {
     testUserOne = { username: 'vaidehi123', email: 'vaidehi1236@gmail.com', password: '123478' };
     testUserTwo = { username: 'vaibhavi234', email: 'vaibhavi123@gmail.com', password: '1234' };
-    await mutate({ mutation: createUser, variables: { input: testUserOne }});
-    await mutate({ mutation: createUser, variables: { input: testUserTwo }});
+    testUserOneResponse = await mutate({ mutation: createUser, variables: { input: testUserOne }});
+    testUserTwoResponse = await mutate({ mutation: createUser, variables: { input: testUserTwo }});
   });
 
   afterEach(async () => {
@@ -95,6 +100,20 @@ describe('Testing queries', () => {
 
     const queryResponse = await query({ query: findAllUsers});
     expect(queryResponse.data.users.length).not.toBe(0);
+
+  });
+
+  it('friend list update test', async () => {
+
+    const inputTest = { userNameTo: testUserOne.username, userNameFrom: testUserTwo.username };
+    const addFriendResponse = await mutate({ mutation: addFriendMutation, variables: { input: inputTest }});
+    expect(addFriendResponse.data.addFriend).toBe(true);
+    const acceptFriendResponse = await mutate({ mutation: acceptFriendMutation, variables: { input: inputTest }});
+    expect(acceptFriendResponse.data.acceptFriend).toBe(true);
+    const searchUserByEmailResponse = await query({ query: searchUserByEmailQuery, variables: { email: testUserOne.email } });
+    expect(searchUserByEmailResponse.data.searchUserByEmail.friends.length).not.toBe(0);
+    const searchUserByEmailResponseTwo = await query({ query: searchUserByEmailQuery, variables: { email: testUserTwo.email } });
+    expect(searchUserByEmailResponseTwo.data.searchUserByEmail.friends.length).not.toBe(0);
 
   });
 
