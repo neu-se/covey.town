@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import Phaser from 'phaser';
+import React, { useEffect, useState } from 'react';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -7,8 +7,9 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
-    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text,
-    message: Phaser.GameObjects.Text
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    label: Phaser.GameObjects.Text;
+    message: Phaser.GameObjects.Text;
   };
 
   private id?: string;
@@ -52,14 +53,14 @@ class CoveyGameScene extends Phaser.Scene {
       this.players = players;
       return;
     }
-    players.forEach((p) => {
+    players.forEach(p => {
       this.updatePlayerLocation(p);
     });
     // Remove disconnected players from board
     const disconnectedPlayers = this.players.filter(
-      (player) => !players.find((p) => p.id === player.id),
+      player => !players.find(p => p.id === player.id),
     );
-    disconnectedPlayers.forEach((disconnectedPlayer) => {
+    disconnectedPlayers.forEach(disconnectedPlayer => {
       if (disconnectedPlayer.sprite) {
         disconnectedPlayer.sprite.destroy();
         disconnectedPlayer.label?.destroy();
@@ -69,15 +70,13 @@ class CoveyGameScene extends Phaser.Scene {
     // Remove disconnected players from list
     if (disconnectedPlayers.length) {
       this.players = this.players.filter(
-        (player) => !disconnectedPlayers.find(
-          (p) => p.id === player.id,
-        ),
+        player => !disconnectedPlayers.find(p => p.id === player.id),
       );
     }
   }
 
   updatePlayerLocation(player: Player) {
-    let myPlayer = this.players.find((p) => p.id === player.id);
+    let myPlayer = this.players.find(p => p.id === player.id);
     if (!myPlayer) {
       let { location } = player;
       if (!location) {
@@ -109,10 +108,12 @@ class CoveyGameScene extends Phaser.Scene {
           font: '18px monospace',
           color: '#FFFF00',
         });
+
         myPlayer.label = label;
         myPlayer.message = message;
         myPlayer.sprite = sprite;
       }
+
       if (!sprite.anims) return;
       sprite.setX(player.location.x);
       sprite.setY(player.location.y);
@@ -134,52 +135,37 @@ class CoveyGameScene extends Phaser.Scene {
       this.players = players;
       return;
     }
-    players.forEach((p) => {
+
+    players.forEach(p => {
       this.newMessage(p, msg);
     });
   }
 
   newMessage(player: Player, msg: string) {
-    let myPlayer = this.players.find((p) => p.id === player.id);
+    // the msg is being passed in
+    const myPlayer = this.players.find(p => p.id === player.id);
     if (!myPlayer) {
-      let { location } = player;
-      if (!location) {
-        location = {
-          rotation: 'back',
-          moving: false,
-          x: 0,
-          y: 0,
-        };
-      }
-      myPlayer = new Player(player.id, player.userName, location);
-      this.players.push(myPlayer);
+      return;
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
-      let { sprite } = myPlayer;
-      if (!sprite) {
-        sprite = this.physics.add
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore - JB todo
-          .sprite(0, 0, 'atlas', 'misa-front')
-          .setSize(30, 40)
-          .setOffset(0, 24);
-        const label = this.add.text(0, 0, myPlayer.userName, {
-          font: '18px monospace',
-          color: '#000000',
-          backgroundColor: '#ffffff',
-        });
-        const message = this.add.text(0, 0, msg, {
+      let { message } = myPlayer;
+      if (!message) {
+        message = this.add.text(0, -20, msg, {
           font: '18px monospace',
           color: '#FFFF00',
         });
-        setTimeout(()=> { 
-          message.setText('');
-        }, 5000);
-        
-        myPlayer.label = label;
+
         myPlayer.message = message;
-        myPlayer.sprite = sprite;
       }
+
+      message = this.add.text(player.location.x, player.location.y - 40, msg, {
+        font: '18px monospace',
+        color: '#FFFF00',
+      });
+
+      setTimeout(() => {
+        message?.setText('');
+      }, 5000);
     }
   }
 
@@ -207,6 +193,7 @@ class CoveyGameScene extends Phaser.Scene {
       const speed = 175;
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
+      const message = this.player.message as Phaser.GameObjects.Text;
 
       // Stop any previous movement from the last frame
       body.setVelocity(0);
@@ -244,18 +231,20 @@ class CoveyGameScene extends Phaser.Scene {
       }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
-      this.player.sprite.body.velocity.normalize()
-        .scale(speed);
+      this.player.sprite.body.velocity.normalize().scale(speed);
 
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
       this.player.message.setX(body.x);
       this.player.message.setY(body.y - 40);
-      if (!this.lastLocation
-        || this.lastLocation.x !== body.x
-        || this.lastLocation.y !== body.y || this.lastLocation.rotation !== primaryDirection
-        || this.lastLocation.moving !== isMoving) {
+      if (
+        !this.lastLocation ||
+        this.lastLocation.x !== body.x ||
+        this.lastLocation.y !== body.y ||
+        this.lastLocation.rotation !== primaryDirection ||
+        this.lastLocation.moving !== isMoving
+      ) {
         if (!this.lastLocation) {
           this.lastLocation = {
             x: body.x,
@@ -270,6 +259,11 @@ class CoveyGameScene extends Phaser.Scene {
         this.lastLocation.moving = isMoving;
         this.emitMovement(this.lastLocation);
       }
+
+      // console.log(`last message: ${this.lastMessage}`)
+      // if (!this.lastMessage || this.player.message.text !== this.lastMessage) {
+      //   this.player.message.setText(message.text);
+      // }
     }
   }
 
@@ -295,56 +289,59 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
     // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
-    const spawnPoint = map.findObject('Objects',
-      (obj) => obj.name === 'Spawn Point') as unknown as
-      Phaser.GameObjects.Components.Transform;
-
+    const spawnPoint = (map.findObject(
+      'Objects',
+      obj => obj.name === 'Spawn Point',
+    ) as unknown) as Phaser.GameObjects.Components.Transform;
 
     // Find all of the transporters, add them to the physics engine
-    const transporters = map.createFromObjects('Objects',
-      { name: 'transporter' })
+    const transporters = map.createFromObjects('Objects', { name: 'transporter' });
     this.physics.world.enable(transporters);
 
     // For each of the transporters (rectangle objects), we need to tweak their location on the scene
     // for reasons that are not obvious to me, but this seems to work. We also set them to be invisible
     // but for debugging, you can comment out that line.
     transporters.forEach(transporter => {
-        const sprite = transporter as Phaser.GameObjects.Sprite;
-        sprite.y += 2 * sprite.height; // Phaser and Tiled seem to disagree on which corner is y
-        sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
-                                  // the map
-      }
-    );
+      const sprite = transporter as Phaser.GameObjects.Sprite;
+      sprite.y += 2 * sprite.height; // Phaser and Tiled seem to disagree on which corner is y
+      sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
+      // the map
+    });
 
-    const labels = map.filterObjects('Objects',(obj)=>obj.name==='label');
+    const labels = map.filterObjects('Objects', obj => obj.name === 'label');
     labels.forEach(label => {
-      if(label.x && label.y){
+      if (label.x && label.y) {
         this.add.text(label.x, label.y, label.text.text, {
           color: '#FFFFFF',
           backgroundColor: '#000000',
-        })
+        });
       }
     });
 
-
-
     const cursorKeys = this.input.keyboard.createCursorKeys();
     this.cursors.push(cursorKeys);
-    this.cursors.push(this.input.keyboard.addKeys({
-      'up': Phaser.Input.Keyboard.KeyCodes.W,
-      'down': Phaser.Input.Keyboard.KeyCodes.S,
-      'left': Phaser.Input.Keyboard.KeyCodes.A,
-      'right': Phaser.Input.Keyboard.KeyCodes.D
-    }, false) as Phaser.Types.Input.Keyboard.CursorKeys);
-    this.cursors.push(this.input.keyboard.addKeys({
-      'up': Phaser.Input.Keyboard.KeyCodes.H,
-      'down': Phaser.Input.Keyboard.KeyCodes.J,
-      'left': Phaser.Input.Keyboard.KeyCodes.K,
-      'right': Phaser.Input.Keyboard.KeyCodes.L
-    }, false) as Phaser.Types.Input.Keyboard.CursorKeys);
-
-
-
+    this.cursors.push(
+      this.input.keyboard.addKeys(
+        {
+          up: Phaser.Input.Keyboard.KeyCodes.W,
+          down: Phaser.Input.Keyboard.KeyCodes.S,
+          left: Phaser.Input.Keyboard.KeyCodes.A,
+          right: Phaser.Input.Keyboard.KeyCodes.D,
+        },
+        false,
+      ) as Phaser.Types.Input.Keyboard.CursorKeys,
+    );
+    this.cursors.push(
+      this.input.keyboard.addKeys(
+        {
+          up: Phaser.Input.Keyboard.KeyCodes.H,
+          down: Phaser.Input.Keyboard.KeyCodes.J,
+          left: Phaser.Input.Keyboard.KeyCodes.K,
+          right: Phaser.Input.Keyboard.KeyCodes.L,
+        },
+        false,
+      ) as Phaser.Types.Input.Keyboard.CursorKeys,
+    );
 
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
@@ -372,36 +369,32 @@ class CoveyGameScene extends Phaser.Scene {
       message,
     };
 
-    // just for testing, normally this will be blank
-    setTimeout(()=> { 
-      message.setText('');
-    }, 5000);
-
     /* Configure physics overlap behavior for when the player steps into
     a transporter area. If you enter a transporter and press 'space', you'll
     transport to the location on the map that is referenced by the 'target' property
     of the transporter.
      */
-    this.physics.add.overlap(sprite, transporters,
-      (overlappingObject, transporter)=>{
-      if(cursorKeys.space.isDown && this.player){
+    this.physics.add.overlap(sprite, transporters, (overlappingObject, transporter) => {
+      if (cursorKeys.space.isDown && this.player) {
         // In the tiled editor, set the 'target' to be an *object* pointer
         // Here, we'll see just the ID, then find the object by ID
         const transportTargetID = transporter.getData('target') as number;
-        const target = map.findObject('Objects', obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID);
-        if(target && target.x && target.y && this.lastLocation){
+        const target = map.findObject(
+          'Objects',
+          obj => ((obj as unknown) as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID,
+        );
+        if (target && target.x && target.y && this.lastLocation) {
           // Move the player to the target, update lastLocation and send it to other players
           this.player.sprite.x = target.x;
           this.player.sprite.y = target.y;
           this.lastLocation.x = target.x;
           this.lastLocation.y = target.y;
           this.emitMovement(this.lastLocation);
-        }
-        else{
+        } else {
           throw new Error(`Unable to find target object ${target}`);
         }
       }
-    })
+    });
 
     this.emitMovement({
       rotation: 'front',
@@ -467,19 +460,22 @@ class CoveyGameScene extends Phaser.Scene {
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-
-
     // Help text that has a "fixed" position on the screen
     this.add
-      .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
-        font: '18px monospace',
-        color: '#000000',
-        padding: {
-          x: 20,
-          y: 10
+      .text(
+        16,
+        16,
+        `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`,
+        {
+          font: '18px monospace',
+          color: '#000000',
+          padding: {
+            x: 20,
+            y: 10,
+          },
+          backgroundColor: '#ffffff',
         },
-        backgroundColor: '#ffffff',
-      })
+      )
       .setScrollFactor(0)
       .setDepth(30);
 
@@ -487,7 +483,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.players.length) {
       // Some players got added to the queue before we were ready, make sure that they have
       // sprites....
-      this.players.forEach((p) => this.updatePlayerLocation(p));
+      this.players.forEach(p => this.updatePlayerLocation(p));
     }
   }
 
@@ -506,9 +502,7 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const {
-    emitMovement, players, messages
-  } = useCoveyAppState();
+  const { emitMovement, players, messages } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
     const config = {
@@ -531,10 +525,10 @@ export default function WorldMap(): JSX.Element {
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
         newGameScene.pause();
-      }
+      };
       video.unPauseGame = () => {
         newGameScene.resume();
-      }
+      };
     }
     return () => {
       game.destroy(true);
@@ -546,13 +540,17 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  useEffect(() => {
-    if(messages.length !== 0) {
-      gameScene?.updateMessages(players, messages[messages.length-1].message);
-    }
-    
-  }, [players, deepPlayers, gameScene, messages]);
-
   // TODO new useEffect for messages
-  return <div id="map-container"/>;
+  useEffect(() => {
+    if (messages && messages.length !== 0) {
+      console.log('message trigger');
+      if (messages[messages.length - 1].getType() === 'global') {
+        gameScene?.updateMessages(players, messages[messages.length - 1].message);
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
+
+  return <div id='map-container' />;
 }

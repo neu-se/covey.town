@@ -27,26 +27,6 @@ function Chat(): JSX.Element {
     return 'black';
   };
 
-  // const messageToProps = (message: AChatMessage): MessageProps => {
-  //   if(message) {
-  //     const sender = players.find(p => p.id === message.senderID)
-  //     console.log(sender?.userName)
-  //     console.log(messages[messages.length-1].message)
-  //     return {
-  //       key: nanoid(),
-  //       userName: `${sender?.userName}: `,
-  //       color: setButtonColor('global'),
-  //       message: messages[messages.length-1].message,
-  //     }
-  //   }
-  //   throw new Error();
-  // }
-
-  // const getMessages = useCallback((async ()=> {
-  //   const messagesCurrent = (await apiClient.getMessages({coveyTownID: currentTownID})).messages;
-  //   setMessagesState(messagesCurrent.map(msg => messageToProps(msg)))
-  // }), [apiClient, currentTownID, messageToProps])
-
   useEffect(() => {
     if (!messages) {
       toast({
@@ -84,7 +64,7 @@ function Chat(): JSX.Element {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userName, messages, toast]);
+  }, [userName, messages]);
 
   const handlePrivateMessage = async () => {
     if (input !== '') {
