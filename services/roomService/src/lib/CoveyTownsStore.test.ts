@@ -1,9 +1,7 @@
 import { nanoid } from 'nanoid';
-import { mock } from 'jest-mock-extended';
 import CoveyTownsStore from './CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
-import IDBClient from '../services/IDBClient';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();

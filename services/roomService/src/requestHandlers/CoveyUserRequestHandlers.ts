@@ -4,8 +4,6 @@ export default function userSubscriptionHandler(socket: Socket): void {
   const { userID } = socket.handshake.auth as { userID: string };
   socket.join(userID);
 
-  console.log(`${userID} connected `);
-
   /**
    * Handles the friend request and fires receiveRequest event to the recipient
    * @fires receiveRequest
@@ -24,6 +22,5 @@ export default function userSubscriptionHandler(socket: Socket): void {
   socket.on('acceptRequest', acceptRequestHandler);
 
   socket.on('disconnect', () => {
-    console.log(`${userID} disconnected`);
   });
 }

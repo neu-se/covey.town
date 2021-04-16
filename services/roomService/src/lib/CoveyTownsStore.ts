@@ -1,5 +1,5 @@
 import CoveyTownController from './CoveyTownController';
-import { CoveyTown, CoveyTownList } from '../CoveyTypes';
+import { CoveyTownList } from '../CoveyTypes';
 import MongoAtlasClient from '../services/MongoAtlasClient';
 import IDBClient from '../services/IDBClient';
 

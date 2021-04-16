@@ -1,4 +1,3 @@
-import { mock } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import { CoveyTown } from '../CoveyTypes';
 import MongoAtlasClient from './MongoAtlasClient';

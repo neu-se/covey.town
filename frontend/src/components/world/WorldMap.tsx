@@ -545,6 +545,12 @@ export default function WorldMap(): JSX.Element {
     })
   }
 
+  /**
+   * Returns true if the logged in user and the user with the given ID are
+   * already friends.
+   * @param townUserID id for the profile of the covey user
+   * @returns true if the two users are friends
+   */
   function areAlreadyFriends(townUserID: string) : boolean {
     if (loggedInUser) {
       return loggedInUser.friendIDs.filter((friendID: string) => friendID === townUserID).length > 0;
