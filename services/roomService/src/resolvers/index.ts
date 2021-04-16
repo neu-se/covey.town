@@ -13,21 +13,6 @@ import {
 const resolvers = {
   Query: {
     /**
-     * Resolver to find a user by id
-     * @param _ parent is not used here
-     * @param args contains all input arguments
-     * @returns user profile matching to the id.
-     */
-    searchUserById: async (_: any, args: any, context:any) => {
-      try {
-        const email = await context.user;
-        const user = await User.findOne((id: string) => id === args.id);
-        return user;
-      } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this');
-      }
-    },
-    /**
      * Resolver to find all the users in Covey Town.
      * @returns all the users in Covey Town
      */
@@ -40,7 +25,6 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-
     searchUserByUserName: async (_: any, args: any, context:any) => {
       try {
         const email = await context.user;
