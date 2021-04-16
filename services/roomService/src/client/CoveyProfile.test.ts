@@ -6,7 +6,7 @@ import {
   deleteUserMutation,
   acceptFriendMutation,
   rejectFriendMutation,
-  searchUserByUserNameQuery,
+  searchUserByUserNameQuery, findAllUsers,
 } from './TestQueries';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
@@ -90,6 +90,15 @@ describe('Testing queries', () => {
     expect(queryResponse.data.searchUserByUserName.length).not.toBe(0);
 
   });
+
+  it('list all users', async () => {
+
+    const queryResponse = await query({ query: findAllUsers});
+    expect(queryResponse.data.users.length).not.toBe(0);
+
+  });
+
+
 
 });
 
