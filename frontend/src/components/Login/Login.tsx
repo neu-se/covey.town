@@ -6,6 +6,7 @@ import MediaErrorSnackbar
   from '../VideoCall/VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
 import { TownJoinResponse } from '../../classes/TownsServiceClient';
 import SplashPage from '../Splash/SplashPage';
+import GQLExample from '../GQLExample/GQLExample'
 
 interface LoginProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -26,6 +27,9 @@ export default function Login({ doLogin }: LoginProps): JSX.Element {
             doLogin={doLogin}
             setMediaError={setMediaError}
           />
+        </Route>
+        <Route exact path="/gqlex">
+          <GQLExample />
         </Route>
         <Route path="/">
           <SplashPage />

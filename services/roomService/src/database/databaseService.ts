@@ -41,20 +41,12 @@ export type UserInfo = {
   currentAvatar: string,
 };
 
-type Email = {
-  email: string,
-};
-
-type Avatar = {
-  currentAvatar: string,
-};
-
 // functions interacting with Users
 export async function logUser(email: string): Promise<void>  {
   let count = 0;
   await db('Users')
     .where('email', email)
-    .then((rows: Email[]) => {
+    .then((rows: any[]) => {
       count = rows.length;
     });
 
@@ -72,7 +64,7 @@ export async function logUser(email: string): Promise<void>  {
 export async function getAllUserInfo(email: string): Promise<UserInfo> {
   return db('Users')
     .where('email', email)
-    .then((rows: UserInfo[]) => {
+    .then((rows: any[]) => {
       const user = rows[0];
       return { email: user.email, firstName: user.firstName, lastName: user.lastName, currentAvatar: user.currentAvatar };
     });
@@ -103,7 +95,7 @@ export async function getPublicTowns(): Promise<TownListingInfo[]> {
   await db('Towns')
     .select('coveyTownID', 'friendlyName')
     .where('isPublicallyListed', true)
-    .then((rows: TownListingInfo[]) => {
+    .then((rows: any[]) => {
       rows.forEach(row => results.push({ coveyTownID: row.coveyTownID, friendlyName: row.friendlyName }));
     });
   return results;
@@ -113,7 +105,7 @@ export async function getAllTowns(): Promise<AllTownResponse[]> {
   const results: AllTownResponse[] = [];
   await db('Towns')
     .select('coveyTownID')
-    .then((rows: AllTownResponse[]) => {
+    .then((rows: any[]) => {
       rows.forEach(row => results.push({ coveyTownID: row.coveyTownID }));
     });
   return results;
@@ -123,7 +115,7 @@ export async function getTownByID(townID: string): Promise<TownData | void> {
   const result = await db('Towns')
     .select('coveyTownID', 'coveyTownPassword', 'friendlyName', 'isPublicallyListed')
     .where('coveyTownID', townID)
-    .then((rows: TownData[]) => {
+    .then((rows: any[]) => {
       const row = rows[0];
       let town;
       if (row !== undefined) {
@@ -201,15 +193,29 @@ export async function unsaveTown(user: string, townID: string): Promise<void> {
     .del();
 }
 
+// export async function getSavedTowns(user: string): Promise<SavedTownListingInfo[]> {
+//   return db('SavedTowns')
+//     .innerJoin('Towns', 'SavedTowns.coveyTownID', 'Towns.coveyTownID')
+//     .select('Towns.coveyTownID as townID', 'Towns.friendlyName as friendlyName', 'Towns.isPublicallyListed as publicStatus')
+//     .where('Savedtowns.userEmail', user)
+//     .then((returnedTowns: any[]) => {
+//       const townList: SavedTownListingInfo[] = [];
+//       returnedTowns.forEach(town => {
+//         townList.push({ coveyTownID: town.townID, friendlyName: town.friendlyName, publicStatus: town.publicStatus});
+//       });
+//       return townList;
+//     });
+// }
+
 export async function getSavedTowns(user: string): Promise<SavedTownListingInfo[]> {
   return db('Towns')
     .leftJoin('SavedTowns', 'Towns.coveyTownID', 'SavedTowns.coveyTownID')
-    .select('Towns.coveyTownID as coveyTownID', 'Towns.friendlyName as friendlyName', 'Towns.isPublicallyListed as publicStatus')
+    .select('Towns.coveyTownID as townID', 'Towns.friendlyName as friendlyName', 'Towns.isPublicallyListed as publicStatus')
     .where('SavedTowns.userEmail', user)
-    .then((returnedTowns: SavedTownListingInfo[]) => {
+    .then((returnedTowns: any[]) => {
       const townList: SavedTownListingInfo[] = [];
       returnedTowns.forEach(town => {
-        townList.push({ coveyTownID: town.coveyTownID, friendlyName: town.friendlyName, publicStatus: town.publicStatus});
+        townList.push({ coveyTownID: town.townID, friendlyName: town.friendlyName, publicStatus: town.publicStatus});
       });
       return townList;
     });
@@ -228,7 +234,7 @@ export async function getCurrentAvatar(user: string): Promise<string> {
   return db('Users')
     .select('currentAvatar')
     .where('email', user)
-    .then((rows: Avatar[]) => {
+    .then((rows: any[]) => {
       const response = rows[0];
       return response.currentAvatar;
     });
