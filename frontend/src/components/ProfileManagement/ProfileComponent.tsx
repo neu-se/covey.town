@@ -28,6 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  VStack
 } from "@chakra-ui/react";
 import FriendSearch from "./FriendSearch";
 import {findAllUserProfiles, searchUserByEmail, updateUser, UpdateUserRequest, User, deleteUser, DeleteUserRequest} from '../../graphql/queries';
@@ -46,7 +47,7 @@ function ProfileComponent(): JSX.Element {
   }
 
   const history = useHistory();
-  const { user, isLoading, logout, getAccessTokenSilently } = useAuth0();
+  const { user, isLoading, logout } = useAuth0();
   const [userName, setUserName] = useState<string>("");
   const [id, setId] = useState<string>("");
   const [bio, setBio] = useState<string>("");
@@ -69,8 +70,6 @@ function ProfileComponent(): JSX.Element {
 
   useEffect(() => {
     const findUser = async () => {
-      const accessToken = await getAccessTokenSilently();
-      window.sessionStorage.setItem("accessToken", accessToken);
       const userInfo = await searchUserByEmail(user.email);
       setUserName(userInfo.username);
       setBio(userInfo.bio);
@@ -95,8 +94,7 @@ function ProfileComponent(): JSX.Element {
     }
     findUser();
     findAllUsers();
-
-  },[getAccessTokenSilently]);
+  },[]);
 
   const updateUserCall = async () => {
 
@@ -152,28 +150,29 @@ function ProfileComponent(): JSX.Element {
         class='box-profile'
       >
         <Stack direction={["column", "row"]} spacing='0px'>
-          <Box w='35%' h='69vh' bg='blue.500' boxShadow='lg'>
+          <Box w={['89%','35%']} h={['89vh','89vh','80vh','75vh']} bg='blue.500' boxShadow='2xl'>
             <Heading size='md' paddingTop='20px'>
               {" "}
-              <Text color='white'>HELLO {userName.toUpperCase()}</Text>
+              <Text color='white'>HELLO, {userName.toUpperCase()}</Text>
             </Heading>
             <Flex width='full' align='center' justifyContent='center'>
               <Box mt={90}>
-                <Text color='white'>{userName.toUpperCase()}</Text>
-                <Text color='white'>email: {user.email}</Text>
-                <Text color='white'>BIO: {bio}</Text>
-                <Text color='white'>LinkedIn link: {linkedInLink}</Text>
-                <Text color='white'>Instagram link: {instagramLink}</Text>
-                <Text color='white'>facebook link: {facebookLink}</Text>
-                <Text color='white'>Location: {location}</Text>
-                <Text color='white'>Occupation: {occupation}</Text>
+                <Text color='white' className="bold-text">{userName.toUpperCase()}</Text>
+                <Text color='white' className="bold-text">Email: {user.email}</Text>
+                <Text color='white' className="bold-text">BIO: {bio}</Text>
+                <Text color='white' className="bold-text">LinkedIn link: {linkedInLink}</Text>
+                <Text color='white' className="bold-text">Instagram link: {instagramLink}</Text>
+                <Text color='white' className="bold-text">Facebook link: {facebookLink}</Text>
+                <Text color='white' className="bold-text">Location: {location}</Text>
+                <Text color='white' className="bold-text">Occupation: {occupation}</Text>
+                <VStack>
                 <Link to='/friendsPage'>
                   {" "}
                   <Button
                     variantColor='teal'
                     variant='outline'
                     type='submit'
-                    width='full'
+                     w = {['150px','200px','200px','300px']}
                     mt={4}
                     color='white'
                   >
@@ -184,7 +183,7 @@ function ProfileComponent(): JSX.Element {
                   variantColor='teal'
                   variant='outline'
                   type='submit'
-                  width='full'
+                     w = {['150px','200px','200px','300px']}
                   mt={4}
                   color='white'
                   onClick={onOpen}
@@ -196,7 +195,7 @@ function ProfileComponent(): JSX.Element {
                   variantColor='teal'
                   variant='outline'
                   type='submit'
-                  width='full'
+                    w = {['150px','200px','200px','300px']}
                   mt={4}
                   color='white'
                   onClick={()=>{
@@ -210,7 +209,7 @@ function ProfileComponent(): JSX.Element {
                   variantColor='teal'
                   variant='outline'
                   type='submit'
-                  width='full'
+                     w = {['150px','200px','200px','300px']}
                   mt={4}
                   color='white'
                   onClick={
@@ -218,6 +217,7 @@ function ProfileComponent(): JSX.Element {
                 >
                   Delete account
                 </Button>
+                </VStack>
                 <Modal
                   isOpen={isOpen}
                   onClose={onClose}
@@ -305,20 +305,20 @@ function ProfileComponent(): JSX.Element {
               </Box>
             </Flex>
           </Box>
-          <Box w='65%' h='60vh' bg='white'>
+          <Box w={['89%','65%']} h={['89vh','89vh','80vh','75vh']} bg='white' boxShadow="2xl">
             <Flex width='full' align='center' justifyContent='center'>
               <Box mt={5}>
                 <FriendSearch />
                 <Divider orientation='horizontal' w='50vw' />
                 <Box w='100%'>
                   <Text className='bold-text' color='blue.500' fontSize="lg"> Covey Town Users </Text>
-                  <Box h='50vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
+                  <Box h='62vh' bg='gray.100' boxShadow='lg' overflowY='auto'>
                     <Flex align='center' justifyContent='center'>
                       <Box mt={5} w='90%'>
                         {users.map((userProfile) => (
                           <Box bg="white" p={5} color="black" key={userProfile.id} borderWidth="1px" borderRadius="lg" alignItems="center">
                             <Flex>
-                              <Button size='md'alignItems="center" onClick={()=>{history.push(`/users/${userProfile.username}`);}}>
+                              <Button alignItems="center" onClick={()=>{history.push(`/users/${userProfile.username}`);}}>
                                 <Text textAlign='center'>{userProfile.username}</Text>
                               </Button>
                               <Spacer/>
