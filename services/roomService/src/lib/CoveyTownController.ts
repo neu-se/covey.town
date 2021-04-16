@@ -85,6 +85,14 @@ export default class CoveyTownController {
   }
 
   /**
+   * Only for testing purpose
+   * @param dbClient 
+   */
+  setDBClient(dbClient: Promise<IDBClient>): void {
+    this._dbClient = dbClient;
+  }
+
+  /**
    * Adds a player to this Covey Town, provisioning the necessary credentials for the
    * player, and returning them
    *
@@ -116,10 +124,16 @@ export default class CoveyTownController {
    *
    * @param session PlayerSession to destroy
    */
-  destroySession(session: PlayerSession): void {
+  async destroySession(session: PlayerSession): Promise<void> {
     this._players = this._players.filter((p) => p.id !== session.player.id);
     this._sessions = this._sessions.filter((s) => s.sessionToken !== session.sessionToken);
     this._listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
+    try {
+      const dbClient = await this._dbClient;
+      dbClient.saveTown(this.toCoveyTown());
+    } catch (err) {
+      throw new Error(`Error saving town in addPlayer(): ${err.toString()}`);
+    }
   }
 
   /**
@@ -170,7 +184,6 @@ export default class CoveyTownController {
     const {
       coveyTownID,
       friendlyName,
-      occupancy,
       capacity,
       players,
       townUpdatePassword,
@@ -180,7 +193,7 @@ export default class CoveyTownController {
     const coveyTown: CoveyTown = {
       coveyTownID,
       friendlyName,
-      occupancy,
+      occupancy: players.length,
       capacity,
       players: players.map(p => p.id),
       townUpdatePassword,

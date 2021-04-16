@@ -47,9 +47,18 @@ export default function SimpleCard(): JSX.Element {
       const { payload } = data;
       // const redirectUrl = `/auth/google/login${payload}`;
       // window.location.pathname = redirectUrl;
-      try{
-      const coveyUser = await auth.loginWithGoogle(payload, authInfo.actions.setAuthState);
-      authInfo.actions.setAuthState({currentUser:coveyUser});
+      try {
+        const coveyUser = await auth.loginWithGoogle(payload, authInfo.actions.setAuthState);
+        authInfo.actions.setAuthState({ currentUser: coveyUser });
+        // If login is successful, establish connection with friend request socket server
+        if (coveyUser) {
+          if (friendRequestSocketState) {
+            friendRequestSocketState.disconnect();
+            setFriendRequestSocket(undefined);
+          }
+          const friendRequestSocket = io(friendRequestServerURL, { auth: { userID: coveyUser.userID } });
+          setFriendRequestSocket(friendRequestSocket);
+        }
       } catch (err) {
         toast({
           title: 'Create Account Error',
@@ -57,7 +66,7 @@ export default function SimpleCard(): JSX.Element {
         })
       }
       history.push('/');
-    } 
+    }
   }, [auth, authInfo.actions, history, toast]);
 
   const openSignIn = useCallback((url: string) => {
@@ -124,7 +133,7 @@ export default function SimpleCard(): JSX.Element {
       const coveyUser = await auth.loginWithEmailPassword(credential, authInfo.actions.setAuthState);
       // If login is successful, establish connection with friend request socket server
       if (coveyUser) {
-        if(friendRequestSocketState) {
+        if (friendRequestSocketState) {
           friendRequestSocketState.disconnect();
           setFriendRequestSocket(undefined);
         }
@@ -147,17 +156,17 @@ export default function SimpleCard(): JSX.Element {
       }
     }
   }, [auth, authInfo.actions.setAuthState, email, friendRequestServerURL, friendRequestSocketState, history, password, setFriendRequestSocket, toast])
-  
-  const signInGoogleHandler = useCallback(()=> {
-    try{
-    openSignIn("http://localhost:3000/login");
+
+  const signInGoogleHandler = useCallback(() => {
+    try {
+      openSignIn("http://localhost:3000/login");
     } catch (err) {
       toast({
         title: 'Create Account Error',
         description: err.toString()
       })
     }
-  },[openSignIn, toast]);
+  }, [openSignIn, toast]);
 
   return (
     <Flex
@@ -205,7 +214,7 @@ export default function SimpleCard(): JSX.Element {
                   bg: 'red.500',
                 }} onClick={signInGoogleHandler}>
                 Sign in with Google
-                <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="" maxHeight="20px" maxWidth="20px" marginLeft="5px"/>
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="" maxHeight="20px" maxWidth="20px" marginLeft="5px" />
               </Button>
             </Stack>
           </Stack>

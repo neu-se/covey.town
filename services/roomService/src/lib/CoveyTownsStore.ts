@@ -25,13 +25,14 @@ export default class CoveyTownsStore {
   }
 
 
-  static async getInstance(): Promise<CoveyTownsStore> {
+  static async getInstance(pdbClient?: Promise<IDBClient>): Promise<CoveyTownsStore> {
     if (CoveyTownsStore._instance === undefined) {
       CoveyTownsStore._instance = new CoveyTownsStore();
       try {
-        const dbClient = await CoveyTownsStore._instance._dbClient;
+        const dbClient = await pdbClient ?? await CoveyTownsStore._instance._dbClient;
         const dbTowns = await dbClient.getTowns();
         dbTowns.forEach(async town => {
+          dbClient.deleteTown(town.coveyTownID);
           await CoveyTownsStore._instance.createTown(town.friendlyName, town.isPubliclyListed);
         });
       } catch (err) {
@@ -40,8 +41,6 @@ export default class CoveyTownsStore {
     }
     return CoveyTownsStore._instance;
   }
-
-
 
   getControllerForTown(coveyTownID: string): CoveyTownController | undefined {
     return this._towns.find(town => town.coveyTownID === coveyTownID);
