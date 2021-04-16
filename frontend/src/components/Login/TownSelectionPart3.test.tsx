@@ -5,10 +5,11 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react'
 import userEvent, { TargetElement } from '@testing-library/user-event'
 import { nanoid } from 'nanoid';
-import TownsServiceClient from '../../classes/TownsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import GraphqlServiceClient from '../../graphql/queries';
+
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -31,8 +32,6 @@ const doLoginMock = jest.fn();
 const mocklistTowns = jest.fn();
 const mockCreateTown = jest.fn();
 const mockVideoSetup = jest.fn();
-TownsServiceClient.prototype.listTowns = mocklistTowns;
-TownsServiceClient.prototype.createTown = mockCreateTown;
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({
   towns: [
@@ -99,7 +98,7 @@ function wrappedTownSelection() {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    graphqlClient: new GraphqlServiceClient(),
   }}>
     <TownSelection doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }

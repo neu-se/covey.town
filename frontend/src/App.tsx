@@ -28,7 +28,7 @@ import { VideoProvider } from './components/VideoCall/VideoFrontend/components/V
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
 import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
-import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
+import { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import theme from './components/VideoCall/VideoFrontend/theme';
 import HeaderComponent from "./components/ProfileManagement/HeaderComponent";
@@ -36,6 +36,7 @@ import ProfileComponent from "./components/ProfileManagement/ProfileComponent";
 import StarterPage from "./components/ProfileManagement/StarterPage";
 import FriendsPage from "./components/UserProfiles/FriendsPage";
 import InviteFriendComponent from "./components/ProfileManagement/InviteFriendComponent";
+import GraphqlServiceClient from "./graphql/queries";
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -62,7 +63,7 @@ function defaultAppState(): CoveyAppState {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    graphqlClient: new GraphqlServiceClient(),
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -78,7 +79,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     userName: state.userName,
     socket: state.socket,
     emitMovement: state.emitMovement,
-    apiClient: state.apiClient,
+    graphqlClient: state.graphqlClient,
   };
 
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {

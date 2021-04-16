@@ -24,7 +24,8 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import { createTown, searchUserByEmail, listTown} from '../../graphql/queries';
+
+ import { searchUserByEmail} from '../../graphql/queries'; 
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -38,18 +39,17 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  const { apiClient } = useCoveyAppState();
   const toast = useToast();
+  const { graphqlClient } = useCoveyAppState();
 
   const updateTownListings = useCallback(() => {
-    // console.log(apiClient);
-    listTown()
+    graphqlClient.listTown()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
           .sort((a: { currentOccupancy: number; }, b: { currentOccupancy: number; }) => b.currentOccupancy - a.currentOccupancy)
         );
       })
-  }, [setCurrentPublicTowns, apiClient]);
+  }, [setCurrentPublicTowns,graphqlClient]);
 
   useEffect(() => {
     const findUser = async () => {
@@ -62,7 +62,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     return () => {
       clearInterval(timer)
     };
-  }, [updateTownListings,user.email]);
+  }, [updateTownListings,user.email,graphqlClient]);
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
@@ -116,7 +116,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       return;
     }
     try {
-      const newTownInfo = await createTown({
+      const newTownInfo = await graphqlClient.createTown({
         friendlyName: newTownName,
         isPubliclyListed: newTownIsPublic
       });

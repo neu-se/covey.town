@@ -116,6 +116,7 @@ const resolvers = {
             user = await User.findByIdAndUpdate(args.input.id, {
               bio: args.input.bio,
             });
+            console.log('updated');
           }
           if (args.input.location !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
@@ -142,8 +143,9 @@ const resolvers = {
               linkedInLink: args.input.linkedInLink,
             });
           }
+          return user;
         }
-        return user;
+        throw new Error('User does not exist');
       } catch (error) {
         throw new AuthenticationError('You must be logged in to do this');
       }

@@ -1,6 +1,7 @@
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
-import { joinTown } from '../../graphql/queries';
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+import GraphqlServiceClient from '../../graphql/queries';
 
 export default class Video {
   private static video: Video | null = null;
@@ -18,12 +19,15 @@ export default class Video {
   private _userName: string;
 
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
+  
+  private graphServiceClient: GraphqlServiceClient = new GraphqlServiceClient();
 
   private _coveyTownID: string;
 
   private _townFriendlyName: string | undefined;
 
   private _isPubliclyListed: boolean | undefined;
+  
 
   pauseGame: () => void = ()=>{};
 
@@ -57,7 +61,7 @@ export default class Video {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
         // Request our token to join the town
-        joinTown({
+        this.graphServiceClient.joinTown({
           coveyTownID: this._coveyTownID,
           userName: this._userName,
         })

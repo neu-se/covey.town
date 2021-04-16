@@ -6,8 +6,8 @@ import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react
 import { nanoid } from 'nanoid';
 import { TargetElement } from '@testing-library/user-event';
 import TownSettings from './TownSettings';
-import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import GraphqlServiceClient from '../../graphql/queries';
 
 const mockUseCoveyAppState = jest.fn(() => (Promise.resolve()));
 const mockToast = jest.fn();
@@ -28,8 +28,6 @@ jest.mock("@chakra-ui/react", () => {
 })
 const mockUpdateTown = jest.fn();
 const mockDeleteTown = jest.fn();
-TownsServiceClient.prototype.updateTown = mockUpdateTown;
-TownsServiceClient.prototype.deleteTown = mockDeleteTown;
 // @ts-ignore
 mockUseCoveyAppState.apiClient = new TownsServiceClient();
 
@@ -52,7 +50,7 @@ function wrappedTownSettings() {
     },
     emitMovement: () => {
     },
-    apiClient: new TownsServiceClient(),
+    graphqlClient: new GraphqlServiceClient(),
   }}>
     <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
 }

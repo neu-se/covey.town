@@ -52,7 +52,7 @@ input townCreateRequestInput {
 
 input updateUserInput {
   id: ID!
-  userName: String
+  username: String
   email: String
   bio: String
   location: String

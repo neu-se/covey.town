@@ -258,11 +258,6 @@ export const findAllUserProfiles = async (): Promise<any> => {
   return data.users;
 };
 
-export const listTown = async (): Promise<any> => {
-  const { data } = await client.query({ query: townList });
-  return data.townList.response;
-};
-
 export const findAllUsersByUserName = async (username: string): Promise<any> => {
   const { data } = await client.query({ query: findAllUsersByUserNameQuery, variables: { username } });
   return data.searchUserByUserName;
@@ -291,29 +286,6 @@ export const searchUserByName = async (username: string): Promise<any> => {
   });
   return data.searchUserByName;
 }
-
-export const createTown = async (payload: TownCreateRequest): Promise<any> => {
-  const { data } = await client.mutate({
-    mutation: createTownMutation,
-    variables: { input: payload },
-  });
-  if (data.townCreateRequest.isOK) {
-    return data.townCreateRequest.response;
-  }
- throw new Error(`Error processing request: ${data.townCreateRequest.message}`);
-};
-
-export const joinTown = async (payload: TownJoinRequest): Promise<any> => {
-  const { data } = await client.mutate({
-    mutation: joinTownMutation,
-    variables: { input: payload }
-  });
-
-  if (data.townJoinRequest.isOK) {
-    return data.townJoinRequest.response;
-  }
-   throw new Error(`Error processing request: ${ data.townJoinRequest.message}`);
-};
 
 export const addFriend = async (payload: AddFriendRequest): Promise<any> => {
   const { data } = await client.mutate({
@@ -356,12 +328,47 @@ export const deleteUser = async (payload: DeleteUserRequest): Promise<any> => {
   return data.deleteUser;
 }
 
-export const deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
-  const { data } = await client.mutate({
-    mutation: deleteTownMutation,
-    variables: { input: payload },
-  });
-  if (!data.townDeleteRequest.isOK) {
-    throw new Error(`Error processing request: ${ data.townDeleteRequest.message}`);
+
+
+export default class GraphqlServiceClient {
+  private graphqlClient = client;
+
+  listTown = async (): Promise<any> => {
+    const { data } = await this.graphqlClient.query({ query: townList });
+    return data.townList.response;
+  };
+
+
+  createTown = async (payload: TownCreateRequest): Promise<any> => {
+    const { data } = await this.graphqlClient.mutate({
+      mutation: createTownMutation,
+      variables: { input: payload },
+    });
+    if (data.townCreateRequest.isOK) {
+      return data.townCreateRequest.response;
+    }
+    throw new Error(`Error processing request: ${data.townCreateRequest.message}`);
+  };
+
+  joinTown = async (payload: TownJoinRequest): Promise<any> => {
+    const { data } = await this.graphqlClient.mutate({
+      mutation: joinTownMutation,
+      variables: { input: payload }
+    });
+
+    if (data.townJoinRequest.isOK) {
+      return data.townJoinRequest.response;
+    }
+    throw new Error(`Error processing request: ${data.townJoinRequest.message}`);
+  };
+
+  deleteTown = async (payload: TownDeleteRequest): Promise<void> => {
+    const { data } = await this.graphqlClient.mutate({
+      mutation: deleteTownMutation,
+      variables: { input: payload },
+    });
+    if (!data.townDeleteRequest.isOK) {
+      throw new Error(`Error processing request: ${data.townDeleteRequest.message}`);
+    }
   }
-};
+}
