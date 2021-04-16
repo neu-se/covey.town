@@ -71,7 +71,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       description: "Unable to find user profile",
       status: "error"
     })
-  } else {
+  } else if (userName !== loggedInUser.profile.username) {
     setUserName(loggedInUser.profile.username)
   }
 
@@ -91,7 +91,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
 
       friendRequestSocket?.disconnect();
       setFriendRequestSocket(undefined);
-      // history.push('/login');
     } catch (err) {
       if (err.error) {
         toast({
@@ -152,11 +151,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   }, [userName, loggedInUser, toast, doLogin, connect, authInfo.currentUser, authInfo.actions, db]);
 
-  const addFriendRequestToList = (request: CoveyUser) => {
+  const addFriendRequestToList = useCallback((request: CoveyUser) => {
     if (friendRequestList.filter(user => user.userID === request.userID).length === 0) {
       setFriendRequestList(currentList => [...currentList, request]);
     }
-  }
+  }, [friendRequestList])
 
   const handleIncomingRequest = async (userID: string) => {
     if (friendRequestIDList.filter(id => id === userID).length === 0) {
@@ -249,7 +248,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     })
   }
 
-  const fetchFriend = async () => {
+  const fetchFriend = useCallback(async () => {
     if (loggedInUser) {
       await db.getUser(loggedInUser.userID)
         .then(user => {
@@ -268,7 +267,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           }
         })
     }
-  }
+  }, [db, loggedInUser]);
 
   const handleCreate = async () => {
     if (!userName || userName.length === 0) {
@@ -317,7 +316,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
-  const populateFriendRequest = async () => {
+  const populateFriendRequest = useCallback(async () => {
     if (loggedInUser) {
       await db.getFriendRequests(loggedInUser.userID)
         .then(response => {
@@ -332,7 +331,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           }
         })
     }
-  }
+  }, [addFriendRequestToList, db, loggedInUser]);
 
   useEffect(() => {
     updateTownListings();

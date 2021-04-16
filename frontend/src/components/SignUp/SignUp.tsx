@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
 
 import {
@@ -31,11 +31,6 @@ export default function SimpleCard(): JSX.Element {
   const auth: IAuth = RealmAuth.getInstance();
   const authInfo = useAuthInfo();
   const dbClient: IDBClient = RealmDBClient.getInstance();
-
-
-  useEffect(()=> {
-    console.log('test');
-  },[]);
 
   const createAccountHandler = async () => {
     function validateEmailAndPassword(): boolean {

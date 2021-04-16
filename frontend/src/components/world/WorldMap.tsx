@@ -6,12 +6,8 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Heading,
-  Input,
   Table,
-  TableCaption,
   Tbody,
   Td,
   Th,
@@ -500,7 +496,6 @@ export default function WorldMap(): JSX.Element {
 
   useEffect(() => {
     const townUsersList: CoveyUser[] = [];
-    console.log(players.length);
     players
     .filter(player => player.coveyUserId !== loggedInUser?.userID)
     .map(async (player) => {
@@ -515,8 +510,7 @@ export default function WorldMap(): JSX.Element {
         });
       })
     setTownUsers(townUsersList);
-    console.log(townUsers.length);
-  }, [players])
+  }, [players, db, loggedInUser?.userID])
 
   const handleAddFriend = async (townUserID: string) => {
     if (!friendRequestSocket) {
@@ -532,7 +526,6 @@ export default function WorldMap(): JSX.Element {
       await db.getFriendRequests(townUserID)
         .then(async (response) => {
           if (response) {
-            console.log(response.requests);
             await db.saveFriendRequests({
               userID: townUserID,
               requests: [...response.requests, loggedInUser.userID]

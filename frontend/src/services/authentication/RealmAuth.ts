@@ -76,25 +76,6 @@ export default class RealmAuth implements IAuth {
     }
 
     async getCurrentUser(): Promise<CoveyUser | null> {
-        // const realmUser = this._realmApp.CurrentUser;
-        // console.log(realmUser);
-        // if (!realmUser) {
-        //     return null;
-        // }
-        // const dbCoveyUser = await this._realmDBClient.getUser(realmUser.id);
-        // const coveyUser: CoveyUser = {
-        //     userId: realmUser.id,
-        //     isLoggedIn: dbCoveyUser.isLoggedIn,
-        //     profile: dbCoveyUser.profile,
-        //     currentTown: dbCoveyUser.currentTown,
-        //     actions: {
-        //         logout: async () => {
-        //             await realmUser.logOut();
-        //         }
-        //     }
-
-        // }
-        // return coveyUser;
         return null;
     }
 
@@ -102,9 +83,7 @@ export default class RealmAuth implements IAuth {
         const { idToken } = googleAuthInfo;
         const realmUser = await this._realmApp.loginWithGoogle(idToken);
         const dbCoveyUser = await this._realmDBClient.getUser(realmUser.id);
-        console.log(dbCoveyUser);
         if(!dbCoveyUser) {
-            console.log("you retard");
             const axiosClient = axios.create();
             const userInfo: GoogleUserInfo = (await axiosClient.get('https://openidconnect.googleapis.com/v1/userinfo',{headers:{'Authorization':`Bearer ${googleAuthInfo.token}`}})).data;
             

@@ -10,7 +10,6 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
   const toast = useToast();
   const authInfo = useAuthInfo();
   const loggedInUser = authInfo.currentUser;
-  console.log(loggedInUser)
   if (loggedInUser === null) {
     toast({
       title: "Unable to find user profile",

@@ -33,7 +33,7 @@ export default function SimpleCard(): JSX.Element {
   const { friendRequestSocket: friendRequestSocketState, setFriendRequestSocket } = useFriendRequestSocket();
 
   const [windowObjectReference, setWindowObjectReference] = useState<Window | null>(null);
-  const receiveMessage = useCallback(async (event: MessageEvent<any>) => {
+  const receiveMessage = useCallback(async (event: MessageEvent) => {
 
     // Do we trust the sender of this message? (might be
     // different from what we originally opened, for example).
@@ -45,8 +45,6 @@ export default function SimpleCard(): JSX.Element {
     if (data.source === 'coveytown-google-redirect') {
       // get the URL params and redirect to our server to use Passport to auth/login
       const { payload } = data;
-      // const redirectUrl = `/auth/google/login${payload}`;
-      // window.location.pathname = redirectUrl;
       try {
         const coveyUser = await auth.loginWithGoogle(payload, authInfo.actions.setAuthState);
         authInfo.actions.setAuthState({ currentUser: coveyUser });
@@ -67,7 +65,7 @@ export default function SimpleCard(): JSX.Element {
       }
       history.push('/');
     }
-  }, [auth, authInfo.actions, history, toast]);
+  }, [auth, authInfo.actions, history, toast, friendRequestSocketState, friendRequestServerURL, setFriendRequestSocket]);
 
   const openSignIn = useCallback((url: string) => {
     let previousUrl: string | null = null;
