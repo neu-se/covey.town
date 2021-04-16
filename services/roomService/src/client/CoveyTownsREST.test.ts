@@ -4,7 +4,9 @@ import Express from 'express';
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
+import CoveyTownsStore from '../lib/CoveyTownsStore';
 import addTownRoutes from '../router/towns';
+import PrivateChatMessage from '../types/PrivateChatMessage';
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 
 type TestTownData = {
@@ -234,9 +236,8 @@ describe('TownsServiceAPIREST', () => {
   });
 
   describe('CoveyMessageAPI', () => {
-    it('Should list zero messages', async () => {
+    it('Should not send a message with a wrong town ID', async () => {
       const pubTown1 = await createTownForTesting(undefined, true);
-      const privTown1 = await createTownForTesting(undefined, false);
       const res = await apiClient.joinTown({
         userName: nanoid(),
         coveyTownID: pubTown1.coveyTownID,
@@ -246,14 +247,31 @@ describe('TownsServiceAPIREST', () => {
         coveyTownID: pubTown1.coveyTownID,
       });
 
-      const messages = await apiClient.getMessages({
-        coveyTownID: pubTown1.coveyTownID,
-      });
-      expect(messages.messages.length).toBe(0);
+      try {
+        await apiClient.sendPrivatePlayerMessage({
+          coveyTownID: 'xxxxxxx',
+          userIDFrom: res.coveyUserID,
+          userIDTo: res2.coveyUserID,
+          message: 'test',
+        });
+        fail('Expected an error to be thrown by sendPrivatePlayerMessage');
+      } catch (err) {
+
+      }
+
+      try {
+        await apiClient.sendGlobalPlayerMessage({
+          coveyTownID: 'xxxxxxx',
+          coveyUserID: res.coveyUserID,
+          message: 'test',
+        });
+        fail('Expected an error to be thrown by sendGlobalPlayerMessage');
+      } catch (err) {
+
+      }
     });
-    it('Able to send global message', async () => {
+    it('Should not send a message with an invalid userID', async () => {
       const pubTown1 = await createTownForTesting(undefined, true);
-      const privTown1 = await createTownForTesting(undefined, false);
       const res = await apiClient.joinTown({
         userName: nanoid(),
         coveyTownID: pubTown1.coveyTownID,
@@ -262,12 +280,37 @@ describe('TownsServiceAPIREST', () => {
         userName: nanoid(),
         coveyTownID: pubTown1.coveyTownID,
       });
+      
 
-      await apiClient.sendGlobalPlayerMessage({
-        coveyTownID: pubTown1.coveyTownID,
-        coveyUserID: res.coveyUserID,
-        message: 'hello',
+      
+      const testMessage1 = await apiClient.sendPrivatePlayerMessage({
+          coveyTownID: pubTown1.coveyTownID,
+          userIDFrom: 'xxxxxxx',
+          userIDTo: 'xxxxxxx',
+          message: 'test',
       });
+
+            
+      const testMessage3 = await apiClient.sendPrivatePlayerMessage({
+        coveyTownID: pubTown1.coveyTownID,
+        userIDFrom: res.coveyUserID,
+        userIDTo: res2.coveyUserID,
+        message: 'test',
+    });
+    
+      
+
+      const testMessage2 = await apiClient.sendGlobalPlayerMessage({
+        coveyTownID: pubTown1.coveyTownID,
+        coveyUserID: 'xxxxxx',
+        message: 'test',
+      });
+
+      expect(CoveyTownsStore.getInstance().getControllerForTown(pubTown1.coveyTownID)?.messages).not.toEqual(expect.arrayContaining([testMessage1]));
+      expect(CoveyTownsStore.getInstance().getControllerForTown(pubTown1.coveyTownID)?.messages).not.toEqual(expect.arrayContaining([testMessage2]));
+      expect(CoveyTownsStore.getInstance().getControllerForTown(pubTown1.coveyTownID)?.messages).toEqual(expect.arrayContaining([testMessage3]));
+
+
     });
   });
 });
