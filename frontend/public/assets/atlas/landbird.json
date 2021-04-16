@@ -1,0 +1,172 @@
+{"frames": {
+
+"landbird-back-walk.000":
+{
+	"frame": {"x":1,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-back-walk.001":
+{
+	"frame": {"x":103,"y":1,"w":32,"h":30},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":30},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-back-walk.002":
+{
+	"frame": {"x":35,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-back-walk.003":
+{
+	"frame": {"x":137,"y":1,"w":32,"h":30},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":30},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-back":
+{
+	"frame": {"x":1,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-front-walk.000":
+{
+	"frame": {"x":69,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-front-walk.001":
+{
+	"frame": {"x":171,"y":1,"w":32,"h":30},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":30},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-front-walk.002":
+{
+	"frame": {"x":69,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-front-walk.003":
+{
+	"frame": {"x":205,"y":1,"w":32,"h":30},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":32,"h":30},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-front":
+{
+	"frame": {"x":69,"y":1,"w":32,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":31,"w":32,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-left-walk.000":
+{
+	"frame": {"x":371,"y":1,"w":22,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":22,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-left-walk.001":
+{
+	"frame": {"x":239,"y":1,"w":31,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":31,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-left-walk.002":
+{
+	"frame": {"x":371,"y":1,"w":22,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":22,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-left-walk.003":
+{
+	"frame": {"x":272,"y":1,"w":31,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":33,"w":31,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-left":
+{
+	"frame": {"x":371,"y":1,"w":22,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":22,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-right-walk.000":
+{
+	"frame": {"x":395,"y":1,"w":22,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":22,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-right-walk.001":
+{
+	"frame": {"x":305,"y":1,"w":31,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":33,"w":31,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-right-walk.002":
+{
+	"frame": {"x":395,"y":1,"w":22,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":22,"h":33},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-right-walk.003":
+{
+	"frame": {"x":338,"y":1,"w":31,"h":31},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":33,"w":31,"h":31},
+	"sourceSize": {"w":32,"h":64}
+},
+"landbird-right":
+{
+	"frame": {"x":395,"y":1,"w":22,"h":33},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":31,"w":22,"h":33},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "landbird.png",
+	"format": "RGBA8888",
+	"size": {"w":418,"h":35},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:2d6ae80d18585fe50ed5186cb6a312da:c80242038a8417b6a997e1a55c88f696:52d09ba28871cc48ed9d75ae47309645$"
+}
+}

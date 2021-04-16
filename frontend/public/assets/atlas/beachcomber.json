@@ -1,0 +1,172 @@
+{"frames": {
+
+"beachcomber-back-walk.000":
+{
+	"frame": {"x":1,"y":165,"w":28,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":27,"w":28,"h":37},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-back-walk.001":
+{
+	"frame": {"x":1,"y":403,"w":26,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":26,"h":38},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-back-walk.002":
+{
+	"frame": {"x":1,"y":204,"w":28,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":27,"w":28,"h":37},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-back-walk.003":
+{
+	"frame": {"x":1,"y":403,"w":26,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":26,"h":38},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-back":
+{
+	"frame": {"x":1,"y":403,"w":26,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":26,"h":38},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-front-walk.000":
+{
+	"frame": {"x":1,"y":243,"w":28,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":27,"w":28,"h":37},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-front-walk.001":
+{
+	"frame": {"x":1,"y":443,"w":26,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":26,"h":38},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-front-walk.002":
+{
+	"frame": {"x":1,"y":282,"w":28,"h":37},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":27,"w":28,"h":37},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-front-walk.003":
+{
+	"frame": {"x":1,"y":443,"w":26,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":26,"h":38},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-front":
+{
+	"frame": {"x":1,"y":443,"w":26,"h":38},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":26,"h":38},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-left-walk.000":
+{
+	"frame": {"x":1,"y":321,"w":27,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":25,"w":27,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-left-walk.001":
+{
+	"frame": {"x":1,"y":1,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-left-walk.002":
+{
+	"frame": {"x":1,"y":42,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-left-walk.003":
+{
+	"frame": {"x":1,"y":1,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-left":
+{
+	"frame": {"x":1,"y":1,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-right-walk.000":
+{
+	"frame": {"x":1,"y":83,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-right-walk.001":
+{
+	"frame": {"x":1,"y":124,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-right-walk.002":
+{
+	"frame": {"x":1,"y":362,"w":27,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":25,"w":27,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-right-walk.003":
+{
+	"frame": {"x":1,"y":124,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+},
+"beachcomber-right":
+{
+	"frame": {"x":1,"y":124,"w":28,"h":39},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":25,"w":28,"h":39},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "beachcomber.png",
+	"format": "RGBA8888",
+	"size": {"w":30,"h":482},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b658b85e919effdb332a8f31cf5f58aa:8c3813eaa3a22e8883f5e0663a94efe4:48150fe5f20ccc0ec55220b88f2813e0$"
+}
+}

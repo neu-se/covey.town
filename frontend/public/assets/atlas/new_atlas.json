@@ -4,13 +4,13 @@
 			"image": "new_atlas.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 54,
-				"h": 166
+				"w": 512,
+				"h": 318
 			},
 			"scale": 1,
 			"frames": [
 				{
-					"filename": "misa-front-walk.000.png",
+					"filename": "brute-front-walk.001.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -19,19 +19,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 10,
+						"y": 16,
 						"w": 16,
-						"h": 22
+						"h": 16
 					},
 					"frame": {
 						"x": 1,
 						"y": 1,
 						"w": 16,
-						"h": 22
+						"h": 16
 					}
 				},
 				{
-					"filename": "misa-front-walk.001.png",
+					"filename": "brute-front-walk.003.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -40,19 +40,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 10,
+						"y": 16,
 						"w": 16,
-						"h": 22
+						"h": 16
 					},
 					"frame": {
 						"x": 19,
 						"y": 1,
 						"w": 16,
-						"h": 22
+						"h": 16
 					}
 				},
 				{
-					"filename": "misa-front-walk.003.png",
+					"filename": "brute-left-walk.001.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -61,61 +61,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 10,
+						"y": 16,
 						"w": 16,
-						"h": 22
-					},
-					"frame": {
-						"x": 19,
-						"y": 1,
-						"w": 16,
-						"h": 22
-					}
-				},
-				{
-					"filename": "misa-front.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 10,
-						"w": 16,
-						"h": 22
-					},
-					"frame": {
-						"x": 19,
-						"y": 1,
-						"w": 16,
-						"h": 22
-					}
-				},
-				{
-					"filename": "misa-front-walk.002.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 10,
-						"w": 16,
-						"h": 22
+						"h": 16
 					},
 					"frame": {
 						"x": 37,
 						"y": 1,
 						"w": 16,
-						"h": 22
+						"h": 16
 					}
 				},
 				{
-					"filename": "misa-back-walk.000.png",
+					"filename": "brute-left-walk.003.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -124,19 +82,565 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 16,
 						"w": 16,
-						"h": 21
+						"h": 16
+					},
+					"frame": {
+						"x": 55,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "brute-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 73,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "brute-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 91,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 109,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 127,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 145,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 163,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 181,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 197,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 213,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "catgirl-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 229,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 245,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 263,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 281,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 299,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 317,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 333,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 349,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "childactor-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 14,
+						"h": 16
+					},
+					"frame": {
+						"x": 365,
+						"y": 1,
+						"w": 14,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 381,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 399,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 417,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 435,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 453,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 471,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 489,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "landbird-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 16,
+						"w": 16,
+						"h": 16
 					},
 					"frame": {
 						"x": 1,
-						"y": 25,
+						"y": 19,
 						"w": 16,
-						"h": 21
+						"h": 16
 					}
 				},
 				{
-					"filename": "misa-back-walk.001.png",
+					"filename": "bob-front-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -145,19 +649,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 15,
 						"w": 16,
-						"h": 21
+						"h": 17
 					},
 					"frame": {
 						"x": 19,
-						"y": 25,
+						"y": 19,
 						"w": 16,
-						"h": 21
+						"h": 17
 					}
 				},
 				{
-					"filename": "misa-back-walk.003.png",
+					"filename": "bob-front-walk.002.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -166,61 +670,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 15,
 						"w": 16,
-						"h": 21
-					},
-					"frame": {
-						"x": 19,
-						"y": 25,
-						"w": 16,
-						"h": 21
-					}
-				},
-				{
-					"filename": "misa-back.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 11,
-						"w": 16,
-						"h": 21
-					},
-					"frame": {
-						"x": 19,
-						"y": 25,
-						"w": 16,
-						"h": 21
-					}
-				},
-				{
-					"filename": "misa-back-walk.002.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 11,
-						"w": 16,
-						"h": 21
+						"h": 17
 					},
 					"frame": {
 						"x": 37,
-						"y": 25,
+						"y": 19,
 						"w": 16,
-						"h": 21
+						"h": 17
 					}
 				},
 				{
-					"filename": "misa-left-walk.001.png",
+					"filename": "brute-back-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -229,19 +691,565 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 15,
 						"w": 16,
-						"h": 21
+						"h": 17
+					},
+					"frame": {
+						"x": 55,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 73,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 91,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 109,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 127,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 145,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 163,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 181,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 199,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 217,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 235,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 253,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 271,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "brute-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 289,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 307,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 325,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 343,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 361,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 379,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 397,
+						"y": 19,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 14,
+						"h": 17
+					},
+					"frame": {
+						"x": 415,
+						"y": 19,
+						"w": 14,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 14,
+						"h": 17
+					},
+					"frame": {
+						"x": 431,
+						"y": 19,
+						"w": 14,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 14,
+						"h": 17
+					},
+					"frame": {
+						"x": 447,
+						"y": 19,
+						"w": 14,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 14,
+						"h": 17
+					},
+					"frame": {
+						"x": 463,
+						"y": 19,
+						"w": 14,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 14,
+						"h": 17
+					},
+					"frame": {
+						"x": 479,
+						"y": 19,
+						"w": 14,
+						"h": 17
+					}
+				},
+				{
+					"filename": "catgirl-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 14,
+						"h": 17
+					},
+					"frame": {
+						"x": 495,
+						"y": 19,
+						"w": 14,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
 					},
 					"frame": {
 						"x": 1,
-						"y": 48,
+						"y": 37,
 						"w": 16,
-						"h": 21
+						"h": 17
 					}
 				},
 				{
-					"filename": "misa-left-walk.003.png",
+					"filename": "childactor-back-walk.002.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -250,19 +1258,649 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 15,
 						"w": 16,
-						"h": 21
+						"h": 17
+					},
+					"frame": {
+						"x": 19,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 37,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 55,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 73,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 91,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 13,
+						"h": 17
+					},
+					"frame": {
+						"x": 109,
+						"y": 38,
+						"w": 13,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 13,
+						"h": 17
+					},
+					"frame": {
+						"x": 124,
+						"y": 38,
+						"w": 13,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 13,
+						"h": 17
+					},
+					"frame": {
+						"x": 139,
+						"y": 38,
+						"w": 13,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 15,
+						"w": 13,
+						"h": 17
+					},
+					"frame": {
+						"x": 154,
+						"y": 38,
+						"w": 13,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 15,
+						"w": 13,
+						"h": 17
+					},
+					"frame": {
+						"x": 169,
+						"y": 38,
+						"w": 13,
+						"h": 17
+					}
+				},
+				{
+					"filename": "childactor-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 15,
+						"w": 13,
+						"h": 17
+					},
+					"frame": {
+						"x": 184,
+						"y": 38,
+						"w": 13,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 199,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 217,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 235,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 253,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 271,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 15,
+						"w": 16,
+						"h": 17
+					},
+					"frame": {
+						"x": 289,
+						"y": 38,
+						"w": 16,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 12,
+						"h": 17
+					},
+					"frame": {
+						"x": 307,
+						"y": 38,
+						"w": 12,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 12,
+						"h": 17
+					},
+					"frame": {
+						"x": 321,
+						"y": 38,
+						"w": 12,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 12,
+						"h": 17
+					},
+					"frame": {
+						"x": 335,
+						"y": 38,
+						"w": 12,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 12,
+						"h": 17
+					},
+					"frame": {
+						"x": 349,
+						"y": 38,
+						"w": 12,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 12,
+						"h": 17
+					},
+					"frame": {
+						"x": 363,
+						"y": 38,
+						"w": 12,
+						"h": 17
+					}
+				},
+				{
+					"filename": "landbird-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 15,
+						"w": 12,
+						"h": 17
+					},
+					"frame": {
+						"x": 377,
+						"y": 38,
+						"w": 12,
+						"h": 17
+					}
+				},
+				{
+					"filename": "bob-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 391,
+						"y": 38,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bob-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 409,
+						"y": 38,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bob-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 427,
+						"y": 38,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bob-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 445,
+						"y": 38,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bob-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 463,
+						"y": 38,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bob-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 481,
+						"y": 38,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "rookie-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 9,
+						"w": 12,
+						"h": 23
+					},
+					"frame": {
+						"x": 499,
+						"y": 38,
+						"w": 12,
+						"h": 23
+					}
+				},
+				{
+					"filename": "bob-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
 					},
 					"frame": {
 						"x": 1,
-						"y": 48,
+						"y": 56,
 						"w": 16,
-						"h": 21
+						"h": 18
 					}
 				},
 				{
-					"filename": "misa-left.png",
+					"filename": "ninja-front-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -271,19 +1909,607 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 13,
 						"w": 16,
-						"h": 21
+						"h": 18
+					},
+					"frame": {
+						"x": 19,
+						"y": 57,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "ninja-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 37,
+						"y": 57,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "ninja-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 55,
+						"y": 57,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "ninja-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 73,
+						"y": 57,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "ninja-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 91,
+						"y": 57,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "ninja-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 14,
+						"w": 16,
+						"h": 18
+					},
+					"frame": {
+						"x": 109,
+						"y": 57,
+						"w": 16,
+						"h": 18
+					}
+				},
+				{
+					"filename": "beachcomber-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 15,
+						"h": 19
+					},
+					"frame": {
+						"x": 127,
+						"y": 57,
+						"w": 15,
+						"h": 19
+					}
+				},
+				{
+					"filename": "beachcomber-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 13,
+						"w": 15,
+						"h": 19
+					},
+					"frame": {
+						"x": 144,
+						"y": 57,
+						"w": 15,
+						"h": 19
+					}
+				},
+				{
+					"filename": "beachcomber-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 15,
+						"h": 19
+					},
+					"frame": {
+						"x": 161,
+						"y": 57,
+						"w": 15,
+						"h": 19
+					}
+				},
+				{
+					"filename": "beachcomber-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 13,
+						"w": 15,
+						"h": 19
+					},
+					"frame": {
+						"x": 178,
+						"y": 57,
+						"w": 15,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 195,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 213,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 231,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 249,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 267,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 285,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 303,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 321,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bob-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 339,
+						"y": 57,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bossman-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 18,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 17,
+						"h": 19
+					},
+					"frame": {
+						"x": 357,
+						"y": 57,
+						"w": 17,
+						"h": 19
+					}
+				},
+				{
+					"filename": "ninja-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 376,
+						"y": 58,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "ninja-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 394,
+						"y": 58,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "ninja-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 412,
+						"y": 58,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "ninja-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 430,
+						"y": 58,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "ninja-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 448,
+						"y": 58,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "ninja-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
+					},
+					"frame": {
+						"x": 466,
+						"y": 58,
+						"w": 16,
+						"h": 19
+					}
+				},
+				{
+					"filename": "robot-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 13,
+						"h": 20
+					},
+					"frame": {
+						"x": 484,
+						"y": 58,
+						"w": 13,
+						"h": 20
+					}
+				},
+				{
+					"filename": "rookie-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 3,
+						"y": 9,
+						"w": 12,
+						"h": 23
+					},
+					"frame": {
+						"x": 499,
+						"y": 63,
+						"w": 12,
+						"h": 23
+					}
+				},
+				{
+					"filename": "ninja-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 13,
+						"w": 16,
+						"h": 19
 					},
 					"frame": {
 						"x": 1,
-						"y": 48,
+						"y": 76,
 						"w": 16,
-						"h": 21
+						"h": 19
 					}
 				},
 				{
-					"filename": "misa-right-walk.001.png",
+					"filename": "ninja-left-walk.003.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -292,19 +2518,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 13,
 						"w": 16,
-						"h": 21
+						"h": 19
 					},
 					"frame": {
 						"x": 19,
-						"y": 48,
+						"y": 77,
 						"w": 16,
-						"h": 21
+						"h": 19
 					}
 				},
 				{
-					"filename": "misa-right-walk.003.png",
+					"filename": "ninja-left.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -313,19 +2539,145 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
+						"y": 13,
 						"w": 16,
-						"h": 21
+						"h": 19
 					},
 					"frame": {
-						"x": 19,
-						"y": 48,
+						"x": 37,
+						"y": 77,
 						"w": 16,
-						"h": 21
+						"h": 19
 					}
 				},
 				{
-					"filename": "misa-right.png",
+					"filename": "beachcomber-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 55,
+						"y": 77,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 71,
+						"y": 77,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 87,
+						"y": 77,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 103,
+						"y": 77,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 119,
+						"y": 78,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 135,
+						"y": 78,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-left-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -334,15 +2686,372 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 11,
-						"w": 16,
-						"h": 21
+						"y": 12,
+						"w": 14,
+						"h": 20
 					},
 					"frame": {
-						"x": 19,
-						"y": 48,
+						"x": 151,
+						"y": 78,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
 						"w": 16,
-						"h": 21
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 167,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 184,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 201,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 218,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 235,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 252,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 12,
+						"w": 14,
+						"h": 20
+					},
+					"frame": {
+						"x": 269,
+						"y": 78,
+						"w": 14,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 285,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "beachcomber-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 302,
+						"y": 78,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bob-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 319,
+						"y": 78,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bob-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 337,
+						"y": 78,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bossman-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 18,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 17,
+						"h": 20
+					},
+					"frame": {
+						"x": 355,
+						"y": 78,
+						"w": 17,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bossman-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 18,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 17,
+						"h": 20
+					},
+					"frame": {
+						"x": 374,
+						"y": 79,
+						"w": 17,
+						"h": 20
+					}
+				},
+				{
+					"filename": "hacker-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 393,
+						"y": 79,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "hacker-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 410,
+						"y": 79,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "hacker-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 427,
+						"y": 79,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "hacker-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 444,
+						"y": 79,
+						"w": 15,
+						"h": 20
 					}
 				},
 				{
@@ -360,8 +3069,8 @@
 						"h": 20
 					},
 					"frame": {
-						"x": 37,
-						"y": 48,
+						"x": 461,
+						"y": 79,
 						"w": 16,
 						"h": 20
 					}
@@ -381,9 +3090,30 @@
 						"h": 20
 					},
 					"frame": {
-						"x": 37,
-						"y": 70,
+						"x": 479,
+						"y": 80,
 						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "robot-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 13,
+						"h": 20
+					},
+					"frame": {
+						"x": 497,
+						"y": 88,
+						"w": 13,
 						"h": 20
 					}
 				},
@@ -403,7 +3133,7 @@
 					},
 					"frame": {
 						"x": 1,
-						"y": 71,
+						"y": 97,
 						"w": 16,
 						"h": 20
 					}
@@ -424,13 +3154,13 @@
 					},
 					"frame": {
 						"x": 19,
-						"y": 71,
+						"y": 98,
 						"w": 16,
 						"h": 20
 					}
 				},
 				{
-					"filename": "catgirl_back.png",
+					"filename": "ninja-back-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -439,19 +3169,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 15,
+						"y": 12,
 						"w": 16,
-						"h": 17
+						"h": 20
 					},
 					"frame": {
 						"x": 37,
-						"y": 92,
+						"y": 98,
 						"w": 16,
-						"h": 17
+						"h": 20
 					}
 				},
 				{
-					"filename": "catgirl_back_walk.000.png",
+					"filename": "ninja-back-walk.002.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -460,19 +3190,607 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 15,
+						"y": 12,
 						"w": 16,
-						"h": 17
+						"h": 20
+					},
+					"frame": {
+						"x": 55,
+						"y": 99,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "ninja-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 73,
+						"y": 99,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "ninja-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 91,
+						"y": 99,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "ninja-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 109,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "robot-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 12,
+						"w": 13,
+						"h": 20
+					},
+					"frame": {
+						"x": 127,
+						"y": 100,
+						"w": 13,
+						"h": 20
+					}
+				},
+				{
+					"filename": "robot-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 12,
+						"w": 13,
+						"h": 20
+					},
+					"frame": {
+						"x": 142,
+						"y": 100,
+						"w": 13,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 157,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 175,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 193,
+						"y": 100,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 210,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 228,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 246,
+						"y": 100,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 263,
+						"y": 100,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 280,
+						"y": 100,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "sami-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 297,
+						"y": 100,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 314,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 332,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 350,
+						"y": 100,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 16,
+						"h": 20
+					},
+					"frame": {
+						"x": 368,
+						"y": 101,
+						"w": 16,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 386,
+						"y": 101,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 403,
+						"y": 101,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 420,
+						"y": 101,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "spooky-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 12,
+						"w": 15,
+						"h": 20
+					},
+					"frame": {
+						"x": 437,
+						"y": 101,
+						"w": 15,
+						"h": 20
+					}
+				},
+				{
+					"filename": "aang-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 454,
+						"y": 101,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 472,
+						"y": 102,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 490,
+						"y": 110,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 1,
+						"y": 119,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 19,
+						"y": 120,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
 					},
 					"frame": {
 						"x": 37,
-						"y": 92,
+						"y": 120,
 						"w": 16,
-						"h": 17
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_back_walk.002.png",
+					"filename": "aang-front-walk.001.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -481,19 +3799,607 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 15,
+						"y": 10,
 						"w": 16,
-						"h": 17
+						"h": 21
+					},
+					"frame": {
+						"x": 55,
+						"y": 121,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 73,
+						"y": 121,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 91,
+						"y": 121,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 109,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 14,
+						"h": 21
+					},
+					"frame": {
+						"x": 127,
+						"y": 122,
+						"w": 14,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 11,
+						"w": 14,
+						"h": 21
+					},
+					"frame": {
+						"x": 143,
+						"y": 122,
+						"w": 14,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 14,
+						"h": 21
+					},
+					"frame": {
+						"x": 159,
+						"y": 122,
+						"w": 14,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 11,
+						"w": 14,
+						"h": 21
+					},
+					"frame": {
+						"x": 175,
+						"y": 122,
+						"w": 14,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 191,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 209,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 227,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 245,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 263,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 281,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 299,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 317,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 335,
+						"y": 122,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "robot-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 13,
+						"h": 21
+					},
+					"frame": {
+						"x": 353,
+						"y": 122,
+						"w": 13,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 368,
+						"y": 123,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 18,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 17,
+						"h": 21
+					},
+					"frame": {
+						"x": 386,
+						"y": 123,
+						"w": 17,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 405,
+						"y": 123,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 423,
+						"y": 123,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 18,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 17,
+						"h": 21
+					},
+					"frame": {
+						"x": 441,
+						"y": 124,
+						"w": 17,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 18,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 18,
+						"h": 21
+					},
+					"frame": {
+						"x": 460,
+						"y": 125,
+						"w": 18,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 480,
+						"y": 133,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "robot-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 13,
+						"h": 21
+					},
+					"frame": {
+						"x": 498,
+						"y": 133,
+						"w": 13,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bossman-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 1,
+						"y": 142,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "dragonrider-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 19,
+						"y": 143,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "dragonrider-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
 					},
 					"frame": {
 						"x": 37,
-						"y": 92,
+						"y": 143,
 						"w": 16,
-						"h": 17
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_front.png",
+					"filename": "hacker-back-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -502,19 +4408,103 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 15,
+						"y": 11,
 						"w": 16,
-						"h": 17
+						"h": 21
 					},
 					"frame": {
+						"x": 55,
+						"y": 144,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "hacker-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 73,
+						"y": 144,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "hacker-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 91,
+						"y": 144,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "hacker-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 109,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "hacker-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
 						"x": 1,
-						"y": 93,
-						"w": 16,
-						"h": 17
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 127,
+						"y": 145,
+						"w": 15,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_front_walk.000.png",
+					"filename": "hacker-left-walk.003.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -522,20 +4512,20 @@
 						"h": 32
 					},
 					"spriteSourceSize": {
-						"x": 0,
-						"y": 15,
-						"w": 16,
-						"h": 17
-					},
-					"frame": {
 						"x": 1,
-						"y": 93,
-						"w": 16,
-						"h": 17
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 144,
+						"y": 145,
+						"w": 15,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_front_walk.002.png",
+					"filename": "hacker-left.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -543,20 +4533,20 @@
 						"h": 32
 					},
 					"spriteSourceSize": {
-						"x": 0,
-						"y": 15,
-						"w": 16,
-						"h": 17
-					},
-					"frame": {
 						"x": 1,
-						"y": 93,
-						"w": 16,
-						"h": 17
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 161,
+						"y": 145,
+						"w": 15,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_back_walk.001.png",
+					"filename": "hacker-right-walk.001.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -565,19 +4555,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 16,
-						"w": 16,
-						"h": 16
+						"y": 11,
+						"w": 15,
+						"h": 21
 					},
 					"frame": {
-						"x": 19,
-						"y": 93,
-						"w": 16,
-						"h": 16
+						"x": 178,
+						"y": 145,
+						"w": 15,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_back_walk.003.png",
+					"filename": "hacker-right-walk.003.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -586,19 +4576,19 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 16,
-						"w": 16,
-						"h": 16
+						"y": 11,
+						"w": 15,
+						"h": 21
 					},
 					"frame": {
-						"x": 19,
-						"y": 111,
-						"w": 16,
-						"h": 16
+						"x": 195,
+						"y": 145,
+						"w": 15,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_front_walk.001.png",
+					"filename": "hacker-right.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -607,208 +4597,271 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 16,
-						"w": 16,
-						"h": 16
+						"y": 11,
+						"w": 15,
+						"h": 21
 					},
 					"frame": {
+						"x": 212,
+						"y": 145,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 229,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 247,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 265,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 283,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 301,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 319,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 337,
+						"y": 145,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 355,
+						"y": 146,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 373,
+						"y": 146,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 391,
+						"y": 146,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "misa-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 409,
+						"y": 146,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "robot-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
 						"x": 1,
-						"y": 112,
-						"w": 16,
-						"h": 16
-					}
-				},
-				{
-					"filename": "catgirl_front_walk.003.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 16,
-						"w": 16,
-						"h": 16
+						"y": 11,
+						"w": 13,
+						"h": 21
 					},
 					"frame": {
-						"x": 37,
-						"y": 111,
-						"w": 16,
-						"h": 16
-					}
-				},
-				{
-					"filename": "catgirl_left.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 2,
-						"y": 15,
-						"w": 14,
-						"h": 17
-					},
-					"frame": {
-						"x": 19,
-						"y": 129,
-						"w": 14,
-						"h": 17
-					}
-				},
-				{
-					"filename": "catgirl_left_walk.000.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 2,
-						"y": 15,
-						"w": 14,
-						"h": 17
-					},
-					"frame": {
-						"x": 19,
-						"y": 129,
-						"w": 14,
-						"h": 17
-					}
-				},
-				{
-					"filename": "catgirl_left_walk.002.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 2,
-						"y": 15,
-						"w": 14,
-						"h": 17
-					},
-					"frame": {
-						"x": 19,
-						"y": 129,
-						"w": 14,
-						"h": 17
-					}
-				},
-				{
-					"filename": "catgirl_right.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 15,
-						"w": 14,
-						"h": 17
-					},
-					"frame": {
-						"x": 1,
-						"y": 130,
-						"w": 14,
-						"h": 17
-					}
-				},
-				{
-					"filename": "catgirl_right_walk.000.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 15,
-						"w": 14,
-						"h": 17
-					},
-					"frame": {
-						"x": 1,
-						"y": 130,
-						"w": 14,
-						"h": 17
-					}
-				},
-				{
-					"filename": "catgirl_right_walk.002.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 15,
-						"w": 14,
-						"h": 17
-					},
-					"frame": {
-						"x": 1,
-						"y": 130,
-						"w": 14,
-						"h": 17
-					}
-				},
-				{
-					"filename": "catgirl_left_walk.001.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 2,
-						"y": 16,
-						"w": 14,
-						"h": 16
-					},
-					"frame": {
-						"x": 35,
-						"y": 129,
-						"w": 14,
-						"h": 16
-					}
-				},
-				{
-					"filename": "catgirl_left_walk.003.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 16,
-						"h": 32
-					},
-					"spriteSourceSize": {
-						"x": 2,
-						"y": 16,
-						"w": 14,
-						"h": 16
-					},
-					"frame": {
-						"x": 35,
+						"x": 427,
 						"y": 147,
-						"w": 14,
-						"h": 16
+						"w": 13,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_right_walk.001.png",
+					"filename": "robot-right-walk.001.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -816,20 +4869,62 @@
 						"h": 32
 					},
 					"spriteSourceSize": {
-						"x": 0,
-						"y": 16,
-						"w": 14,
-						"h": 16
+						"x": 2,
+						"y": 11,
+						"w": 13,
+						"h": 21
 					},
 					"frame": {
-						"x": 17,
-						"y": 148,
-						"w": 14,
-						"h": 16
+						"x": 442,
+						"y": 147,
+						"w": 13,
+						"h": 21
 					}
 				},
 				{
-					"filename": "catgirl_right_walk.003.png",
+					"filename": "robot-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 11,
+						"w": 13,
+						"h": 21
+					},
+					"frame": {
+						"x": 457,
+						"y": 148,
+						"w": 13,
+						"h": 21
+					}
+				},
+				{
+					"filename": "robot-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 11,
+						"w": 13,
+						"h": 21
+					},
+					"frame": {
+						"x": 472,
+						"y": 156,
+						"w": 13,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-front-walk.000.png",
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
@@ -838,15 +4933,3480 @@
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 16,
-						"w": 14,
-						"h": 16
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 487,
+						"y": 156,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 21
 					},
 					"frame": {
 						"x": 1,
-						"y": 149,
+						"y": 165,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 19,
+						"y": 166,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 37,
+						"y": 166,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 55,
+						"y": 167,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 73,
+						"y": 167,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 90,
+						"y": 167,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 107,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 124,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 141,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "sami-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 158,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 175,
+						"y": 168,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 193,
+						"y": 168,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 211,
+						"y": 168,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 229,
+						"y": 168,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 247,
+						"y": 168,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 16,
+						"h": 21
+					},
+					"frame": {
+						"x": 265,
+						"y": 168,
+						"w": 16,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 283,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 300,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 317,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 334,
+						"y": 168,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 351,
+						"y": 169,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "spooky-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 11,
+						"w": 15,
+						"h": 21
+					},
+					"frame": {
+						"x": 368,
+						"y": 169,
+						"w": 15,
+						"h": 21
+					}
+				},
+				{
+					"filename": "aang-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
 						"w": 14,
-						"h": 16
+						"h": 22
+					},
+					"frame": {
+						"x": 385,
+						"y": 169,
+						"w": 14,
+						"h": 22
+					}
+				},
+				{
+					"filename": "aang-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
+						"w": 14,
+						"h": 22
+					},
+					"frame": {
+						"x": 401,
+						"y": 169,
+						"w": 14,
+						"h": 22
+					}
+				},
+				{
+					"filename": "aang-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
+						"w": 14,
+						"h": 22
+					},
+					"frame": {
+						"x": 417,
+						"y": 170,
+						"w": 14,
+						"h": 22
+					}
+				},
+				{
+					"filename": "aang-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
+						"w": 14,
+						"h": 22
+					},
+					"frame": {
+						"x": 433,
+						"y": 170,
+						"w": 14,
+						"h": 22
+					}
+				},
+				{
+					"filename": "aang-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
+						"w": 14,
+						"h": 22
+					},
+					"frame": {
+						"x": 449,
+						"y": 171,
+						"w": 14,
+						"h": 22
+					}
+				},
+				{
+					"filename": "aang-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
+						"w": 14,
+						"h": 22
+					},
+					"frame": {
+						"x": 465,
+						"y": 179,
+						"w": 14,
+						"h": 22
+					}
+				},
+				{
+					"filename": "dragonrider-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 481,
+						"y": 179,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "rookie-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 12,
+						"h": 24
+					},
+					"frame": {
+						"x": 499,
+						"y": 179,
+						"w": 12,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 1,
+						"y": 188,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "dragonrider-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 19,
+						"y": 189,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 37,
+						"y": 189,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 55,
+						"y": 190,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 73,
+						"y": 190,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "dragonrider-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 9,
+						"w": 13,
+						"h": 23
+					},
+					"frame": {
+						"x": 91,
+						"y": 190,
+						"w": 13,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 106,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 124,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 142,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 160,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "fisher-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 178,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "hacker-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 196,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "hacker-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 214,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "hacker-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 232,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "hacker-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 250,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "hacker-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 268,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "hacker-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 286,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "misa-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 304,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "misa-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 322,
+						"y": 191,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "misa-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 340,
+						"y": 192,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "misa-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 358,
+						"y": 192,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "misa-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 376,
+						"y": 193,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 394,
+						"y": 193,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 412,
+						"y": 194,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 430,
+						"y": 194,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "rookie-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 10,
+						"w": 15,
+						"h": 22
+					},
+					"frame": {
+						"x": 448,
+						"y": 195,
+						"w": 15,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 465,
+						"y": 203,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "dragonrider-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 9,
+						"w": 13,
+						"h": 23
+					},
+					"frame": {
+						"x": 483,
+						"y": 203,
+						"w": 13,
+						"h": 23
+					}
+				},
+				{
+					"filename": "dragonrider-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 9,
+						"w": 13,
+						"h": 23
+					},
+					"frame": {
+						"x": 498,
+						"y": 205,
+						"w": 13,
+						"h": 23
+					}
+				},
+				{
+					"filename": "robot-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 1,
+						"y": 212,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 19,
+						"y": 213,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 37,
+						"y": 213,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 55,
+						"y": 214,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 73,
+						"y": 214,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "robot-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 91,
+						"y": 215,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "rookie-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 10,
+						"w": 16,
+						"h": 22
+					},
+					"frame": {
+						"x": 109,
+						"y": 215,
+						"w": 16,
+						"h": 22
+					}
+				},
+				{
+					"filename": "captain-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 127,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 145,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 163,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 181,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 199,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 217,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 235,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 253,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 271,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 289,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 307,
+						"y": 215,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "dragonrider-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 9,
+						"w": 13,
+						"h": 23
+					},
+					"frame": {
+						"x": 325,
+						"y": 215,
+						"w": 13,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 340,
+						"y": 216,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "dragonrider-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 358,
+						"y": 216,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "dragonrider-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 9,
+						"w": 15,
+						"h": 23
+					},
+					"frame": {
+						"x": 376,
+						"y": 217,
+						"w": 15,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 393,
+						"y": 217,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 411,
+						"y": 218,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 429,
+						"y": 218,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 447,
+						"y": 219,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 465,
+						"y": 227,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 9,
+						"w": 13,
+						"h": 23
+					},
+					"frame": {
+						"x": 483,
+						"y": 228,
+						"w": 13,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 9,
+						"w": 13,
+						"h": 23
+					},
+					"frame": {
+						"x": 498,
+						"y": 230,
+						"w": 13,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 1,
+						"y": 236,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 19,
+						"y": 237,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 37,
+						"y": 237,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 55,
+						"y": 238,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 73,
+						"y": 238,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 91,
+						"y": 239,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "fisher-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 109,
+						"y": 239,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 127,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 145,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 163,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 181,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "rookie-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 199,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 217,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 235,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 253,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 271,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 289,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 307,
+						"y": 240,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "dragonrider-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 325,
+						"y": 240,
+						"w": 13,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 340,
+						"y": 241,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "scientist-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 358,
+						"y": 241,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "spyderboss-back-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 9,
+						"w": 16,
+						"h": 23
+					},
+					"frame": {
+						"x": 376,
+						"y": 242,
+						"w": 16,
+						"h": 23
+					}
+				},
+				{
+					"filename": "spyderboss-back-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 9,
+						"w": 15,
+						"h": 23
+					},
+					"frame": {
+						"x": 394,
+						"y": 242,
+						"w": 15,
+						"h": 23
+					}
+				},
+				{
+					"filename": "captain-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 411,
+						"y": 243,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 429,
+						"y": 243,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 447,
+						"y": 244,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 465,
+						"y": 252,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 483,
+						"y": 253,
+						"w": 13,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 498,
+						"y": 255,
+						"w": 13,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 1,
+						"y": 261,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 19,
+						"y": 262,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 37,
+						"y": 262,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "captain-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 55,
+						"y": 263,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 73,
+						"y": 263,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 91,
+						"y": 264,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 109,
+						"y": 264,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 127,
+						"y": 265,
+						"w": 13,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 142,
+						"y": 265,
+						"w": 13,
+						"h": 24
+					}
+				},
+				{
+					"filename": "dragonrider-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 157,
+						"y": 265,
+						"w": 13,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 172,
+						"y": 265,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 190,
+						"y": 265,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 208,
+						"y": 265,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 12,
+						"h": 24
+					},
+					"frame": {
+						"x": 226,
+						"y": 265,
+						"w": 12,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 12,
+						"h": 24
+					},
+					"frame": {
+						"x": 240,
+						"y": 265,
+						"w": 12,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 12,
+						"h": 24
+					},
+					"frame": {
+						"x": 254,
+						"y": 265,
+						"w": 12,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 12,
+						"h": 24
+					},
+					"frame": {
+						"x": 268,
+						"y": 265,
+						"w": 12,
+						"h": 24
+					}
+				},
+				{
+					"filename": "rookie-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 8,
+						"w": 12,
+						"h": 24
+					},
+					"frame": {
+						"x": 282,
+						"y": 265,
+						"w": 12,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 296,
+						"y": 265,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 314,
+						"y": 266,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 332,
+						"y": 266,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 350,
+						"y": 266,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 368,
+						"y": 267,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 386,
+						"y": 267,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 404,
+						"y": 269,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 422,
+						"y": 269,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 440,
+						"y": 270,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 458,
+						"y": 278,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 476,
+						"y": 279,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "scientist-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 494,
+						"y": 281,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-back-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 1,
+						"y": 287,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-back-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 19,
+						"y": 288,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-back.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 37,
+						"y": 288,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-front-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 55,
+						"y": 289,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-front-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 16,
+						"h": 24
+					},
+					"frame": {
+						"x": 73,
+						"y": 289,
+						"w": 16,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-left-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 8,
+						"w": 15,
+						"h": 24
+					},
+					"frame": {
+						"x": 91,
+						"y": 290,
+						"w": 15,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-left-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 8,
+						"w": 15,
+						"h": 24
+					},
+					"frame": {
+						"x": 108,
+						"y": 290,
+						"w": 15,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-right-walk.000.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 15,
+						"h": 24
+					},
+					"frame": {
+						"x": 125,
+						"y": 291,
+						"w": 15,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-right-walk.002.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 8,
+						"w": 15,
+						"h": 24
+					},
+					"frame": {
+						"x": 142,
+						"y": 291,
+						"w": 15,
+						"h": 24
+					}
+				},
+				{
+					"filename": "spyderboss-front-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 7,
+						"w": 16,
+						"h": 25
+					},
+					"frame": {
+						"x": 159,
+						"y": 291,
+						"w": 16,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-front-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 7,
+						"w": 16,
+						"h": 25
+					},
+					"frame": {
+						"x": 177,
+						"y": 291,
+						"w": 16,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-front.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 7,
+						"w": 16,
+						"h": 25
+					},
+					"frame": {
+						"x": 195,
+						"y": 291,
+						"w": 16,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-left-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 7,
+						"w": 15,
+						"h": 25
+					},
+					"frame": {
+						"x": 213,
+						"y": 291,
+						"w": 15,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-left-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 7,
+						"w": 15,
+						"h": 25
+					},
+					"frame": {
+						"x": 230,
+						"y": 291,
+						"w": 15,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-left.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 7,
+						"w": 15,
+						"h": 25
+					},
+					"frame": {
+						"x": 247,
+						"y": 291,
+						"w": 15,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-right-walk.001.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 7,
+						"w": 15,
+						"h": 25
+					},
+					"frame": {
+						"x": 264,
+						"y": 291,
+						"w": 15,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-right-walk.003.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 7,
+						"w": 15,
+						"h": 25
+					},
+					"frame": {
+						"x": 281,
+						"y": 291,
+						"w": 15,
+						"h": 25
+					}
+				},
+				{
+					"filename": "spyderboss-right.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 7,
+						"w": 15,
+						"h": 25
+					},
+					"frame": {
+						"x": 298,
+						"y": 292,
+						"w": 15,
+						"h": 25
 					}
 				}
 			]
@@ -855,6 +8415,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:c1cbe93c4ca913dee7001ef2ee56a98f:fb0da8c6d67486e8c596980af83a36d7:b9d48b3d994f5669599dbc5a621f3e1b$"
+		"smartupdate": "$TexturePacker:SmartUpdate:2029a870efc2efa611994b16a3aab66e:04a4bb09748a719c70bf3f5cc07a91de:b9d48b3d994f5669599dbc5a621f3e1b$"
 	}
 }

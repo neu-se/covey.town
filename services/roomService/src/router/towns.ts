@@ -5,7 +5,9 @@ import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
   townCreateHandler,
-  savedTownHandler,
+  savedTownListHandler,
+  getUserInfoHandler,
+  updateUserInfoHandler,
   townDeleteHandler,
   townJoinHandler,
   townListHandler,
@@ -61,6 +63,44 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
 
   });
+
+  // retrieves information about a user
+  app.get('/users/:email', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await getUserInfoHandler({
+        email: req.params.email,
+      });
+      res.status(200)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500)
+        .json({
+          message: 'Internal server error, please see log in server for details',
+        });
+    }
+
+  });
+
+  // updates first and last names for user
+  app.patch('/users/:email', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await updateUserInfoHandler({
+        email: req.params.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+      });
+      res.status(200)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500)
+        .json({
+          message: 'Internal server error, please see log in server for details',
+        });
+    }
+  });
+ 
 
   app.delete('/users/:email', BodyParser.json(), async (req, res) => {
     try {
@@ -118,9 +158,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * List all saved towns for user
    */
-  app.get('/towns/:user', BodyParser.json(), async (req, res) => {
+  app.get('/savedTowns/:user', BodyParser.json(), async (req, res) => {
     try {
-      const result = await savedTownHandler({ email: req.params.user });
+      const result = await savedTownListHandler({ email: req.params.user });
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -136,7 +176,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    * save town to user
    */
 
-  app.post('/towns/:user', BodyParser.json(), async (req, res) => {
+  app.post('/savedTowns/:user', BodyParser.json(), async (req, res) => {
     try {
       const result = await saveTownHandler({
         email: req.params.user,
@@ -156,11 +196,11 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * delete town from users saved towns
    */
-  app.delete('/towns/:user/:townID', BodyParser.json(), async (req, res) => {
+  app.delete('/savedTowns/:user/:townID', BodyParser.json(), async (req, res) => {
     try {
       const result = await deleteSavedTownHandler({
         email: req.params.user,
-        coveyTownID: req.body.townID,
+        coveyTownID: req.params.townID,
       });
       res.status(StatusCodes.OK)
         .json(result);

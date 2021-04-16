@@ -18,10 +18,14 @@ import {
 } from '@chakra-ui/react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
+import { useAuth0 } from "@auth0/auth0-react";
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
+
 const TownSettings: React.FunctionComponent = () => {
+  
+  const { user, isAuthenticated } = useAuth0();
   const {isOpen, onOpen, onClose} = useDisclosure()
   const video = useMaybeVideo()
   const {apiClient, currentTownID, currentTownFriendlyName, currentTownIsPubliclyListed} = useCoveyAppState();
@@ -38,48 +42,82 @@ const TownSettings: React.FunctionComponent = () => {
     onClose();
     video?.unPauseGame();
   }, [onClose, video]);
-
-  const toast = useToast()
+  
+  
+  const toast = useToast();
   const processUpdates = async (action: string) =>{
-    if(action === 'delete'){
-      try{
-        await apiClient.deleteTown({coveyTownID: currentTownID,
-          coveyTownPassword: roomUpdatePassword});
-        toast({
-          title: 'Town deleted',
-          status: 'success'
-        })
-        closeSettings();
-      }catch(err){
-        toast({
-          title: 'Unable to delete town',
-          description: err.toString(),
-          status: 'error'
-        });
-      }
-    }else {
-      try {
-        await apiClient.updateTown({
-          coveyTownID: currentTownID,
-          coveyTownPassword: roomUpdatePassword,
-          friendlyName,
-          isPubliclyListed
-        });
-        toast({
-          title: 'Town updated',
-          description: 'To see the updated town, please exit and re-join this town',
-          status: 'success'
-        })
-        closeSettings();
-      }catch(err){
-        toast({
-          title: 'Unable to update town',
-          description: err.toString(),
-          status: 'error'
-        });
-      }
-    }
+    switch (action) {
+      case 'delete':
+        try{
+          await apiClient.deleteTown({coveyTownID: currentTownID,
+            coveyTownPassword: roomUpdatePassword});
+          toast({
+            title: 'Town deleted',
+            status: 'success'
+          })
+          closeSettings();
+        }catch(err){
+          toast({
+            title: 'Unable to delete town',
+            description: err.toString(),
+            status: 'error'
+          });
+        }
+        break;
+      case 'edit':
+        try {
+          await apiClient.updateTown({
+            coveyTownID: currentTownID,
+            coveyTownPassword: roomUpdatePassword,
+            friendlyName,
+            isPubliclyListed
+          });
+          toast({
+            title: 'Town updated',
+            description: 'To see the updated town, please exit and re-join this town',
+            status: 'success'
+          })
+          closeSettings();
+        }catch(err){
+          toast({
+            title: 'Unable to update town',
+            description: err.toString(),
+            status: 'error'
+          });
+        }
+        break;
+      case 'save':
+        try {
+          await apiClient.saveTown({
+            email: user.email,
+            townID: currentTownID
+          });
+          toast({
+            title: 'Town saved!',
+            description: 'To see your saved towns, please exit the town. They should be visible on the Town Selection screen and also in your profile',
+            status: 'success'
+          })
+        }catch(err){
+          toast({
+            title: 'Unable to save town',
+            description: err.toString(),
+            status: 'error'
+          });
+        }
+        break;
+      default:
+        break;
+    } 
   };
+  
+  let saveTownButton = <div/>;
+
+  if(isAuthenticated){
+
+    saveTownButton = <Button data-testid='savebutton' colorScheme="green" mr={3} value="save" name='action3' onClick={()=>processUpdates('save')}>
+                        Save to Profile  
+                      </Button>
+  }
 
   return <>
     <MenuItem data-testid='openMenuButton' onClick={openSettings}>
@@ -108,6 +146,7 @@ const TownSettings: React.FunctionComponent = () => {
           </ModalBody>
 
           <ModalFooter>
+            {saveTownButton}
             <Button data-testid='deletebutton' colorScheme="red" mr={3} value="delete" name='action1' onClick={()=>processUpdates('delete')}>
               Delete
             </Button>
