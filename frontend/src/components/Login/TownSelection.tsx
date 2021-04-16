@@ -449,7 +449,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                               </Flex>
                             </Td>
                             <Td role='cell'>{
-                              (friend.currentTown && friend.currentTown !== null) ? `In room ${friend.currentTown.coveyTownID}` : 'In lobby'
+                              (friend.currentTown && friend.currentTown !== null) ? `In town ${friend.currentTown.friendlyName}` : 'In lobby'
                             }</Td>
                             {
                               (friend.currentTown && friend.currentTown !== null) ? <Td><Button onClick={() => { if (friend.currentTown && friend.currentTown !== null) { handleJoin(friend.currentTown.coveyTownID) } }}>Connect</Button></Td> : <Td />
