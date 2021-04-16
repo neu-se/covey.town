@@ -45,7 +45,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const loggedInUser = authInfo.currentUser;
   assert(loggedInUser);
   const db = RealmDBClient.getInstance();
-  const [userName, setUserName] = useState<string>(loggedInUser.profile.username || '');
+  const [userName, setUserName] = useState<string>('');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -71,6 +71,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       description: "Unable to find user profile",
       status: "error"
     })
+  } else {
+    setUserName(loggedInUser.profile.username)
   }
 
   function handleEditProfile(): void {
@@ -228,7 +230,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       await db.getFriendRequests(addFriendID)
         .then(async (response) => {
           if (response) {
-            console.log(response.requests);
             await db.saveFriendRequests({
               userID: addFriendID,
               requests: [...response.requests, loggedInUser.userID]
@@ -254,12 +255,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         .then(user => {
           if(user) {
             const list: CoveyUser[] = [];
-            console.log(user.friendIDs)
             user.friendIDs.map(async (id) => {
               await db.getUser(id)
                 .then(response => {
                   if (response) {
-                    console.log(response)
                     list.push(response);
                   }
                   return response;
@@ -271,7 +270,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   }
 
-  const handleProfile = () => history.push('/profile')
   const handleCreate = async () => {
     if (!userName || userName.length === 0) {
       toast({
@@ -330,7 +328,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 addFriendRequestToList(requestUser);
               }
             })
-            console.log(response.requests);
             setFriendRequestIDList(response.requests);
           }
         })
@@ -347,7 +344,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     return () => {
       clearInterval(timer)
     };
-  }, [updateTownListings]);
+  }, [updateTownListings, fetchFriend, populateFriendRequest]);
 
   // Filter state's friend request list for unique items and return list of CoveyUsers for render
   function filteredFriendRequests(): (CoveyUser | undefined)[] {
@@ -357,8 +354,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       const userRequest = friendRequestList.find(user => user.userID === id);
       if (userRequest) { return userRequest; } return undefined;
     });
-    console.log(friendRequestList)
-    console.log(result)
     return result;
   }
 
@@ -388,7 +383,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               const friend = JSON.parse(JSON.stringify(response));
               friend.friendIDs = [...friend.friendIDs, loggedInUser.userID];
               try {
-                console.log(friend);
                 await db.saveUser(friend);
               } catch (e) {
                 toast({
@@ -515,7 +509,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                 <FormLabel htmlFor="addFriendID">Add friend</FormLabel>
                 <Flex>
                   <Input name="addFriendID" placeholder="Send friend request using their user ID" value={addFriendID} onChange={event => setAddFriendID(event.target.value)} />
-                  <Button marginLeft="2" onClick={handleSendFriendRequest}>Send friend request</Button>
+                  <Button marginLeft="2" onClick={handleSendFriendRequest}>Send request</Button>
                 </Flex>
                 <Heading p="4" as="h6" size="md">Your user ID is {loggedInUser ? loggedInUser.userID : 'Error'}</Heading>
               </FormControl>
