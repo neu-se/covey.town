@@ -221,23 +221,19 @@ async function GameController(
   socket.on(
     'globalMessage',
     (msg: { _message: string; _senderID: string;}) => {
-      if (msg._senderID !== gamePlayerID) {
           dispatchAppUpdate({
             action: 'globalMessage',
             message: new GlobalChatMessage(msg._message, msg._senderID),
           });
-      }
     },
   );
 
   socket.on('privateMessage', 
   (msg: { _message: string; _senderID: string; _receiverID: string }) => {
-    if (msg._senderID !== gamePlayerID) {
         dispatchAppUpdate({
           action: 'privateMessage',
           message: new PrivateChatMessage(msg._message, msg._senderID, msg._receiverID),
         });
-    }
   },
   )
 
