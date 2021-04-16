@@ -54,7 +54,8 @@ describe('CoveyTownController', () => {
     it('should save the town to database', async () => {
       const mockDB = mock<Promise<IDBClient>>();
       const townName = `FriendlyNameTest-${nanoid()}`;
-      const townController = new CoveyTownController(townName, false, mockDB);
+      const townController = new CoveyTownController(townName, false);
+      townController.setDBClient(mockDB);
       const newPlayerSession = await townController.addPlayer(new Player(nanoid(), nanoid()));
 
       expect((await mockDB).saveTown).toBeCalled();
@@ -251,7 +252,8 @@ describe('CoveyTownController', () => {
   describe('destroySession', () => {
     it('saves the updated town state to database', async () => {
       const mockDB = mock<Promise<IDBClient>>();
-      const testTown = new CoveyTownController('', true, mockDB);
+      const testTown = new CoveyTownController('', true);
+      testTown.setDBClient(mockDB);
       const player = new Player('test player', nanoid());
       const session = await testTown.addPlayer(player);
       await testTown.destroySession(session);

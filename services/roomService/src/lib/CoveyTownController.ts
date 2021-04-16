@@ -75,13 +75,17 @@ export default class CoveyTownController {
 
   private _dbClient: Promise<IDBClient>;
 
-  constructor(friendlyName: string, isPubliclyListed: boolean, dbClient?: Promise<IDBClient>) {
+  constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
-    this._dbClient = dbClient ?? MongoAtlasClient.setup();
+    this._dbClient = MongoAtlasClient.setup();
+  }
+
+  setDBClient(dbClient: Promise<IDBClient>) {
+    this._dbClient = dbClient;
   }
 
   /**
@@ -116,10 +120,16 @@ export default class CoveyTownController {
    *
    * @param session PlayerSession to destroy
    */
-  destroySession(session: PlayerSession): void {
+  async destroySession(session: PlayerSession): Promise<void> {
     this._players = this._players.filter((p) => p.id !== session.player.id);
     this._sessions = this._sessions.filter((s) => s.sessionToken !== session.sessionToken);
     this._listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
+    try {
+      const dbClient = await this._dbClient;
+      dbClient.saveTown(this.toCoveyTown());
+    } catch (err) {
+      throw new Error(`Error saving town in addPlayer(): ${err.toString()}`);
+    }
   }
 
   /**
