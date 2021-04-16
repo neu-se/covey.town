@@ -48,6 +48,7 @@
         "@chakra-ui/icons": "^1.0.10",
         "@types/ramda": "^0.27.34",
         "express": "^4.17.1",
+        "moment": "^2.29.1",
         "ramda": "^0.27.1",
         "socket.io": "^4.0.1",
         "typescript-is": "^0.17.0"
