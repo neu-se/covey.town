@@ -129,11 +129,8 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
             <h1>{`Oops, that wasn't right. The real lie was "${choicesList[lieIndex]}".`}</h1>
             }
           </div>
-
         </>
       }
     </>
-
-
   )
 }

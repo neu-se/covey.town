@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import HangmanLetter from "./HangmanLetter";
 import HangmanGame from "../../gamesClient/HangmanGame";
 import HangmanFigure from './HangmanFigure';
@@ -14,8 +14,9 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
   const {gamesClient, currentTownID} = useCoveyAppState();
   const [currentGame, setCurrentGame] = useState<HangmanGame>(startingGame);
   const gameId = startingGame.id;
-  const [wordState, setWordState] = useState('')
   const finalWord = startingGame.finalWord.split('')
+  const [playing, setPlaying] = useState(true);
+  const [winner, setWinner] = useState(0);
 
   const updateAlreadyGuessedLetters = () => {
     let letters: string[] = [];
@@ -31,19 +32,25 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
       const {games} = await gamesClient.listGames({townID: currentTownID})
       const game = games.find(g => g.id === gameId)
       setCurrentGame(game as HangmanGame)
+      if(currentGame.splitWord.length === 0) {
+        setWinner(2);
+        setPlaying(false);
+      }
+      if(currentGame.limbList.length === 0) {
+        setWinner(1);
+        setPlaying(false);
+      }
     }
     fetchGame();
-    // guessedWord();
     const timer = setInterval(async () => {
       await fetchGame();
-      // await guessedWord();
     }, 500)
     return () => {
       if (timer) {
         clearInterval(timer);
       }
     }
-  }, []);
+  }, [currentTownID, gameId, gamesClient]);
 
   return (
     <>
@@ -120,6 +127,12 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
                     </div>
                   </div>
                 </>
+            }
+            {
+              !playing &&
+              <div>
+                <h5>Game is over! Player {winner} won!</h5>
+              </div>
             }
           </>
       }
