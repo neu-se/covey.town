@@ -24,6 +24,7 @@ function InviteFriendComponent() : JSX.Element {
   const { users } = useParams<ParamTypes>()
   const [userName, setUserName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [facebookLink,setFacebookLink] = useState<string>("");
   const [instagramLink, setInstagramLink] = useState<string>("");
   const [linkedInLink, setLinkedInLink] = useState<string>("");
@@ -38,6 +39,7 @@ function InviteFriendComponent() : JSX.Element {
     const findUser = async () => {
       const userInfo = await searchUserByName(users);
       const currentUser = await searchUserByEmail(user.email);
+      setEmail(userInfo.email);
       setCurrentUserName(currentUser.username);
       setUserName(userInfo.username)
       setBio(userInfo.bio)
@@ -83,7 +85,7 @@ function InviteFriendComponent() : JSX.Element {
           <Flex width='full' align='center' justifyContent='center'>
             <Box mt={90}>
               <Text color='white' >{userName.toUpperCase()}</Text>
-              <Text color='white' >email:</Text>
+              <Text color='white' >email: {email}</Text>
               <Text color='white'>BIO: {bio}</Text>
               <Text color='white'>LinkedIn link: {linkedInLink}</Text>
               <Text color='white'>Instagram link: {instagramLink}</Text>
@@ -91,7 +93,7 @@ function InviteFriendComponent() : JSX.Element {
               <Text color='white'>Location: {location}</Text>
               <Text color='white'>Occupation: {occupation}</Text>
               <Link to='/friendsPage'>
-                {showNone && 
+                {showNone &&
                   <Button
                     variantColor='teal'
                     variant='outline'
@@ -104,7 +106,7 @@ function InviteFriendComponent() : JSX.Element {
                     Your profile
                   </Button>
                 }
-                { showInvite && !showNone && 
+                { showInvite && !showNone &&
                   <Button
                     variantColor='teal'
                     variant='outline'

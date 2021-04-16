@@ -1,5 +1,6 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
+<<<<<<< HEAD
 import {
   GraphQLResponse,
 } from 'apollo-server-types';
@@ -15,6 +16,9 @@ import {
   searchUserByNameQuery,
   updateUserMutation,
 } from './TestQueries';
+=======
+import { createUser } from './TestQueries';
+>>>>>>> 1abb535c203e1b9c8253793675a60e8c21cfd021
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
 import connection from '../data/Utils/index';
@@ -24,7 +28,7 @@ const context = { user: {email: 'admin@labtrail.app'} };
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers,  
   context: () => (context),
 });
 
@@ -36,6 +40,7 @@ beforeAll(async () => {
 });
 
 describe('Testing queries', () => {
+<<<<<<< HEAD
   let testUser: { email: string; username: string; password?: string; };
   let createUserResponse: GraphQLResponse;
 
@@ -185,5 +190,12 @@ describe('Testing queries', () => {
     expect(searchUserByEmailResponseTwo.data.searchUserByEmail.friends.length).not.toBe(0);
   });
 
+=======
+  it('create user', async () => {
+    const testUser = { username: 'anu', email: 'ananya@gmail.com', password: '1234' };
+    const createUserResponse = await mutate({ mutation: createUser, variables: { input: testUser }});
+    expect(createUserResponse.data.signUp.username).toBe('anu');
+  });
+>>>>>>> 1abb535c203e1b9c8253793675a60e8c21cfd021
 });
 
