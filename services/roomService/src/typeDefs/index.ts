@@ -151,7 +151,9 @@ type TownDeleteResponseEnvelope {
 
 type TownUpdateResponseEnvelope {
   isOK: Boolean!
-  me
+  message : String
+}
+
 
 
 type Mutation {
@@ -160,6 +162,7 @@ type Mutation {
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
   townDeleteRequest(input: townDeleteRequestInput): TownDeleteResponseEnvelope
+  townUpdateRequest(input: townUpdateRequestInput): TownUpdateResponseEnvelope
   updateUser(input: updateUserInput): User
   deleteUser(input: deleteUserInput): Boolean
   acceptFriend(input: addFriendInput): Boolean
