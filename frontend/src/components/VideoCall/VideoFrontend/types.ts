@@ -12,7 +12,7 @@ declare module 'twilio-video' {
   }
 
   interface LocalTrackPublication {
-    setPriority: (priority: Track.Priority) => this;
+    setPriority: (priority: Track.Priority) => LocalTrackPublication;
   }
 
   interface LocalVideoTrack {
@@ -22,7 +22,7 @@ declare module 'twilio-video' {
 
   interface RemoteVideoTrack {
     isSwitchedOff: boolean;
-    setPriority: (priority: Track.Priority | null) => this;
+    setPriority: (priority: Track.Priority) => RemoteVideoTrack;
   }
 
   interface VideoBandwidthProfileOptions {
