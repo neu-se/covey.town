@@ -77,7 +77,7 @@ describe('TownServiceApiSocket', () => {
     expect(movedPlayer.location).toMatchObject(newLocation);
     expect(otherMovedPlayer.location).toMatchObject(newLocation);
   });
-  it('Dispatches chat updates to all clients in the same town', async () => {
+  it('Dispatches chat updates to a specific client receiver in the same town', async () => {
     const town = await createTownForTesting();
     const joinData = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid()});
     const joinData2 = await apiClient.joinTown({coveyTownID: town.coveyTownID, userName: nanoid()});
