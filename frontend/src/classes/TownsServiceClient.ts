@@ -80,6 +80,44 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
+export type JoinedTown = {
+  townID: string,
+  positionX: number,
+  positionY: number,
+};
+
+/**
+ * Payload sent by client to save a user in Covey.Town
+ */
+export interface SaveUserRequest {
+  userID: string;
+  email?: string;
+  username?: string;
+  useAudio?: boolean;
+  useVideo?: boolean;
+  towns?: JoinedTown[];
+}
+
+/**
+ * Payload sent by client to request information for a user's email
+ */
+export interface GetUserRequest {
+  userID: string;
+}
+
+
+/**
+ * Response from the server for a get user request
+ */
+export interface GetUserResponse {
+  userID: string;
+  email: string;
+  username: string;
+  useAudio: boolean;
+  useVideo: boolean;
+  towns: JoinedTown[];
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -146,4 +184,13 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async saveUser(requestData: SaveUserRequest): Promise<void> {
+    const responseWrapper = await this._axios.put<ResponseEnvelope<void>>('/user', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+  }
+
+  async getUser(requestData: GetUserRequest): Promise<GetUserResponse> {
+    const responseWrapper = await this._axios.get<ResponseEnvelope<GetUserResponse>>(`/user/${requestData.userID}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
 }

@@ -1,4 +1,3 @@
-import AccountsServiceClient from '../AccountsServiceClient';
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
 
@@ -18,8 +17,6 @@ export default class Video {
   private _userName: string;
 
   private townsServiceClient: TownsServiceClient = new TownsServiceClient();
-
-  private accountsServiceClient: AccountsServiceClient = new AccountsServiceClient();
 
   private _coveyTownID: string;
 

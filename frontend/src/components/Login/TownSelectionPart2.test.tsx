@@ -6,7 +6,6 @@ import { fireEvent, render, RenderResult, waitFor, within } from '@testing-libra
 import userEvent, { TargetElement } from '@testing-library/user-event'
 import { nanoid } from 'nanoid';
 import TownsServiceClient, { TownListResponse } from '../../classes/TownsServiceClient';
-import AccountsServiceClient from '../../classes/AccountsServiceClient';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
@@ -101,7 +100,6 @@ function wrappedTownSelection() {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
-    accountApiClient: new AccountsServiceClient(),
   }}>
     <TownSelection username='test username' doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
 }

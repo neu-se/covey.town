@@ -3,16 +3,15 @@ import { Heading, Text } from '@chakra-ui/react';
 import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import Registration from '../../../../Login/Registration';
-import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
+import { SaveUserRequest, TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import TownSelection from '../../../../Login/TownSelection';
 import { UserInfo } from '../../../../../CoveyTypes';
 import { useAuth0 } from '@auth0/auth0-react';
-import { SaveUserRequest } from '../../../../../classes/AccountsServiceClient';
 import useCoveyAppState from '../../../../../hooks/useCoveyAppState';
 
 export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>; setMediaError?(error: Error): void }) {
   const auth0 = useAuth0();
-  const { accountApiClient } = useCoveyAppState();
+  const { apiClient } = useCoveyAppState();
 
   const loggedOutUser = { userID: '', email: '', username: '', useAudio: false, useVideo: false, towns: [] };
   const [loggedIn, setLoggedIn] = useState<boolean>(auth0.isAuthenticated);
@@ -23,13 +22,13 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
   }
 
   async function updateUserInfo(userID: string) {
-    const getResponse = await accountApiClient.getUser({ userID });
+    const getResponse = await apiClient.getUser({ userID });
     setUserInfo(getResponse as UserInfo);
   }
 
   async function saveUserInfo(request: SaveUserRequest) {
     try {
-      await accountApiClient.saveUser(request);
+      await apiClient.saveUser(request);
       updateUserInfo(request.userID);
     } catch (err) {
       console.log(err.toString());

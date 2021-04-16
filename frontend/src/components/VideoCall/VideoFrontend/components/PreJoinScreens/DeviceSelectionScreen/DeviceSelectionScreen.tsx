@@ -82,7 +82,7 @@ export default function DeviceSelectionScreen({
   const [useSavedDevicePreferences, setUseSavedDevicePreferences] = useState<boolean>(false);
   const [currentlyUnmuted, setCurrentlyUnmuted] = useState<boolean>(false);
   const [currentlyShowVideo, setCurrentlyShowVideo] = useState<boolean>(false);
-  const { accountApiClient } = useCoveyAppState();
+  const { apiClient } = useCoveyAppState();
   const auth0 = useAuth0();
 
   const { getToken, isFetching } = useAppState();
@@ -99,8 +99,8 @@ export default function DeviceSelectionScreen({
   const toast = useToast();
   const handleSaveDevices = async (userID: string, newUseAudio: boolean, newUseVideo: boolean) => {
     try {
-      await accountApiClient.saveUser({ userID, useAudio: newUseAudio, useVideo: newUseVideo });
-      const getResponse = await accountApiClient.getUser({ userID });
+      await apiClient.saveUser({ userID, useAudio: newUseAudio, useVideo: newUseVideo });
+      const getResponse = await apiClient.getUser({ userID });
       if (setUserInfo) {
         setUserInfo(getResponse as UserInfo);
       }

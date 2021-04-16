@@ -40,7 +40,7 @@ export default function TownSelection({ username, doLogin, setUserInfo }: TownSe
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
   const { connect } = useVideoContext();
-  const { apiClient, accountApiClient } = useCoveyAppState();
+  const { apiClient } = useCoveyAppState();
   const toast = useToast();
   const auth0 = useAuth0();
 
@@ -105,8 +105,8 @@ export default function TownSelection({ username, doLogin, setUserInfo }: TownSe
         });
       }
       else {
-        await accountApiClient.saveUser({ userID,  username: newUsername });
-        const getResponse = await accountApiClient.getUser({ userID });
+        await apiClient.saveUser({ userID,  username: newUsername });
+        const getResponse = await apiClient.getUser({ userID });
         if (setUserInfo) {
           setUserInfo(getResponse as UserInfo);
         }

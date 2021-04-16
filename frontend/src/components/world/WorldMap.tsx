@@ -452,7 +452,7 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players, myPlayerID, accountApiClient
+    emitMovement, players, myPlayerID, apiClient
   } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [previousTowns, setPreviousTowns] = useState<JoinedTown[]>([]);
@@ -460,7 +460,7 @@ export default function WorldMap(): JSX.Element {
   const { isAuthenticated, user } = useAuth0();
   
   const updatePreviousTowns = useCallback((userID: string) => {
-    accountApiClient.getUser({ userID })
+    apiClient.getUser({ userID })
       .then(res => {
         setPreviousTowns(res.towns);
         setGetResponseReceived(true);
@@ -469,7 +469,7 @@ export default function WorldMap(): JSX.Element {
         setPreviousTowns([]);
         setGetResponseReceived(true);
       });
-  }, [setPreviousTowns, accountApiClient]);
+  }, [setPreviousTowns, apiClient]);
 
 
   useEffect(() => {
