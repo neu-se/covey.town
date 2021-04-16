@@ -43,12 +43,12 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
 
   return (
     <>
-      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green"
+      <Button data-testid='openMenuButton' className="games-padded-asset games-join-button" colorScheme="green"
               onClick={() => {
                 onOpen();
                 video?.pauseGame()}
               }>
-        <Typography variant="body1">Join Game</Typography>
+        Join Game
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>

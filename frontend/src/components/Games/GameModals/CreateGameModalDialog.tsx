@@ -219,6 +219,26 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                   </div>
                 </>
             }
+            {
+              playing && currentGameObject === undefined &&
+              <>
+                <div className="col-12">
+                  <h1 className="games-headline">
+                    {gameSelection === "ttl" ? "Two Truths and a Lie" : gameSelection}
+                  </h1>
+                  <hr/>
+                  <br/>
+                </div>
+
+                <div className="games-border games-extra-padded">
+                  <div className="games-center-div games-end-message">
+                    <br/>
+                    Oh no! Looks like the other player ended the game.
+                    <br/>
+                  </div>
+                </div>
+              </>
+            }
             {!playing &&
             <ModalFooter>
             <Button className="games-padded-asset" colorScheme="green"
