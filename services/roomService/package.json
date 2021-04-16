@@ -51,6 +51,7 @@
     "apollo-datasource-rest": "^0.10.0",
     "apollo-server-express": "^2.23.0",
     "apollo-server-testing": "^2.23.0",
+    "apollo-server-types": "^0.7.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

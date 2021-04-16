@@ -8,7 +8,7 @@ function LoginButton(): JSX.Element {
   return (
     <>
       {!isAuthenticated && (
-        <Button color='blue.500' onClick={loginWithRedirect}>
+        <Button color='blue.500' mr={3} onClick={loginWithRedirect}>
           Log in
         </Button>
       )}

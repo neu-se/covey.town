@@ -1,11 +1,20 @@
 import { createTestClient } from 'apollo-server-testing';
 import { ApolloServer } from 'apollo-server-express';
-// import { GraphQLResponse } from 'graphql';
 import {
   GraphQLResponse,
 } from 'apollo-server-types';
-
-import { createUser, deleteUserMutation, searchUserByEmailQuery, searchUserByNameQuery, updateUserMutation} from './TestQueries';
+import {
+  createUser,
+  addFriendMutation,
+  deleteUserMutation,
+  acceptFriendMutation,
+  rejectFriendMutation,
+  searchUserByUserNameQuery,
+  findAllUsers,
+  searchUserByEmailQuery,
+  searchUserByNameQuery,
+  updateUserMutation,
+} from './TestQueries';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
 import connection from '../data/Utils/index';
@@ -15,7 +24,7 @@ const context = { user: {email: 'admin@labtrail.app'} };
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,  
+  resolvers,
   context: () => (context),
 });
 
@@ -29,7 +38,6 @@ beforeAll(async () => {
 describe('Testing queries', () => {
   let testUser: { email: string; username: string; password?: string; };
   let createUserResponse: GraphQLResponse;
-  let deleteUserResponse: GraphQLResponse;
 
   beforeEach(async () => {
     testUser = { username: 'testUser', email: 'testUser123@gmail.com', password: '1234' };
@@ -40,26 +48,21 @@ describe('Testing queries', () => {
     const deleteUserInput = {
       email: testUser.email,
     };
-    deleteUserResponse = await mutate({ mutation: deleteUserMutation, variables: { input: deleteUserInput } });
-    expect(deleteUserResponse).toBeTruthy();
+    await mutate({ mutation: deleteUserMutation, variables: { input: deleteUserInput } });
   });
 
   it('search user profile by email', async () => {
-
     const searchUserByEmailResponse = await query({ query: searchUserByEmailQuery, variables: { email: testUser.email } });
     expect(searchUserByEmailResponse.data.searchUserByEmail.email).toBe(testUser.email);
     expect(searchUserByEmailResponse.data.searchUserByEmail.username).toBe(testUser.username);
     expect(searchUserByEmailResponse.errors).toBeUndefined();
-
   });
 
   it('search user profile by name', async () => {
-
     const searchUserByNameResponse = await query({ query: searchUserByNameQuery, variables: { username: testUser.username } });
     expect(searchUserByNameResponse.data.searchUserByName.email).toBe(testUser.email);
     expect(searchUserByNameResponse.data.searchUserByName.username).toBe(testUser.username);
     expect(searchUserByNameResponse.errors).toBeUndefined();
-
   });
 
   it('create user', async () => {
@@ -83,8 +86,8 @@ describe('Testing queries', () => {
     const deleteNewUserResponse = await mutate({ mutation: deleteUserMutation, variables: { input: deleteUserInput } });
     expect(deleteNewUserResponse).toBeTruthy();
   });
-  it('update only one field for user', async () => {
 
+  it('update only one field for user', async () => {
     const updateUserInput = {
       id: createUserResponse.data?.signUp.id,
       email: testUser.email,
@@ -92,14 +95,13 @@ describe('Testing queries', () => {
       password: testUser.password,
       bio: 'MSCS student at Northeastern University',
     };
-    
     const updateUserResponse = await mutate({ mutation: updateUserMutation, variables: { input: updateUserInput } });
     expect(updateUserResponse.data.updateUser.bio).toBe('MSCS student at Northeastern University');
     expect(createUserResponse.data?.signUp.email).toBe('testUser123@gmail.com');
     
   });
+
   it('update all fields for user', async () => {
-    
     const updateUserInput = {
       id: createUserResponse.data?.signUp.id,
       email: testUser.email,
@@ -112,7 +114,6 @@ describe('Testing queries', () => {
       facebookLink: 'https://www.facebook.com/test.user/',
       linkedInLink: 'https://www.linkedin.com/test.user/',
     };
-
     const updateUserResponse = await mutate({ mutation: updateUserMutation, variables: { input: updateUserInput } });
     expect(updateUserResponse.data.updateUser.bio).toBe('MSCS student at Northeastern University');
     expect(updateUserResponse.data.updateUser.location).toBe('Boston');
@@ -122,6 +123,67 @@ describe('Testing queries', () => {
     expect(updateUserResponse.data.updateUser.linkedInLink).toBe('https://www.linkedin.com/test.user/');
   });
 
+});
+
+describe('Testing queries', () => {
+  let testUserOne : { email: string; username: string; password?: string; };
+  let testUserTwo : { email: string; username: string; password?: string; };
+  beforeEach(async () => {
+    testUserOne = { username: 'vaidehi123', email: 'vaidehi1236@gmail.com', password: '123478' };
+    testUserTwo = { username: 'vaibhavi234', email: 'vaibhavi123@gmail.com', password: '1234' };
+    await mutate({ mutation: createUser, variables: { input: testUserOne }});
+    await mutate({ mutation: createUser, variables: { input: testUserTwo }});
+  });
+
+  afterEach(async () => {
+    const testInput = { email: testUserOne.email };
+    const testInputTwo = { email: testUserTwo.email };
+    await mutate({ mutation: deleteUserMutation, variables: { input: testInput }});
+    await mutate({ mutation: deleteUserMutation, variables: { input: testInputTwo }});
+  });
+
+  it('add friend', async () => {
+    const inputTest = { userNameTo: testUserOne.username, userNameFrom: testUserTwo.username };
+    const addFriendResponse = await mutate({ mutation: addFriendMutation, variables: { input: inputTest }});
+    expect(addFriendResponse.data.addFriend).toBe(true);
+  });
+
+  it('accept friend', async () => {
+    const inputTest = { userNameTo: testUserOne.username, userNameFrom: testUserTwo.username };
+    await mutate({ mutation: addFriendMutation, variables: { input: inputTest }});
+    const acceptFriendResponse = await mutate({ mutation: acceptFriendMutation, variables: { input: inputTest }});
+    expect(acceptFriendResponse.data.acceptFriend).toBe(true);
+  });
+
+  it('reject friend', async () => {
+    const inputTest = { userNameTo: testUserOne.username, userNameFrom: testUserTwo.username };
+    await mutate({ mutation: addFriendMutation, variables: { input: inputTest }});
+    const rejectFriendResponse = await mutate({ mutation: rejectFriendMutation, variables: { input: inputTest }});
+    expect(rejectFriendResponse.data.rejectFriend).toBe(true);
+  });
+
+  it('substring search', async () => {
+    const inputTest = { username: 'vai' };
+    const queryResponse = await query({ query: searchUserByUserNameQuery, variables: inputTest});
+    expect(queryResponse.data.searchUserByUserName.length).not.toBe(0);
+  });
+
+  it('list all users', async () => {
+    const queryResponse = await query({ query: findAllUsers});
+    expect(queryResponse.data.users.length).not.toBe(0);
+  });
+
+  it('friend list update test', async () => {
+    const inputTest = { userNameTo: testUserOne.username, userNameFrom: testUserTwo.username };
+    const addFriendResponse = await mutate({ mutation: addFriendMutation, variables: { input: inputTest }});
+    expect(addFriendResponse.data.addFriend).toBe(true);
+    const acceptFriendResponse = await mutate({ mutation: acceptFriendMutation, variables: { input: inputTest }});
+    expect(acceptFriendResponse.data.acceptFriend).toBe(true);
+    const searchUserByEmailResponse = await query({ query: searchUserByEmailQuery, variables: { email: testUserOne.email } });
+    expect(searchUserByEmailResponse.data.searchUserByEmail.friends.length).not.toBe(0);
+    const searchUserByEmailResponseTwo = await query({ query: searchUserByEmailQuery, variables: { email: testUserTwo.email } });
+    expect(searchUserByEmailResponseTwo.data.searchUserByEmail.friends.length).not.toBe(0);
+  });
 
 });
 

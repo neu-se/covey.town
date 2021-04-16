@@ -70,19 +70,19 @@ function InviteFriendComponent() : JSX.Element {
         p={2}
         maxWidth='500px'
         w='90vw'
-        h='80vh'
+        h='100vh'
         mt={50}
         class='box-profile'
       >
 
-        <Box w='100%' h='60vh' bg='blue.500' boxShadow='lg'>
+        <Box w='100%' h={['70vh','70vh','60vh','60vh']} bg='blue.500' boxShadow='lg'>
           <Heading size='md' paddingTop='20px'>
             {" "}
             <Text color='white'>{userName.toUpperCase()}</Text>
           </Heading>
           <Flex width='full' align='center' justifyContent='center'>
             <Box mt={90}>
-              <Text color='white'>{userName.toUpperCase()}</Text>
+              <Text color='white' >{userName.toUpperCase()}</Text>
               <Text color='white' >email:</Text>
               <Text color='white'>BIO: {bio}</Text>
               <Text color='white'>LinkedIn link: {linkedInLink}</Text>
@@ -147,6 +147,8 @@ function InviteFriendComponent() : JSX.Element {
             </Box>
           </Flex>
         </Box>
+
+
       </Box>
     </Flex>
 
