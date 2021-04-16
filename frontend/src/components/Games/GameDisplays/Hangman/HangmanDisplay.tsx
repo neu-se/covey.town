@@ -50,7 +50,7 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
     <>
       {
         currentGame === undefined &&
-          <div className="games-center-div">
+          <div className="games-center-div games-end-message">
             <br/>
             Oh no! Looks like the other player ended the game.
             <br/>

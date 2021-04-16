@@ -43,7 +43,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
     <>
       {
         currentGame === undefined &&
-        <div className="games-center-div">
+        <div className="games-center-div games-end-message">
           <br/>
           Oh no! Looks like the other player ended the game.
           <br/>
