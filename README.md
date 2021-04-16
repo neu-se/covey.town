@@ -25,7 +25,7 @@ To create an account and configure your local environment:
 2. Create an API key and secret (select "API Keys" on the left under "Settings")
 3. Create a `.env` file in the `services/roomService` directory, setting the values as follows:
 
-| Config Value             | Description                                                  |
+| Config                   | Description                                                  |
 | ------------------------ | ------------------------------------------------------------ |
 | `TWILIO_ACCOUNT_SID`     | Visible on your twilio account dashboard.                    |
 | `TWILIO_API_KEY_SID`     | The SID of the new API key you created.                      |
@@ -42,7 +42,7 @@ The backend will automatically restart if you change any of the files in the `se
 
 Create a `.env` file in the `frontend` directory, with the following values to configure the town URLs, friend request service, Realm, and Google third-party authentication:
 
-| Config Value                           | Description                                                              |
+| Config                                 | Value                                                                    |
 | -------------------------------------- | ------------------------------------------------------------------------ |
 | `REACT_APP_TOWNS_SERVICE_URL`          | http://localhost:8081                                                    |
 | `REACT_APP_REALM_ID`                   | coveytown1-msmxv                                                         | 
