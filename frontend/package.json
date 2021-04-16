@@ -16,7 +16,6 @@
     "@types/jest": "^26.0.15",
     "@types/lodash.throttle": "^4.1.6",
     "@types/node": "^12.0.0",
-    "@types/node-emoji": "^1.8.1",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/react-router": "^5.1.13",
@@ -83,6 +82,7 @@
   "devDependencies": {
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.0",
+    "@types/node-emoji": "^1.8.1",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-config-prettier": "^8.1.0",
