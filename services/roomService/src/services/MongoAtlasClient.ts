@@ -72,7 +72,7 @@ export default class MongoAtlasClient implements IDBClient {
 
   async saveTown(coveyTown: CoveyTown): Promise<void> {
     if (!this._dbClient) {
-      throw new Error('Atlas DB Client not initialized');
+      this._dbClient = await MongoPackage.MongoClient.connect(this._uri, { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
     const db = this._dbClient.db(this._coveyTownDBName);
@@ -82,7 +82,7 @@ export default class MongoAtlasClient implements IDBClient {
 
   async deleteTown(coveyTownID: string): Promise<void> {
     if (!this._dbClient) {
-      throw new Error('Atlas DB Client not initialized');
+      this._dbClient = await MongoPackage.MongoClient.connect(this._uri, { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
     const db = this._dbClient.db(this._coveyTownDBName);
@@ -92,7 +92,7 @@ export default class MongoAtlasClient implements IDBClient {
 
   async getTowns(): Promise<CoveyTown[]> {
     if (!this._dbClient) {
-      throw new Error('Atlas DB Client not initialized');
+      this._dbClient = await MongoPackage.MongoClient.connect(this._uri, { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
     const db = this._dbClient.db(this._coveyTownDBName);

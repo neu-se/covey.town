@@ -1,6 +1,23 @@
 # Features
 
 ## User Story 1:
+### Create an Account
+- Upon landing on the website, user will be prompted to login or create an account.
+- After pressing "create an account", the user will be redirected to sign up page, where they could enter their username,  email, and password.
+
+![Create an account](docs/user-story-1/create-account.png)
+
+- After they press the button to create the account, they will be automatically logged in.
+
+### Log in
+- Once a user has created an account, they can reuse their email address and pasword to log in.
+
+![login](docs/user-story-1/login.png)
+
+### Log out
+- Once a user has logged in, they could log out of their current account.
+
+![Logout](docs/user-story-1/logout.png)
 
 ## User Story 2:
 
