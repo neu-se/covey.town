@@ -56,6 +56,7 @@ describe('CoveyTownController', () => {
   });
   describe('town listeners and events', () => {
     let testingTown: CoveyTownController;
+    let otherTown: CoveyTownController;
     const mockListeners = [
       mock<CoveyTownListener>(),
       mock<CoveyTownListener>(),
@@ -63,7 +64,9 @@ describe('CoveyTownController', () => {
     ];
     beforeEach(() => {
       const townName = `town listeners and events tests ${nanoid()}`;
+      const otherTownName = `a second town to test that chats stay within towns ${nanoid()}`;
       testingTown = new CoveyTownController(townName, false);
+      otherTown = new CoveyTownController(otherTownName, false);
       mockListeners.forEach(mockReset);
     });
     it('should notify added listeners of player movement when updatePlayerLocation is called', async () => {
@@ -157,23 +160,6 @@ describe('CoveyTownController', () => {
       expect(testingTown.messages[0].senderID).toBe(player1.id);
     });
 
-    it("should send a private message and other players can't see it", async () => {
-      const player1 = new Player('player 1');
-      const player2 = new Player('player 2');
-      const player3 = new Player('player 3');
-
-      await testingTown.addPlayer(player1);
-      await testingTown.addPlayer(player2);
-      await testingTown.addPlayer(player3);
-      mockListeners.forEach(listener => testingTown.addTownListener(listener));
-      const message = new PrivateChatMessage('hello', player1.id, player2.id);
-      mockListeners.forEach(listener => listener.onPrivateMessage(message));
-      expect(mockListeners[0].onPrivateMessage).toBeCalledWith(message);
-      expect(mockListeners[1].onPrivateMessage).toBeCalledWith(message);
-      expect(mockListeners[2].onPrivateMessage).toBeCalledWith(message);
-      // TODO check that players 1 and 2 got the message but player 3 did not
-    });
-
     it('should send a global message', async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
@@ -198,42 +184,44 @@ describe('CoveyTownController', () => {
       expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
       expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
-
-      // TODO players 1-3 should have gotten the message
     });
 
-    it('players in other rooms do not get a message from the current room', async () => {
+    it('players in other rooms do not get a global message from the current room', async () => {
+      const player1 = new Player('player 1');
+      const player2 = new Player('player 2');
+
+      await testingTown.addPlayer(player1);
+      await otherTown.addPlayer(player2);
+      const message = new GlobalChatMessage('Road works ahead', player1.id);
+      const otherTownMessage = new GlobalChatMessage('I sure hope it does', player2.id);
+
+      testingTown.sendGlobalPlayerMessage(message.senderID, message.message);
+      otherTown.sendGlobalPlayerMessage(otherTownMessage.senderID, otherTownMessage.message);
+      expect(testingTown.messages).toEqual(expect.arrayContaining([message]));
+      expect(testingTown.messages).toEqual(expect.not.arrayContaining([otherTownMessage]));
+      expect(otherTown.messages).toEqual(expect.arrayContaining([otherTownMessage]));
+      expect(otherTown.messages).toEqual(expect.not.arrayContaining([message]));
+    });
+
+    it('players in other rooms do not get a private message from the current room', async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
       const player3 = new Player('player 3');
+      const player4 = new Player('player 4');
 
       await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
-      await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', player1.id);
-      mockListeners.forEach(listener => testingTown.addTownListener(listener));
-      mockListeners.forEach(listener => listener.onGlobalMessage(message));
-      expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
-      expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
-      expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
-      // TODO do tests for array of messages in the controller
-    });
+      await otherTown.addPlayer(player3);
+      await otherTown.addPlayer(player4);
+      const message = new PrivateChatMessage('Road works ahead', player1.id, player2.id);
+      const otherTownMessage = new PrivateChatMessage('I sure hope it does', player3.id, player4.id);
 
-    it('players that have left the room do not get a message from the current room', async () => {
-      const player1 = new Player('player 1');
-      const player2 = new Player('player 2');
-      const player3 = new Player('player 3');
-
-      await testingTown.addPlayer(player1);
-      await testingTown.addPlayer(player2);
-      await testingTown.addPlayer(player3);
-      const message = new GlobalChatMessage('hello', player1.id);
-      mockListeners.forEach(listener => testingTown.addTownListener(listener));
-      mockListeners.forEach(listener => listener.onGlobalMessage(message));
-      expect(mockListeners[0].onGlobalMessage).toBeCalledWith(message);
-      expect(mockListeners[1].onGlobalMessage).toBeCalledWith(message);
-      expect(mockListeners[2].onGlobalMessage).toBeCalledWith(message);
-      // TODO players 1-3
+      testingTown.sendPrivatePlayerMessage(message.senderID, message.getReceiverID(), message.message);
+      otherTown.sendPrivatePlayerMessage(otherTownMessage.senderID, otherTownMessage.getReceiverID(), otherTownMessage.message);
+      expect(testingTown.messages).toEqual(expect.arrayContaining([message]));
+      expect(testingTown.messages).toEqual(expect.not.arrayContaining([otherTownMessage]));
+      expect(otherTown.messages).toEqual(expect.arrayContaining([otherTownMessage]));
+      expect(otherTown.messages).toEqual(expect.not.arrayContaining([message]));
     });
 
     it('global messages should be censored appropriately', async () => {
@@ -269,16 +257,16 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player2);
       const message1 = new PrivateChatMessage('professor bell icecream', player1ID, player2ID);
       const censoredMessage1 = new PrivateChatMessage('professor **** icecream', player1ID, player2ID);
-      testingTown.sendPrivatePlayerMessage(message1.message, player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message1.message);
       const message2 = new PrivateChatMessage('bell', player1ID, player2ID);
       const censoredMessage2 = new PrivateChatMessage('****', player1ID, player2ID);
-      testingTown.sendPrivatePlayerMessage(message2.message, player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message2.message);
       const message3 = new PrivateChatMessage('professor boyland', player1ID, player2ID);
       const censoredMessage3 = new PrivateChatMessage('professor boyland', player1ID, player2ID);
-      testingTown.sendPrivatePlayerMessage(message3.message, player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message3.message);
       const message4 = new PrivateChatMessage('professor bell bell boyland', player1ID, player2ID);
       const censoredMessage4 = new PrivateChatMessage('professor **** **** boyland', player1ID, player2ID);
-      testingTown.sendPrivatePlayerMessage(message4.message, player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message4.message);
       expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage1]));
       expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage2]));
       expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage3]));
