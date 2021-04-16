@@ -36,7 +36,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation) => void, myPlayerID : string) {
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void, myPlayerID: string) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
@@ -108,7 +108,8 @@ class CoveyGameScene extends Phaser.Scene {
         });
         const message = this.add.text(0, 0, '', {
           font: '18px monospace',
-          color: '#FFFF00',
+          color: '#002b80',
+          backgroundColor: '#ffffff',
         });
 
         myPlayer.label = label;
@@ -146,28 +147,55 @@ class CoveyGameScene extends Phaser.Scene {
 
   newMessage(player: Player, msg: AChatMessage) {
     const myPlayer = this.players.find(p => p.id === player.id);
+
+    if (!this.player) {
+      return;
+    }
+
     if (!myPlayer) {
       return;
     }
-    
-    if (this.id !== myPlayer.id && myPlayer.id === msg.senderID && this.physics && player.location) {
-      let { message } = myPlayer;
-      if (!message) {
-        message = this.add.text(0, -20, msg.message, {
-          font: '18px monospace',
-          color: '#FFFF00',
-        });
 
-        myPlayer.message = message;
+    if (this.physics && player.location) {
+      if (this.myPlayerID === msg.senderID) {
+        let { message } = this.player;
+        if (!message) {
+          message = this.add.text(0, -20, msg.message, {
+            font: '18px monospace',
+            color: '#002b80',
+            backgroundColor: '#ffffff',
+          });
+
+          this.player.message = message;
+        }
+
+        this.player.message?.setX(this.lastLocation ? this.lastLocation.x : 0);
+        this.player.message?.setY(this.lastLocation ? this.lastLocation.y - 40 : 0);
+        this.player.message?.setText(msg.message);
+
+        setTimeout(() => {
+          this.player?.message?.setText('');
+        }, 5000);
+      } else if (myPlayer.id === msg.senderID) {
+        let { message } = myPlayer;
+        if (!message) {
+          message = this.add.text(0, -20, msg.message, {
+            font: '18px monospace',
+            color: '#002b80',
+            backgroundColor: '#ffffff',
+          });
+
+          myPlayer.message = message;
+        }
+
+        myPlayer.message?.setX(player.location.x);
+        myPlayer.message?.setY(player.location.y - 40);
+        myPlayer.message?.setText(msg.message);
+
+        setTimeout(() => {
+          myPlayer.message?.setText('');
+        }, 5000);
       }
-
-      myPlayer.message?.setX(player.location.x);
-      myPlayer.message?.setY(player.location.y - 40);
-      myPlayer.message?.setText(msg.message);
-
-      setTimeout(() => {
-        myPlayer.message?.setText('');
-      }, 5000);
     }
   }
 
@@ -237,13 +265,15 @@ class CoveyGameScene extends Phaser.Scene {
       const isMoving = primaryDirection !== undefined;
       this.player.label.setX(body.x);
       this.player.label.setY(body.y - 20);
-      if (!this.lastLocation
-        || this.lastLocation.x !== body.x
-        || this.lastLocation.y !== body.y
-        || (isMoving && this.lastLocation.rotation !== primaryDirection)
-        || this.lastLocation.moving !== isMoving) {
       this.player.message.setX(body.x);
       this.player.message.setY(body.y - 40);
+      if (
+        !this.lastLocation ||
+        this.lastLocation.x !== body.x ||
+        this.lastLocation.y !== body.y ||
+        (isMoving && this.lastLocation.rotation !== primaryDirection) ||
+        this.lastLocation.moving !== isMoving
+      ) {
         if (!this.lastLocation) {
           this.lastLocation = {
             x: body.x,
@@ -353,7 +383,8 @@ class CoveyGameScene extends Phaser.Scene {
 
     const message = this.add.text(spawnPoint.x, spawnPoint.y - 40, '', {
       font: '18px monospace',
-      color: '#FFFF00',
+      color: '#002b80',
+      backgroundColor: '#ffffff',
       // padding: {x: 20, y: 10},
     });
 
@@ -489,7 +520,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   resume() {
     this.paused = false;
-    if(Video.instance()){
+    if (Video.instance()) {
       // If the game is also in process of being torn down, the keyboard could be undefined
       this.input.keyboard.addCapture(this.previouslyCapturedKeys);
     }
@@ -499,9 +530,7 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const {
-    emitMovement, players,
-  } = useCoveyAppState();
+  const { emitMovement, players, messages, myPlayerID } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
     const config = {
@@ -538,7 +567,6 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
-
 
   useEffect(() => {
     if (messages && messages.length !== 0) {

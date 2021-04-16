@@ -120,10 +120,10 @@ function Chat(): JSX.Element {
           coveyUserID: myPlayerID,
           message: emojifiedInput,
         });
-        setMessagesState([
-          ...messagesState,
-          { key: nanoid(), userName, color: setButtonColor('global'), message: emojifiedInput },
-        ]);
+        // setMessagesState([
+        //   ...messagesState,
+        //   { key: nanoid(), userName, color: setButtonColor('global'), message: emojifiedInput },
+        // ]);
         // do toasts if message is not sent
         setInput('');
       } catch (err) {
