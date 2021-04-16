@@ -1,7 +1,9 @@
 import { nanoid } from 'nanoid';
+import { mock } from 'jest-mock-extended';
 import CoveyTownsStore from './CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import IDBClient from '../services/IDBClient';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
@@ -31,15 +33,23 @@ async function createTownForTesting(friendlyNameToUse?: string, isPublic = false
 }
 
 describe('CoveyTownsStore', () => {
+
   beforeEach(() => {
     mockCoveyListenerTownDestroyed.mockClear();
     mockCoveyListenerOtherFns.mockClear();
+
   });
-  it('should be a singleton', () => {
-    const store1 = CoveyTownsStore.getInstance();
-    const store2 = CoveyTownsStore.getInstance();
+
+  it('should be a singleton', async () => {
+    const store1 = await CoveyTownsStore.getInstance();
+    const store2 = await CoveyTownsStore.getInstance();
     expect(store1)
       .toBe(store2);
+  });
+
+  it('should delete and create new town upon initialization', async () => {
+
+
   });
 
   describe('createTown', () => {
@@ -73,7 +83,7 @@ describe('CoveyTownsStore', () => {
     it('Should check the password before updating any value', async () => {
       const town = await createTownForTesting();
       const { friendlyName } = town;
-      const res = (await CoveyTownsStore.getInstance())
+      const res = await (await CoveyTownsStore.getInstance())
         .updateTown(town.coveyTownID, 'abcd', 'newName', true);
       expect(res)
         .toBe(false);
@@ -87,7 +97,7 @@ describe('CoveyTownsStore', () => {
       const town = await createTownForTesting();
       const { friendlyName } = town;
 
-      const res = (await CoveyTownsStore.getInstance())
+      const res = await (await CoveyTownsStore.getInstance())
         .updateTown('abcdef', town.townUpdatePassword, 'newName', true);
       expect(res)
         .toBe(false);
@@ -102,7 +112,7 @@ describe('CoveyTownsStore', () => {
       // First try with just a visiblity change
       const town = await createTownForTesting();
       const { friendlyName } = town;
-      const res = (await CoveyTownsStore.getInstance())
+      const res = await (await CoveyTownsStore.getInstance())
         .updateTown(town.coveyTownID, town.townUpdatePassword, undefined, true);
       expect(res)
         .toBe(true);
@@ -113,7 +123,7 @@ describe('CoveyTownsStore', () => {
 
       // Now try with just a name change
       const newFriendlyName = nanoid();
-      const res2 = (await CoveyTownsStore.getInstance())
+      const res2 = await (await CoveyTownsStore.getInstance())
         .updateTown(town.coveyTownID, town.townUpdatePassword, newFriendlyName, undefined);
       expect(res2)
         .toBe(true);
@@ -123,7 +133,7 @@ describe('CoveyTownsStore', () => {
         .toBe(newFriendlyName);
 
       // Now try to change both
-      const res3 = (await CoveyTownsStore.getInstance())
+      const res3 = await (await CoveyTownsStore.getInstance())
         .updateTown(town.coveyTownID, town.townUpdatePassword, friendlyName, false);
       expect(res3)
         .toBe(true);
@@ -137,13 +147,13 @@ describe('CoveyTownsStore', () => {
   describe('deleteTown', () => {
     it('Should check the password before deleting the town', async () => {
       const town = await createTownForTesting();
-      const res = (await CoveyTownsStore.getInstance())
+      const res = await (await CoveyTownsStore.getInstance())
         .deleteTown(town.coveyTownID, `${town.townUpdatePassword}*`);
       expect(res)
         .toBe(false);
     });
     it('Should fail if the townID does not exist', async () => {
-      const res = (await CoveyTownsStore.getInstance())
+      const res = await (await CoveyTownsStore.getInstance())
         .deleteTown('abcdef', 'efg');
       expect(res)
         .toBe(false);
@@ -228,7 +238,7 @@ describe('CoveyTownsStore', () => {
         .filter(townInfo => townInfo.friendlyName === town.friendlyName || townInfo.coveyTownID === town.coveyTownID);
       expect(towns.length)
         .toBe(1);
-      const res = (await CoveyTownsStore.getInstance())
+      const res = await (await CoveyTownsStore.getInstance())
         .deleteTown(town.coveyTownID, town.townUpdatePassword);
       expect(res)
         .toBe(true);

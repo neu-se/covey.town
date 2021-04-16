@@ -75,13 +75,13 @@ export default class CoveyTownController {
 
   private _dbClient: Promise<IDBClient>;
 
-  constructor(friendlyName: string, isPubliclyListed: boolean) {
+  constructor(friendlyName: string, isPubliclyListed: boolean, dbClient?: Promise<IDBClient>) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
-    this._dbClient = MongoAtlasClient.setup();
+    this._dbClient = dbClient ?? MongoAtlasClient.setup();
   }
 
   /**
@@ -170,7 +170,6 @@ export default class CoveyTownController {
     const {
       coveyTownID,
       friendlyName,
-      occupancy,
       capacity,
       players,
       townUpdatePassword,
@@ -180,7 +179,7 @@ export default class CoveyTownController {
     const coveyTown: CoveyTown = {
       coveyTownID,
       friendlyName,
-      occupancy,
+      occupancy: players.length,
       capacity,
       players: players.map(p => p.id),
       townUpdatePassword,
