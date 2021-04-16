@@ -1,5 +1,5 @@
 import DebugLogger from '../DebugLogger';
-import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
+import { TownJoinResponse } from '../TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import GraphqlServiceClient from '../../graphql/queries';
 
@@ -18,8 +18,6 @@ export default class Video {
 
   private _userName: string;
 
-  private townsServiceClient: TownsServiceClient = new TownsServiceClient();
-  
   private graphServiceClient: GraphqlServiceClient = new GraphqlServiceClient();
 
   private _coveyTownID: string;

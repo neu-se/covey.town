@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { TownCreateRequest, TownJoinRequest, TownDeleteRequest } from '../classes/TownsServiceClient';
+import { TownCreateRequest, TownJoinRequest, TownDeleteRequest, TownUpdateRequest } from '../classes/TownsServiceClient';
 import client from './client';
 
 /**
@@ -253,6 +253,15 @@ const rejectFriendMutation = gql`
   }
 `;
 
+const updateTownMutation = gql`
+  mutation updateTown($input: townUpdateRequestInput!) {
+    townUpdateRequest(input: $input) {
+      isOK
+      message
+    }
+  }
+`;
+
 export const findAllUserProfiles = async (): Promise<any> => {
   const { data } = await client.query({ query: findAllUsers });
   return data.users;
@@ -371,4 +380,14 @@ export default class GraphqlServiceClient {
       throw new Error(`Error processing request: ${data.townDeleteRequest.message}`);
     }
   }
+
+  updateTown = async (payload: TownUpdateRequest): Promise<void> => {
+  const { data } = await client.mutate({
+    mutation: updateTownMutation,
+    variables: { input: payload },
+  });
+  if (!data.townUpdateRequest.isOK) {
+    throw new Error(`Error processing request: ${ data.townUpdateRequest.message}`);
+  }
+};
 }
