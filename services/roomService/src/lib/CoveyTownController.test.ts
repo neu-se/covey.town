@@ -238,67 +238,82 @@ describe('CoveyTownController', () => {
 
     it('global messages should be censored appropriately', async () => {
       const player1 = new Player('player 1');
+      const player1ID = player1.id;
 
       await testingTown.addPlayer(player1);
-      const message1 = new GlobalChatMessage('professor bell icecream', player1.id);
-      testingTown.sendGlobalPlayerMessage(player1.id, message1.message);
-      const message2 = new GlobalChatMessage('bell', player1.id);
-      testingTown.sendGlobalPlayerMessage(player1.id, message2.message);
-      const message3 = new GlobalChatMessage('professor boyland', player1.id);
-      testingTown.sendGlobalPlayerMessage(player1.id, message3.message);
-      const message4 = new GlobalChatMessage('professor bell bell boyland', player1.id);
-      testingTown.sendGlobalPlayerMessage(player1.id, message4.message);
-      //mockListeners.forEach(listener => listener.onGlobalMessage(message1));
-      //expect(message1.message).toEqual('professor **** icecream');
-      // TODO check the arrays and listeners
+      const message1 = new GlobalChatMessage('professor bell icecream', player1ID);
+      const censoredMessage1 = new GlobalChatMessage('professor **** icecream', player1ID);
+      testingTown.sendGlobalPlayerMessage(player1ID, message1.message);
+      const message2 = new GlobalChatMessage('bell', player1ID);
+      const censoredMessage2 = new GlobalChatMessage('****', player1ID);
+      testingTown.sendGlobalPlayerMessage(player1ID, message2.message);
+      const message3 = new GlobalChatMessage('professor boyland', player1ID);
+      const censoredMessage3 = new GlobalChatMessage('professor boyland', player1ID);
+      testingTown.sendGlobalPlayerMessage(player1ID, message3.message);
+      const message4 = new GlobalChatMessage('professor bell bell boyland', player1ID);
+      const censoredMessage4 = new GlobalChatMessage('professor **** **** boyland', player1ID);
+      testingTown.sendGlobalPlayerMessage(player1ID, message4.message);
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage1]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage2]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage3]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage4]));
     });
 
     it('private messages should be censored appropriately', async () => {
       const player1 = new Player('player 1');
       const player2 = new Player('player 2');
+      const player1ID = player1.id;
+      const player2ID = player2.id;
 
       await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
-      const message1 = new PrivateChatMessage('professor bell icecream', player1.id, player2.id);
-      testingTown.sendPrivatePlayerMessage(message1.message, player1.id, player2.id);
-      const message2 = new PrivateChatMessage('bell', player1.id, player2.id);
-      testingTown.sendPrivatePlayerMessage(message2.message, player1.id, player2.id);
-      const message3 = new PrivateChatMessage('professor boyland', player1.id, player2.id);
-      testingTown.sendPrivatePlayerMessage(message3.message, player1.id, player2.id);
-      const message4 = new PrivateChatMessage('professor bell bell boyland', player1.id, player2.id);
-      testingTown.sendPrivatePlayerMessage(message4.message, player1.id, player2.id);
-      // todo check the arrays and listeners
+      const message1 = new PrivateChatMessage('professor bell icecream', player1ID, player2ID);
+      const censoredMessage1 = new PrivateChatMessage('professor **** icecream', player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(message1.message, player1ID, player2ID);
+      const message2 = new PrivateChatMessage('bell', player1ID, player2ID);
+      const censoredMessage2 = new PrivateChatMessage('****', player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(message2.message, player1ID, player2ID);
+      const message3 = new PrivateChatMessage('professor boyland', player1ID, player2ID);
+      const censoredMessage3 = new PrivateChatMessage('professor boyland', player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(message3.message, player1ID, player2ID);
+      const message4 = new PrivateChatMessage('professor bell bell boyland', player1ID, player2ID);
+      const censoredMessage4 = new PrivateChatMessage('professor **** **** boyland', player1ID, player2ID);
+      testingTown.sendPrivatePlayerMessage(message4.message, player1ID, player2ID);
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage1]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage2]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage3]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([censoredMessage4]));
     });
-/*
+
     it('global messages should send emojis when appropriate', async () => {
       const player1 = new Player('player 1');
       const player1ID = player1.id;
 
       await testingTown.addPlayer(player1);
       const message1 = new GlobalChatMessage('howdy', player1ID);
+      const emojifiedMessage1 = new GlobalChatMessage('howdy', player1ID);
       testingTown.sendGlobalPlayerMessage(player1ID, message1.message);
       const message2 = new GlobalChatMessage('howdy :face_with_cowboy_hat: partner', player1ID);
+      const emojifiedMessage2 = new GlobalChatMessage('howdy 🤠 partner', player1ID);
       testingTown.sendGlobalPlayerMessage(player1ID, message2.message);
       const message3 = new GlobalChatMessage('howdy :face_with_cowboy_hat partner', player1ID);
+      const emojifiedMessage3 = new GlobalChatMessage('howdy :face_with_cowboy_hat partner', player1ID);
       testingTown.sendGlobalPlayerMessage(player1ID, message3.message);
       const message4 = new GlobalChatMessage(':face_with_cowboy_hat:', player1ID);
+      const emojifiedMessage4 = new GlobalChatMessage('🤠', player1ID);
       testingTown.sendGlobalPlayerMessage(player1ID, message4.message);
       const message5 = new GlobalChatMessage(':fae_with_cowboy_hat:', player1ID);
+      const emojifiedMessage5 = new GlobalChatMessage(':fae_with_cowboy_hat:', player1ID)
       testingTown.sendGlobalPlayerMessage(player1ID, message5.message);
       const message6 = new GlobalChatMessage('hey howdy hey :face_with_cowboy_hat: :face_with_cowboy_hat: my names Woody', player1ID);
+      const emojifiedMessage6 = new GlobalChatMessage('hey howdy hey 🤠 🤠 my names Woody', player1ID);
       testingTown.sendGlobalPlayerMessage(player1ID, message6.message);
-      mockListeners.forEach(listener => listener.onGlobalMessage(message1));
-      expect(message1.message).toEqual('howdy');
-      mockListeners.forEach(listener => listener.onGlobalMessage(message2));
-      expect(message2.message).toEqual('howdy 🤠 partner');
-      mockListeners.forEach(listener => listener.onGlobalMessage(message3));
-      expect(message3.message).toEqual('howdy :face_with_cowboy_hat partner');
-      mockListeners.forEach(listener => listener.onGlobalMessage(message4));
-      expect(message4.message).toEqual('🤠');
-      mockListeners.forEach(listener => listener.onGlobalMessage(message5));
-      expect(message5.message).toEqual(':fae_with_cowboy_hat:');
-      mockListeners.forEach(listener => listener.onGlobalMessage(message6));
-      expect(message6.message).toEqual('hey howdy hey 🤠 🤠 my names Woody');
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage1]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage2]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage3]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage4]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage5]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage6]));
     });
 
     it('private messages should send emojis when appropriate', async () => {
@@ -310,31 +325,31 @@ describe('CoveyTownController', () => {
       await testingTown.addPlayer(player1);
       await testingTown.addPlayer(player2);
       const message1 = new PrivateChatMessage('howdy', player1ID, player2ID);
+      const emojifiedMessage1 = new PrivateChatMessage('howdy', player1ID, player2ID);
       testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message1.message);
       const message2 = new PrivateChatMessage('howdy :face_with_cowboy_hat: partner', player1ID, player2ID);
+      const emojifiedMessage2 = new PrivateChatMessage('howdy 🤠 partner', player1ID, player2ID);
       testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message2.message);
       const message3 = new PrivateChatMessage('howdy :face_with_cowboy_hat partner', player1ID, player2ID);
+      const emojifiedMessage3 = new PrivateChatMessage('howdy :face_with_cowboy_hat partner', player1ID, player2ID);
       testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message3.message);
       const message4 = new PrivateChatMessage(':face_with_cowboy_hat:', player1ID, player2ID);
+      const emojifiedMessage4 = new PrivateChatMessage('🤠', player1ID, player2ID);
       testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message4.message);
       const message5 = new PrivateChatMessage(':fae_with_cowboy_hat:', player1ID, player2ID);
+      const emojifiedMessage5 = new PrivateChatMessage(':fae_with_cowboy_hat:', player1ID, player2ID);
       testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message5.message);
       const message6 = new PrivateChatMessage('hey howdy hey :face_with_cowboy_hat: :face_with_cowboy_hat: my names Woody', player1ID, player2ID);
+      const emojifiedMessage6 = new PrivateChatMessage('hey howdy hey 🤠 🤠 my names Woody', player1ID, player2ID);
       testingTown.sendPrivatePlayerMessage(player1ID, player2ID, message6.message);
-      mockListeners.forEach(listener => listener.onPrivateMessage(message1));
-      expect(message1.message).toEqual('howdy');
-      mockListeners.forEach(listener => listener.onPrivateMessage(message2));
-      expect(message2.message).toEqual('howdy 🤠 partner');
-      mockListeners.forEach(listener => listener.onPrivateMessage(message3));
-      expect(message3.message).toEqual('howdy :face_with_cowboy_hat partner');
-      mockListeners.forEach(listener => listener.onPrivateMessage(message4));
-      expect(message4.message).toEqual('🤠');
-      mockListeners.forEach(listener => listener.onPrivateMessage(message5));
-      expect(message5.message).toEqual(':fae_with_cowboy_hat:');
-      mockListeners.forEach(listener => listener.onPrivateMessage(message6));
-      expect(message6.message).toEqual('hey howdy hey 🤠 🤠 my names Woody');
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage1]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage2]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage3]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage4]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage5]));
+      expect(testingTown.messages).toEqual(expect.arrayContaining([emojifiedMessage6]));
     });
-    */
+    
   });
 
   describe('townSubscriptionHandler', () => {
