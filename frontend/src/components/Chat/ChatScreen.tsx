@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, SyntheticEvent } from "react";
 import { Socket } from 'socket.io-client';
 import Moment from 'moment';
 import { IconButton, ListItem } from "@material-ui/core";
@@ -8,7 +8,7 @@ import useCoveyAppState from "../../hooks/useCoveyAppState";
 import './ChatScreen.css';
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
-const useChat = (coveyTownID: string, socket: Socket) => {
+const useChat = (socket: Socket) => {
   const socketRef = useRef(socket);
 
   const {
@@ -21,7 +21,6 @@ const useChat = (coveyTownID: string, socket: Socket) => {
     socketRef.current.emit("playerChatted", {
       body: messageBody,
       senderId: myPlayerID,
-      ownedByCurrentUser: true,
       userName,
       dateCreated: new Date().toISOString(),
       isBroadcast,
@@ -32,15 +31,15 @@ const useChat = (coveyTownID: string, socket: Socket) => {
 };
 
 
-const ChatScreen: any = () => {
+const ChatScreen: React.FunctionComponent = () => {
 
   const {
-    players, myPlayerID, currentTownID, socket, nearbyPlayers
+    players, myPlayerID, socket, nearbyPlayers
   } = useCoveyAppState();
 
   const [newMessage, setNewMessage] = useState('');
   const [receiver, setReceiver] = useState('everyone');
-  const { messages, sendMessage } = useChat(currentTownID, socket as Socket);
+  const { messages, sendMessage } = useChat(socket as Socket);
   const styles = {
     textField: { width: "100%", borderWidth: 0, borderColor: "transparent" },
     sendButton: { backgroundColor: "black" },
@@ -48,7 +47,7 @@ const ChatScreen: any = () => {
   } as const;
   const video = useMaybeVideo();
 
-  const handleSubmit = (e:any) => {
+  const handleSubmit = (e:SyntheticEvent) => {
     e.preventDefault();
     if(receiver === "everyone"){
       sendMessage(newMessage, true, "");
@@ -124,9 +123,9 @@ const ChatScreen: any = () => {
             {messages.map((message) => (
               <ListItem
                 key={JSON.stringify(message)}
-                style={estyles.listItem(message.ownedByCurrentUser)}>
+                style={estyles.listItem(myPlayerID === message.senderId)}>
                 <div style={message.isBroadcast ? estyles.author : estyles.private}>{message.userName}{message.isBroadcast ? '' : '(Private)'}</div>
-                <div style={estyles.container(message.ownedByCurrentUser)}>
+                <div style={estyles.container(myPlayerID === message.senderId)}>
                   {message.body}
                 </div>
                 <div style={estyles.author}>{Moment(message.dateCreated).format('DD MMM hh:mm')}</div>

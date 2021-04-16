@@ -34,7 +34,6 @@ export type CoveyAppState = {
 export type Message = {
   body: string,
   senderId: string,
-  ownedByCurrentUser: boolean,
   userName: string,
   dateCreated: string,
   receiverId: string, 

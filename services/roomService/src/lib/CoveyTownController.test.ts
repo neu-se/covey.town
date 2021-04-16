@@ -71,7 +71,6 @@ describe('CoveyTownController', () => {
       const message: Message = {
         body: 'test message', 
         senderId: nanoid(), 
-        ownedByCurrentUser: true,
         userName: nanoid(),
         dateCreated: new Date(),
         isBroadcast: true,
@@ -121,7 +120,6 @@ describe('CoveyTownController', () => {
       const message: Message = {
         body: 'test message', 
         senderId: nanoid(), 
-        ownedByCurrentUser: true,
         userName: nanoid(),
         dateCreated: new Date(),
         isBroadcast: true,
@@ -208,7 +206,6 @@ describe('CoveyTownController', () => {
         const message: Message = {
           body: 'test message', 
           senderId: nanoid(), 
-          ownedByCurrentUser: true,
           userName: nanoid(),
           dateCreated: new Date(),
           isBroadcast: true,
@@ -291,7 +288,6 @@ describe('CoveyTownController', () => {
           const message: Message = {
             body: 'test message', 
             senderId: nanoid(), 
-            ownedByCurrentUser: true,
             userName: nanoid(),
             dateCreated: new Date(),
             isBroadcast: true,

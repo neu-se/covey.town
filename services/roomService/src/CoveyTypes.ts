@@ -10,7 +10,6 @@ export type CoveyTownList = { friendlyName: string; coveyTownID: string; current
 export type Message = {
   body: string,
   senderId: string,
-  ownedByCurrentUser: boolean,
   userName: string,
   dateCreated: Date,
   receiverId: string, 

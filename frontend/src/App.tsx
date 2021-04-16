@@ -143,16 +143,12 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       break;
     case 'playerChatted':
       if(update.message.isBroadcast){
-        if(update.message.senderId !== nextState.myPlayerID){
-          update.message.ownedByCurrentUser = false; // eslint-disable-line no-param-reassign
-        }
         nextState.messages.push(update.message);
       }
       else if(update.message.senderId === nextState.myPlayerID){
           nextState.messages.push(update.message);
       }
       else if(update.message.receiverId === nextState.myPlayerID){
-          update.message.ownedByCurrentUser = false; // eslint-disable-line no-param-reassign
           nextState.messages.push(update.message);
       }
       break;
