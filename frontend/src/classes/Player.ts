@@ -9,13 +9,11 @@ export default class Player {
 
   public label?: Phaser.GameObjects.Text;
 
-  private _currentAvatar: string;
 
   constructor(id: string, userName: string, location: UserLocation) {
     this._id = id;
     this._userName = userName;
     this.location = location;
-    this._currentAvatar = 'misa';
   }
 
   get userName(): string {
@@ -24,14 +22,6 @@ export default class Player {
 
   get id(): string {
     return this._id;
-  }
-
-  get currentAvatar(): string {
-    return this._currentAvatar;
-  }
-
-  set currentAvatar(value: string) {
-    this._currentAvatar = value;
   }
 
   static fromServerPlayer(playerFromServer: ServerPlayer): Player {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Switch, Route} from 'react-router-dom'; 
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'; 
 import Profile from '../Authentication/Profile'
 import PreJoinScreens from '../VideoCall/VideoFrontend/components/PreJoinScreens/PreJoinScreens';
 import MediaErrorSnackbar
@@ -16,23 +16,25 @@ export default function Login({ doLogin }: LoginProps): JSX.Element {
   const [mediaError, setMediaError] = useState<Error>();
 
   return (
-    <Switch>
-      <Route exact path="/profile">
-        <Profile />
-      </Route>
-      <Route exact path="/home">
-        <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />
-        <PreJoinScreens
-          doLogin={doLogin}
-          setMediaError={setMediaError}
-        />
-      </Route>
-      <Route exact path="/gqlex">
-        <GQLExample />
-      </Route>
-      <Route path="/">
-        <SplashPage />
-      </Route>
-  </Switch>
+    <Router>
+      <Switch>
+        <Route exact path="/profile">
+          <Profile doLogin={doLogin} />
+        </Route>
+        <Route exact path="/home">
+          <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />
+          <PreJoinScreens
+            doLogin={doLogin}
+            setMediaError={setMediaError}
+          />
+        </Route>
+        <Route exact path="/gqlex">
+          <GQLExample />
+        </Route>
+        <Route path="/">
+          <SplashPage />
+        </Route>
+      </Switch>
+    </Router>
   );
 }

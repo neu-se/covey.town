@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Snackbar from '../../Snackbar/Snackbar';
 import { useHasAudioInputDevices, useHasVideoInputDevices } from '../../../hooks/deviceHooks/deviceHooks';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
@@ -18,7 +18,7 @@ export function getSnackbarContent(hasAudio: boolean, hasVideo: boolean, error?:
       } else {
         message = (
           <>
-            Clowdr has been denied permission to use audio and video.
+            Covey.Town has been denied permission to use audio and video.
             <br />
             Learn how to enable audio and video in your browser:
             <ul style={{ marginTop: '0.4em' }}>
@@ -87,14 +87,17 @@ export default function MediaErrorSnackbar({ error, dismissError }: { error?: Er
 
   const { isAcquiringLocalTracks } = useVideoContext();
 
-  const isSnackbarOpen = !isAcquiringLocalTracks && (Boolean(error) || !hasAudio || !hasVideo);
+  const [snackBarDismissedMessage, setSnackBarDismissedMessage] = useState<string | JSX.Element>();
 
   const { headline, message } = getSnackbarContent(hasAudio, hasVideo, error);
 
+  const isSnackbarOpen = message !== snackBarDismissedMessage &&
+    !isAcquiringLocalTracks && (Boolean(error) || !hasAudio || !hasVideo);
   return (
     <Snackbar
       open={isSnackbarOpen}
       handleClose={() => {
+        setSnackBarDismissedMessage(message);
         if (dismissError) {
           dismissError();
         }
