@@ -233,7 +233,6 @@ async function GameController(
   socket.on('privateMessage', 
   (msg: { _message: string; _senderID: string; _receiverID: string }) => {
     if (msg._senderID !== gamePlayerID) {
-      console.log(msg);
         dispatchAppUpdate({
           action: 'privateMessage',
           message: new PrivateChatMessage(msg._message, msg._senderID, msg._receiverID),

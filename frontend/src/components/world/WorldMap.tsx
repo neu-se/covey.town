@@ -129,7 +129,6 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  // TODO
   updateMessages(players: Player[], msg: string) {
     if (!this.ready) {
       this.players = players;
@@ -508,7 +507,7 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players,
+    emitMovement, players, messages
   } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
@@ -546,6 +545,13 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
+
+  useEffect(() => {
+    if(messages.length !== 0) {
+      gameScene?.updateMessages(players, messages[messages.length-1].message);
+    }
+    
+  }, [players, deepPlayers, gameScene, messages]);
 
   // TODO new useEffect for messages
   return <div id="map-container"/>;
