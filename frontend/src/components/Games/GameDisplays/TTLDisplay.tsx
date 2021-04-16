@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Button} from "@chakra-ui/react";
+import {Button} from '@chakra-ui/react';
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import TTLGame from "../gamesClient/TTLGame";
 
@@ -121,11 +121,11 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
               </div>
             }
 
-            {!guessing && selection === lieIndex &&
-            <h1>&{currentGame.player2Username} guessed correctly!</h1>
+            {!guessing && selection === currentGame.correctOption &&
+            <h1>{currentGame.player2Username} guessed correctly!</h1>
             }
 
-            {!guessing && selection !== lieIndex &&
+            {!guessing && selection !== currentGame.correctOption &&
             <h1>{`Oops, that wasn't right. The real lie was "${choicesList[lieIndex]}".`}</h1>
             }
           </div>
