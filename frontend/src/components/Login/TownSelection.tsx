@@ -25,7 +25,7 @@ import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
- import { searchUserByEmail} from '../../graphql/queries'; 
+/*  import { searchUserByEmail} from '../../graphql/queries';  */
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -52,17 +52,17 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [setCurrentPublicTowns,graphqlClient]);
 
   useEffect(() => {
-    const findUser = async () => {
+/*     const findUser = async () => {
       const userInfo = await searchUserByEmail(user.email);
       setUserName(userInfo.username);
-    }
+    } */
     updateTownListings();
-    findUser();
+  /*   findUser(); */
     const timer = setInterval(updateTownListings, 2000);
     return () => {
       clearInterval(timer)
     };
-  }, [updateTownListings,user.email,graphqlClient]);
+  }, [updateTownListings, graphqlClient]);
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
@@ -156,7 +156,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
                 value={userName}
-                disabled
+                onChange={event => setUserName(event.target.value)}
               />
             </FormControl>
           </Box>

@@ -14,7 +14,7 @@ import GraphqlServiceClient from '../../graphql/queries';
 const mockConnect = jest.fn(() => Promise.resolve());
 
 const mockToast = jest.fn();
-jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../graphql/queries');
 jest.mock('../../classes/Video/Video');
 jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts', () => ({
   __esModule: true, // this property makes it work
@@ -28,10 +28,18 @@ jest.mock("@chakra-ui/react", () => {
     useToast: mockUseToast,
   };
 })
+
+jest.mock('../../graphql/client', () => {
+  const client = jest.fn()
+  return client;
+});
+
 const doLoginMock = jest.fn();
 const mocklistTowns = jest.fn();
 const mockCreateTown = jest.fn();
 const mockVideoSetup = jest.fn();
+GraphqlServiceClient.prototype.listTown = mocklistTowns;
+GraphqlServiceClient.prototype.createTown = mockCreateTown;
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({
   towns: [
@@ -376,7 +384,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
               await waitFor(() => expect(mockToast)
                 .toBeCalledWith({
                   title: 'Unable to join town',
-                  description: 'Please select a username',
+                  description: 'Please update your username in user profile',
                   status: 'error'
                 }))
             } else {

@@ -2,16 +2,12 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { ChakraProvider } from '@chakra-ui/react'
-import { useAuth0 } from "@auth0/auth0-react";
-import { mocked } from "ts-jest/utils";
 import { render, waitFor, within } from '@testing-library/react'
 import { nanoid } from 'nanoid';
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 import GraphqlServiceClient from '../../graphql/queries';
-
-
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -22,7 +18,7 @@ jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts',
   __esModule: true, // this property makes it work
   default: () => ({ connect: mockConnect })
 }));
-/* jest.mock("@auth0/auth0-react"); */
+
 jest.mock("@chakra-ui/react", () => {
   const ui = jest.requireActual("@chakra-ui/react");
   const mockUseToast = () => (mockToast);
@@ -41,26 +37,6 @@ const mockCreateTown = jest.fn();
 const mockVideoSetup = jest.fn();
 GraphqlServiceClient.prototype.listTown = mocklistTowns;
 GraphqlServiceClient.prototype.createTown = mockCreateTown;
-
-const user = {
-    email: "johndoe@me.com",
-    email_verified: true,
-};
-
- const mockedUseAuth0 = mocked(useAuth0, true);
-mockedUseAuth0.mockReturnValue({
-      isAuthenticated: true,
-            user,
-            logout: jest.fn(),
-            loginWithRedirect: jest.fn(),
-            getAccessTokenWithPopup: jest.fn(),
-            getAccessTokenSilently: jest.fn(),
-            getIdTokenClaims: jest.fn(),
-            loginWithPopup: jest.fn(),
-            isLoading: false,
-          buildAuthorizeUrl: jest.fn(),
-          buildLogoutUrl: jest.fn()  
-        }); 
 
 Video.setup = mockVideoSetup;
 const listTowns = (suffix: string) => Promise.resolve({

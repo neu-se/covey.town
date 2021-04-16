@@ -13,11 +13,11 @@ const mockUseCoveyAppState = jest.fn(() => (Promise.resolve()));
 const mockToast = jest.fn();
 const mockUseDisclosure = {isOpen: true, onOpen: jest.fn(), onClose: jest.fn()};
 
-jest.mock('../../classes/TownsServiceClient');
 jest.mock('../../hooks/useCoveyAppState', () => ({
   __esModule: true, // this property makes it work
   default: () => (mockUseCoveyAppState)
 }));
+jest.mock('../../graphql/queries');
 jest.mock("@chakra-ui/react", () => {
   const ui = jest.requireActual("@chakra-ui/react");
   return {
@@ -26,10 +26,14 @@ jest.mock("@chakra-ui/react", () => {
     useDisclosure: ()=>(mockUseDisclosure),
   };
 })
+jest.mock('../../graphql/client', () => {
+  const client = jest.fn()
+  return client;
+});
 const mockUpdateTown = jest.fn();
 const mockDeleteTown = jest.fn();
-// @ts-ignore
-mockUseCoveyAppState.apiClient = new TownsServiceClient();
+GraphqlServiceClient.prototype.updateTown = mockUpdateTown;
+GraphqlServiceClient.prototype.deleteTown = mockDeleteTown;
 
 function wrappedTownSettings() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
