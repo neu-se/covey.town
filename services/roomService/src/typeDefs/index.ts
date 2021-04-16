@@ -137,10 +137,24 @@ input townDeleteRequestInput {
   coveyTownPassword: String!
 }
 
+input townUpdateRequestInput {
+  coveyTownID: String!
+  coveyTownPassword: String!
+  friendlyName: String!
+  isPubliclyListed: Boolean!
+}
+
 type TownDeleteResponseEnvelope {
   isOK: Boolean!
   message : String
 }
+
+type TownUpdateResponseEnvelope {
+  isOK: Boolean!
+  message : String
+}
+
+
 
 type Mutation {
   addFriend(input: addFriendInput): Boolean
@@ -148,6 +162,7 @@ type Mutation {
   townJoinRequest(input: townJoinRequestInput): TownJoinResponse
   townCreateRequest(input: townCreateRequestInput): TownCreateResponseEnevelope
   townDeleteRequest(input: townDeleteRequestInput): TownDeleteResponseEnvelope
+  townUpdateRequest(input: townUpdateRequestInput): TownUpdateResponseEnvelope
   updateUser(input: updateUserInput): User
   deleteUser(input: deleteUserInput): Boolean
   acceptFriend(input: addFriendInput): Boolean

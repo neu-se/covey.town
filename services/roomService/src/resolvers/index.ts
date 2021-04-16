@@ -5,6 +5,7 @@ import {
   townJoinHandler,
   townDeleteHandler,
   townListHandler,
+  townUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 
 /**
@@ -12,21 +13,6 @@ import {
  */
 const resolvers = {
   Query: {
-    /**
-     * Resolver to find a user by id
-     * @param _ parent is not used here
-     * @param args contains all input arguments
-     * @returns user profile matching to the id.
-     */
-    searchUserById: async (_: any, args: any, context:any) => {
-      try {
-        const email = await context.user;
-        const user = await User.findOne((id: string) => id === args.id);
-        return user;
-      } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this');
-      }
-    },
     /**
      * Resolver to find all the users in Covey Town.
      * @returns all the users in Covey Town
@@ -40,7 +26,6 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-
     searchUserByUserName: async (_: any, args: any, context:any) => {
       try {
         const email = await context.user;
@@ -58,7 +43,7 @@ const resolvers = {
         const user = await User.findOne({ username: args.username });
         return user;
       } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this');      
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
     townList: async (_: any, __: any, context: any) => {
@@ -115,33 +100,32 @@ const resolvers = {
           if (args.input.bio !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               bio: args.input.bio,
-            });
-            console.log('updated');
+            }, {new: true});
           }
           if (args.input.location !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               location: args.input.location,
-            });
+            }, {new: true});
           }
           if (args.input.occupation !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               occupation: args.input.occupation,
-            });
+            }, {new: true});
           }
           if (args.input.instagramLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               instagramLink: args.input.instagramLink,
-            });
+            }, {new: true});
           }
           if (args.input.facebookLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               facebookLink: args.input.facebookLink,
-            });
+            }, {new: true});
           }
           if (args.input.linkedInLink !== undefined) {
             user = await User.findByIdAndUpdate(args.input.id, {
               linkedInLink: args.input.linkedInLink,
-            });
+            }, {new: true});
           }
           return user;
         }
@@ -178,7 +162,7 @@ const resolvers = {
     },
     rejectFriend: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const query = { username: args.input.userNameTo };
         const updateDocument = {
           $pull: { requests: args.input.userNameFrom },
@@ -195,7 +179,7 @@ const resolvers = {
     },
     addFriend: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         await User.updateOne(
           { username: args.input.userNameTo },
           { $push: { requests: args.input.userNameFrom } },
@@ -211,7 +195,7 @@ const resolvers = {
     },
     deleteUser: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const user = await User.findOne({ email: args.input.email });
         if (user !== undefined) {
           await User.remove({ email: args.input.email });
@@ -231,7 +215,7 @@ const resolvers = {
      */
     townJoinRequest: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const response = await townJoinHandler({
           userName: args.input.userName,
           coveyTownID: args.input.coveyTownID,
@@ -261,14 +245,28 @@ const resolvers = {
     },
     townDeleteRequest: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const response = await townDeleteHandler({
           coveyTownID: args.input.coveyTownID,
           coveyTownPassword: args.input.coveyTownPassword,
         });
         return response;
       } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this'); 
+        throw new AuthenticationError('You must be logged in to do this');
+      }
+    },
+    townUpdateRequest: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        const response = await townUpdateHandler({
+          coveyTownID: args.input.coveyTownID,
+          coveyTownPassword: args.input.coveyTownPassword,
+          friendlyName: args.input.friendlyName,
+          isPubliclyListed: args.input.isPubliclyListed,
+        });
+        return response;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
   },

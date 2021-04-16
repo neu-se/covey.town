@@ -213,6 +213,15 @@ const deleteTownMutation = gql`
   }
 `;
 
+const updateTownMutation = gql`
+  mutation updateTown($input: townUpdateRequestInput!) {
+    townUpdateRequest(input: $input) {
+      isOK
+      message
+    }
+  }
+`;
+
 const addFriendMutation = gql`
   mutation addFriend($input: addFriendInput!) {
     addFriend(input: $input)
@@ -250,15 +259,6 @@ const acceptFriendMutation = gql`
 const rejectFriendMutation = gql`
   mutation rejectFriend($input: addFriendInput!) {
     rejectFriend(input: $input)
-  }
-`;
-
-const updateTownMutation = gql`
-  mutation updateTown($input: townUpdateRequestInput!) {
-    townUpdateRequest(input: $input) {
-      isOK
-      message
-    }
   }
 `;
 

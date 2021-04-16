@@ -47,7 +47,7 @@ function ProfileComponent(): JSX.Element {
   }
 
   const history = useHistory();
-  const { user, isLoading, logout,getAccessTokenSilently } = useAuth0();
+  const { user, isLoading, logout, getAccessTokenSilently } = useAuth0();
   const [userName, setUserName] = useState<string>("");
   const [id, setId] = useState<string>("");
   const [bio, setBio] = useState<string>("");
@@ -98,8 +98,7 @@ function ProfileComponent(): JSX.Element {
 
   const updateUserCall = async () => {
 
-      const ids = id;
-      console.log(occupation1)
+    const ids = id;
     const findUser = async () => {
       const userInfo = await searchUserByEmail(user.email);
       setUserName(userInfo.username);
@@ -111,27 +110,27 @@ function ProfileComponent(): JSX.Element {
       setLocation(userInfo.location);
       setOccupation(userInfo.occupation);
     }
-      const payload : UpdateUserRequest =
-          { id: ids, userName: user.name, bio : bio1,
-          email: user.email, facebookLink: facebookLink1,
-          linkedInLink: linkedInLink1, instagramLink: instagramLink1,
-          location: location1, occupation: occupation1, password: user.password}
+    const payload : UpdateUserRequest =
+      { id: ids, userName: user.name, bio : bio1,
+        email: user.email, facebookLink: facebookLink1,
+        linkedInLink: linkedInLink1, instagramLink: instagramLink1,
+      location: location1, occupation: occupation1, password: user.password
+      }
 
-          const userInfo =  await updateUser(payload);
-      findUser();
-
+    await updateUser(payload);
+    findUser();
   }
   const handleDelete = async (email: string) => {
-    
+
     setIsAlertOpen(false);
     const payload: DeleteUserRequest = { email };
-    const success = await deleteUser(payload);
+    await deleteUser(payload);
     logout({ returnTo: window.location.origin });
   }
 
   const handleAlertDialog = () => {
     setIsAlertOpen(true);
-    
+
   }
 
 
