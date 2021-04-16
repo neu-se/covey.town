@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import HangmanLetter from "./HangmanLetter";
 import HangmanGame from "../../gamesClient/HangmanGame";
 import HangmanFigure from './HangmanFigure';
@@ -14,8 +14,9 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
   const {gamesClient, currentTownID} = useCoveyAppState();
   const [currentGame, setCurrentGame] = useState<HangmanGame>(startingGame);
   const gameId = startingGame.id;
-  const [wordState, setWordState] = useState('')
   const finalWord = startingGame.finalWord.split('')
+  const [playing, setPlaying] = useState(true);
+  const [winner, setWinner] = useState(0);
 
   const updateAlreadyGuessedLetters = () => {
     let letters: string[] = [];
@@ -33,17 +34,15 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
       setCurrentGame(game as HangmanGame)
     }
     fetchGame();
-    // guessedWord();
     const timer = setInterval(async () => {
       await fetchGame();
-      // await guessedWord();
     }, 500)
     return () => {
       if (timer) {
         clearInterval(timer);
       }
     }
-  }, []);
+  }, [currentTownID, gameId, gamesClient]);
 
   return (
     <>
@@ -54,6 +53,22 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
             Oh no! Looks like the other player ended the game.
             <br/>
           </div>
+      }
+      {
+        currentGame.limbList.length === 0 &&
+        <>
+          <div>
+            <h1>Game is over! {currentGame.player1Username} won!</h1>
+          </div>
+        </>
+      }
+      {
+        currentGame.splitWord.length === 0 &&
+        <>
+          <div>
+            <h1>Game is over! {currentGame.player2Username} won!</h1>
+          </div>
+        </>
       }
       {
         currentGame !== undefined &&
