@@ -1,1 +1,1 @@
-web: node services/roomService/build/server.js
+web: node services/friendService/build/server.js

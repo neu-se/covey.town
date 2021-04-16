@@ -1,9 +1,9 @@
 import * as http from 'http';
 import * as io from 'socket.io';
-import userSubscriptionHandler from './handlers/userSubscriptionHandler';
+import addUserRoutes from './router/friends';
 
-const httpServer = http.createServer();
-const socketServer = new io.Server(httpServer, { cors: { origin: '*' } });
-socketServer.on('connection', userSubscriptionHandler);
-httpServer.listen(8082, () => {
+const userServer = http.createServer();
+addUserRoutes(userServer);
+
+userServer.listen(process.env.PORT || 8082, () => {
 });
