@@ -1,4 +1,4 @@
-## Interacticting with our user stories
+## Interacting with our user stories
 
 - **User Story 1:** Players can send text chats to all other players in the room. These messages will appear above their heads.
   - If a player wants to send a message to everyone else in the room, they can type a message in the box above the "send global message" button. Then they should click the "send global message" button.
