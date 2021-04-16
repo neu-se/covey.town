@@ -193,7 +193,6 @@ class CoveyGameScene extends Phaser.Scene {
       const speed = 175;
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
-      const message = this.player.message as Phaser.GameObjects.Text;
 
       // Stop any previous movement from the last frame
       body.setVelocity(0);
@@ -540,10 +539,8 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  // TODO new useEffect for messages
   useEffect(() => {
     if (messages && messages.length !== 0) {
-      console.log('message trigger');
       if (messages[messages.length - 1].getType() === 'global') {
         gameScene?.updateMessages(players, messages[messages.length - 1].message);
       }
