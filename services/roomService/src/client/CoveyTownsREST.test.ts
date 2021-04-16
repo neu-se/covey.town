@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import assert from 'assert';
 import { AddressInfo } from 'net';
 import db from '../database/knexfile';
-import { logUser, deleteUser } from '../database/databaseService';
+import { logUser, deleteUser, UserInfo } from '../database/databaseService';
 
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
@@ -85,14 +85,14 @@ describe('TownsServiceAPIREST', () => {
     it('allows for users to be created only once', async () => {
       await apiClient.logUser({ email: 'USER_TEST' });
       await apiClient.logUser({ email: 'USER_TEST' });
-      const numUsers = await db('Users').where('email', 'USER_TEST').then((res: any[]) =>
+      const numUsers = await db('Users').where('email', 'USER_TEST').then((res: UserInfo[]) =>
         res.length);
       expect(numUsers)
         .toBe(1);
     });
     it('allows for already created users to be deleted', async () => {
       await apiClient.deleteUser({ email: 'USER_TEST' });
-      const numUsers = await db('Users').where('email', 'USER_TEST').then((res: any[]) =>
+      const numUsers = await db('Users').where('email', 'USER_TEST').then((res: UserInfo[]) =>
         res.length);
       expect(numUsers)
         .toBe(0);

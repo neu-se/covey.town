@@ -8,6 +8,14 @@ import { logUser, deleteUser, saveTown, unsaveTown } from '../database/databaseS
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
 
+type Name = {
+  friendlyName: string,
+};
+
+type PublicStatus = {
+  isPublicallyListed: boolean,
+};
+
 function mockCoveyListener(): CoveyTownListener {
   return {
     onPlayerDisconnected(removedPlayer: Player): void {
@@ -61,7 +69,7 @@ describe('CoveyTownsStore', () => {
       const firstFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', firstTown.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const town = response[0];
           const name: string = town.friendlyName;
           return name;
@@ -70,7 +78,7 @@ describe('CoveyTownsStore', () => {
       const secondFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', secondTown.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const town = response[0];
           const name: string = town.friendlyName;
           return name;
@@ -107,7 +115,7 @@ describe('CoveyTownsStore', () => {
       const friendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -118,7 +126,7 @@ describe('CoveyTownsStore', () => {
       const currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -128,7 +136,7 @@ describe('CoveyTownsStore', () => {
       const currentPublicStatus = await db('Towns')
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: PublicStatus[]) => {
           const currentTown = response[0];
           const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
@@ -142,7 +150,7 @@ describe('CoveyTownsStore', () => {
       const friendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -154,7 +162,7 @@ describe('CoveyTownsStore', () => {
       const currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -164,7 +172,7 @@ describe('CoveyTownsStore', () => {
       const currentPublicStatus = await db('Towns')
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: PublicStatus[]) => {
           const currentTown = response[0];
           const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
@@ -180,7 +188,7 @@ describe('CoveyTownsStore', () => {
       const friendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -191,7 +199,7 @@ describe('CoveyTownsStore', () => {
       let currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -201,7 +209,7 @@ describe('CoveyTownsStore', () => {
       let currentPublicStatus = await db('Towns')
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: PublicStatus[]) => {
           const currentTown = response[0];
           const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
@@ -217,7 +225,7 @@ describe('CoveyTownsStore', () => {
       currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -227,7 +235,7 @@ describe('CoveyTownsStore', () => {
       currentPublicStatus = await db('Towns')
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: PublicStatus[]) => {
           const currentTown = response[0];
           const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
@@ -243,7 +251,7 @@ describe('CoveyTownsStore', () => {
       currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -253,7 +261,7 @@ describe('CoveyTownsStore', () => {
       currentPublicStatus = await db('Towns')
         .select('isPublicallyListed')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: PublicStatus[]) => {
           const currentTown = response[0];
           const publicStatus: boolean = currentTown.isPublicallyListed;
           return publicStatus;
@@ -303,7 +311,7 @@ describe('CoveyTownsStore', () => {
       const currentFriendlyName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -318,7 +326,7 @@ describe('CoveyTownsStore', () => {
       const townName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -350,7 +358,7 @@ describe('CoveyTownsStore', () => {
       const townName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -367,7 +375,7 @@ describe('CoveyTownsStore', () => {
       const townName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -376,7 +384,7 @@ describe('CoveyTownsStore', () => {
       const town2Name = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town2.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -397,7 +405,7 @@ describe('CoveyTownsStore', () => {
       const townName = await db('Towns')
         .select('friendlyName')
         .where('coveyTownID', town.coveyTownController.coveyTownID)
-        .then((response: any[]) => {
+        .then((response: Name[]) => {
           const currentTown = response[0];
           const name: string = currentTown.friendlyName;
           return name;
@@ -456,7 +464,7 @@ describe('CoveyTownsStore', () => {
         .toBe(townB.coveyTownController.coveyTownID);
     });
     it('should not list towns that were created by the user, but not saved', async () => {
-      const townA = await createTownForTesting();
+      await createTownForTesting();
       const townsA = await CoveyTownsStore.getInstance().then(instance =>
         instance.getSavedTowns('TEST_USER'));
       expect(townsA.length)
