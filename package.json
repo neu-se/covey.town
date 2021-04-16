@@ -20,6 +20,7 @@
     "homepage": "https://github.com/neu-se/covey.town#readme",
     "devDependencies": {
         "@types/jest": "^26.0.22",
+        "@types/node-emoji": "^1.8.1",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
         "eslint": "^7.24.0",
