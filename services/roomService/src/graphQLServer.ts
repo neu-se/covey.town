@@ -59,10 +59,13 @@ const apolloServer = new ApolloServer({
 
 
 apolloServer.applyMiddleware({ app, path: '/graphql' });
- 
+
 // Represents the database connection
 connection();
 
-const http = app.listen(process.env.PORT || 8081, () => console.log('Listening'));
+const http = app.listen(process.env.PORT || 8081, () => {
+  // eslint-disable-next-line no-console
+  console.log('Listening');
+});
 const socketServer = new io.Server(http, { cors: { origin: '*' } });
 socketServer.on('connection', townSubscriptionHandler);

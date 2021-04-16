@@ -17,18 +17,18 @@ const resolvers = {
      * Resolver to find all the users in Covey Town.
      * @returns all the users in Covey Town
      */
-    users: async (_: any, __: any, context: any) => {
+    users: async (_: void, __: void, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const users = User.find();
         return users;
       } catch (error) {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    searchUserByUserName: async (_: any, args: any, context:any) => {
+    searchUserByUserName: async (_: void, args: {username: string}, context:Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const response = await User.find({
           username: { $regex: args.username, $options: 'i' },
         });
@@ -37,18 +37,18 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    searchUserByName: async (_: any, args: any, context:any) => {
+    searchUserByName: async (_: void, args: {username: string}, context:Record<string, unknown>) : Promise<unknown>  => {
       try {
-        const email = await context.user;
+        await context.user;
         const user = await User.findOne({ username: args.username });
         return user;
       } catch (error) {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    townList: async (_: any, __: any, context: any) => {
+    townList: async (_: void, __: void, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const response = await townListHandler();
         return response;
       } catch (error) {
@@ -61,9 +61,9 @@ const resolvers = {
      * @param args contains all input arguments
      * @returns user profile matching to the id.
      */
-    searchUserByEmail: async (_: any, args: any, context: any) => {
+    searchUserByEmail: async (_: void, args: {email: string}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const user = await User.findOne({ email: args.email });
         return user;
       } catch (error) {
@@ -79,7 +79,7 @@ const resolvers = {
      * @param args represents all the input parameters.
      * @returns the user profile.
      */
-    signUp: async (_: any, args: any) => {
+    signUp: async (_: void, args: {input : {email: string, username: string, password:string }}) : Promise<unknown> => {
       const user = await User.findOne({ email: args.input.email });
       if (user) {
         throw new Error('User already in use');
@@ -92,9 +92,9 @@ const resolvers = {
       const result = newUser.save();
       return result;
     },
-    updateUser: async (_: any, args: any, context: any) => {
+    updateUser: async (_: void, args: { input : { id: string, bio: string, location: string, occupation:string, instagramLink: string, facebookLink: string, linkedInLink: string }}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         let user = await User.findOne({ id: args.input.id });
         if (user !== undefined) {
           if (args.input.bio !== undefined) {
@@ -134,9 +134,9 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    acceptFriend: async (_: any, args: any, context: any) => {
+    acceptFriend: async (_: void, args: {input: {userNameTo: string, userNameFrom: string}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const query = { username: args.input.userNameTo };
         const updateDocument = {
           $pull: { requests: args.input.userNameFrom },
@@ -160,9 +160,9 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    rejectFriend: async (_: any, args: any, context: any) => {
+    rejectFriend: async (_: void, args: {input: {userNameTo: string, userNameFrom: string}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const query = { username: args.input.userNameTo };
         const updateDocument = {
           $pull: { requests: args.input.userNameFrom },
@@ -172,14 +172,15 @@ const resolvers = {
         const updateDocumentFrom = {
           $pull: { sentRequests: args.input.userNameTo },
         };
+        await User.updateOne(queryFrom, updateDocumentFrom);
         return true;
       } catch (error) {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    addFriend: async (_: any, args: any, context: any) => {
+    addFriend: async (_: void, args: {input: {userNameTo: string, userNameFrom: string}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         await User.updateOne(
           { username: args.input.userNameTo },
           { $push: { requests: args.input.userNameFrom } },
@@ -193,9 +194,9 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    deleteUser: async (_: any, args: any, context: any) => {
+    deleteUser: async (_: void, args: {input: {email: string}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const user = await User.findOne({ email: args.input.email });
         if (user !== undefined) {
           await User.remove({ email: args.input.email });
@@ -213,9 +214,9 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownJoinResponse
      */
-    townJoinRequest: async (_: any, args: any, context: any) => {
+    townJoinRequest: async (_: void, args: {input: {userName: string, coveyTownID: string}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const response = await townJoinHandler({
           userName: args.input.userName,
           coveyTownID: args.input.coveyTownID,
@@ -232,9 +233,9 @@ const resolvers = {
      * @param args represents the arguments to the function
      * @returns TownCreateResponse
      */
-    townCreateRequest: async (_: any, args: any, context: any) => {
+    townCreateRequest: async (_: void, args: {input: {friendlyName: string, isPubliclyListed: boolean}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         return await townCreateHandler({
           friendlyName: args.input.friendlyName,
           isPubliclyListed: args.input.isPubliclyListed,
@@ -243,9 +244,9 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    townDeleteRequest: async (_: any, args: any, context: any) => {
+    townDeleteRequest: async (_: void, args: {input: {coveyTownID: string, coveyTownPassword: string}}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const response = await townDeleteHandler({
           coveyTownID: args.input.coveyTownID,
           coveyTownPassword: args.input.coveyTownPassword,
@@ -255,9 +256,9 @@ const resolvers = {
         throw new AuthenticationError('You must be logged in to do this');
       }
     },
-    townUpdateRequest: async (_: any, args: any, context: any) => {
+    townUpdateRequest: async (_: void, args: {input: {coveyTownID: string, coveyTownPassword: string, friendlyName: string, isPubliclyListed: boolean }}, context: Record<string, unknown>) : Promise<unknown> => {
       try {
-        const email = await context.user;
+        await context.user;
         const response = await townUpdateHandler({
           coveyTownID: args.input.coveyTownID,
           coveyTownPassword: args.input.coveyTownPassword,
