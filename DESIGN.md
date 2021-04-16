@@ -28,7 +28,7 @@ We added new types such as CoveyUser and CoveyUserProfile as abstraction for ent
 - MongoDB Realm returns a Realm user
 - CoveyTown creates a Covey User using Realm user info and Google user info extracted using extracted Google user tokens
 - CoveyTown persists Covey User to MongoDB Atlas for reuse
-![Login Google Sequence](docs/user-story-1/google-login.png)
+![Login Google Sequence](docs/user-story-2/google-login.png)
 ## User Story 3:
 ### Friend List
 - Upon sign in, user's friend list is fetched from the database and populated in the UI.
