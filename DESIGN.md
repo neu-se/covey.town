@@ -54,25 +54,28 @@ We added new types such as CoveyUser and CoveyUserProfile as abstraction for ent
 ![Add friend design diagram](docs/user-story-3/Addfrienddiagram.png)
 
 ## User Story 4:
-TODO
-
-
-## Realm App
+### Realm App
 - An endpoint that enables interfacing between our app and Mongo Realm. 
 
-## Authentication
+### Authentication
 - Added an interface IAuth as an abstraction for all authentication operations.
 - Created a Singleton RealmAuth class that implements IAuth. Utilizes MongoRealm as the authentication provider for the implementations.
 
-## Database
-### Frontend
+### Database
+#### Frontend
 - Added an inteface IDBClient as an abstraction for all database operations
 - Created a Singleton RealmDBClient class which is an IDBClient implementation that utilizes MongoRealm as the database provider.
 - Implements GraphQL as abstraction for MongoDB query and mutation.
 
-### Backend
+#### Backend
 - Added an inteface IDBClient as an abstraction for all database operations.
 - Created MongoAtlasClient class that opens the connection to cloud provider MongoDB Atlas and implements all IDBClient functions.
 
-
-
+### Town Users List
+- Upon joining a town, the players currently in the town are already stored and updated in the CoveyAppState, and information about the logged in user from the Auth Info is used to render the town users list and allow other town users to be added as friends from the WorldMap/Town Screen
+- The logged in user's persisting profile stores the user's friend list, which allows us to filter who friend requests can be sent to
+- Covey.Town players will now have two IDs:
+  - An ID generated each time a user joins, used to identify the player in a town
+  - A coveyUserID generated once during account creation, and stored in our database used to query user profiles and friends lists
+- The coveyUserID for other town users will be used to send friend requests in the same manner done on the Town Selection page
+  - (A ready friend request socket will listen for incoming friend requests that are sent from the Town Screen)
