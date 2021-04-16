@@ -52,7 +52,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
         <Typography variant="body1">Browse Open Games</Typography>
       </MenuItem>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -66,7 +66,7 @@ export default function BrowseOpenGamesModal(props: {currentPlayer: {username: s
           <ModalBody>
             <UnorderedList>
               {gamesList?.map(game =>
-                <ListItem key={game.id}>Play {game.id.includes("ttl") ? "ttl" : "Hangman"} with {game.player1Username}
+                <ListItem key={game.id}>Play {game.id.includes("ttl") ? "Two Truths and a Lie" : "Hangman"} with {game.player1Username}
                   <div className="float-right">
                     <JoinGameModalDialog currentPlayer={props.currentPlayer}
                                          dialogType={game.player2ID === '' ? 'joining' : 'unavailable'}

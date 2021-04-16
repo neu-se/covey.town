@@ -74,7 +74,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
         <Typography variant="body1">New Game</Typography>
       </MenuItem>
 
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           {

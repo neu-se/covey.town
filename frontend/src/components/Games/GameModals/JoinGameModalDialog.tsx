@@ -51,7 +51,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
         <Typography variant="body1">Join Game</Typography>
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton onClick={async () => {
