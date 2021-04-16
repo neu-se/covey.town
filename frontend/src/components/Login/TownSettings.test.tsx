@@ -34,7 +34,8 @@ const mockUpdateTown = jest.fn();
 const mockDeleteTown = jest.fn();
 GraphqlServiceClient.prototype.updateTown = mockUpdateTown;
 GraphqlServiceClient.prototype.deleteTown = mockDeleteTown;
-
+// @ts-ignore
+mockUseCoveyAppState.graphqlClient = new GraphqlServiceClient();
 function wrappedTownSettings() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
     nearbyPlayers: { nearbyPlayers: [] },

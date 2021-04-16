@@ -178,7 +178,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
           await waitFor(() => expect(mockToast)
             .toBeCalledWith({
               title: 'Unable to create town',
-              description: 'Please update your username before creating a town',
+              description: 'Please select a username before creating a town',
               status: 'error'
             }));
         });

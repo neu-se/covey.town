@@ -52,12 +52,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   }, [setCurrentPublicTowns,graphqlClient]);
 
   useEffect(() => {
-/*     const findUser = async () => {
-      const userInfo = await searchUserByEmail(user.email);
-      setUserName(userInfo.username);
-    } */
     updateTownListings();
-  /*   findUser(); */
     const timer = setInterval(updateTownListings, 2000);
     return () => {
       clearInterval(timer)
@@ -69,7 +64,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       if (!userName || userName.length === 0) {
         toast({
           title: 'Unable to join town',
-          description: 'Please update your username in user profile',
+          description: 'Please select a username',
           status: 'error',
         });
         return;
@@ -102,7 +97,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     if (!userName || userName.length === 0) {
       toast({
         title: 'Unable to create town',
-        description: 'Please update your username before creating a town',
+        description: 'Please select a username before creating a town',
         status: 'error',
       });
       return;
