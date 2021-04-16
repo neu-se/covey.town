@@ -14,15 +14,18 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
   const [selection, setSelection] = useState(0);
   const {currentTownID, gamesClient} = useCoveyAppState();
   const [currentGame, setCurrentGame] = useState<TTLGame>(startingGame);
-  const gameId = startingGame.id;
-  const choicesList = [currentGame.option1, currentGame.option2, currentGame.option3];
-
+  const [gameId, setGameId] = useState<string>("");
+  const [choicesList, setChoicesList] = useState<string[]>([]);
+  const [lieIndex, setLieIndex] = useState<number>(0);
 
   useEffect(() => {
     const fetchGame = async () => {
       const {games} = await gamesClient.listGames({townID: currentTownID})
-      const game = games.find(g => g.id === gameId)
+      const game = games.find(g => g.id === startingGame.id)
       setCurrentGame(game as TTLGame)
+      setGameId(game? game.id : "");
+      setChoicesList(currentGame ? [currentGame.option1, currentGame.option2, currentGame.option3] : []);
+      setLieIndex(currentGame ? currentGame.correctOption - 1 : 0);
     }
     fetchGame();
     const timer = setInterval(async () => {
@@ -35,7 +38,6 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
     }
   }, []);
 
-  const lieIndex = (currentGame.correctOption - 1);
 
   return (
     <>
@@ -114,7 +116,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
             {
               guessing && currentPlayerId !== currentGame.player2ID &&
               <div className="games-center-div">
-                <div className="row">
+                <div className="row games-wait-message">
                   Player 2 is guessing!
                 </div>
                 <br/>
@@ -122,11 +124,19 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
             }
 
             {!guessing && selection === currentGame.correctOption &&
-            <h1>{currentGame.player2Username} guessed correctly!</h1>
+              <div className="games-center-div games-end-message">
+                <br/>
+                <h1>{currentGame.player2Username} guessed correctly!</h1>
+                <br/>
+              </div>
             }
 
             {!guessing && selection !== currentGame.correctOption &&
+            <div className="games-center-div games-end-message">
+              <br/>
             <h1>{`Oops, that wasn't right. The real lie was "${choicesList[lieIndex]}".`}</h1>
+              <br/>
+            </div>
             }
           </div>
         </>

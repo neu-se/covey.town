@@ -13,8 +13,8 @@ interface HangmanDisplayProps {
 export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanDisplayProps): JSX.Element {
   const {gamesClient, currentTownID} = useCoveyAppState();
   const [currentGame, setCurrentGame] = useState<HangmanGame>(startingGame);
-  const gameId = startingGame.id;
-  const finalWord = startingGame.finalWord.split('')
+  const [gameId, setGameId] = useState<string>("");
+  const [finalWord, setFinalWord] = useState<string[]>([]);
   const [playing, setPlaying] = useState(true);
   const [winner, setWinner] = useState(0);
 
@@ -30,8 +30,10 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
   useEffect(() => {
     const fetchGame = async () => {
       const {games} = await gamesClient.listGames({townID: currentTownID})
-      const game = games.find(g => g.id === gameId)
+      const game = games.find(g => g.id === startingGame.id)
       setCurrentGame(game as HangmanGame)
+      setGameId(game? game.id : "");
+      setFinalWord( currentGame ? currentGame.finalWord.split("") : [])
     }
     fetchGame();
     const timer = setInterval(async () => {
@@ -55,48 +57,53 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
           </div>
       }
       {
-        currentGame.limbList.length === 0 &&
-        <>
-          <div>
-            <h1>Game is over! {currentGame.player1Username} won!</h1>
-          </div>
-        </>
-      }
-      {
-        currentGame.splitWord.length === 0 &&
-        <>
-          <div>
-            <h1>Game is over! {currentGame.player2Username} won!</h1>
-          </div>
-        </>
-      }
-      {
         currentGame !== undefined &&
           <>
-            <div className="games-border">
+            <div className="games-border games-padded-asset">
+              Already guessed:
               {updateAlreadyGuessedLetters().map(letter =>
-                <span key={letter}>{finalWord.includes(letter) ? "" : letter}</span>
+                <span key={letter}>{finalWord.includes(letter) ? "" : ` ${letter} `}</span>
               )}
             </div>
             <HangmanFigure game={currentGame}/>
             <br/>
             <div className="games-center-div">
               <h3>{finalWord.map(letter =>
-                <span key={letter}>{updateAlreadyGuessedLetters().includes(letter) ? letter : "_ "}</span>
+                <span key={letter}>{updateAlreadyGuessedLetters().includes(letter) ? `${letter} ` : "_ "}</span>
               )}</h3>
             </div>
             <br/>
             {
-              currentPlayerId !== currentGame.player2ID &&
+              currentPlayerId !== currentGame.player2ID && currentGame.splitWord.length !== 0 && currentGame.limbList.length !== 0 &&
               <div className="games-center-div">
-                <div className="row">
+                <div className="row games-wait-message">
                   Player 2 is guessing!
                 </div>
                 <br/>
               </div>
               }
             {
-              currentPlayerId === currentGame.player2ID &&
+              currentGame.limbList.length === 0 &&
+              <>
+                <div className="games-center-div games-end-message">
+                  <br/>
+                  <h1>Game is over! {currentGame.player1Username} won!</h1>
+                  <br/>
+                </div>
+              </>
+            }
+            {
+              currentGame.splitWord.length === 0 &&
+              <>
+                <div className="games-center-div games-end-message">
+                  <br/>
+                  <h1>Game is over! {currentGame.player2Username} won!</h1>
+                  <br/>
+                </div>
+              </>
+            }
+            {
+              currentPlayerId === currentGame.player2ID && currentGame.splitWord.length !== 0 && currentGame.limbList.length !== 0 &&
                 <>
                   <div className="games-center-div">
                     <div className="row">
@@ -137,6 +144,7 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
                 </>
             }
           </>
+
       }
     </>
   )

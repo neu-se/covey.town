@@ -42,6 +42,22 @@ code {
   color: #732d30;
 }
 
+.games-end-message {
+  font-size: large;
+  font-weight: bold;
+  padding: 2px;
+  text-align: center;
+  color: #49c183;
+}
+
+.games-wait-message {
+  font-size: large;
+  font-weight: bold;
+  padding: 2px;
+  text-align: center;
+  color: #732d30;
+}
+
 .games-center-div {
   text-align: center;
   display: flex;
