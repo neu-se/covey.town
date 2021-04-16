@@ -29,7 +29,7 @@ class CoveyGameScene extends Phaser.Scene {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
   };
 
-  private id?: string;
+  private myPlayerID: string;
 
   private players: Player[] = [];
 
@@ -52,10 +52,11 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void, myPlayerID : string) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
+    this.myPlayerID = myPlayerID;
   }
 
   preload() {
@@ -108,7 +109,7 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.coveyUserId, player.userName, location);
       this.players.push(myPlayer);
     }
-    if (this.id !== myPlayer.id && this.physics && player.location) {
+    if (this.myPlayerID !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
@@ -208,7 +209,8 @@ class CoveyGameScene extends Phaser.Scene {
       this.player.label.setY(body.y - 20);
       if (!this.lastLocation
         || this.lastLocation.x !== body.x
-        || this.lastLocation.y !== body.y || this.lastLocation.rotation !== primaryDirection
+        || this.lastLocation.y !== body.y
+        || (isMoving && this.lastLocation.rotation !== primaryDirection)
         || this.lastLocation.moving !== isMoving) {
         if (!this.lastLocation) {
           this.lastLocation = {
@@ -440,7 +442,10 @@ class CoveyGameScene extends Phaser.Scene {
 
   resume() {
     this.paused = false;
-    this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+    if(Video.instance()){
+      // If the game is also in process of being torn down, the keyboard could be undefined
+      this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+    }
     this.previouslyCapturedKeys = [];
   }
 }
@@ -455,7 +460,7 @@ export default function WorldMap(): JSX.Element {
   const { friendRequestSocket } = useFriendRequestSocket();
 
   const {
-    emitMovement, players,
+    emitMovement, players, myPlayerID,
   } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
@@ -474,7 +479,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement);
+      const newGameScene = new CoveyGameScene(video, emitMovement, myPlayerID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -487,7 +492,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement]);
+  }, [video, emitMovement, myPlayerID]);
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {
