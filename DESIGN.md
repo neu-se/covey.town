@@ -16,7 +16,18 @@ We added new types such as CoveyUser and CoveyUserProfile as abstraction for ent
 ![Login Sequence](docs/user-story-1/login-seq.png)
 
 ## User Story 2:
-
+- We use three-legged OAuth processing to handle login using Google account.
+- A user, as the resource owner, initiates a request to covey town frontend.
+- Covey Town sends the resource owner a redirection to the authorization server.
+- The resource owner authenticates and optionally authorizes with the authorization server.
+- The authorization server presents a form to the resource owner to grant access.
+- The resource owner submits the form to allow or to deny access.
+- Google authorization server sends a redirect uri with tokens attached
+- CoveyTown extract those tokens
+- CoveyTown logins to MongoDB Realm user authentication using Google tokens
+- MongoDB Realm returns a Realm user
+- CoveyTown creates a Covey User using Realm user info and Google user info extracted using extracted Google user tokens
+- CoveyTown persists Covey User to MongoDB Atlas for reuse
 ![Login Google Sequence](docs/user-story-1/google-login.png)
 ## User Story 3:
 ### Friend List
