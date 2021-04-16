@@ -175,7 +175,7 @@ export default class CoveyTownController {
    */
   sendPrivatePlayerMessage(userIDFrom: string, userIDTo: string, message: string): void {
     var messageAltered : PrivateChatMessage;
-    messageAltered = new PrivateChatMessage(emojify(Censorer.censorMessage(message)), userIDTo, userIDFrom);
+    messageAltered = new PrivateChatMessage(emojify(Censorer.censorMessage(message)), userIDFrom, userIDTo);
     this.messages.push(messageAltered);
     this._listeners.forEach(listener => listener.onPrivateMessage(messageAltered));
   }
