@@ -20,7 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
-import { deleteTown } from '../../graphql/queries';
+import { deleteTown, updateTown } from '../../graphql/queries';
 
 const TownSettings: React.FunctionComponent = () => {
   const {isOpen, onOpen, onClose} = useDisclosure()
@@ -60,12 +60,8 @@ const TownSettings: React.FunctionComponent = () => {
       }
     }else {
       try {
-        await apiClient.updateTown({
-          coveyTownID: currentTownID,
-          coveyTownPassword: roomUpdatePassword,
-          friendlyName,
-          isPubliclyListed
-        });
+        await updateTown({coveyTownID: currentTownID,
+          coveyTownPassword: roomUpdatePassword, friendlyName, isPubliclyListed});
         toast({
           title: 'Town updated',
           description: 'To see the updated town, please exit and re-join this town',

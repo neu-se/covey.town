@@ -5,6 +5,7 @@ import {
   townJoinHandler,
   townDeleteHandler,
   townListHandler,
+  townUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 
 /**
@@ -42,7 +43,7 @@ const resolvers = {
         const user = await User.findOne({ username: args.username });
         return user;
       } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this');      
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
     townList: async (_: any, __: any, context: any) => {
@@ -160,7 +161,7 @@ const resolvers = {
     },
     rejectFriend: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const query = { username: args.input.userNameTo };
         const updateDocument = {
           $pull: { requests: args.input.userNameFrom },
@@ -177,7 +178,7 @@ const resolvers = {
     },
     addFriend: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         await User.updateOne(
           { username: args.input.userNameTo },
           { $push: { requests: args.input.userNameFrom } },
@@ -193,7 +194,7 @@ const resolvers = {
     },
     deleteUser: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const user = await User.findOne({ email: args.input.email });
         if (user !== undefined) {
           await User.remove({ email: args.input.email });
@@ -213,7 +214,7 @@ const resolvers = {
      */
     townJoinRequest: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const response = await townJoinHandler({
           userName: args.input.userName,
           coveyTownID: args.input.coveyTownID,
@@ -243,14 +244,28 @@ const resolvers = {
     },
     townDeleteRequest: async (_: any, args: any, context: any) => {
       try {
-        const email = await context.user;        
+        const email = await context.user;
         const response = await townDeleteHandler({
           coveyTownID: args.input.coveyTownID,
           coveyTownPassword: args.input.coveyTownPassword,
         });
         return response;
       } catch (error) {
-        throw new AuthenticationError('You must be logged in to do this'); 
+        throw new AuthenticationError('You must be logged in to do this');
+      }
+    },
+    townUpdateRequest: async (_: any, args: any, context: any) => {
+      try {
+        const email = await context.user;
+        const response = await townUpdateHandler({
+          coveyTownID: args.input.coveyTownID,
+          coveyTownPassword: args.input.coveyTownPassword,
+          friendlyName: args.input.friendlyName,
+          isPubliclyListed: args.input.isPubliclyListed,
+        });
+        return response;
+      } catch (error) {
+        throw new AuthenticationError('You must be logged in to do this');
       }
     },
   },
