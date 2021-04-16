@@ -66,8 +66,9 @@ function Chat(): JSX.Element {
             message: messages[messages.length-1].message,
           },
         ])
-      } else if (messages[messages.length-1].getType() === 'private') {
-        const receiver = players.find(p => p.id === myPlayerID)
+      }
+      else if (messages[messages.length-1].getType() === 'private') {
+        const receiver = players.find(p => p.id === messages[messages.length-1].getReceiverID())        
         if(messages[messages.length-1].getReceiverID() === myPlayerID) {
           setMessagesState([
             ...messagesState,
