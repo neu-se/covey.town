@@ -51,8 +51,9 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
         currentGame === undefined &&
           <div className="games-center-div">
             <br/>
-            Oh no! Looks like Player 1 ended the game.
-            <br/>          </div>
+            Oh no! Looks like the other player ended the game.
+            <br/>
+          </div>
       }
       {
         currentGame !== undefined &&

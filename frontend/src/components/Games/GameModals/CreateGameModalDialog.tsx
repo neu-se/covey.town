@@ -97,10 +97,11 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
             video?.unPauseGame();
           }} />
           <ModalBody>
-            {
+
+          {
               !playing &&
                 <>
-                  Select a game type to get started:
+                Select a game type to get started:
                   <br/>
                   <br/>
                   <label htmlFor="hangman">
@@ -217,9 +218,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     }
                   </div>
                 </>
-
             }
-          </ModalBody>
             {!playing &&
             <ModalFooter>
             <Button className="games-padded-asset" colorScheme="green"
@@ -267,6 +266,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
               </Button>
             </ModalFooter>
             }
+        </ModalBody>
         </ModalContent>
       </Modal>
     </>
