@@ -1,6 +1,3 @@
-import HangmanGame from '../games/HangmanGame';
-import TTLGame from '../games/TTLGame';
-
 export type HangmanWord = { word: string };
 export type TTLChoices = { choice1: string, choice2: string, choice3: string, correctLie: number };
 
@@ -17,5 +14,3 @@ export enum Limb {
   LeftLeg,
   RightLeg,
 }
-
-export type GameList = (TTLGame | HangmanGame)[];

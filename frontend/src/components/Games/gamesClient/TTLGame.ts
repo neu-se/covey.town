@@ -1,4 +1,4 @@
-import { customAlphabet, nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { TTLPlayer2Move, TTLChoices } from './GameTypes';
 import IGame from './IGame';
 

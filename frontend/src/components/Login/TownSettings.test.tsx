@@ -8,12 +8,14 @@ import { TargetElement } from '@testing-library/user-event';
 import TownSettings from './TownSettings';
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import GameServiceClient from "../Games/gamesClient/GameServiceClient";
 
 const mockUseCoveyAppState = jest.fn(() => (Promise.resolve()));
 const mockToast = jest.fn();
 const mockUseDisclosure = {isOpen: true, onOpen: jest.fn(), onClose: jest.fn()};
 
 jest.mock('../../classes/TownsServiceClient');
+jest.mock('../../components/Games/gamesClient/GameServiceClient');
 jest.mock('../../hooks/useCoveyAppState', () => ({
   __esModule: true, // this property makes it work
   default: () => (mockUseCoveyAppState)
@@ -53,6 +55,7 @@ function wrappedTownSettings() {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
+    gamesClient: new GameServiceClient(),
   }}>
     <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
 }

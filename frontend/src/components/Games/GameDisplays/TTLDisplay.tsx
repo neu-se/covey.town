@@ -16,7 +16,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
   const [currentGame, setCurrentGame] = useState<TTLGame>(startingGame);
   const gameId = startingGame.id;
   const choicesList = [currentGame.option1, currentGame.option2, currentGame.option3];
- 
+
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -43,7 +43,7 @@ export default function TTLDisplay({currentPlayerId, startingGame}: TTLProps): J
         currentGame === undefined &&
         <div className="games-center-div">
           <br/>
-          Oh no! Looks like Player 1 ended the game.
+          Oh no! Looks like the other player ended the game.
           <br/>
         </div>
       }

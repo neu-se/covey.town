@@ -15,6 +15,7 @@ import HangmanDisplay from "../GameDisplays/Hangman/HangmanDisplay";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import HangmanGame from "../gamesClient/HangmanGame";
 import TTLGame from "../gamesClient/TTLGame";
+import useMaybeVideo from "../../../hooks/useMaybeVideo";
 
 interface GameModalDialogProps {
   currentPlayer: {username: string, id: string},
@@ -29,6 +30,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
   const { currentTownID, gamesClient } = useCoveyAppState();
   const [currentGameObject, setCurrentGameObject] = useState<TTLGame | HangmanGame | undefined>(undefined)
   const [playing, setPlaying] = useState(false);
+  const video = useMaybeVideo();
 
 
   const getCurrentGame = async () => {
@@ -41,13 +43,25 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
 
   return (
     <>
-      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green" onClick={() => {onOpen();}}>
+      <Button data-testid='openMenuButton' className="games-padded-asset" colorScheme="green"
+              onClick={() => {
+                onOpen();
+                video?.pauseGame()}
+              }>
         <Typography variant="body1">Join Game</Typography>
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
+          <ModalCloseButton onClick={async () => {
+            if (currentGameObject !== undefined && currentGameObject.id !== "") {
+              await gamesClient.deleteGame({townID: currentTownID, gameId: currentGameObject.id});
+              setCurrentGameObject(undefined)
+              setPlaying(false)
+            }
+            video?.unPauseGame();
+          }} />
           {!playing &&
           <>
             {dialogType === "unavailable" &&
@@ -60,7 +74,7 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
               Ready to Play?
             </ModalHeader>
             }
-            <ModalCloseButton/>
+
             {dialogType === "unavailable" &&
             <ModalBody>
               Looks like someone else joined this game before you. This game is no longer open.
@@ -100,7 +114,6 @@ export default function JoinGameModalDialog({currentPlayer, dialogType, gameId, 
                 <h1 className="games-headline">
                   {gameType === "ttl" ? "Two Truths and a Lie" : gameType}
                 </h1>
-                <ModalCloseButton/>
                 <hr/>
                 <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                 <br/>

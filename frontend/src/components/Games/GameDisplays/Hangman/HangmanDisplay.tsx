@@ -25,36 +25,6 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
     return letters;
   }
 
-  // const guessedWord = () => {
-  //   const word = startingGame.finalWord.split('');
-  //   const hiddenLetters = currentGame.splitWord;
-  //   const wordWithBlanks = [];
-  //   setWordState('');
-  //   for (let i = 0; i < word.length; i += 1) {
-  //     if (!hiddenLetters.find(letter => word[i] === letter)) {
-  //       wordWithBlanks.push(word[i]);
-  //     } else {
-  //       wordWithBlanks.push("_");
-  //     }
-  //   }
-  //   // setWordState(wordWithBlanks.join(' '));
-  //   return wordWithBlanks.join(' ');
-  // }
-
-  // const guessedWord = () => {
-  //   const word = currentGame.finalWord.split('');
-  //   const hiddenLetters = currentGame.splitWord;
-  //   const wordWithBlanks = [];
-  //   setWordState('');
-  //   for (let i = 0; i < word.length; i += 1) {
-  //     if (!hiddenLetters.find(letter => word[i] === letter)) {
-  //       wordWithBlanks.push(word[i]);
-  //     } else {
-  //       wordWithBlanks.push("_");
-  //     }
-  //   }
-  //   setWordState(wordWithBlanks.join(' '));
-  // }
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -81,8 +51,9 @@ export default function HangmanDisplay({currentPlayerId, startingGame}: HangmanD
         currentGame === undefined &&
           <div className="games-center-div">
             <br/>
-            Oh no! Looks like Player 1 ended the game.
-            <br/>          </div>
+            Oh no! Looks like the other player ended the game.
+            <br/>
+          </div>
       }
       {
         currentGame !== undefined &&

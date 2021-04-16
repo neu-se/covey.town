@@ -21,6 +21,7 @@ import {GameCreateRequest} from "../gamesClient/GameRequestTypes";
 import useCoveyAppState from "../../../hooks/useCoveyAppState";
 import TTLGame from "../gamesClient/TTLGame";
 import HangmanGame from "../gamesClient/HangmanGame";
+import useMaybeVideo from "../../../hooks/useMaybeVideo";
 
 export default function CreateGameModalDialog(props: {currentPlayer: {username: string, id: string}}): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -36,6 +37,8 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
   const { currentPlayer } = props
   const { currentTownID, gamesClient } = useCoveyAppState();
   const toast = useToast()
+  const video = useMaybeVideo();
+
 
   const createNewGame = async (requestData : GameCreateRequest) => {
     const newGameId = await gamesClient.createGame(requestData)
@@ -64,7 +67,10 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
 
   return (
     <>
-      <MenuItem data-testid='openMenuButton' onClick={() => onOpen()}>
+      <MenuItem data-testid='openMenuButton' onClick={() => {
+        onOpen();
+        video?.pauseGame()}
+      }>
         <Typography variant="body1">New Game</Typography>
       </MenuItem>
 
@@ -88,12 +94,14 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
               setHangmanWord("")
               setLie(0)
             }
+            video?.unPauseGame();
           }} />
           <ModalBody>
-            {
+
+          {
               !playing &&
                 <>
-                  Select a game type to get started:
+                Select a game type to get started:
                   <br/>
                   <br/>
                   <label htmlFor="hangman">
@@ -125,7 +133,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                                value={hangmanWord}
                                className="games-padded-asset col-12"
                                onChange={(e) =>
-                                 setHangmanWord(e.target.value)}/>
+                                 setHangmanWord(e.target.value.toLowerCase())}/>
                       </FormLabel>
                     }
                     {
@@ -195,7 +203,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     <h1 className="games-headline">
                       {gameSelection === "ttl" ? "Two Truths and a Lie" : gameSelection}
                     </h1>
-                    <ModalCloseButton />
+                    { /* <ModalCloseButton /> */ }
                     <hr/>
                     <p className="games-subhead">{currentGameObject.player1Username} vs. {currentGameObject.player2Username}</p>
                     <br/>
@@ -210,9 +218,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
                     }
                   </div>
                 </>
-
             }
-          </ModalBody>
             {!playing &&
             <ModalFooter>
             <Button className="games-padded-asset" colorScheme="green"
@@ -260,6 +266,7 @@ export default function CreateGameModalDialog(props: {currentPlayer: {username: 
               </Button>
             </ModalFooter>
             }
+        </ModalBody>
         </ModalContent>
       </Modal>
     </>

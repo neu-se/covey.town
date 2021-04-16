@@ -1,4 +1,5 @@
-import { TTLPlayer1Move, TTLPlayer2Move, HangmanPlayer1Move, HangmanPlayer2Move, GameList } from './GameTypes';
+import {TTLPlayer1Move, TTLPlayer2Move, HangmanPlayer1Move, HangmanPlayer2Move} from "./GameTypes";
+import {GameList} from "./GameList";
 
 export interface ResponseEnvelope<T> {
   isOK: boolean;
