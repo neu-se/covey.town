@@ -9,7 +9,6 @@ import { UserLocation } from '../CoveyTypes';
 import TownsServiceClient from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
 import db from '../database/knexfile';
-import { logUser, deleteUser } from '../database/databaseService';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -26,7 +25,7 @@ describe('TownServiceApiSocket', () => {
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
-      creator: 'TEST_USER',
+      creator: 'Guest',
     });
     return {
       friendlyName,
@@ -46,12 +45,10 @@ describe('TownServiceApiSocket', () => {
     const address = server.address() as AddressInfo;
 
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
-    await logUser('TEST_USER');
   });
   afterAll(async () => {
     server.close();
     TestUtils.cleanupSockets();
-    await deleteUser('TEST_USER');
     await db.destroy();
   });
   afterEach(async () => {

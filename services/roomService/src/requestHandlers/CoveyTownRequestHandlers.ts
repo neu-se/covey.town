@@ -3,12 +3,10 @@ import { Socket } from 'socket.io';
 import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
-import { CoveyTownsStore, updateTown, SavedCoveyTownList } from '../lib/CoveyTownsStore';
+import { CoveyTownsStore, updateTown } from '../lib/CoveyTownsStore';
 import {
-  getAllUserInfo,
-  setUserNames,
   deleteUser,
-  logUser,
+  updateUser,
   getTownByID,
   saveTown,
   unsaveTown,
@@ -71,10 +69,6 @@ export interface TownListResponse {
   towns: CoveyTownList;
 }
 
-export interface SavedTownListResponse {
-  towns: SavedCoveyTownList;
-}
-
 /**
  * Payload sent by the client to delete a Town
  */
@@ -89,23 +83,6 @@ export interface CreateUserRequest {
 
 export interface DeleteUserRequest {
   email: string;
-}
-
-export interface UserInfoRequest {
-  email: string;
-}
-
-export interface UserInfoResponse {
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  currentAvatar: string;
-}
-
-export interface UpdateUserRequest {
-  email: string;
-  firstName?: string;
-  lastName?: string;
 }
 
 export interface SavedTownsRequest {
@@ -208,7 +185,7 @@ export async function updateAvatarHandler(requestData: UpdateAvatarRequest): Pro
 }
 
 export async function createUserHandler(requestData: CreateUserRequest): Promise<ResponseEnvelope<void>> {
-  await logUser(requestData.email);
+  await updateUser(requestData.email);
   return {
     isOK: true,
   };
@@ -216,21 +193,6 @@ export async function createUserHandler(requestData: CreateUserRequest): Promise
 
 export async function userDeleteHandler(requestData: DeleteUserRequest): Promise<ResponseEnvelope<void>> {
   await deleteUser(requestData.email);
-  return {
-    isOK: true,
-  };
-}
-
-export async function getUserInfoHandler(requestData: UserInfoRequest): Promise<ResponseEnvelope<UserInfoResponse>> {
-  const response = await getAllUserInfo(requestData.email);
-  return {
-    isOK: true,
-    response,
-  };
-}
-
-export async function updateUserInfoHandler(requestData: UpdateUserRequest): Promise<ResponseEnvelope<void>> {
-  await setUserNames(requestData.email, requestData.firstName, requestData.lastName);
   return {
     isOK: true,
   };
@@ -245,9 +207,9 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   };
 }
 
-export async function savedTownListHandler(requestData: SavedTownsRequest): Promise<ResponseEnvelope<SavedTownListResponse>> {
+export async function savedTownHandler(requestData: SavedTownsRequest): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = await CoveyTownsStore.getInstance();
-  const townList: SavedCoveyTownList = await townsStore.getSavedTowns(requestData.email);
+  const townList: CoveyTownList = await townsStore.getSavedTowns(requestData.email);
   return {
     isOK: true,
     response: { towns: townList },
