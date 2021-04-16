@@ -291,15 +291,6 @@ describe('TownsServiceAPIREST', () => {
       });
 
             
-      const testMessage3 = await apiClient.sendPrivatePlayerMessage({
-        coveyTownID: pubTown1.coveyTownID,
-        userIDFrom: res.coveyUserID,
-        userIDTo: res2.coveyUserID,
-        message: 'test',
-    });
-    
-      
-
       const testMessage2 = await apiClient.sendGlobalPlayerMessage({
         coveyTownID: pubTown1.coveyTownID,
         coveyUserID: 'xxxxxx',
@@ -308,7 +299,6 @@ describe('TownsServiceAPIREST', () => {
 
       expect(CoveyTownsStore.getInstance().getControllerForTown(pubTown1.coveyTownID)?.messages).not.toEqual(expect.arrayContaining([testMessage1]));
       expect(CoveyTownsStore.getInstance().getControllerForTown(pubTown1.coveyTownID)?.messages).not.toEqual(expect.arrayContaining([testMessage2]));
-      expect(CoveyTownsStore.getInstance().getControllerForTown(pubTown1.coveyTownID)?.messages).toEqual(expect.arrayContaining([testMessage3]));
 
 
     });
