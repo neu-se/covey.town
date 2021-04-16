@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Image, Heading } from "@chakra-ui/react";
+import { Box, Image, Heading, Flex, Center } from "@chakra-ui/react";
 
 export default function StarterPage(): JSX.Element {
   return (
     <>
+    
       <Heading
         color='blue.500'
         as='h2'
@@ -16,15 +17,17 @@ export default function StarterPage(): JSX.Element {
       <Heading as='h4' size='md' color='blue.500'>
         Login / Signup to begin networking
       </Heading>
-      <Box boxSize='xxl' paddingLeft='450px' paddingTop='6px'>
+      <Center boxSize='xxl'>
         <Image
           borderRadius='full'
           src='/assets/networking.png'
-          boxSize='600px'
+          boxSize='70vh'
           objectFit='cover'
           alt='coveytown'
+          mt= {5}
         />
-      </Box>
+      </Center>
+      
     </>
   );
 }
