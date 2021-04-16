@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Phaser from 'phaser';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useToast } from '@chakra-ui/react';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -10,7 +12,9 @@ class CoveyGameScene extends Phaser.Scene {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
   };
 
-  private id?: string;
+  private currentAvatar: string;
+
+  private myPlayerID: string;
 
   private players: Player[] = [];
 
@@ -33,17 +37,40 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void, myPlayerID : string, currentAvatar: string) {
+    // Add current avatar in constructor parameters and assign to private variable
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
+    this.myPlayerID = myPlayerID;
+    this.currentAvatar = currentAvatar;
   }
 
   preload() {
     // this.load.image("logo", logoImg);
+    // this.load.atlas('atlas3', '/assets/atlas/atlas3.png', '/assets/atlas/atlas3.json');
     this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
-    this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
+    this.load.atlas('misa', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
+    this.load.atlas('catgirl', '/assets/atlas/catgirl.png', '/assets/atlas/catgirl.json');
+    this.load.atlas('aang', '/assets/atlas/aang.png', '/assets/atlas/aang.json');
+    this.load.atlas('beachcomber', '/assets/atlas/beachcomber.png', '/assets/atlas/beachcomber.json');
+    this.load.atlas('bob', '/assets/atlas/bob.png', '/assets/atlas/bob.json');
+    this.load.atlas('bossman', '/assets/atlas/bossman.png', '/assets/atlas/bossman.json');
+    this.load.atlas('brute', '/assets/atlas/brute.png', '/assets/atlas/brute.json');
+    this.load.atlas('captain', '/assets/atlas/captain.png', '/assets/atlas/captain.json');
+    this.load.atlas('childactor', '/assets/atlas/childactor.png', '/assets/atlas/childactor.json');
+    this.load.atlas('dragonrider', '/assets/atlas/dragonrider.png', '/assets/atlas/dragonrider.json');
+    this.load.atlas('fisher', '/assets/atlas/fisher.png', '/assets/atlas/fisher.json');
+    this.load.atlas('hacker', '/assets/atlas/hacker.png', '/assets/atlas/hacker.json');
+    this.load.atlas('landbird', '/assets/atlas/landbird.png', '/assets/atlas/landbird.json');
+    this.load.atlas('ninja', '/assets/atlas/ninja.png', '/assets/atlas/ninja.json');
+    this.load.atlas('robot', '/assets/atlas/robot.png', '/assets/atlas/robot.json');
+    this.load.atlas('rookie', '/assets/atlas/rookie.png', '/assets/atlas/rookie.json');
+    this.load.atlas('sami', '/assets/atlas/sami.png', '/assets/atlas/sami.json');
+    this.load.atlas('scientist', '/assets/atlas/scientist.png', '/assets/atlas/scientist.json');
+    this.load.atlas('spooky', '/assets/atlas/spooky.png', '/assets/atlas/spooky.json');
+    this.load.atlas('spyderboss', '/assets/atlas/spyderboss.png', '/assets/atlas/spyderboss.json');
   }
 
   updatePlayersLocations(players: Player[]) {
@@ -75,6 +102,7 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   updatePlayerLocation(player: Player) {
+    const avatarName = this.currentAvatar;
     let myPlayer = this.players.find((p) => p.id === player.id);
     if (!myPlayer) {
       let { location } = player;
@@ -89,13 +117,14 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location);
       this.players.push(myPlayer);
     }
-    if (this.id !== myPlayer.id && this.physics && player.location) {
+    if (this.myPlayerID !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
+      // const avatar = myPlayer.currentAvatar;
       if (!sprite) {
         sprite = this.physics.add
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore - JB todo
-          .sprite(0, 0, 'atlas', 'misa-front')
+          .sprite(0, 0, `${avatarName}`, `${avatarName}-front`)
           .setSize(30, 40)
           .setOffset(0, 24);
         const label = this.add.text(0, 0, myPlayer.userName, {
@@ -112,10 +141,10 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer.label?.setX(player.location.x);
       myPlayer.label?.setY(player.location.y - 20);
       if (player.location.moving) {
-        sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
+        sprite.anims.play(`${avatarName}-${player.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();
-        sprite.setTexture('atlas', `misa-${player.location.rotation}`);
+        sprite.setTexture(`${avatarName}`, `${avatarName}-${player.location.rotation}`);
       }
     }
   }
@@ -147,36 +176,37 @@ class CoveyGameScene extends Phaser.Scene {
 
       // Stop any previous movement from the last frame
       body.setVelocity(0);
-
+      
+      const avatarName = this.currentAvatar;
       const primaryDirection = this.getNewMovementDirection();
       switch (primaryDirection) {
         case 'left':
           body.setVelocityX(-speed);
-          this.player.sprite.anims.play('misa-left-walk', true);
+          this.player.sprite.anims.play(`${avatarName}-left-walk`, true);
           break;
         case 'right':
           body.setVelocityX(speed);
-          this.player.sprite.anims.play('misa-right-walk', true);
+          this.player.sprite.anims.play(`${avatarName}-right-walk`, true);
           break;
         case 'front':
           body.setVelocityY(speed);
-          this.player.sprite.anims.play('misa-front-walk', true);
+          this.player.sprite.anims.play(`${avatarName}-front-walk`, true);
           break;
         case 'back':
           body.setVelocityY(-speed);
-          this.player.sprite.anims.play('misa-back-walk', true);
+          this.player.sprite.anims.play(`${avatarName}-back-walk`, true);
           break;
         default:
           // Not moving
           this.player.sprite.anims.stop();
           // If we were moving, pick and idle frame to use
           if (prevVelocity.x < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-left');
+            this.player.sprite.setTexture(`${avatarName}`, `${avatarName}-left`);
           } else if (prevVelocity.x > 0) {
-            this.player.sprite.setTexture('atlas', 'misa-right');
+            this.player.sprite.setTexture(`${avatarName}`, `${avatarName}-right`);
           } else if (prevVelocity.y < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-back');
-          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
+            this.player.sprite.setTexture(`${avatarName}`, `${avatarName}-back`);
+          } else if (prevVelocity.y > 0) this.player.sprite.setTexture(`${avatarName}`, `${avatarName}-front`);
           break;
       }
 
@@ -285,8 +315,9 @@ class CoveyGameScene extends Phaser.Scene {
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
     // player's body.
+    const avatarName = this.currentAvatar;
     const sprite = this.physics.add
-      .sprite(spawnPoint.x, spawnPoint.y, 'atlas', 'misa-front')
+      .sprite(spawnPoint.x, spawnPoint.y, `${avatarName}`, `${avatarName}-front`)
       .setSize(30, 40)
       .setOffset(0, 24);
     const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, '(You)', {
@@ -342,9 +373,9 @@ class CoveyGameScene extends Phaser.Scene {
     // animation manager so any sprite can access them.
     const { anims } = this;
     anims.create({
-      key: 'misa-left-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-left-walk.',
+      key: `${avatarName}-left-walk`,
+      frames: anims.generateFrameNames(`${avatarName}`, {
+        prefix: `${avatarName}-left-walk.`,
         start: 0,
         end: 3,
         zeroPad: 3,
@@ -353,9 +384,9 @@ class CoveyGameScene extends Phaser.Scene {
       repeat: -1,
     });
     anims.create({
-      key: 'misa-right-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-right-walk.',
+      key: `${avatarName}-right-walk`,
+      frames: anims.generateFrameNames(`${avatarName}`, {
+        prefix: `${avatarName}-right-walk.`,
         start: 0,
         end: 3,
         zeroPad: 3,
@@ -364,9 +395,9 @@ class CoveyGameScene extends Phaser.Scene {
       repeat: -1,
     });
     anims.create({
-      key: 'misa-front-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-front-walk.',
+      key: `${avatarName}-front-walk`,
+      frames: anims.generateFrameNames(`${avatarName}`, {
+        prefix: `${avatarName}-front-walk.`,
         start: 0,
         end: 3,
         zeroPad: 3,
@@ -375,9 +406,9 @@ class CoveyGameScene extends Phaser.Scene {
       repeat: -1,
     });
     anims.create({
-      key: 'misa-back-walk',
-      frames: anims.generateFrameNames('atlas', {
-        prefix: 'misa-back-walk.',
+      key: `${avatarName}-back-walk`,
+      frames: anims.generateFrameNames(`${avatarName}`, {
+        prefix: `${avatarName}-back-walk.`,
         start: 0,
         end: 3,
         zeroPad: 3,
@@ -433,9 +464,15 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players,
+    emitMovement, players, myPlayerID, apiClient
   } = useCoveyAppState();
+
+  const { user, isAuthenticated } = useAuth0();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
+  const toast = useToast();
+  
+  const [currentAvatar, setCurrentAvatar] = useState<string>('misa');
+  
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
@@ -452,7 +489,26 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement);
+
+      
+
+      if (isAuthenticated && user) {
+        apiClient.getCurrentAvatar({email: user.email})
+          .then((avatar) => {
+            setCurrentAvatar(avatar);
+          })
+          .catch((err) => {
+            toast({
+              title: 'Get avatar failed',
+              description: err.toString(),
+              status: 'error'
+            })
+          })
+      } else {
+        setCurrentAvatar('misa');
+      }
+
+      const newGameScene = new CoveyGameScene(video, emitMovement, myPlayerID, currentAvatar);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -465,7 +521,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement]);
+  }, [video, emitMovement, myPlayerID, user, isAuthenticated, currentAvatar, apiClient, toast]);
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {

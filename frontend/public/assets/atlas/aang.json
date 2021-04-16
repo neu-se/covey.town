@@ -1,0 +1,172 @@
+{"frames": {
+
+"aang-back-walk.000":
+{
+	"frame": {"x":62,"y":1,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-back-walk.001":
+{
+	"frame": {"x":62,"y":43,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-back-walk.002":
+{
+	"frame": {"x":1,"y":87,"w":29,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":23,"w":29,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-back-walk.003":
+{
+	"frame": {"x":62,"y":43,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-back":
+{
+	"frame": {"x":62,"y":43,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-front-walk.000":
+{
+	"frame": {"x":1,"y":1,"w":31,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":23,"w":31,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-front-walk.001":
+{
+	"frame": {"x":62,"y":85,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-front-walk.002":
+{
+	"frame": {"x":29,"y":45,"w":31,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":31,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-front-walk.003":
+{
+	"frame": {"x":62,"y":85,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-front":
+{
+	"frame": {"x":62,"y":85,"w":30,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":30,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-left-walk.000":
+{
+	"frame": {"x":32,"y":87,"w":26,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":26,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-left-walk.001":
+{
+	"frame": {"x":34,"y":1,"w":26,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":21,"w":26,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-left-walk.002":
+{
+	"frame": {"x":94,"y":1,"w":26,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":23,"w":26,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-left-walk.003":
+{
+	"frame": {"x":34,"y":1,"w":26,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":21,"w":26,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-left":
+{
+	"frame": {"x":34,"y":1,"w":26,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":21,"w":26,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-right-walk.000":
+{
+	"frame": {"x":94,"y":43,"w":26,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":23,"w":26,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-right-walk.001":
+{
+	"frame": {"x":1,"y":43,"w":26,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":21,"w":26,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-right-walk.002":
+{
+	"frame": {"x":94,"y":85,"w":26,"h":40},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":23,"w":26,"h":40},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-right-walk.003":
+{
+	"frame": {"x":1,"y":43,"w":26,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":21,"w":26,"h":42},
+	"sourceSize": {"w":32,"h":64}
+},
+"aang-right":
+{
+	"frame": {"x":1,"y":43,"w":26,"h":42},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":21,"w":26,"h":42},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "aang.png",
+	"format": "RGBA8888",
+	"size": {"w":121,"h":128},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:326bd08773c15f96451706e4e33d6332:01cd4e388554d412b414daa3de67538d:825695e3b232fabe2f72b09d4a0662e8$"
+}
+}

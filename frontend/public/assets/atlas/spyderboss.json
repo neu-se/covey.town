@@ -1,0 +1,172 @@
+{"frames": {
+
+"spyderboss-back-walk.000":
+{
+	"frame": {"x":1,"y":52,"w":30,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":19,"w":30,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-back-walk.001":
+{
+	"frame": {"x":64,"y":51,"w":31,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":17,"w":31,"h":46},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-back-walk.002":
+{
+	"frame": {"x":33,"y":52,"w":29,"h":45},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":19,"w":29,"h":45},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-back-walk.003":
+{
+	"frame": {"x":64,"y":51,"w":31,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":17,"w":31,"h":46},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-back":
+{
+	"frame": {"x":64,"y":51,"w":31,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":17,"w":31,"h":46},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-front-walk.000":
+{
+	"frame": {"x":96,"y":1,"w":32,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":17,"w":32,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-front-walk.001":
+{
+	"frame": {"x":63,"y":1,"w":31,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":15,"w":31,"h":48},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-front-walk.002":
+{
+	"frame": {"x":97,"y":50,"w":32,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":17,"w":32,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-front-walk.003":
+{
+	"frame": {"x":63,"y":1,"w":31,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":15,"w":31,"h":48},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-front":
+{
+	"frame": {"x":63,"y":1,"w":31,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":15,"w":31,"h":48},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-left-walk.000":
+{
+	"frame": {"x":130,"y":1,"w":29,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":17,"w":29,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-left-walk.001":
+{
+	"frame": {"x":1,"y":1,"w":29,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":15,"w":29,"h":49},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-left-walk.002":
+{
+	"frame": {"x":131,"y":50,"w":29,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":17,"w":29,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-left-walk.003":
+{
+	"frame": {"x":1,"y":1,"w":29,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":15,"w":29,"h":49},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-left":
+{
+	"frame": {"x":1,"y":1,"w":29,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":15,"w":29,"h":49},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-right-walk.000":
+{
+	"frame": {"x":161,"y":1,"w":29,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":17,"w":29,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-right-walk.001":
+{
+	"frame": {"x":32,"y":1,"w":29,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":15,"w":29,"h":49},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-right-walk.002":
+{
+	"frame": {"x":162,"y":50,"w":29,"h":47},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":17,"w":29,"h":47},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-right-walk.003":
+{
+	"frame": {"x":32,"y":1,"w":29,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":15,"w":29,"h":49},
+	"sourceSize": {"w":32,"h":64}
+},
+"spyderboss-right":
+{
+	"frame": {"x":32,"y":1,"w":29,"h":49},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":15,"w":29,"h":49},
+	"sourceSize": {"w":32,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "spyderboss.png",
+	"format": "RGBA8888",
+	"size": {"w":192,"h":98},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:838668d06aed379d0218d5115d716c45:8bc2965ad2fc53b82c65f132a621b789:eec395c7587d17e88033f663a51e0a93$"
+}
+}

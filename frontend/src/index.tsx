@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Auth0Provider } from "@auth0/auth0-react";
-import {ApolloProvider, ApolloClient, InMemoryCache, gql} from '@apollo/client'
+import {ApolloProvider, ApolloClient, InMemoryCache} from '@apollo/client'
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';

@@ -3,6 +3,7 @@ import { CoveyTownsStore, CreateTownResponse, updateTown } from './CoveyTownsSto
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import db from '../database/knexfile';
+import { logUser, deleteUser, saveTown, unsaveTown } from '../database/databaseService';
 
 const mockCoveyListenerTownDestroyed = jest.fn();
 const mockCoveyListenerOtherFns = jest.fn();
@@ -24,15 +25,18 @@ function mockCoveyListener(): CoveyTownListener {
   };
 }
 
-async function createTownForTesting(friendlyNameToUse?: string, isPublic = false): Promise<CreateTownResponse> {
+async function createTownForTesting(friendlyNameToUse?: string, isPublic = false, creator = 'TEST_USER'): Promise<CreateTownResponse> {
   const friendlyName = friendlyNameToUse !== undefined ? friendlyNameToUse :
     `${isPublic ? 'Public' : 'Private'}TestingTown=${nanoid()}`;
   return CoveyTownsStore.getInstance().then((instance: CoveyTownsStore) =>
-    instance.createTown(friendlyName, isPublic, 'Guest'));
+    instance.createTown(friendlyName, isPublic, creator));
 }
 
 describe('CoveyTownsStore', () => {
-  beforeEach(() => {
+
+  beforeEach(async () => {
+    await logUser('TEST_USER');
+    await logUser('TEST_USER_2');
     mockCoveyListenerTownDestroyed.mockClear();
     mockCoveyListenerOtherFns.mockClear();
   });
@@ -41,6 +45,10 @@ describe('CoveyTownsStore', () => {
     const store2 = await CoveyTownsStore.getInstance();
     expect(store1)
       .toBe(store2);
+  });
+  afterEach(async () => {
+    await deleteUser('TEST_USER');
+    await deleteUser('TEST_USER_2');
   });
 
   afterAll(async () => {
@@ -407,6 +415,80 @@ describe('CoveyTownsStore', () => {
         instance.getTowns().then(publicTowns => 
           publicTowns.filter(townInfo => townInfo.friendlyName === townName || townInfo.coveyTownID === town.coveyTownController.coveyTownID)));
       expect(townsPostDelete.length)
+        .toBe(0);
+    });
+  });
+  describe('listSavedTowns', () => {
+    it('should list saved towns for given user', async () => {
+      const town = await createTownForTesting();
+      await saveTown('TEST_USER', town.coveyTownController.coveyTownID);
+      const towns = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER'));
+      expect(towns.length)
+        .toBe(1);
+      expect(towns[0].coveyTownID)
+        .toBe((await town).coveyTownController.coveyTownID);
+    });
+    it('should not list towns saved if given invalid user', async () => {
+      const town = await createTownForTesting();
+      await saveTown('TEST_USER', town.coveyTownController.coveyTownID);
+      const towns = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('INVALID_USER'));
+      expect(towns.length)
+        .toBe(0);
+    });
+    it('should not list towns for other valid user', async () => {
+      const townA = await createTownForTesting();
+      await saveTown('TEST_USER', townA.coveyTownController.coveyTownID);
+      const townB = await createTownForTesting('TEST_USER_2');
+      await saveTown('TEST_USER_2', townB.coveyTownController.coveyTownID);
+      const townsA = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER'));
+      expect(townsA.length)
+        .toBe(1);
+      expect(townsA[0].coveyTownID)
+        .toBe(townA.coveyTownController.coveyTownID);
+      const townsB = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER_2'));
+      expect(townsB.length)
+        .toBe(1);
+      expect(townsB[0].coveyTownID)
+        .toBe(townB.coveyTownController.coveyTownID);
+    });
+    it('should not list towns that were created by the user, but not saved', async () => {
+      const townA = await createTownForTesting();
+      const townsA = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER'));
+      expect(townsA.length)
+        .toBe(0);
+    });
+    it('should list towns created by one user, but saved by another', async () => {
+      const town = await createTownForTesting('TEST_USER_2');
+      await saveTown('TEST_USER', town.coveyTownController.coveyTownID);
+      const towns = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER'));
+      expect(towns.length)
+        .toBe(1);
+      expect(towns[0].coveyTownID)
+        .toBe(town.coveyTownController.coveyTownID);
+    });
+    it('should not include deleted towns', async () => {
+      const town = await createTownForTesting();
+      await saveTown('TEST_USER', town.coveyTownController.coveyTownID);
+      await CoveyTownsStore.getInstance().then(instance =>
+        instance.deleteTown(town.coveyTownController.coveyTownID, town.coveyTownPassword));
+      const towns = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER'));
+      expect(towns.length)
+        .toBe(0);
+    });
+    it('should not include unsaved towns', async () => {
+      const town = await createTownForTesting();
+      await saveTown('TEST_USER', town.coveyTownController.coveyTownID);
+      await unsaveTown('TEST_USER', town.coveyTownController.coveyTownID);
+      const towns = await CoveyTownsStore.getInstance().then(instance =>
+        instance.getSavedTowns('TEST_USER'));
+      expect(towns.length)
         .toBe(0);
     });
   });

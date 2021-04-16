@@ -3,6 +3,7 @@ import CoveyTownController from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
 import {
   AllTownResponse,
+  SavedTownListingInfo,
   getPublicTowns,
   getSavedTowns,
   getAllTowns,
@@ -14,6 +15,13 @@ import {
   TownListingInfo,
 } from '../database/databaseService';
 
+export type SavedCoveyTownList = {
+  friendlyName: string,
+  coveyTownID: string,
+  publicStatus: string,
+  currentOccupancy: number,
+  maximumOccupancy: number,
+}[];
 
 export type CreateTownResponse = {
   coveyTownController: CoveyTownController,
@@ -91,19 +99,23 @@ export class CoveyTownsStore {
     return response;
   }
 
-  async getSavedTowns(email: string): Promise<CoveyTownList> {
-    const savedTowns: TownListingInfo[] = await getSavedTowns(email);
-    const response: CoveyTownList = [];
+  async getSavedTowns(email: string): Promise<SavedCoveyTownList> {
+    const savedTowns: SavedTownListingInfo[] = await getSavedTowns(email);
+    const response: SavedCoveyTownList = [];
     savedTowns.forEach(town => {
       const { coveyTownID } = town;
       const controller = this.getControllerForTown(coveyTownID);
       if (controller) {
         const capacity = controller?.capacity;
         const occupancy = controller?.occupancy;
-
+        let publicStatus = 'private';
+        if (town.publicStatus) {
+          publicStatus = 'public';
+        }
         response.push({
           friendlyName: town.friendlyName,
           coveyTownID,
+          publicStatus,
           currentOccupancy: occupancy,
           maximumOccupancy: capacity,
         });
