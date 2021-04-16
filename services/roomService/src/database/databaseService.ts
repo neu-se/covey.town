@@ -28,21 +28,15 @@ export type TownListingInfo = {
   friendlyName: string,
 };
 
-export type SavedTownListingInfo = {
-  coveyTownID: string,
-  friendlyName: string,
-  publicStatus: boolean,
-};
-
 export type UserInfo = {
   email: string,
-  firstName: string,
-  lastName: string,
+  username: string,
+  nickname: string,
   currentAvatar: string,
 };
 
 // functions interacting with Users
-export async function logUser(email: string): Promise<void>  {
+export async function updateUser(email: string): Promise<void>  {
   let count = 0;
   await db('Users')
     .where('email', email)
@@ -54,9 +48,6 @@ export async function logUser(email: string): Promise<void>  {
     await db('Users')
       .insert({
         'email': email,
-        'currentAvatar': 'misa',
-        'firstName': '',
-        'lastName': '',
       });
   }
 }
@@ -66,20 +57,8 @@ export async function getAllUserInfo(email: string): Promise<UserInfo> {
     .where('email', email)
     .then((rows: any[]) => {
       const user = rows[0];
-      return { email: user.email, firstName: user.firstName, lastName: user.lastName, currentAvatar: user.currentAvatar };
+      return { email: user.email, username: user.username, nickname: user.nickname, currentAvatar: user.currentAvatar };
     });
-}
-
-export async function setUserNames(email: string, firstName?: string, lastName?: string): Promise<void> {
-  
-  if (firstName || lastName) {
-    await db('Users')
-      .where('email', email)
-      .update({
-        'firstName': firstName,
-        'lastName': lastName,
-      });
-  }
 }
 
 export async function deleteUser(email: string): Promise<void> {
@@ -193,29 +172,15 @@ export async function unsaveTown(user: string, townID: string): Promise<void> {
     .del();
 }
 
-// export async function getSavedTowns(user: string): Promise<SavedTownListingInfo[]> {
-//   return db('SavedTowns')
-//     .innerJoin('Towns', 'SavedTowns.coveyTownID', 'Towns.coveyTownID')
-//     .select('Towns.coveyTownID as townID', 'Towns.friendlyName as friendlyName', 'Towns.isPublicallyListed as publicStatus')
-//     .where('Savedtowns.userEmail', user)
-//     .then((returnedTowns: any[]) => {
-//       const townList: SavedTownListingInfo[] = [];
-//       returnedTowns.forEach(town => {
-//         townList.push({ coveyTownID: town.townID, friendlyName: town.friendlyName, publicStatus: town.publicStatus});
-//       });
-//       return townList;
-//     });
-// }
-
-export async function getSavedTowns(user: string): Promise<SavedTownListingInfo[]> {
-  return db('Towns')
-    .leftJoin('SavedTowns', 'Towns.coveyTownID', 'SavedTowns.coveyTownID')
-    .select('Towns.coveyTownID as townID', 'Towns.friendlyName as friendlyName', 'Towns.isPublicallyListed as publicStatus')
-    .where('SavedTowns.userEmail', user)
+export async function getSavedTowns(user: string): Promise<TownListingInfo[]> {
+  return db('SavedTowns')
+    .innerJoin('Towns', 'SavedTowns.coveyTownID', 'Towns.coveyTownID')
+    .select('Towns.coveyTownID as townID', 'Towns.friendlyName as friendlyName')
+    .where('Savedtowns.userEmail', user)
     .then((returnedTowns: any[]) => {
-      const townList: SavedTownListingInfo[] = [];
+      const townList: TownListingInfo[] = [];
       returnedTowns.forEach(town => {
-        townList.push({ coveyTownID: town.townID, friendlyName: town.friendlyName, publicStatus: town.publicStatus});
+        townList.push({ coveyTownID: town.townID, friendlyName: town.friendlyName });
       });
       return townList;
     });

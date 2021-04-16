@@ -1,3 +1,3 @@
-export default function foo(): void {
+export default function foo() {
     // return;
 }

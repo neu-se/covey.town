@@ -14,32 +14,29 @@ import {
   TableCaption,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
   useToast
 } from '@chakra-ui/react';
 import { useAuth0 } from "@auth0/auth0-react";
-import { BsFillInfoCircleFill } from 'react-icons/bs';
-import { User } from '@auth0/auth0-react/dist/auth-state';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
-import { CoveyTownInfo, CoveySavedTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
+import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
 }
 
-function getEmail(isAuthenticated: boolean, user: User): string {
+function getEmail(isAuthenticated: boolean, user: any): string {
   if (isAuthenticated) {
     return user.email;
   }
   return 'Guest';
 }
 
-function getDefaultUsername(isAuthenticated:boolean, user: User){
+function getDefaultUsername(isAuthenticated:boolean, user:any){
   if(!isAuthenticated) {
     return 'Guest';
   }
@@ -53,48 +50,22 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
-  const [savedTowns, setSavedTowns] = useState<CoveySavedTownInfo[]>();
   const { connect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
   const [userExists, setUserExists] = useState<boolean>(false);
 
-  const updateUser = useCallback(async() => {
+  const updateUser = () => {
+    // ISSUE-> user.email is undefined
+    // i tried with other user values and nothing seems to be defined
     if (!userExists && isAuthenticated && user) {
-
-      try {
-        await apiClient.logUser({ email: user.email });
-      } catch (err) {
-        toast({
-          title: 'apiClient.logUser failed',
-          description: err.toString(),
-          status: 'error'
-        })
-      }
+      apiClient.logUser({ email: user.email });
     }
     setUserExists(true);
-  }, [apiClient, isAuthenticated, toast, user, userExists]);
-
-  const updateSavedTownListings = useCallback(() => {
-    if (!userExists && isAuthenticated && user) {
-
-      apiClient.listSavedTowns({email: user.email})
-        .then((towns) => {
-          setSavedTowns(towns.towns
-            .sort((a, b) => b.currentOccupancy - a.currentOccupancy)
-          );
-        })
-        .catch((err) => {
-          toast({
-            title: 'Unable to get Saved Towns',
-            description: err.toString(),
-            status: 'error'
-          })
-      }) 
-    }
-  }, [apiClient, isAuthenticated, toast, user, userExists])
+  }
 
   const updateTownListings = useCallback(() => {
+    // console.log(apiClient);
     apiClient.listTowns()
       .then((towns) => {
         setCurrentPublicTowns(towns.towns
@@ -102,19 +73,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         );
       })
   }, [setCurrentPublicTowns, apiClient]);
-
   useEffect(() => {
+    updateUser();
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
     return () => {
       clearInterval(timer)
     };
   }, [updateTownListings]);
-
-  useEffect(() => {
-    updateUser();
-    updateSavedTownListings();
-  })
 
   const handleJoin = useCallback(async (coveyRoomID: string) => {
     try {
@@ -198,36 +164,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
-  let savedTownsComponent = <div>
-    <Box p="4" borderWidth="1px" borderRadius="lg">
-      <Stack align='center' direction="row">
-        <BsFillInfoCircleFill/> <Text fontSize="lg">To Use the Saved Towns Feature, Sign up or Log in! </Text>
-      </Stack>
-    </Box></div>;
-
-  if(isAuthenticated){
-
-    savedTownsComponent = (<div>
-      <Heading p="4" as="h4" size="md">Saved Towns</Heading>
-        <Box bg="#EBF8FF" maxH="500px" overflowY="scroll" borderWidth="1px" borderRadius="lg">
-          <Table>
-            <TableCaption placement="bottom">All Saved Towns</TableCaption>
-            <Thead><Tr><Th>Town Name</Th><Th>Town ID</Th><Th>Town Type</Th><Th>Activity</Th></Tr></Thead>
-            <Tbody>
-              {savedTowns?.map((town) => (
-                <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td
-                  role='cell'>{town.coveyTownID}</Td><Td role='cell'>{town.publicStatus}</Td>
-                  <Td role='cell'>{town.currentOccupancy}/{town.maximumOccupancy}
-                    <Button onClick={() => handleJoin(town.coveyTownID)}
-                            disabled={town.currentOccupancy >= town.maximumOccupancy}>Connect</Button></Td></Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      </div>
-      )
-  }
-
   return (
     <>
       <form>
@@ -284,14 +220,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               </Flex>
 
             </Box>
-            
-            <div>{savedTownsComponent}</div>
 
             <Heading p="4" as="h4" size="md">Select a public town to join</Heading>
             <Box maxH="500px" overflowY="scroll">
               <Table>
                 <TableCaption placement="bottom">Publicly Listed Towns</TableCaption>
-                <Thead><Tr><Th>Town Name</Th><Th>Town ID</Th><Th>Activity</Th></Tr></Thead>
+                <Thead><Tr><Th>Room Name</Th><Th>Room ID</Th><Th>Activity</Th></Tr></Thead>
                 <Tbody>
                   {currentPublicTowns?.map((town) => (
                     <Tr key={town.coveyTownID}><Td role='cell'>{town.friendlyName}</Td><Td

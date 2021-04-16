@@ -11,7 +11,6 @@ import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandle
 import { CoveyTownsStore } from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 import db from '../database/knexfile';
-import { logUser, deleteUser } from '../database/databaseService';
 
 jest.mock('./TwilioVideo');
 
@@ -32,14 +31,10 @@ function generateTestLocation(): UserLocation {
 }
 
 describe('CoveyTownController', () => {
-  beforeAll(async () => {
-    await logUser('TEST_USER');
-  });
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
   });
   afterAll(async () => {
-    await deleteUser('TEST_USER'   );
     await db.destroy();
   });
   it('constructor should set the coveyTownID property', () => { // Included in handout
@@ -154,7 +149,7 @@ describe('CoveyTownController', () => {
     beforeEach(async () => {
       const townName = `connectPlayerSocket tests ${nanoid()}`;
       testingTown = await CoveyTownsStore.getInstance().then(instance => 
-        instance.createTown(townName, false, 'TEST_USER').then(town => 
+        instance.createTown(townName, false, 'Guest').then(town => 
           town.coveyTownController));
       mockReset(mockSocket);
 
