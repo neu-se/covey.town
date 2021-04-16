@@ -6,7 +6,6 @@ import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
 import { UserLocation } from '../CoveyTypes';
-import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
@@ -170,7 +169,7 @@ describe('CoveyTownController', () => {
       const testingTown = await townStore.createTown(townName, false);
       mockReset(mockSocket);
       const player = new Player(nanoid(), 'test player');
-      const session = await testingTown.addPlayer(player);
+      await testingTown.addPlayer(player);
       TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, nanoid(), mockSocket);
       await townSubscriptionHandler(mockSocket);
       expect(mockSocket.disconnect).toBeCalledWith(true);
