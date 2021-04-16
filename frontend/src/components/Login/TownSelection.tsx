@@ -124,6 +124,8 @@ const TownSelection = ({ doLogin, test }: TownSelectionProps): JSX.Element => {
   const [gender, setGender] = useState<string>('');
   const [relationshipStatus, setRelationshipStatus] = useState<string>('');
   const [isPublic, setIsPublic] = useState<boolean>(false);
+  const hasuraUrl = process.env.REACT_APP_HASURA_USER;
+  const secret = process.env.REACT_APP_HASURA_SECRET;
 
   const updateUser = () => {
     // build the user object
@@ -139,12 +141,15 @@ const TownSelection = ({ doLogin, test }: TownSelectionProps): JSX.Element => {
     }
 
     // send the user object to patch
-    const updateUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId"
-    fetch(updateUrl, {
+    // const updateUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId";
+    if (hasuraUrl === undefined || secret === undefined) {
+      return;
+    }
+    fetch(`${hasuraUrl}/userId`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+        "x-hasura-admin-secret": secret
       },
       body: JSON.stringify(req),
     })
@@ -195,15 +200,18 @@ const TownSelection = ({ doLogin, test }: TownSelectionProps): JSX.Element => {
 
   useEffect(() => {
     if (user) {
-      const getUserUrl = "https://coveytown-g39.hasura.app/api/rest/user/userId";
+      console.log(hasuraUrl, secret)
+      if (hasuraUrl === undefined || secret === undefined) {
+        return;
+      }
       const data: GetUserByIdBody = {
         userId: user.sub
       }
-      fetch(getUserUrl, {
+      fetch(`${hasuraUrl}/userId`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+          "x-hasura-admin-secret": secret
         },
         body: JSON.stringify(data),
       })
@@ -224,12 +232,14 @@ const TownSelection = ({ doLogin, test }: TownSelectionProps): JSX.Element => {
               relationship_status: '',
               user_id: user.sub
             }
-            const createUserUrl = "https://coveytown-g39.hasura.app/api/rest/user";
-            fetch(createUserUrl, {
+            if (hasuraUrl === undefined || secret === undefined) {
+              return;
+            }
+            fetch(hasuraUrl, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+                "x-hasura-admin-secret": secret
               },
               body: JSON.stringify(req),
             })
@@ -259,7 +269,7 @@ const TownSelection = ({ doLogin, test }: TownSelectionProps): JSX.Element => {
           })
         })
     }
-  }, [user, toast])
+  }, [user, toast, hasuraUrl, secret])
 
   const updateTownListings = useCallback(() => {
     apiClient.listTowns()
@@ -502,15 +512,17 @@ const TownSelection = ({ doLogin, test }: TownSelectionProps): JSX.Element => {
   }
 
   const deleteUser = () => {
-    const deleteUrl = "https://coveytown-g39.hasura.app/api/rest/user"
     const req: DeleteUserByIdBody = {
       userId: user.sub
     }
-    fetch(deleteUrl, {
+    if (hasuraUrl === undefined || secret === undefined) {
+      return;
+    }
+    fetch(hasuraUrl, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "x-hasura-admin-secret": "YElV9O3QzdoLBLnB3DYk2RBuggi7Tn1DiOEqBKOdwbCZRlaA6yMHyuyZy6Vlj3av"
+        "x-hasura-admin-secret": secret
       },
       body: JSON.stringify(req),
     })
