@@ -63,8 +63,8 @@ export async function logUser(email: string): Promise<void>  {
       .insert({
         'email': email,
         'currentAvatar': 'misa',
-        'firstName': '',
-        'lastName': '',
+        'firstName': ' ',
+        'lastName': ' ',
       });
   }
 }
