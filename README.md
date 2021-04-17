@@ -12,6 +12,17 @@ The frontend implements video chat using the [Twilio Programmable Video](https:/
 
 A backend service (in the `services/roomService` directory) implements the application logic: tracking which "towns" are available to be joined, and the state of each of those towns.
 
+---
+
+## Running Covey.Town Games
+
+- [Public Github repository](https://github.com/mirandaday16/covey.town)
+- [Backend deployed on Heroku](https://covey-town-games.herokuapp.com/)
+- [Frontend deployed on Netlify](https://covey-town-games.netlify.app/)
+- _No additional setup required!_
+
+---
+
 ## Running this app locally
 
 Running the application locally entails running both the backend service and a frontend.
