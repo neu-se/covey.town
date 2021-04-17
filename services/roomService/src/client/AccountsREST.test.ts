@@ -4,8 +4,7 @@ import http from 'http';
 import { AddressInfo } from 'net';
 import addAccountRoutes from '../router/accounts';
 
-import CoveyServicesClient, { ResetUserRequest, GetUserResponse, JoinedTown, SaveUserRequest, DeleteUserRequest } from './CoveyServicesClient';
-import { GetUserRequest } from '../requestHandlers/AccountRequestHandlers';
+import CoveyServicesClient, { GetUserResponse, JoinedTown, SaveUserRequest } from './CoveyServicesClient';
 
 /**
  * Example data for Joined towns 
@@ -58,69 +57,19 @@ const tatiSaveUser: SaveUserRequest = {
   towns: [town1, town2, town3],
 };
 
-const jeminUserIDSaveUser: SaveUserRequest = {
-  userID: 'jay',
-};
-
 /**
- * Example data for GetUserRequest
+ * Example data for userID of users
  */
-const jeminGetUser: GetUserRequest = {
-  userID: 'jemin',
-};
+const jeminUserID = { userID: 'jemin' };
 
-const tatiGetUser: GetUserRequest = {
-  userID: 'tatiana',
-};
+const tatiUserID = { userID: 'tatiana' };
 
-const johnGetUser: GetUserRequest = {
-  userID: 'john',
-};
+const johnUserID = { userID: 'john' };
 
-const jeminUserIDGetUser: GetUserRequest = {
-  userID: 'jay',
-};
-
-/**
- * Example data for ResetUserRequest
- */
-const jeminResetUser: ResetUserRequest = {
-  userID: 'jemin',
-};
-
-const tatiResetUser: ResetUserRequest = {
-  userID: 'tatiana',
-};
-
-const johnResetUser: ResetUserRequest = {
-  userID: 'john',
-};
-
-const jeminUserIDResetUser: ResetUserRequest = {
-  userID: 'jay',
-};
+const jayUserID = { userID: 'jay' };
 
 /**
  * Example data for DeleteUserRequest
- */
-const jeminDeleteUser: DeleteUserRequest = {
-  userID: 'jemin',
-};
-
-const tatiDeleteUser: DeleteUserRequest = {
-  userID: 'tatiana',
-};
-
-const johnDeleteUser: DeleteUserRequest = {
-  userID: 'john',
-};
-
-const jeminUserIDDeleteUser: DeleteUserRequest = {
-  userID: 'jay',
-};
-
-/**
- * example data for return of GetUserResponse
  */
 const jeminUserResponse: GetUserResponse = {
   userID: 'jay',
@@ -155,11 +104,10 @@ describe('AccountsServicesAPIREST', () => {
       try {
         await apiClient.saveUser(jeminSaveUser);
 
-        const getUserResult = await apiClient.getUser(jeminGetUser);
+        const getUserResult = await apiClient.getUser(jeminUserID);
         expect(getUserResult).toStrictEqual(jeminSaveUser);
 
-        await apiClient.resetUser(jeminResetUser);
-        await apiClient.deleteUser(jeminDeleteUser);
+        await apiClient.deleteUser(jeminUserID);
       } catch (err){
         // shouldn't fail here
         fail(err.toString());
@@ -169,11 +117,10 @@ describe('AccountsServicesAPIREST', () => {
       try {
         await apiClient.saveUser(johnSaveUser);
 
-        const getUserResult = await apiClient.getUser(johnGetUser);
+        const getUserResult = await apiClient.getUser(johnUserID);
         expect(getUserResult).toStrictEqual(johnSaveUser);
 
-        await apiClient.resetUser(johnResetUser);
-        await apiClient.deleteUser(johnDeleteUser);
+        await apiClient.deleteUser(johnUserID);
       } catch (err) {
         // shouldn't fail here
         fail(err.toString());
@@ -183,11 +130,10 @@ describe('AccountsServicesAPIREST', () => {
       try {
         await apiClient.saveUser(tatiSaveUser);
 
-        const getUserResult = await apiClient.getUser(tatiGetUser);
+        const getUserResult = await apiClient.getUser(tatiUserID);
         expect(getUserResult).toStrictEqual(tatiSaveUser);
 
-        await apiClient.resetUser(tatiResetUser);
-        await apiClient.deleteUser(tatiDeleteUser);
+        await apiClient.deleteUser(tatiUserID);
       } catch (err) {
         // shouldn't fail here
         fail(err.toString());
@@ -195,13 +141,12 @@ describe('AccountsServicesAPIREST', () => {
     });
     it('Allows and retrieves user created with just userID', async () => {
       try {
-        await apiClient.saveUser(jeminUserIDSaveUser);
+        await apiClient.saveUser(jayUserID);
 
-        const getUserResult = await apiClient.getUser(jeminUserIDGetUser);
+        const getUserResult = await apiClient.getUser(jayUserID);
         expect(getUserResult).toStrictEqual(jeminUserResponse);
 
-        await apiClient.resetUser(jeminUserIDResetUser);
-        await apiClient.deleteUser(jeminUserIDDeleteUser);
+        await apiClient.deleteUser(jayUserID);
       } catch (err) {
         // shouldn't fail here
         fail(err.toString());

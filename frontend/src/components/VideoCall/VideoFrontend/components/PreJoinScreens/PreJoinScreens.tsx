@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Heading, Text } from '@chakra-ui/react';
+import { Heading, Text, useToast } from '@chakra-ui/react';
 import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import Registration from '../../../../Login/Registration';
@@ -20,18 +20,13 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
     setLoggedIn(auth0.isAuthenticated);
   }
 
-  async function updateUserInfo(userID: string) {
-    const getResponse = await apiClient.getUser({ userID });
-    setUserInfo(getResponse as UserInfo);
-  }
-
   async function saveUserInfo(request: SaveUserRequest) {
     try {
       await apiClient.saveUser(request);
-      updateUserInfo(request.userID);
-    } catch (err) {
-      console.log(err.toString());
-      // Do nothing
+      const getResponse = await apiClient.getUser({ userID: request.userID });
+      setUserInfo(getResponse as UserInfo);
+    } catch {
+      // do nothing
     }
   }
 

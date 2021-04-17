@@ -39,11 +39,12 @@ export default function Registration({ auth0, setUserInfo }: RegistrationProps):
         return <div>Authentication Loading ...</div>;
     }
 
-    const deleteAccountHandler = async (userID: string) => {
+    const resetAccountHandler = async (userID: string) => {
       try {
         await apiClient.resetUser({ userID });
         toast({
-          title: 'Successfully cleared account preferences.',
+          title: 'Successfully reset account preferences to default.',
+          description: 'You will now be muted, will not show video, and have no username by default.',
           status: 'success',
         });
         const getResponse = await apiClient.getUser({ userID });
@@ -75,7 +76,7 @@ export default function Registration({ auth0, setUserInfo }: RegistrationProps):
               <Button
                 className={classes.deleteAccountButton}
                 onClick={() => {
-                  deleteAccountHandler(auth0.user.sub);
+                  resetAccountHandler(auth0.user.sub);
                 }}>
                   Reset Settings
               </Button>
