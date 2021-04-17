@@ -1,12 +1,10 @@
 import dotenv from 'dotenv';
+import { Client } from 'pg';
 import { JoinedTown } from '../AccountTypes';
 
-// eslint-disable-next-line
-const { Client } = require('pg');
-
-dotenv.config();
+const config = dotenv.config();
 const client = new Client({
-  connectionString: process.env.DATABASE_CONNECTION_STRING,
+  connectionString: process.env.DATABASE_CONNECTION_STRING || config.parsed?.DATABASE_CONNECTION_STRING,
   ssl: {
     rejectUnauthorized: false,
   },
