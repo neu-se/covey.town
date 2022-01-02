@@ -51,9 +51,13 @@ const TownSettings: React.FunctionComponent = () => {
         })
         closeSettings();
       }catch(err){
+        let msg = "Unknown error";
+        if(err instanceof Error){
+          msg = err.toString();
+        } 
         toast({
           title: 'Unable to delete town',
-          description: err.toString(),
+          description: msg,
           status: 'error'
         });
       }
@@ -72,9 +76,13 @@ const TownSettings: React.FunctionComponent = () => {
         })
         closeSettings();
       }catch(err){
+        let msg = "Unknown error";
+        if(err instanceof Error){
+          msg = err.toString();
+        } 
         toast({
           title: 'Unable to update town',
-          description: err.toString(),
+          description: msg,
           status: 'error'
         });
       }
