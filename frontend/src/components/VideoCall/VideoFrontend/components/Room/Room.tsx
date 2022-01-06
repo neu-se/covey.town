@@ -1,43 +1,59 @@
-import React, { useMemo } from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import React from 'react';
 import clsx from 'clsx';
+import { makeStyles, Theme } from '@material-ui/core';
+import ChatWindow from '../ChatWindow/ChatWindow';
 import ParticipantList from '../ParticipantList/ParticipantList';
 import MainParticipant from '../MainParticipant/MainParticipant';
-import usePresenting from '../VideoProvider/usePresenting/usePresenting';
-import { useAppState } from '../../state';
+import BackgroundSelectionDialog from '../BackgroundSelectionDialog/BackgroundSelectionDialog';
+import useChatContext from '../../hooks/useChatContext/useChatContext';
+import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 
-type StyleProps = {
-  preferredMode: 'sidebar' | 'fullwidth';
-  presenting: 'presenting' | 'not presenting';
-};
-
-const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
-  container: (props) => ({
-    position: 'relative',
+const useStyles = makeStyles((theme: Theme) => {
+  const totalMobileSidebarHeight = `${theme.sidebarMobileHeight +
+    theme.sidebarMobilePadding * 2 +
+    theme.participantBorderWidth}px`;
+  // return {
+  //   container: {
+  //     position: 'relative',
+  //     height: '100%',
+  //     display: 'grid',
+  //     gridTemplateColumns: `1fr ${theme.sidebarWidth}px`,
+  //     gridTemplateRows: '100%',
+  //     [theme.breakpoints.down('sm')]: {
+  //       gridTemplateColumns: `100%`,
+  //       gridTemplateRows: `calc(100% - ${totalMobileSidebarHeight}) ${totalMobileSidebarHeight}`,
+  //     },
+  //   },
+  //   rightDrawerOpen: { gridTemplateColumns: `1fr ${theme.sidebarWidth}px ${theme.rightDrawerWidth}px` },
+  // };
+    return {container: (props) => ({    position: 'relative',
     height: '100%',
     display: 'grid',
-    gridTemplateColumns:
-            props.preferredMode === 'sidebar' && props.presenting === 'not presenting'
-              ? '1fr'
-              : `1fr ${theme.sidebarWidth}px`,
+    gridTemplateColumns: `1fr ${theme.sidebarWidth}px`,
     gridTemplateRows: '100%',
     [theme.breakpoints.down('sm')]: {
       gridTemplateColumns: '100%',
-      gridTemplateRows: `1fr ${theme.sidebarMobileHeight + 26}px`,
+      // gridTemplateRows: `1fr ${theme.sidebarMobileHeight + 26}px`,
+      gridTemplateRows: `calc(100% - ${totalMobileSidebarHeight}) ${totalMobileSidebarHeight}`,
       overflow: 'auto',
     },
-  }),
-}));
+  }), rightDrawerOpen: { gridTemplateColumns: `1fr ${theme.sidebarWidth}px ${theme.rightDrawerWidth}px` },}
+});
 
 export default function Room() {
-  const { preferredMode } = useAppState();
-  const presenting = usePresenting();
-  const classes = useStyles({ preferredMode, presenting });
-
+  const classes = useStyles();
+  const { isChatWindowOpen } = useChatContext();
+  const { isBackgroundSelectionOpen } = useVideoContext();
   return (
-    <div className={clsx(classes.container)}>
-      {presenting === 'presenting' ? <MainParticipant /> : <></>}
-      <ParticipantList gridView={presenting === 'not presenting'} />
+    <div
+      className={clsx(classes.container, {
+        [classes.rightDrawerOpen]: isChatWindowOpen || isBackgroundSelectionOpen,
+      })}
+    >
+      {/* <MainParticipant /> */}
+      <ParticipantList />
+      <ChatWindow />
+      <BackgroundSelectionDialog />
     </div>
   );
 }

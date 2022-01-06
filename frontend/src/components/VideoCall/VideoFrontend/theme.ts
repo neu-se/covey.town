@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 
-declare module '@material-ui/core/styles/createMuiTheme' {
+declare module '@material-ui/core/styles/createTheme' {
   interface Theme {
     sidebarWidth: number;
     sidebarMobileHeight: number;
@@ -8,6 +8,9 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     footerHeight: number;
     mobileTopBarHeight: number;
     mobileFooterHeight: number;
+    sidebarMobilePadding: number;
+    participantBorderWidth: number;
+    rightDrawerWidth: number;
   }
 
   // allow configuration using `createMuiTheme`
@@ -18,13 +21,23 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     footerHeight: number;
     mobileTopBarHeight: number;
     mobileFooterHeight: number;
+    sidebarMobilePadding: number;
+    participantBorderWidth: number;
+    rightDrawerWidth?: number;
   }
 }
 
-const defaultTheme = createMuiTheme();
+const defaultTheme = createTheme();
 
-export default (highlightColour: string) => createMuiTheme({
+export default createTheme({
   overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        'html, body, #root': {
+          height: '100%',
+        },
+      },
+    },
     MuiButton: {
       root: {
         borderRadius: '4px',
@@ -94,27 +107,21 @@ export default (highlightColour: string) => createMuiTheme({
       },
     },
   },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-    },
-  },
   typography: {
     fontFamily: 'Inter, sans-serif',
   },
   palette: {
     primary: {
-      main: highlightColour,
+      main: '#027AC5',
     },
   },
-  brand: highlightColour,
+  brand: '#E22525',
   footerHeight: 72,
   mobileFooterHeight: 56,
-  sidebarWidth: 355,
+  sidebarWidth: 300,
   sidebarMobileHeight: 90,
+  sidebarMobilePadding: 8,
+  participantBorderWidth: 2,
   mobileTopBarHeight: 52,
+  rightDrawerWidth: 320,
 });

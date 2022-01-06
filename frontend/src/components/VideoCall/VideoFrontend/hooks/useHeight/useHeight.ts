@@ -14,5 +14,5 @@ export default function useHeight() {
     };
   });
 
-  return `${height}px`;
+  return height + 'px';
 }

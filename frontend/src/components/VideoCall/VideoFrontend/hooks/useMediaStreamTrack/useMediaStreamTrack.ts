@@ -21,7 +21,6 @@ export default function useMediaStreamTrack(track?: AudioTrack | VideoTrack) {
         track.off('started', handleStarted);
       };
     }
-    return () => { };
   }, [track]);
 
   return mediaStreamTrack;

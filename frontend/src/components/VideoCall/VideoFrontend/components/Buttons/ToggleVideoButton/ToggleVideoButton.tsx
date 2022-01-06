@@ -4,40 +4,29 @@ import Button from '@material-ui/core/Button';
 import VideoOffIcon from '../../../icons/VideoOffIcon';
 import VideoOnIcon from '../../../icons/VideoOnIcon';
 
-import { useHasVideoInputDevices } from '../../../hooks/deviceHooks/deviceHooks';
+import useDevices from '../../../hooks/useDevices/useDevices';
 import useLocalVideoToggle from '../../../hooks/useLocalVideoToggle/useLocalVideoToggle';
 
-export default function ToggleVideoButton(props: {
-  disabled?: boolean;
-  className?: string;
-  setMediaError?(error: Error): void;
-}) {
-  // @ts-ignore
-  const { isEnabled: isVideoEnabled, toggleVideoEnabled } = useLocalVideoToggle();
+export default function ToggleVideoButton(props: { disabled?: boolean; className?: string }) {
+  const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const lastClickTimeRef = useRef(0);
-  const hasVideoDevices = useHasVideoInputDevices();
+  const { hasVideoInputDevices } = useDevices();
 
-  const toggleVideo = useCallback(async () => {
-    if (Date.now() - lastClickTimeRef.current > 200) {
+  const toggleVideo = useCallback(() => {
+    if (Date.now() - lastClickTimeRef.current > 500) {
       lastClickTimeRef.current = Date.now();
-      try {
-        await toggleVideoEnabled();
-      } catch (e) {
-        if (props.setMediaError) {
-          props.setMediaError(e);
-        }
-      }
+      toggleVideoEnabled();
     }
-  }, [props, toggleVideoEnabled]);
+  }, [toggleVideoEnabled]);
 
   return (
     <Button
       className={props.className}
       onClick={toggleVideo}
-      disabled={!hasVideoDevices || props.disabled}
+      disabled={!hasVideoInputDevices || props.disabled}
       startIcon={isVideoEnabled ? <VideoOnIcon /> : <VideoOffIcon />}
     >
-      {!hasVideoDevices ? 'No video devices' : isVideoEnabled ? 'Stop Video' : 'Start Video'}
+      {!hasVideoInputDevices ? 'No Video' : isVideoEnabled ? 'Stop Video' : 'Start Video'}
     </Button>
   );
 }

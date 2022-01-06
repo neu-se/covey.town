@@ -1,7 +1,8 @@
 import React from 'react';
-import { makeStyles, Theme, Typography } from '@material-ui/core';
 import AvatarIcon from '../../../../icons/AvatarIcon';
+import { makeStyles, Theme, Typography } from '@material-ui/core';
 import LocalAudioLevelIndicator from '../../../LocalAudioLevelIndicator/LocalAudioLevelIndicator';
+import { LocalVideoTrack } from 'twilio-video';
 import VideoTrack from '../../../VideoTrack/VideoTrack';
 import useVideoContext from '../../../../hooks/useVideoContext/useVideoContext';
 
@@ -54,7 +55,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function LocalVideoPreview({ identity }: { identity: string }) {
   const classes = useStyles();
-  const { localVideoTrack: videoTrack } = useVideoContext();
+  const { localTracks } = useVideoContext();
+
+  const videoTrack = localTracks.find(
+    track => !track.name.includes('screen') && track.kind === 'video'
+  ) as LocalVideoTrack;
 
   return (
     <div className={classes.container}>

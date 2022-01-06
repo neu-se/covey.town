@@ -1,18 +1,14 @@
-import React, { useCallback } from 'react';
-import { Grid, Hidden, makeStyles, Theme, } from '@material-ui/core';
-import { useForm } from 'react-hook-form';
-import { Button, FormControl, FormErrorMessage, FormLabel, Input, useToast, } from '@chakra-ui/react';
-import assert from 'assert';
+import React from 'react';
+import { makeStyles, Typography, Grid, Button, Theme, Hidden } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import LocalVideoPreview from './LocalVideoPreview/LocalVideoPreview';
 import SettingsMenu from './SettingsMenu/SettingsMenu';
+import { Steps } from '../PreJoinScreens';
 import ToggleAudioButton from '../../Buttons/ToggleAudioButton/ToggleAudioButton';
 import ToggleVideoButton from '../../Buttons/ToggleVideoButton/ToggleVideoButton';
 import { useAppState } from '../../../state';
+import useChatContext from '../../../hooks/useChatContext/useChatContext';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import { VideoRoom } from '../../../../../../CoveyTypes';
-
-import Video from '../../../../../../classes/Video/Video';
-import { TownJoinResponse } from '../../../../../../classes/TownsServiceClient';
 
 const useStyles = makeStyles((theme: Theme) => ({
   gutterBottom: {
@@ -22,13 +18,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: '1em',
   },
   deviceButton: {
-    color: 'black',
     width: '100%',
     border: '2px solid #aaa',
     margin: '1em 0',
-    '&:hover': {
-      color: 'black',
-    },
   },
   localPreviewContainer: {
     paddingRight: '2em',
@@ -61,57 +53,37 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface DeviceSelectionScreenProps {
-  setMediaError?(error: Error): void;
 }
 
-export default function DeviceSelectionScreen({ setMediaError }: DeviceSelectionScreenProps) {
+export default function DeviceSelectionScreen({ }: DeviceSelectionScreenProps) {
   const classes = useStyles();
   const { getToken, isFetching } = useAppState();
-  const {
-    connect, isAcquiringLocalTracks, isConnecting, localAudioTrack, localVideoTrack,
-  } = useVideoContext();
+  const { connect: chatConnect } = useChatContext();
+  const { connect: videoConnect, isAcquiringLocalTracks, isConnecting } = useVideoContext();
   const disableButtons = isFetching || isAcquiringLocalTracks || isConnecting;
-  const {
-    handleSubmit, errors, register, formState,
-  } = useForm();
+
 
   return (
     <>
-      <Grid container justify="center" aria-label="join video room form">
+      <Grid container justifyContent="center">
         <Grid item md={7} sm={12} xs={12}>
           <div className={classes.localPreviewContainer}>
-            <LocalVideoPreview identity="" />
+            <LocalVideoPreview identity="You" />
           </div>
           <div className={classes.mobileButtonBar}>
             <Hidden mdUp>
-              <ToggleAudioButton
-                className={classes.mobileButton}
-                disabled={disableButtons}
-                setMediaError={setMediaError}
-              />
-              <ToggleVideoButton
-                className={classes.mobileButton}
-                disabled={disableButtons}
-                setMediaError={setMediaError}
-              />
+              <ToggleAudioButton className={classes.mobileButton} disabled={disableButtons} />
+              <ToggleVideoButton className={classes.mobileButton} disabled={disableButtons} />
             </Hidden>
             <SettingsMenu mobileButtonClass={classes.mobileButton} />
           </div>
         </Grid>
         <Grid item md={5} sm={12} xs={12}>
-          <Grid container direction="column" justify="space-between" style={{ height: '100%' }}>
+          <Grid container direction="column" justifyContent="space-between" style={{ height: '100%' }}>
             <div>
               <Hidden smDown>
-                <ToggleAudioButton
-                  className={classes.deviceButton}
-                  disabled={disableButtons}
-                  setMediaError={setMediaError}
-                />
-                <ToggleVideoButton
-                  className={classes.deviceButton}
-                  disabled={disableButtons}
-                  setMediaError={setMediaError}
-                />
+                <ToggleAudioButton className={classes.deviceButton} disabled={disableButtons} />
+                <ToggleVideoButton className={classes.deviceButton} disabled={disableButtons} />
               </Hidden>
             </div>
           </Grid>

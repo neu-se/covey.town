@@ -6,9 +6,7 @@ export default function PinIcon() {
   return (
     <Tooltip title="Participant is pinned. Click to un-pin." placement="top">
       <SvgIcon
-        style={{
-          float: 'right', background: 'rgba(0, 0, 0, 0.5)', padding: '0.1em', boxSizing: 'content-box',
-        }}
+        style={{ float: 'right', background: 'rgba(0, 0, 0, 0.5)', padding: '0.1em', boxSizing: 'content-box' }}
         width="26"
         height="26"
         viewBox="0 0 26 26"

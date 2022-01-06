@@ -1,14 +1,12 @@
-import React, { useCallback, useState } from 'react';
-import {
-  FormControl, MenuItem, Typography, Select,
-} from '@material-ui/core';
+import React, { useState } from 'react';
+import { DEFAULT_VIDEO_CONSTRAINTS, SELECTED_VIDEO_INPUT_KEY } from '../../../constants';
+import { FormControl, MenuItem, Typography, Select } from '@material-ui/core';
+import { LocalVideoTrack } from 'twilio-video';
 import { makeStyles } from '@material-ui/core/styles';
-import { DEFAULT_VIDEO_CONSTRAINTS } from '../../../constants';
 import VideoTrack from '../../VideoTrack/VideoTrack';
+import useDevices from '../../../hooks/useDevices/useDevices';
 import useMediaStreamTrack from '../../../hooks/useMediaStreamTrack/useMediaStreamTrack';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import { useVideoInputDevices } from '../../../hooks/deviceHooks/deviceHooks';
-import LocalStorage_TwilioVideo from '../../../../../../classes/LocalStorage/TwilioVideo';
 
 const useStyles = makeStyles({
   preview: {
@@ -23,27 +21,25 @@ const useStyles = makeStyles({
 
 export default function VideoInputList() {
   const classes = useStyles();
-  const videoInputDevices = useVideoInputDevices();
-  const { localVideoTrack } = useVideoContext();
-  const mediaStreamTrack = useMediaStreamTrack(localVideoTrack);
-  const localVideoInputDeviceId = mediaStreamTrack?.getSettings().deviceId;
-  const [lastVideoDeviceId, _setLastVideoDeviceId] = useState<string | null>(
-    LocalStorage_TwilioVideo.twilioVideoLastCamera,
-  );
+  const { videoInputDevices } = useDevices();
+  const { localTracks } = useVideoContext();
 
-  const setLastVideoDeviceId = useCallback((deviceId: string | null) => {
-    LocalStorage_TwilioVideo.twilioVideoLastCamera = deviceId;
-    _setLastVideoDeviceId(deviceId);
-  }, []);
+  const localVideoTrack = localTracks.find(track => track.kind === 'video') as LocalVideoTrack | undefined;
+  const mediaStreamTrack = useMediaStreamTrack(localVideoTrack);
+  const [storedLocalVideoDeviceId, setStoredLocalVideoDeviceId] = useState(
+    window.localStorage.getItem(SELECTED_VIDEO_INPUT_KEY)
+  );
+  const localVideoInputDeviceId = mediaStreamTrack?.getSettings().deviceId || storedLocalVideoDeviceId;
 
   function replaceTrack(newDeviceId: string) {
-    setLastVideoDeviceId(newDeviceId);
-    if (localVideoTrack) {
-      localVideoTrack.restart({
-        ...(DEFAULT_VIDEO_CONSTRAINTS as {}),
-        deviceId: { exact: newDeviceId },
-      });
-    }
+    // Here we store the device ID in the component state. This is so we can re-render this component display
+    // to display the name of the selected device when it is changed while the users camera is off.
+    setStoredLocalVideoDeviceId(newDeviceId);
+    window.localStorage.setItem(SELECTED_VIDEO_INPUT_KEY, newDeviceId);
+    localVideoTrack?.restart({
+      ...(DEFAULT_VIDEO_CONSTRAINTS as {}),
+      deviceId: { exact: newDeviceId },
+    });
   }
 
   return (
@@ -59,11 +55,11 @@ export default function VideoInputList() {
             Video Input
           </Typography>
           <Select
-            onChange={(e) => replaceTrack(e.target.value as string)}
-            value={localVideoInputDeviceId || lastVideoDeviceId}
+            onChange={e => replaceTrack(e.target.value as string)}
+            value={localVideoInputDeviceId || ''}
             variant="outlined"
           >
-            {videoInputDevices.map((device) => (
+            {videoInputDevices.map(device => (
               <MenuItem value={device.deviceId} key={device.deviceId}>
                 {device.label}
               </MenuItem>

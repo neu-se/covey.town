@@ -1,6 +1,8 @@
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
 
+
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["pauseGame", "unPauseGame"] }] */
 export default class Video {
   private static video: Video | null = null;
 

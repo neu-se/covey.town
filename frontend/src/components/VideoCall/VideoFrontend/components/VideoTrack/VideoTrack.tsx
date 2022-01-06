@@ -1,15 +1,13 @@
 import React, { useRef, useEffect } from 'react';
+import { IVideoTrack } from '../../types';
 import { styled } from '@material-ui/core/styles';
 import { Track } from 'twilio-video';
-import { IVideoTrack } from '../../types';
 import useMediaStreamTrack from '../../hooks/useMediaStreamTrack/useMediaStreamTrack';
 import useVideoTrackDimensions from '../../hooks/useVideoTrackDimensions/useVideoTrackDimensions';
 
 const Video = styled('video')({
-  maxWidth: '100%',
-  maxHeight: '100%',
   width: '100%',
-  objectFit: 'contain',
+  height: '100%',
 });
 
 interface VideoTrackProps {
@@ -33,6 +31,11 @@ export default function VideoTrack({ track, isLocal, priority }: VideoTrackProps
     track.attach(el);
     return () => {
       track.detach(el);
+
+      // This addresses a Chrome issue where the number of WebMediaPlayers is limited.
+      // See: https://github.com/twilio/twilio-video.js/issues/1528
+      el.srcObject = null;
+
       if (track.setPriority && priority) {
         // Passing `null` to setPriority will set the track's priority to that which it was published with.
         track.setPriority(null);

@@ -1,20 +1,17 @@
-import React, { useState } from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Participant from '../Participant/Participant';
+import React from 'react';
+import useNearbyPlayers from '../../../../../hooks/useNearbyPlayers';
 import useMainParticipant from '../../hooks/useMainParticipant/useMainParticipant';
 import useParticipants, { ParticipantWithSlot } from '../../hooks/useParticipants/useParticipants';
-import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
-import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import useScreenShareParticipant from '../../hooks/useScreenShareParticipant/useScreenShareParticipant';
-import { UserProfile } from '../../../../../CoveyTypes';
+import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
+import Participant from '../Participant/Participant';
+import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 
-import useNearbyPlayers from '../../../../../hooks/useNearbyPlayers';
-
-function useStyles(width: 'sidebar' | 'fullwidth') {
-  return makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
     container: {
-      padding: '2em',
       overflowY: 'auto',
       background: 'rgb(79, 83, 85)',
       gridArea: '1 / 2 / 1 / 3',
@@ -24,14 +21,21 @@ function useStyles(width: 'sidebar' | 'fullwidth') {
         overflowY: 'initial',
         overflowX: 'auto',
         display: 'flex',
-        padding: '8px',
       },
     },
     transparentBackground: {
       background: 'transparent',
     },
     scrollContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    innerScrollContainer: {
+      width: `calc(${theme.sidebarWidth}px - 3em)`,
+      padding: '1.5em 0',
       [theme.breakpoints.down('sm')]: {
+        width: 'auto',
+        padding: `${theme.sidebarMobilePadding}px`,
         display: 'flex',
       },
     },
@@ -45,35 +49,62 @@ function useStyles(width: 'sidebar' | 'fullwidth') {
     },
     gridInnerContainer: {
       display: 'grid',
-      gridTemplateColumns: width === 'sidebar' ? '1fr' : '1fr 1fr 1fr 1fr',
+      gridTemplateColumns: '1fr 1fr 1fr 1fr',
       gridAutoRows: '1fr',
       [theme.breakpoints.down('md')]: {
-        gridTemplateColumns: width === 'sidebar' ? '1fr' : '1fr 1fr 1fr',
+        gridTemplateColumns: '1fr 1fr 1fr',
       },
       [theme.breakpoints.down('sm')]: {
-        gridTemplateColumns: width === 'sidebar' ? '1fr' : '1fr 1fr',
+        gridTemplateColumns: '1fr 1fr',
       },
       [theme.breakpoints.down('xs')]: {
         gridTemplateColumns: '1fr',
       },
     },
-  }))();
-}
+  })
+);
 
-export default function ParticipantList(props: { gridView: boolean }) {
-  const {
-    room: { localParticipant },
-  } = useVideoContext();
+export default function ParticipantList() {
+  // const classes = useStyles();
+  const { room } = useVideoContext();
+  const localParticipant = room!.localParticipant;
   const participants = useParticipants();
   const [selectedParticipant, setSelectedParticipant] = useSelectedParticipant();
   const screenShareParticipant = useScreenShareParticipant();
   const mainParticipant = useMainParticipant();
   const { nearbyPlayers } = useNearbyPlayers();
-
-  // const { preferredMode, highlightedProfiles } = useAppState();
-  // const classes = useStyles(preferredMode);
+  const isRemoteParticipantScreenSharing = screenShareParticipant && screenShareParticipant !== localParticipant;
 
   const classes = useStyles('fullwidth');
+  // if (participants.length === 0) return null; // Don't render this component if there are no remote participants.
+
+  // return (
+  //   <aside
+  //     className={clsx(classes.container, {
+  //       [classes.transparentBackground]: !isRemoteParticipantScreenSharing,
+  //     })}
+  //   >
+  //     <div className={classes.scrollContainer}>
+  //       <div className={classes.innerScrollContainer}>
+  //         <Participant participant={localParticipant} isLocalParticipant={true} />
+  //         {participants.map(participant => {
+  //           const isSelected = participant === selectedParticipant;
+  //           const hideParticipant =
+  //             participant === mainParticipant && participant !== screenShareParticipant && !isSelected;
+  //           return (
+  //             <Participant
+  //               key={participant.sid}
+  //               participant={participant}
+  //               isSelected={participant === selectedParticipant}
+  //               onClick={() => setSelectedParticipant(participant)}
+  //               hideParticipant={hideParticipant}
+  //             />
+  //           );
+  //         })}
+  //       </div>
+  //     </div>
+  //   </aside>
+  // );
 
   function participantSorter(x: ParticipantWithSlot, y: ParticipantWithSlot): number {
     return x.slot < y.slot ? -1 : x.slot === y.slot ? 0 : 1;
@@ -84,7 +115,7 @@ export default function ParticipantList(props: { gridView: boolean }) {
       <Participant
         participant={localParticipant}
         isLocalParticipant
-        insideGrid={props.gridView}
+        insideGrid={true}
                 // highlight={highlightedProfiles?.includes(localUserProfile.id) ?? false}
         slot={0}
       />
@@ -109,15 +140,14 @@ export default function ParticipantList(props: { gridView: boolean }) {
               onClick={() => setSelectedParticipant(participant)}
               hideParticipant={hideParticipant}
               slot={participantWithSlot.slot}
-              insideGrid={props.gridView}
+              insideGrid={true}
             />
           );
         })}
     </>
   );
 
-  return props.gridView ? (
-    <main
+  return <main
       className={clsx(
         classes.gridContainer,
         {
@@ -132,13 +162,4 @@ export default function ParticipantList(props: { gridView: boolean }) {
     >
       <div className={classes.gridInnerContainer}>{participantsEl}</div>
     </main>
-  ) : (
-    <aside
-      className={clsx(classes.container, {
-        [classes.transparentBackground]: true,
-      })}
-    >
-      <div className={classes.scrollContainer}>{participantsEl}</div>
-    </aside>
-  );
 }

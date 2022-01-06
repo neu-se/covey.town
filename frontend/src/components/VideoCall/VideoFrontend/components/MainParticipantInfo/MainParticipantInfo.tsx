@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import {
-  LocalAudioTrack, LocalVideoTrack, Participant, RemoteAudioTrack, RemoteVideoTrack,
-} from 'twilio-video';
+import { LocalAudioTrack, LocalVideoTrack, Participant, RemoteAudioTrack, RemoteVideoTrack } from 'twilio-video';
 
-import Typography from '@material-ui/core/Typography';
+import AudioLevelIndicator from '../AudioLevelIndicator/AudioLevelIndicator';
 import AvatarIcon from '../../icons/AvatarIcon';
+import NetworkQualityLevel from '../NetworkQualityLevel/NetworkQualityLevel';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
+import useIsRecording from '../../hooks/useIsRecording/useIsRecording';
 import useIsTrackSwitchedOff from '../../hooks/useIsTrackSwitchedOff/useIsTrackSwitchedOff';
+import useParticipantIsReconnecting from '../../hooks/useParticipantIsReconnecting/useParticipantIsReconnecting';
 import usePublications from '../../hooks/usePublications/usePublications';
+import useScreenShareParticipant from '../../hooks/useScreenShareParticipant/useScreenShareParticipant';
 import useTrack from '../../hooks/useTrack/useTrack';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
-import useParticipantIsReconnecting from '../../hooks/useParticipantIsReconnecting/useParticipantIsReconnecting';
-import AudioLevelIndicator from '../AudioLevelIndicator/AudioLevelIndicator';
-// import useConference from '../../../../../hooks/useConference';
-import useSelectedParticipant from '../VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import { UserProfile } from '../../../../../CoveyTypes';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -23,17 +23,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer',
   },
   identity: {
     background: 'rgba(0, 0, 0, 0.5)',
     color: 'white',
     padding: '0.1em 0.3em 0.1em 0',
-    fontSize: '1.2em',
     display: 'inline-flex',
     '& svg': {
       marginLeft: '0.3em',
     },
+    marginRight: '0.4em',
+    alignItems: 'center',
   },
   infoContainer: {
     position: 'absolute',
@@ -74,6 +74,41 @@ const useStyles = makeStyles((theme: Theme) => ({
       transform: 'scale(2)',
     },
   },
+  recordingIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    background: 'rgba(0, 0, 0, 0.5)',
+    color: 'white',
+    padding: '0.1em 0.3em 0.1em 0',
+    fontSize: '1.2rem',
+    height: '28px',
+    [theme.breakpoints.down('sm')]: {
+      bottom: 'auto',
+      right: 0,
+      top: 0,
+    },
+  },
+  circle: {
+    height: '12px',
+    width: '12px',
+    background: 'red',
+    borderRadius: '100%',
+    margin: '0 0.6em',
+    animation: `1.25s $pulsate ease-out infinite`,
+  },
+  '@keyframes pulsate': {
+    '0%': {
+      background: `#A90000`,
+    },
+    '50%': {
+      background: '#f00',
+    },
+    '100%': {
+      background: '#A90000',
+    },
+  },
 }));
 
 interface MainParticipantInfoProps {
@@ -83,49 +118,62 @@ interface MainParticipantInfoProps {
 
 export default function MainParticipantInfo({ participant, children }: MainParticipantInfoProps) {
   const classes = useStyles();
-  const {
-    room: { localParticipant },
-  } = useVideoContext();
+  const { room } = useVideoContext();
+  const localParticipant = room!.localParticipant;
   const isLocal = localParticipant === participant;
 
-  // const screenShareParticipant = useScreenShareParticipant();
-  // const isRemoteParticipantScreenSharing = screenShareParticipant && screenShareParticipant !== localParticipant;
+  const screenShareParticipant = useScreenShareParticipant();
+  const isRemoteParticipantScreenSharing = screenShareParticipant && screenShareParticipant !== localParticipant;
 
   const publications = usePublications(participant);
-  const videoPublication = publications.find((p) => p.trackName.includes('camera'));
-  const screenSharePublication = publications.find((p) => p.trackName.includes('screen'));
-  const setSelectedParticipant = useSelectedParticipant()[1];
+  const videoPublication = publications.find(p => !p.trackName.includes('screen') && p.kind === 'video');
+  const screenSharePublication = publications.find(p => p.trackName.includes('screen'));
 
   const videoTrack = useTrack(screenSharePublication || videoPublication);
   const isVideoEnabled = Boolean(videoTrack);
 
-  const audioPublication = publications.find((p) => p.kind === 'audio');
+  const audioPublication = publications.find(p => p.kind === 'audio');
   const audioTrack = useTrack(audioPublication) as LocalAudioTrack | RemoteAudioTrack | undefined;
 
   const isVideoSwitchedOff = useIsTrackSwitchedOff(videoTrack as LocalVideoTrack | RemoteVideoTrack);
   const isParticipantReconnecting = useParticipantIsReconnecting(participant);
 
+  const isRecording = useIsRecording();
   const [participantProfile, setParticipantProfile] = useState<UserProfile | null>(null);
-  // useSafeAsync(() => UserProfile.get(participant.identity, conference.id), setParticipantProfile, [participant.identity], "MainParticipantInfo:setParticipantProfile");
 
   return (
     <div
       data-cy-main-participant
       data-cy-participant={participant.identity}
       className={clsx(classes.container, {
-        [classes.fullWidth]: false,
+        [classes.fullWidth]: !isRemoteParticipantScreenSharing,
       })}
-      onClick={() => setSelectedParticipant(participant)}
     >
       <div className={classes.infoContainer}>
-        <div className={classes.identity}>
-          <AudioLevelIndicator audioTrack={audioTrack} />
-          <Typography variant="body1" color="inherit">
-            {participantProfile ? participantProfile.displayName : ''}
-            {isLocal && ' (You)'}
-            {screenSharePublication && ' - Screen'}
-          </Typography>
+        <div style={{ display: 'flex' }}>
+          <div className={classes.identity}>
+            <AudioLevelIndicator audioTrack={audioTrack} />
+            <Typography variant="body1" color="inherit">
+              {participantProfile ? participantProfile.displayName : ''}
+              {isLocal && ' (You)'}
+              {screenSharePublication && ' - Screen'}
+            </Typography>
+          </div>
+          <NetworkQualityLevel participant={participant} />
         </div>
+        {isRecording && (
+          <Tooltip
+            title="All participants' audio and video is currently being recorded. Visit the app settings to stop recording."
+            placement="top"
+          >
+            <div className={classes.recordingIndicator}>
+              <div className={classes.circle}></div>
+              <Typography variant="body1" color="inherit" data-cy-recording-indicator>
+                Recording
+              </Typography>
+            </div>
+          </Tooltip>
+        )}
       </div>
       {(!isVideoEnabled || isVideoSwitchedOff) && (
         <div className={classes.avatarContainer}>

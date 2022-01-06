@@ -8,7 +8,7 @@ interface MediaStreamTrackPublishOptions {
   logLevel: LogLevels;
 }
 
-export default function useScreenShareToggle(room: Room, onError: ErrorCallback) {
+export default function useScreenShareToggle(room: Room | null, onError: ErrorCallback) {
   const [isSharing, setIsSharing] = useState(false);
   const stopScreenShareRef = useRef<() => void>(null!);
 
@@ -22,22 +22,22 @@ export default function useScreenShareToggle(room: Room, onError: ErrorCallback)
           width: 1920,
         },
       })
-      .then((stream) => {
+      .then(stream => {
         const track = stream.getTracks()[0];
 
         // All video tracks are published with 'low' priority. This works because the video
         // track that is displayed in the 'MainParticipant' component will have it's priority
         // set to 'high' via track.setPriority()
-        room.localParticipant
+        room!.localParticipant
           .publishTrack(track, {
             name: 'screen', // Tracks can be named to easily find them later
             priority: 'low', // Priority is set to high by the subscriber when the video track is rendered
           } as MediaStreamTrackPublishOptions)
-          .then((trackPublication) => {
+          .then(trackPublication => {
             stopScreenShareRef.current = () => {
-              room.localParticipant.unpublishTrack(track);
+              room!.localParticipant.unpublishTrack(track);
               // TODO: remove this if the SDK is updated to emit this event
-              room.localParticipant.emit('trackUnpublished', trackPublication);
+              room!.localParticipant.emit('trackUnpublished', trackPublication);
               track.stop();
               setIsSharing(false);
             };
@@ -47,7 +47,7 @@ export default function useScreenShareToggle(room: Room, onError: ErrorCallback)
           })
           .catch(onError);
       })
-      .catch((error) => {
+      .catch(error => {
         // Don't display an error if the user closes the screen share dialog
         if (error.name !== 'AbortError' && error.name !== 'NotAllowedError') {
           onError(error);
@@ -56,8 +56,10 @@ export default function useScreenShareToggle(room: Room, onError: ErrorCallback)
   }, [room, onError]);
 
   const toggleScreenShare = useCallback(() => {
-    !isSharing ? shareScreen() : stopScreenShareRef.current();
-  }, [isSharing, shareScreen, stopScreenShareRef]);
+    if (room) {
+      !isSharing ? shareScreen() : stopScreenShareRef.current();
+    }
+  }, [isSharing, shareScreen, room]);
 
   return [isSharing, toggleScreenShare] as const;
 }

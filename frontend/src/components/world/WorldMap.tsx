@@ -42,8 +42,13 @@ class CoveyGameScene extends Phaser.Scene {
 
   preload() {
     // this.load.image("logo", logoImg);
-    this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px-extruded.png');
-    this.load.tilemapTiledJSON('map', '/assets/tilemaps/tuxemon-town.json');
+    this.load.image('Room_Builder_32x32', '/assets/tilesets/Room_Builder_32x32.png');
+    this.load.image('22_Museum_32x32', '/assets/tilesets/22_Museum_32x32.png');
+    this.load.image('5_Classroom_and_library_32x32','/assets/tilesets/5_Classroom_and_library_32x32.png');
+    this.load.image('13_Conference_Hall_32x32','/assets/tilesets/13_Conference_Hall_32x32.png');
+    this.load.image('14_Basement_32x32','/assets/tilesets/14_Basement_32x32.png');
+    this.load.image('16_Grocery_store_32x32','/assets/tilesets/16_Grocery_store_32x32.png')
+    this.load.tilemapTiledJSON('map', '/assets/tilemaps/indoors.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
@@ -216,19 +221,29 @@ class CoveyGameScene extends Phaser.Scene {
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
      tileset image in Phaser's cache (i.e. the name you used in preload)
      */
-    const tileset = map.addTilesetImage('tuxmon-sample-32px-extruded', 'tiles');
+    const tileset = ['Room_Builder_32x32', '22_Museum_32x32', '5_Classroom_and_library_32x32',
+      '13_Conference_Hall_32x32', '14_Basement_32x32', '16_Grocery_store_32x32'].map(v => map.addTilesetImage(v));
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const belowLayer = map.createLayer('Below Player', tileset, 0, 0);
+    const wallsLayer = map.createLayer('Walls', tileset, 0, 0);
+    const onTheWallsLayer = map.createLayer('On The Walls',tileset, 0, 0);
+    wallsLayer.setCollisionByProperty({collides: true});
+    onTheWallsLayer.setCollisionByProperty({collides: true});
+
     const worldLayer = map.createLayer('World', tileset, 0, 0);
     worldLayer.setCollisionByProperty({ collides: true });
     const aboveLayer = map.createLayer('Above Player', tileset, 0, 0);
+    aboveLayer.setCollisionByProperty({collides: true});
+    const veryAboveLayer = map.createLayer('Very Above Player', tileset, 0, 0);
     /* By default, everything gets depth sorted on the screen in the order we created things.
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
      it a depth. Higher depths will sit on top of lower depth objects.
      */
+    worldLayer.setDepth(5);
     aboveLayer.setDepth(10);
+    veryAboveLayer.setDepth(15);
 
     // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
     // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
@@ -338,6 +353,9 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Watch the player and worldLayer for collisions, for the duration of the scene:
     this.physics.add.collider(sprite, worldLayer);
+    this.physics.add.collider(sprite, wallsLayer);
+    this.physics.add.collider(sprite, aboveLayer);
+    this.physics.add.collider(sprite, onTheWallsLayer);
 
     // Create the player's walking animations from the texture atlas. These are stored in the global
     // animation manager so any sprite can access them.
@@ -395,7 +413,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Help text that has a "fixed" position on the screen
     this.add
-      .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
+      .text(16, 16, `Arrow keys to move\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
         font: '18px monospace',
         color: '#000000',
         padding: {
@@ -440,6 +458,7 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
+      backgroundColor: '#000000',
       parent: 'map-container',
       minWidth: 800,
       minHeight: 600,

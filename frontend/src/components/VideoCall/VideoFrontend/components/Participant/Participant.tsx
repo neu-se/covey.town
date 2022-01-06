@@ -1,7 +1,7 @@
 import React from 'react';
-import { Participant as IParticipant } from 'twilio-video';
 import ParticipantInfo from '../ParticipantInfo/ParticipantInfo';
 import ParticipantTracks from '../ParticipantTracks/ParticipantTracks';
+import { Participant as IParticipant } from 'twilio-video';
 import { UserProfile } from '../../../../../CoveyTypes';
 
 interface ParticipantProps {
@@ -11,12 +11,10 @@ interface ParticipantProps {
   enableScreenShare?: boolean;
   onClick?: () => void;
   isSelected?: boolean;
-  isDominantSpeaker?: boolean;
   isLocalParticipant?: boolean;
   hideParticipant?: boolean;
   slot?: number;
   insideGrid: boolean;
-  highlight?: boolean;
 }
 
 export default function Participant({
@@ -30,7 +28,6 @@ export default function Participant({
   hideParticipant,
   slot,
   insideGrid,
-  highlight,
 }: ParticipantProps) {
   return (
     <ParticipantInfo
@@ -42,7 +39,6 @@ export default function Participant({
       hideParticipant={hideParticipant}
       slot={slot}
       insideGrid={insideGrid}
-      highlight={highlight}
     >
       <ParticipantTracks
         participant={participant}

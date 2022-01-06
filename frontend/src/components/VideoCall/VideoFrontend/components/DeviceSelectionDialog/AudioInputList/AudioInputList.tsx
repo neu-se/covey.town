@@ -1,31 +1,25 @@
-import React, { useCallback, useState } from 'react';
-import {
-  FormControl, MenuItem, Typography, Select, Grid,
-} from '@material-ui/core';
+import React from 'react';
 import AudioLevelIndicator from '../../AudioLevelIndicator/AudioLevelIndicator';
-import { useAudioInputDevices } from '../../../hooks/deviceHooks/deviceHooks';
+import { LocalAudioTrack } from 'twilio-video';
+import { FormControl, MenuItem, Typography, Select, Grid } from '@material-ui/core';
+import { SELECTED_AUDIO_INPUT_KEY } from '../../../constants';
+import useDevices from '../../../hooks/useDevices/useDevices';
 import useMediaStreamTrack from '../../../hooks/useMediaStreamTrack/useMediaStreamTrack';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import LocalStorage_TwilioVideo from '../../../../../../classes/LocalStorage/TwilioVideo';
 
 export default function AudioInputList() {
-  const audioInputDevices = useAudioInputDevices();
-  const { localAudioTrack } = useVideoContext();
+  const { audioInputDevices } = useDevices();
+  const { localTracks } = useVideoContext();
 
+  const localAudioTrack = localTracks.find(track => track.kind === 'audio') as LocalAudioTrack;
   const mediaStreamTrack = useMediaStreamTrack(localAudioTrack);
   const localAudioInputDeviceId = mediaStreamTrack?.getSettings().deviceId;
-  const [lastAudioDeviceId, _setLastAudioDeviceId] = useState<string | null>(
-    LocalStorage_TwilioVideo.twilioVideoLastMic,
-  );
-
-  const setLastAudioDeviceId = useCallback((deviceId: string | null) => {
-    LocalStorage_TwilioVideo.twilioVideoLastMic = deviceId;
-    _setLastAudioDeviceId(deviceId);
-  }, []);
 
   function replaceTrack(newDeviceId: string) {
-    setLastAudioDeviceId(newDeviceId);
+    console.log(newDeviceId)
+    window.localStorage.setItem(SELECTED_AUDIO_INPUT_KEY, newDeviceId);
     localAudioTrack?.restart({ deviceId: { exact: newDeviceId } });
+    console.log(localAudioTrack)
   }
 
   return (
@@ -33,16 +27,16 @@ export default function AudioInputList() {
       <Typography variant="subtitle2" gutterBottom>
         Audio Input
       </Typography>
-      <Grid container alignItems="center" justify="space-between">
+      <Grid container alignItems="center" justifyContent="space-between">
         <div className="inputSelect">
           {audioInputDevices.length > 1 ? (
             <FormControl fullWidth>
               <Select
-                onChange={(e) => replaceTrack(e.target.value as string)}
-                value={localAudioInputDeviceId || lastAudioDeviceId}
+                onChange={e => replaceTrack(e.target.value as string)}
+                value={localAudioInputDeviceId || ''}
                 variant="outlined"
               >
-                {audioInputDevices.map((device) => (
+                {audioInputDevices.map(device => (
                   <MenuItem value={device.deviceId} key={device.deviceId}>
                     {device.label}
                   </MenuItem>

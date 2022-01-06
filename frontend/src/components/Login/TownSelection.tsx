@@ -23,6 +23,7 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import useChatContext from '../VideoCall/VideoFrontend/hooks/useChatContext/useChatContext';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -34,7 +35,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
-  const { connect } = useVideoContext();
+  const { connect: videoConnect } = useVideoContext();
+  const { connect: chatConnect } = useChatContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
 
@@ -78,7 +80,11 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       const loggedIn = await doLogin(initData);
       if (loggedIn) {
         assert(initData.providerVideoToken);
-        await connect(initData.providerVideoToken);
+        await videoConnect(initData.providerVideoToken);
+        if(process.env.REACT_APP_DISABLE_TWILIO_CONVERSATIONS !== 'true')
+        {
+          chatConnect(initData.providerVideoToken);
+        }
       }
     } catch (err) {
       toast({
@@ -87,7 +93,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         status: 'error'
       })
     }
-  }, [doLogin, userName, connect, toast]);
+  }, [doLogin, userName, videoConnect, chatConnect, toast]);
 
   const handleCreate = async () => {
     if (!userName || userName.length === 0) {

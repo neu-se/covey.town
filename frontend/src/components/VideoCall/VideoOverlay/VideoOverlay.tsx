@@ -15,7 +15,6 @@ import useVideoContext from '../VideoFrontend/hooks/useVideoContext/useVideoCont
 import useLocalVideoToggle from '../VideoFrontend/hooks/useLocalVideoToggle/useLocalVideoToggle';
 import './VideoGrid.scss';
 import MediaErrorSnackbar from '../VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
-import usePresenting from '../VideoFrontend/components/VideoProvider/usePresenting/usePresenting';
 import useMaybeVideo from '../../../hooks/useMaybeVideo';
 
 const Container = styled('div')({
@@ -44,28 +43,31 @@ export default function VideoGrid(props: Props) {
   const roomState = useRoomState();
   const coveyController = useMaybeVideo();
 
-  const { stopAudio } = useLocalAudioToggle();
-  const { stopVideo } = useLocalVideoToggle();
+  const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();
+  const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const unmountRef = useRef<() => void>();
   const unloadRef = useRef<EventListener>();
   const existingRoomRef = useRef<TwilioRoom | undefined>();
   const [mediaError, setMediaError] = useState<Error>();
-  const presenting = usePresenting();
 
   let coveyRoom = coveyController?.coveyTownID;
   if (!coveyRoom) coveyRoom = 'Disconnected';
   useEffect(() => {
     function stop() {
       try {
-        stopAudio();
+        if(isAudioEnabled){
+          toggleAudioEnabled();
+        }
       } catch {}
 
       try {
-        stopVideo();
+        if(isVideoEnabled){
+          toggleVideoEnabled();
+        }
       } catch {}
 
       try {
-        if (roomState === 'connected' || roomState === 'reconnecting') {
+        if (room && (roomState === 'connected' || roomState === 'reconnecting')) {
           room.disconnect();
         }
       } catch {}
@@ -78,7 +80,7 @@ export default function VideoGrid(props: Props) {
       ev.preventDefault();
       stop();
     };
-  }, [room, roomState, stopAudio, stopVideo]);
+  }, [room, roomState, isVideoEnabled, isAudioEnabled, toggleAudioEnabled, toggleVideoEnabled]);
 
   useEffect(() => () => {
     if (unmountRef && unmountRef.current) {
@@ -95,24 +97,18 @@ export default function VideoGrid(props: Props) {
     };
   }, []);
 
+  const sid = room?.sid;
   useEffect(() => {
     if (
-      existingRoomRef.current
-            && (room.sid !== existingRoomRef.current.sid || coveyRoom !== existingRoomRef.current.sid)
+      existingRoomRef.current 
+            && (sid !== existingRoomRef.current.sid || coveyRoom !== existingRoomRef.current.sid)
     ) {
       if (existingRoomRef.current.state === 'connected') {
         existingRoomRef.current.disconnect();
       }
     }
-    existingRoomRef.current = room;
-  }, [room.sid, room, coveyRoom]);
-
-  useEffect(() => {
-    const isPresenting = presenting === 'presenting';
-    if (props.onPresentingChanged) {
-      props.onPresentingChanged(isPresenting);
-    }
-  }, [presenting, props]);
+    existingRoomRef.current = room || undefined;
+  }, [sid, room, coveyRoom]);
 
   return (
     <>
@@ -126,10 +122,10 @@ export default function VideoGrid(props: Props) {
             <ReconnectingNotification />
             <MobileTopMenuBar />
             <Room />
-            <MenuBar setMediaError={setMediaError} />
+            <MenuBar />
           </Main>
         )}
-        <MediaErrorSnackbar error={mediaError} dismissError={() => setMediaError(undefined)} />
+        <MediaErrorSnackbar error={mediaError} />
       </Container>
     </>
   );

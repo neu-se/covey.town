@@ -1,6 +1,4 @@
-import {
-  Grid, makeStyles, Theme, Typography,
-} from '@material-ui/core';
+import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
 import React from 'react';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import EndCallButton from '../Buttons/EndCallButton/EndCallButton';
@@ -37,8 +35,8 @@ export default function MobileTopMenuBar() {
   const { room } = useVideoContext();
 
   return (
-    <Grid container alignItems="center" justify="space-between" className={classes.container}>
-      <Typography variant="subtitle1">{room.name}</Typography>
+    <Grid container alignItems="center" justifyContent="space-between" className={classes.container}>
+      <Typography variant="subtitle1">{room!.name}</Typography>
       <div>
         <EndCallButton className={classes.endCallButton} />
         <Menu buttonClassName={classes.settingsButton} />

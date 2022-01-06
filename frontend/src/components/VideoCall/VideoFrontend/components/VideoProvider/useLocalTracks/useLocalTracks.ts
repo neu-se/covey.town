@@ -1,54 +1,46 @@
+import { DEFAULT_VIDEO_CONSTRAINTS, SELECTED_AUDIO_INPUT_KEY, SELECTED_VIDEO_INPUT_KEY } from '../../../constants';
+import { getDeviceInfo, isPermissionDenied } from '../../../utils';
 import { useCallback, useState } from 'react';
 import Video, { LocalVideoTrack, LocalAudioTrack, CreateLocalTrackOptions } from 'twilio-video';
-import { useMutex } from 'react-context-mutex';
-import { useHasAudioInputDevices, useHasVideoInputDevices } from '../../../hooks/deviceHooks/deviceHooks';
-import { DEFAULT_VIDEO_CONSTRAINTS } from '../../../constants';
-import LocalStorage_TwilioVideo from '../../../../../../classes/LocalStorage/TwilioVideo';
 
 export default function useLocalTracks() {
   const [audioTrack, setAudioTrack] = useState<LocalAudioTrack>();
   const [videoTrack, setVideoTrack] = useState<LocalVideoTrack>();
   const [isAcquiringLocalTracks, setIsAcquiringLocalTracks] = useState(false);
 
-  const hasAudio = useHasAudioInputDevices();
-  const hasVideo = useHasVideoInputDevices();
-
-  const getLocalAudioTrack = useCallback(async (deviceId?: string) => {
+  const getLocalAudioTrack = useCallback((deviceId?: string) => {
     const options: CreateLocalTrackOptions = {};
 
     if (deviceId) {
       options.deviceId = { exact: deviceId };
     }
 
-    console.log('Running getLocalAudioTrack');
-
-    const newTrack = await Video.createLocalAudioTrack(options);
-    setAudioTrack(newTrack);
-    return newTrack;
-  }, []);
-
-  const getLocalVideoTrack = useCallback((newOptions?: CreateLocalTrackOptions) => {
-    const options: CreateLocalTrackOptions = {
-      // ...(DEFAULT_VIDEO_CONSTRAINTS as {}),
-      width: 640,
-      height: 480,
-      frameRate: 24,
-      name: `camera-${Date.now()}`,
-      ...newOptions,
-    };
-
-    return Video.createLocalVideoTrack(options).then((newTrack) => {
-      setVideoTrack(newTrack);
+    return Video.createLocalAudioTrack(options).then(newTrack => {
+      setAudioTrack(newTrack);
       return newTrack;
     });
   }, []);
 
-  const removeLocalVideoTrack = useCallback(() => {
-    if (videoTrack) {
-      videoTrack.stop();
-      setVideoTrack(undefined);
-    }
-  }, [videoTrack]);
+  const getLocalVideoTrack = useCallback(async () => {
+    const selectedVideoDeviceId = window.localStorage.getItem(SELECTED_VIDEO_INPUT_KEY);
+
+    const { videoInputDevices } = await getDeviceInfo();
+
+    const hasSelectedVideoDevice = videoInputDevices.some(
+      device => selectedVideoDeviceId && device.deviceId === selectedVideoDeviceId
+    );
+
+    const options: CreateLocalTrackOptions = {
+      ...(DEFAULT_VIDEO_CONSTRAINTS as {}),
+      name: `camera-${Date.now()}`,
+      ...(hasSelectedVideoDevice && { deviceId: { exact: selectedVideoDeviceId! } }),
+    };
+
+    return Video.createLocalVideoTrack(options).then(newTrack => {
+      setVideoTrack(newTrack);
+      return newTrack;
+    });
+  }, []);
 
   const removeLocalAudioTrack = useCallback(() => {
     if (audioTrack) {
@@ -57,55 +49,97 @@ export default function useLocalTracks() {
     }
   }, [audioTrack]);
 
-  const MutexRunner = useMutex();
-  const getAudioAndVideoTracksMutex = new MutexRunner('getAudioAndVideoTracks');
-  const getAudioAndVideoTracks = async () => getAudioAndVideoTracksMutex.run(
-    async () => {
-      getAudioAndVideoTracksMutex.lock();
-      try {
-        if (!hasAudio && !hasVideo) return Promise.resolve();
-        if (audioTrack || videoTrack) return Promise.resolve();
+  const removeLocalVideoTrack = useCallback(() => {
+    if (videoTrack) {
+      videoTrack.stop();
+      setVideoTrack(undefined);
+    }
+  }, [videoTrack]);
 
-        console.log('Running getAudioAndVideoTracks');
+  const getAudioAndVideoTracks = useCallback(async () => {
+    const { audioInputDevices, videoInputDevices, hasAudioInputDevices, hasVideoInputDevices } = await getDeviceInfo();
 
-        setIsAcquiringLocalTracks(true);
-        const tracks = await Video.createLocalTracks({
-          video: hasVideo && {
-            ...(DEFAULT_VIDEO_CONSTRAINTS as {}),
-            name: `camera-${Date.now()}`,
-            deviceId: LocalStorage_TwilioVideo.twilioVideoLastCamera ?? undefined,
-          },
-          audio: hasAudio && {
-            deviceId: LocalStorage_TwilioVideo.twilioVideoLastMic ?? undefined,
-          },
-        });
+    if (!hasAudioInputDevices && !hasVideoInputDevices) return Promise.resolve();
+    if (isAcquiringLocalTracks || audioTrack || videoTrack) return Promise.resolve();
 
-        const _videoTrack = tracks.find((track) => track.kind === 'video');
-        const _audioTrack = tracks.find((track) => track.kind === 'audio');
-        if (_videoTrack) {
-          console.log('Running getAudioAndVideoTracks:setVideoTrack');
-          setVideoTrack(_videoTrack as LocalVideoTrack);
+    setIsAcquiringLocalTracks(true);
+
+    const selectedAudioDeviceId = window.localStorage.getItem(SELECTED_AUDIO_INPUT_KEY);
+    const selectedVideoDeviceId = window.localStorage.getItem(SELECTED_VIDEO_INPUT_KEY);
+
+    const hasSelectedAudioDevice = audioInputDevices.some(
+      device => selectedAudioDeviceId && device.deviceId === selectedAudioDeviceId
+    );
+    const hasSelectedVideoDevice = videoInputDevices.some(
+      device => selectedVideoDeviceId && device.deviceId === selectedVideoDeviceId
+    );
+
+    // In Chrome, it is possible to deny permissions to only audio or only video.
+    // If that has happened, then we don't want to attempt to acquire the device.
+    const isCameraPermissionDenied = await isPermissionDenied('camera');
+    const isMicrophonePermissionDenied = await isPermissionDenied('microphone');
+
+    const shouldAcquireVideo = hasVideoInputDevices && !isCameraPermissionDenied;
+    const shouldAcquireAudio = hasAudioInputDevices && !isMicrophonePermissionDenied;
+
+    const localTrackConstraints = {
+      video: shouldAcquireVideo && {
+        ...(DEFAULT_VIDEO_CONSTRAINTS as {}),
+        name: `camera-${Date.now()}`,
+        ...(hasSelectedVideoDevice && { deviceId: { exact: selectedVideoDeviceId! } }),
+      },
+      audio:
+        shouldAcquireAudio &&
+        (hasSelectedAudioDevice ? { deviceId: { exact: selectedAudioDeviceId! } } : hasAudioInputDevices),
+    };
+
+    return Video.createLocalTracks(localTrackConstraints)
+      .then(tracks => {
+        const newVideoTrack = tracks.find(track => track.kind === 'video') as LocalVideoTrack;
+        const newAudioTrack = tracks.find(track => track.kind === 'audio') as LocalAudioTrack;
+        if (newVideoTrack) {
+          setVideoTrack(newVideoTrack);
+          // Save the deviceId so it can be picked up by the VideoInputList component. This only matters
+          // in cases where the user's video is disabled.
+          window.localStorage.setItem(
+            SELECTED_VIDEO_INPUT_KEY,
+            newVideoTrack.mediaStreamTrack.getSettings().deviceId ?? ''
+          );
         }
-        if (_audioTrack) {
-          console.log('Running getAudioAndVideoTracks:setAudioTrack');
-          setAudioTrack(_audioTrack as LocalAudioTrack);
+        if (newAudioTrack) {
+          setAudioTrack(newAudioTrack);
         }
-      } finally {
-        setIsAcquiringLocalTracks(false);
-        getAudioAndVideoTracksMutex.unlock();
-      }
-    },
-    () => {},
-  );
+
+        // These custom errors will be picked up by the MediaErrorSnackbar component.
+        if (isCameraPermissionDenied && isMicrophonePermissionDenied) {
+          const error = new Error();
+          error.name = 'NotAllowedError';
+          throw error;
+        }
+
+        if (isCameraPermissionDenied) {
+          throw new Error('CameraPermissionsDenied');
+        }
+
+        if (isMicrophonePermissionDenied) {
+          throw new Error('MicrophonePermissionsDenied');
+        }
+      })
+      .finally(() => setIsAcquiringLocalTracks(false));
+  }, [audioTrack, videoTrack, isAcquiringLocalTracks]);
+
+  const localTracks = [audioTrack, videoTrack].filter(track => track !== undefined) as (
+    | LocalAudioTrack
+    | LocalVideoTrack
+  )[];
 
   return {
-    audioTrack,
-    videoTrack,
+    localTracks,
     getLocalVideoTrack,
     getLocalAudioTrack,
     isAcquiringLocalTracks,
-    removeLocalVideoTrack,
     removeLocalAudioTrack,
+    removeLocalVideoTrack,
     getAudioAndVideoTracks,
   };
 }

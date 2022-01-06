@@ -25,6 +25,7 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
+import { ChatProvider } from './components/VideoCall/VideoFrontend/components/ChatProvider';
 
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
@@ -250,7 +251,9 @@ function EmbeddedTwilioAppWrapper() {
     <UnsupportedBrowserWarning>
       <VideoProvider options={connectionOptions} onError={setError} onDisconnect={onDisconnect}>
         <ErrorDialog dismissError={() => setError(null)} error={error} />
-        <App setOnDisconnect={setOnDisconnect} />
+        <ChatProvider>
+          <App setOnDisconnect={setOnDisconnect} />
+        </ChatProvider>
       </VideoProvider>
     </UnsupportedBrowserWarning>
   );
@@ -260,8 +263,8 @@ export default function AppStateWrapper(): JSX.Element {
   return (
     <BrowserRouter>
       <ChakraProvider>
-        <MuiThemeProvider theme={theme('rgb(185, 37, 0)')}>
-          <AppStateProvider preferredMode="fullwidth" highlightedProfiles={[]}>
+        <MuiThemeProvider theme={theme}>
+          <AppStateProvider>
             <EmbeddedTwilioAppWrapper />
           </AppStateProvider>
         </MuiThemeProvider>

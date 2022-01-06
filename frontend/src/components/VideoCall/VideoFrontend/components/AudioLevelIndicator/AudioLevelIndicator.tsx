@@ -40,7 +40,7 @@ function AudioLevelIndicator({ audioTrack, color = 'white' }: { audioTrack?: Aud
       // we stop the cloned track that is stored in 'newMediaStream'. It is important that we stop
       // all tracks when they are not in use. Browsers like Firefox don't let you create a new stream
       // from a new audio device while the active audio device still has active tracks.
-      const stopAllMediaStreamTracks = () => newMediaStream.getTracks().forEach((track) => track.stop());
+      const stopAllMediaStreamTracks = () => newMediaStream.getTracks().forEach(track => track.stop());
       audioTrack.on('stopped', stopAllMediaStreamTracks);
 
       const reinitializeAnalyser = () => {
@@ -62,8 +62,6 @@ function AudioLevelIndicator({ audioTrack, color = 'white' }: { audioTrack?: Aud
         audioTrack.off('stopped', stopAllMediaStreamTracks);
       };
     }
-    return () => {
-    };
   }, [isTrackEnabled, mediaStreamTrack, audioTrack]);
 
   useEffect(() => {
@@ -76,7 +74,7 @@ function AudioLevelIndicator({ audioTrack, color = 'white' }: { audioTrack?: Aud
         analyser.getByteFrequencyData(sampleArray);
         let values = 0;
 
-        const { length } = sampleArray;
+        const length = sampleArray.length;
         for (let i = 0; i < length; i++) {
           values += sampleArray[i];
         }
@@ -91,8 +89,6 @@ function AudioLevelIndicator({ audioTrack, color = 'white' }: { audioTrack?: Aud
         timer.stop();
       };
     }
-    return () => {
-    };
   }, [isTrackEnabled, analyser]);
 
   // Each instance of this component will need a unique HTML ID
@@ -115,7 +111,7 @@ function AudioLevelIndicator({ audioTrack, color = 'white' }: { audioTrack?: Aud
           rx="6"
           ry="3"
           fill="#23BF6E"
-        />
+        ></rect>
         <path
           fill={color}
           strokeWidth="0"

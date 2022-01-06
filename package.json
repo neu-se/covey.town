@@ -41,8 +41,8 @@
         "*.{js,css,md}": "prettier --write"
     },
     "engines": {
-        "node": "15.4.0",
-        "npm": "7.3.x"
+        "node": "16.13.x",
+        "npm": "8.1.x"
     },
     "dependencies": {
         "@types/ramda": "^0.27.34",
