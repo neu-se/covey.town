@@ -115,7 +115,7 @@ describe('Part 4 - Town Settings', () => {
     await waitFor(() => expect(isPublicCheck.checked)
       .toBe(false));
     renderData.unmount();
-  });
+  }, 10000);
   describe("Updating a town", () => {
     it("Passes the form values to apiClient.updateTown", async () => {
       const params = {
@@ -146,7 +146,7 @@ describe('Part 4 - Town Settings', () => {
         }));
       expect(mockDeleteTown).not.toBeCalled();
 
-    });
+    }, 10000);
     it("Displays a toast 'Town updated' and closes on successful update", async () => {
       const params = {
         friendlyName: nanoid(),
@@ -177,7 +177,7 @@ describe('Part 4 - Town Settings', () => {
       expect(mockDeleteTown).not.toBeCalled();
 
       await waitFor(()=>expect(mockUseDisclosure.onClose).toBeCalled());
-    });
+    }, 10000);
     it("Displays a toast 'Unable to update town' if an error is thrown by apiClient.updateTown", async () => {
       const params = {
         friendlyName: nanoid(),
@@ -209,7 +209,7 @@ describe('Part 4 - Town Settings', () => {
 
       expect(mockDeleteTown).not.toBeCalled();
 
-    });
+    }, 10000);
   });
   describe("Deleting a town", () => {
     it("Passes the form values to apiClient.deleteTown", async () => {
@@ -239,7 +239,7 @@ describe('Part 4 - Town Settings', () => {
         }));
       expect(mockUpdateTown).not.toBeCalled();
 
-    });
+    }, 10000);
     it("Displays a toast 'Town deleted' and closes on successful update", async () => {
       const params = {
         friendlyName: nanoid(),
@@ -269,7 +269,7 @@ describe('Part 4 - Town Settings', () => {
       expect(mockUpdateTown).not.toBeCalled();
       await waitFor(()=>expect(mockUseDisclosure.onClose).toBeCalled());
 
-    });
+    }, 10000);
     it("Displays a toast 'Unable to delete town' if an error is thrown by apiClient.deleteTown", async () => {
       const params = {
         friendlyName: nanoid(),
@@ -297,6 +297,6 @@ describe('Part 4 - Town Settings', () => {
 
       expect(mockUpdateTown).not.toBeCalled();
 
-    });
+    }, 10000);
   });
 })
