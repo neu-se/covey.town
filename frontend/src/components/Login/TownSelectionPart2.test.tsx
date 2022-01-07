@@ -9,6 +9,7 @@ import TownsServiceClient, { TownListResponse } from '../../classes/TownsService
 import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
+import { ChatProvider } from '../VideoCall/VideoFrontend/components/ChatProvider'
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -16,6 +17,10 @@ const mockToast = jest.fn();
 jest.mock('../../classes/TownsServiceClient');
 jest.mock('../../classes/Video/Video');
 jest.mock('../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext.ts', () => ({
+  __esModule: true, // this property makes it work
+  default: () => ({ connect: mockConnect })
+}));
+jest.mock('../VideoCall/VideoFrontend/hooks/useChatContext/useChatContext.ts', () => ({
   __esModule: true, // this property makes it work
   default: () => ({ connect: mockConnect })
 }));
@@ -100,8 +105,8 @@ function wrappedTownSelection() {
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
-  }}>
-    <TownSelection doLogin={doLoginMock}/></CoveyAppContext.Provider></ChakraProvider>;
+  }}><ChatProvider>
+    <TownSelection doLogin={doLoginMock}/></ChatProvider></CoveyAppContext.Provider></ChakraProvider>;
 }
 
 describe('Town Selection - depends on Part 1 passing', () => {
