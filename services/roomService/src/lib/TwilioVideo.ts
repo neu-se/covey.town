@@ -64,8 +64,8 @@ export default class TwilioVideo implements IVideoClient {
       // Does it exist?
       await conversationsClient.conversations(conversationID).fetch();
     } catch (e) {
-      // Create the room, with auto expire of 24h
-      await conversationsClient.conversations.create({uniqueName: conversationID, timers: {closed: 'P1D'}});
+      // Create the room
+      await conversationsClient.conversations.create({uniqueName: conversationID});
     }
     // Add the participant to the conversation
     try {
