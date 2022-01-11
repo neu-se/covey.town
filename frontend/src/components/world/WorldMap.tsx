@@ -44,10 +44,12 @@ class CoveyGameScene extends Phaser.Scene {
     // this.load.image("logo", logoImg);
     this.load.image('Room_Builder_32x32', '/assets/tilesets/Room_Builder_32x32.png');
     this.load.image('22_Museum_32x32', '/assets/tilesets/22_Museum_32x32.png');
-    this.load.image('5_Classroom_and_library_32x32','/assets/tilesets/5_Classroom_and_library_32x32.png');
-    this.load.image('13_Conference_Hall_32x32','/assets/tilesets/13_Conference_Hall_32x32.png');
-    this.load.image('14_Basement_32x32','/assets/tilesets/14_Basement_32x32.png');
-    this.load.image('16_Grocery_store_32x32','/assets/tilesets/16_Grocery_store_32x32.png')
+    this.load.image('5_Classroom_and_library_32x32', '/assets/tilesets/5_Classroom_and_library_32x32.png');
+    this.load.image('12_Kitchen_32x32', '/assets/tilesets/12_Kitchen_32x32.png');
+    this.load.image('1_Generic_32x32', '/assets/tilesets/1_Generic_32x32.png');
+    this.load.image('13_Conference_Hall_32x32', '/assets/tilesets/13_Conference_Hall_32x32.png');
+    this.load.image('14_Basement_32x32', '/assets/tilesets/14_Basement_32x32.png');
+    this.load.image('16_Grocery_store_32x32', '/assets/tilesets/16_Grocery_store_32x32.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/indoors.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
@@ -256,25 +258,24 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
     // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
-    const spawnPoint = map.findObject('Objects',
-      (obj) => obj.name === 'Spawn Point') as unknown as
-      Phaser.GameObjects.Components.Transform;
-
+    const spawnPoint = (map.findObject(
+      'Objects',
+      obj => obj.name === 'Spawn Point',
+    ) as unknown) as Phaser.GameObjects.Components.Transform;
 
     // Find all of the transporters, add them to the physics engine
-    const transporters = map.createFromObjects('Objects',
-      { name: 'transporter' })
+    const transporters = map.createFromObjects('Objects', { name: 'transporter' });
     this.physics.world.enable(transporters);
 
     // For each of the transporters (rectangle objects), we need to tweak their location on the scene
     // for reasons that are not obvious to me, but this seems to work. We also set them to be invisible
     // but for debugging, you can comment out that line.
     transporters.forEach(transporter => {
-        const sprite = transporter as Phaser.GameObjects.Sprite;
-        sprite.y += 2 * sprite.height; // Phaser and Tiled seem to disagree on which corner is y
-        sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
-                                  // the map
-      }
+      const sprite = transporter as Phaser.GameObjects.Sprite;
+      sprite.y += sprite.displayHeight; // Phaser and Tiled seem to disagree on which corner is y
+      sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
+      // the map
+    });
     );
 
     const labels = map.filterObjects('Objects',(obj)=>obj.name==='label');
@@ -330,22 +331,23 @@ class CoveyGameScene extends Phaser.Scene {
     transport to the location on the map that is referenced by the 'target' property
     of the transporter.
      */
-    this.physics.add.overlap(sprite, transporters,
-      (overlappingObject, transporter)=>{
-      if(cursorKeys.space.isDown && this.player){
+    this.physics.add.overlap(sprite, transporters, (overlappingObject, transporter) => {
+      if (this.player) {
         // In the tiled editor, set the 'target' to be an *object* pointer
         // Here, we'll see just the ID, then find the object by ID
         const transportTargetID = transporter.getData('target') as number;
-        const target = map.findObject('Objects', obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID);
-        if(target && target.x && target.y && this.lastLocation){
+        const target = map.findObject(
+          'Objects',
+          obj => ((obj as unknown) as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID,
+        );
+        if (target && target.x && target.y && this.lastLocation) {
           // Move the player to the target, update lastLocation and send it to other players
           this.player.sprite.x = target.x;
           this.player.sprite.y = target.y;
           this.lastLocation.x = target.x;
           this.lastLocation.y = target.y;
           this.emitMovement(this.lastLocation);
-        }
-        else{
+        } else {
           throw new Error(`Unable to find target object ${target}`);
         }
       }
@@ -450,7 +452,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   resume() {
     this.paused = false;
-    if(Video.instance()){
+    if (Video.instance()) {
       // If the game is also in process of being torn down, the keyboard could be undefined
       this.input.keyboard.addCapture(this.previouslyCapturedKeys);
     }
