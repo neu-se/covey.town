@@ -276,7 +276,6 @@ class CoveyGameScene extends Phaser.Scene {
       sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
       // the map
     });
-    );
 
     const labels = map.filterObjects('Objects',(obj)=>obj.name==='label');
     labels.forEach(label => {
