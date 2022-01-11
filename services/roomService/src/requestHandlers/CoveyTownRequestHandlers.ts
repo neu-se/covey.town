@@ -4,6 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import { ConversationCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -34,6 +35,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** Active conversation areas */
+  conversationAreas: ServerConversationArea[];
 }
 
 /**
@@ -118,6 +121,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
+      conversationAreas: coveyTownController.conversations
     },
   };
 }
@@ -169,6 +173,21 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 }
 
+export async function conversationCreateHandler(requestData: ConversationCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(requestData.coveyTownID);
+  if(!townController?.getSessionByToken(requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: 'Not authorized'
+    }
+  }
+  const success = townController.createConversation(requestData.conversation);
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? `Unable to create conversation ${requestData.conversation.label} with topic ${requestData.conversation.topic}` : undefined
+  }
+}
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -190,6 +209,12 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    onConversationDestroyed(conversation: ServerConversationArea){
+      socket.emit('conversationDestroyed', conversation);
+    },
+    onConversationUpdated(conversation: ServerConversationArea){
+      socket.emit('conversationUpdated', conversation);
+    }
   };
 }
 

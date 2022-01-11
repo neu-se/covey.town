@@ -4,6 +4,18 @@ import { UserLocation } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+type BoundingBox = {
+  x: number,
+  y: number,
+  width: number,
+  height: number
+}
+export type ServerConversationArea = {
+  label: string;
+  topic: string;
+  occupantsByID: string[];
+  boundingBox: BoundingBox;
+};
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -77,6 +89,12 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface ConversationCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  conversation: ServerConversationArea;
 }
 
 /**

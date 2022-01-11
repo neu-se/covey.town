@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 
 /**
@@ -14,6 +15,8 @@ export default class Player {
   /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
 
+  private _activeConversation?: ServerConversationArea;
+
   constructor(userName: string) {
     this.location = {
       x: 0,
@@ -23,6 +26,14 @@ export default class Player {
     };
     this._userName = userName;
     this._id = nanoid();
+  }
+
+  get activeConversation(): ServerConversationArea | undefined {
+    return this._activeConversation;
+  }
+
+  set activeConversation(conversation: ServerConversationArea | undefined) {
+    this._activeConversation = conversation;
   }
 
   get userName(): string {
@@ -35,5 +46,14 @@ export default class Player {
 
   updateLocation(location: UserLocation): void {
     this.location = location;
+  }
+
+  isWithin(conversation: ServerConversationArea) {
+    return (
+      this.location.x >= conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
+      this.location.x <= conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
+      this.location.y >= conversation.boundingBox.y - conversation.boundingBox.height / 2 &&
+      this.location.y <= conversation.boundingBox.y + conversation.boundingBox.height / 2
+    );
   }
 }

@@ -1,10 +1,11 @@
 import { customAlphabet, nanoid } from 'nanoid';
+import { ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
-import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import TwilioVideo from './TwilioVideo';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -13,7 +14,6 @@ const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
  * can occur (e.g. joining a town, moving, leaving a town)
  */
 export default class CoveyTownController {
-
   get capacity(): number {
     return this._capacity;
   }
@@ -50,6 +50,10 @@ export default class CoveyTownController {
     return this._coveyTownID;
   }
 
+  get conversations(): ServerConversationArea[] {
+    return this._conversations;
+  }
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -72,8 +76,10 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
+  private _conversations: ServerConversationArea[] = [];
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
-    this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
+    this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
@@ -93,10 +99,13 @@ export default class CoveyTownController {
     this._players.push(newPlayer);
 
     // Create a video token for this user to join this town
-    theSession.videoToken = await this._videoClient.getTokenForTown(this._coveyTownID, newPlayer.id);
+    theSession.videoToken = await this._videoClient.getTokenForTown(
+      this._coveyTownID,
+      newPlayer.id,
+    );
 
     // Notify other players that this player has joined
-    this._listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
+    this._listeners.forEach(listener => listener.onPlayerJoined(newPlayer));
 
     return theSession;
   }
@@ -107,9 +116,23 @@ export default class CoveyTownController {
    * @param session PlayerSession to destroy
    */
   destroySession(session: PlayerSession): void {
-    this._players = this._players.filter((p) => p.id !== session.player.id);
-    this._sessions = this._sessions.filter((s) => s.sessionToken !== session.sessionToken);
-    this._listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
+    this._players = this._players.filter(p => p.id !== session.player.id);
+    this._sessions = this._sessions.filter(s => s.sessionToken !== session.sessionToken);
+    this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
+    const conversation = session.player.activeConversation;
+    if (conversation) {
+      this.removePlayerFromConversation(session.player, conversation);
+    }
+  }
+
+  removePlayerFromConversation(player: Player, conversation: ServerConversationArea) {
+    conversation.occupantsByID = conversation.occupantsByID.filter(p => p != player.id);
+    if (conversation.occupantsByID.length == 0) {
+      this._conversations = this._conversations.filter(conv => conv !== conversation);
+      this._listeners.forEach(listener => listener.onConversationDestroyed(conversation));
+    } else {
+      this._listeners.forEach(listener => listener.onConversationUpdated(conversation));
+    }
   }
 
   /**
@@ -119,7 +142,19 @@ export default class CoveyTownController {
    */
   updatePlayerLocation(player: Player, location: UserLocation): void {
     player.updateLocation(location);
-    this._listeners.forEach((listener) => listener.onPlayerMoved(player));
+    const conversation = this.conversations.find(conv => conv.label === location.conversationLabel);
+    const prevConversation = player.activeConversation;
+    player.activeConversation = conversation;
+    if (conversation !== prevConversation) {
+      if (prevConversation) {
+        this.removePlayerFromConversation(player, prevConversation);
+      }
+      if (conversation) {
+        conversation.occupantsByID.push(player.id);
+        this._listeners.forEach(listener => listener.onConversationUpdated(conversation));
+      }
+    }
+    this._listeners.forEach(listener => listener.onPlayerMoved(player));
   }
 
   /**
@@ -139,7 +174,7 @@ export default class CoveyTownController {
    * with addTownListener, or otherwise will be a no-op
    */
   removeTownListener(listener: CoveyTownListener): void {
-    this._listeners = this._listeners.filter((v) => v !== listener);
+    this._listeners = this._listeners.filter(v => v !== listener);
   }
 
   /**
@@ -149,10 +184,25 @@ export default class CoveyTownController {
    * @param token
    */
   getSessionByToken(token: string): PlayerSession | undefined {
-    return this._sessions.find((p) => p.sessionToken === token);
+    return this._sessions.find(p => p.sessionToken === token);
   }
 
   disconnectAllPlayers(): void {
-    this._listeners.forEach((listener) => listener.onTownDestroyed());
+    this._listeners.forEach(listener => listener.onTownDestroyed());
+  }
+
+  createConversation(conversation: ServerConversationArea): boolean {
+    if (
+      this._conversations.find(
+        eachExistingConversation => eachExistingConversation.label === conversation.label,
+      )
+    )
+      return false;
+    this._conversations.push(conversation);
+    const playersInThisConversation = this.players.filter(player => player.isWithin(conversation));
+    playersInThisConversation.forEach(player => (player.activeConversation = conversation));
+    conversation.occupantsByID = playersInThisConversation.map(player => player.id);
+    this._listeners.forEach(listener => listener.onConversationUpdated(conversation));
+    return true;
   }
 }

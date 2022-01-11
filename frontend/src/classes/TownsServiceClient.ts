@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
+import { ServerConversationArea } from './ConversationArea';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -31,6 +32,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** Names and occupants of any existing ConversationAreas */
+  conversationAreas: ServerConversationArea[];
 }
 
 /**
@@ -74,6 +77,12 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface ConversationCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  conversation: ServerConversationArea;
 }
 
 /**
@@ -139,6 +148,11 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+  
+  async createConversation(requestData: ConversationCreateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversations`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

@@ -4,6 +4,7 @@ import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import {
+  conversationCreateHandler,
   townCreateHandler, townDeleteHandler,
   townJoinHandler,
   townListHandler,
@@ -104,6 +105,24 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({
           message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  app.post('/towns/:townID/conversations', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await conversationCreateHandler({
+        coveyTownID: req.params.townID,
+        sessionToken: req.body.sessionToken,
+        conversation: req.body.conversation
+        });
+      res.status(200)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500)
+        .json({
+          message: 'Internal server error, please see log in server for details',
         });
     }
   });
