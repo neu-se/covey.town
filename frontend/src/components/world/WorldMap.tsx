@@ -221,21 +221,30 @@ class CoveyGameScene extends Phaser.Scene {
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
      tileset image in Phaser's cache (i.e. the name you used in preload)
      */
-    const tileset = ['Room_Builder_32x32', '22_Museum_32x32', '5_Classroom_and_library_32x32',
-      '13_Conference_Hall_32x32', '14_Basement_32x32', '16_Grocery_store_32x32'].map(v => map.addTilesetImage(v));
+    const tileset = [
+      'Room_Builder_32x32',
+      '22_Museum_32x32',
+      '5_Classroom_and_library_32x32',
+      '12_Kitchen_32x32',
+      '1_Generic_32x32',
+      '13_Conference_Hall_32x32',
+      '14_Basement_32x32',
+      '16_Grocery_store_32x32',
+    ].map(v => map.addTilesetImage(v));
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const belowLayer = map.createLayer('Below Player', tileset, 0, 0);
     const wallsLayer = map.createLayer('Walls', tileset, 0, 0);
-    const onTheWallsLayer = map.createLayer('On The Walls',tileset, 0, 0);
-    wallsLayer.setCollisionByProperty({collides: true});
-    onTheWallsLayer.setCollisionByProperty({collides: true});
+    const onTheWallsLayer = map.createLayer('On The Walls', tileset, 0, 0);
+    wallsLayer.setCollisionByProperty({ collides: true });
+    onTheWallsLayer.setCollisionByProperty({ collides: true });
 
     const worldLayer = map.createLayer('World', tileset, 0, 0);
     worldLayer.setCollisionByProperty({ collides: true });
     const aboveLayer = map.createLayer('Above Player', tileset, 0, 0);
-    aboveLayer.setCollisionByProperty({collides: true});
+    aboveLayer.setCollisionByProperty({ collides: true });
+
     const veryAboveLayer = map.createLayer('Very Above Player', tileset, 0, 0);
     /* By default, everything gets depth sorted on the screen in the order we created things.
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
