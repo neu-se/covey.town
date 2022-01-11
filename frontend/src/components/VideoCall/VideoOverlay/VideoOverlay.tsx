@@ -116,7 +116,7 @@ export default function VideoGrid(props: Props) {
       <Container style={{ height: '100%' }} className="video-grid">
         {roomState === 'disconnected' ? (
         // <PreJoinScreens room={{id: coveyRoom, twilioID: coveyRoom}} setMediaError={setMediaError} />
-          <div>Error</div>
+          <div>Connecting...</div>
         ) : (
           <Main style={{ paddingBottom: '90px' }}>
             <ReconnectingNotification />
