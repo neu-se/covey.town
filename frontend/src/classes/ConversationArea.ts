@@ -1,3 +1,4 @@
+import assert from 'assert';
 import Phaser from 'phaser';
 
 type ConversationGameObjects = {
@@ -7,11 +8,11 @@ type ConversationGameObjects = {
 };
 
 type BoundingBox = {
-  x: number,
-  y: number,
-  width: number,
-  height: number
-}
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 
 export type ServerConversationArea = {
   label: string;
@@ -21,16 +22,34 @@ export type ServerConversationArea = {
 };
 
 export default class ConversationArea {
-
   private _occupants: string[] = [];
 
   private _label: string;
 
   private _topic?: string;
 
-  private _gameObjects: ConversationGameObjects; 
+  private _gameObjects?: ConversationGameObjects;
 
-  constructor(gameObjects: ConversationGameObjects, label: string, topic?: string) {
+  private _boundingBox: BoundingBox;
+
+  constructor(
+    label: string,
+    topic?: string,
+    gameObjects?: ConversationGameObjects,
+    boundingBox?: BoundingBox,
+  ) {
+    if (gameObjects) {
+      this._boundingBox = {
+        x: gameObjects.sprite.x,
+        y: gameObjects.sprite.y,
+        width: gameObjects.sprite.displayWidth,
+        height: gameObjects.sprite.displayHeight,
+      };
+    } else if (boundingBox) {
+      this._boundingBox = boundingBox;
+    } else {
+      throw new Error('Must provide gameObjects or boundingBox');
+    }
     this._gameObjects = gameObjects;
     this._label = label;
     this._topic = topic;
@@ -43,12 +62,12 @@ export default class ConversationArea {
   set occupants(newOccupants: string[]) {
     this._occupants = newOccupants;
   }
-  
+
   get occupants() {
     return this._occupants;
   }
 
-  set topic(newTopic: string) {
+  set topic(newTopic: string|undefined) {
     this._topic = newTopic;
   }
 
@@ -56,21 +75,17 @@ export default class ConversationArea {
     return this._topic || '(No topic)';
   }
 
-  isEmpty(): boolean{
+  isEmpty(): boolean {
     return this._topic === undefined;
   }
 
   getBounds(): Phaser.Geom.Rectangle {
+    assert(this._gameObjects);
     return this._gameObjects.sprite.getBounds();
   }
 
   getBoundingBox(): BoundingBox {
-    return {
-      x: this._gameObjects.sprite.x,
-      y: this._gameObjects.sprite.y,
-      width: this._gameObjects.sprite.displayWidth,
-      height: this._gameObjects.sprite.displayHeight
-    }
+    return this._boundingBox;
   }
 
   destroy() {
@@ -80,10 +95,12 @@ export default class ConversationArea {
 
   onTopicChange(newTopic?: string) {
     this._topic = newTopic;
-    if (newTopic) {
-      this._gameObjects.topicText.text = newTopic;
-    } else {
-      this._gameObjects.topicText.text = '(No topic)';
+    if (this._gameObjects) {
+      if (newTopic) {
+        this._gameObjects.topicText.text = newTopic;
+      } else {
+        this._gameObjects.topicText.text = '(No topic)';
+      }
     }
   }
 
@@ -92,19 +109,23 @@ export default class ConversationArea {
   }
 
   // eslint-disable-next-line
-  onCurrentPlayerEntered() {
-  }
+  onCurrentPlayerEntered() {}
 
   // eslint-disable-next-line
-  onCurrentPlayerExits() {
-  }
+  onCurrentPlayerExits() {}
 
-  toServerConversationArea() : ServerConversationArea{
+  toServerConversationArea(): ServerConversationArea {
     return {
       label: this.label,
       occupantsByID: this.occupants,
       topic: this.topic,
-      boundingBox: this.getBoundingBox()
-    }
+      boundingBox: this.getBoundingBox(),
+    };
+  }
+
+  static fromServerConversationArea(serverArea: ServerConversationArea): ConversationArea {
+    const ret = new ConversationArea(serverArea.label, serverArea.topic, undefined, serverArea.boundingBox);
+    ret.occupants = serverArea.occupantsByID;
+    return ret;
   }
 }

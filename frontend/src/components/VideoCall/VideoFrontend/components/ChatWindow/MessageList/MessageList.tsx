@@ -6,6 +6,7 @@ import TextMessage from './TextMessage/TextMessage';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
 import MediaMessage from './MediaMessage/MediaMessage';
 import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
+import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
 
 interface MessageListProps {
   messages: Message[];
@@ -18,7 +19,7 @@ export default function MessageList({ messages }: MessageListProps) {
   const { room } = useVideoContext();
   const localParticipant = room!.localParticipant;
 
-  const { players } = useCoveyAppState();
+  const players = usePlayersInTown();
 
   return (
     <MessageListScrollContainer messages={messages}>

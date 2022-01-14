@@ -1,10 +1,10 @@
 import React from 'react';
-import { NearbyPlayers } from '../CoveyTypes';
+import Player from '../classes/Player';
 
 /**
  * Hint: You will never need to use this directly. Instead, use the
- * `useCoveyAppState` hook.
+ * `useNearbyPlayers` hook.
  */
-const Context = React.createContext<NearbyPlayers>({ nearbyPlayers: [] });
+const Context = React.createContext<Player[]>([]);
 
 export default Context;

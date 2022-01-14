@@ -72,7 +72,7 @@ export default function ParticipantList() {
   const [selectedParticipant, setSelectedParticipant] = useSelectedParticipant();
   const screenShareParticipant = useScreenShareParticipant();
   const mainParticipant = useMainParticipant();
-  const { nearbyPlayers } = useNearbyPlayers();
+  const nearbyPlayers = useNearbyPlayers();
   const isRemoteParticipantScreenSharing = screenShareParticipant && screenShareParticipant !== localParticipant;
 
   const classes = useStyles('fullwidth');

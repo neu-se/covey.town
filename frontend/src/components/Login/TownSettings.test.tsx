@@ -35,8 +35,6 @@ mockUseCoveyAppState.apiClient = new TownsServiceClient();
 
 function wrappedTownSettings() {
   return <ChakraProvider><CoveyAppContext.Provider value={{
-    nearbyPlayers: { nearbyPlayers: [] },
-    players: [],
     myPlayerID: '',
     currentTownID: '',
     currentTownFriendlyName: '',
@@ -44,16 +42,9 @@ function wrappedTownSettings() {
     sessionToken: '',
     userName: '',
     socket: null,
-    currentLocation: {
-      x: 0,
-      y: 0,
-      rotation: 'front',
-      moving: false,
-    },
     emitMovement: () => {
     },
     apiClient: new TownsServiceClient(),
-    conversationAreas: []
   }}>
     <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
 }

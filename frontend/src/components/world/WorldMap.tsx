@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
-import ConversationArea, { ServerConversationArea } from '../../classes/ConversationArea';
-import Player, { UserLocation } from '../../classes/Player';
+import ConversationArea from '../../classes/ConversationArea';
+import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
+import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import usePlayerMovement from '../../hooks/usePlayerMovement';
+import usePlayersInTown from '../../hooks/usePlayersInTown';
 import NewConversationModal from './NewCoversationModal';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
@@ -44,7 +47,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private setNewConversation: (conv: ConversationArea) => void;
 
-  private pendingInitConversationAreas?: ServerConversationArea[];
+  private pendingInitConversationAreas?: ConversationArea[];
 
   constructor(
     video: Video,
@@ -73,7 +76,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
-  updateConversationAreas(conversationAreas: ServerConversationArea[]) {
+  updateConversationAreas(conversationAreas: ConversationArea[]) {
     this.pendingInitConversationAreas = conversationAreas;
     if (!this.ready) {
       return;
@@ -197,6 +200,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
     if (this.player && this.cursors) {
       const speed = 175;
+
       const prevVelocity = this.player.sprite.body.velocity.clone();
       const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
 
@@ -366,8 +370,8 @@ class CoveyGameScene extends Phaser.Scene {
       sprite.setTintFill();
       sprite.setAlpha(0.3);
       const conversationAreaObj = new ConversationArea(
+        sprite.name,undefined,
         { labelText, topicText, sprite },
-        sprite.name,
       );
       sprite.setData('conversation', conversationAreaObj);
       this.conversationAreas.push(conversationAreaObj);
@@ -599,15 +603,19 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, players, myPlayerID, conversationAreas } = useCoveyAppState();
+  const { emitMovement, myPlayerID } = useCoveyAppState();
+  const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
+  const playerMovementCallbacks = usePlayerMovement();
+  const players = usePlayersInTown();
 
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
       backgroundColor: '#000000',
       parent: 'map-container',
+      pixelArt: true,
       minWidth: 800,
       minHeight: 600,
       physics: {
@@ -635,13 +643,22 @@ export default function WorldMap(): JSX.Element {
     };
   }, [video, emitMovement, setNewConversation, myPlayerID]);
 
-  const deepPlayers = JSON.stringify(players);
+  useEffect(() => {
+    const movementDispatcher = (player: ServerPlayer) => {
+      gameScene?.updatePlayerLocation(Player.fromServerPlayer(player));
+    }
+    playerMovementCallbacks.push(movementDispatcher);
+    return () => {
+      playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher),1);
+    }
+  }, [gameScene, playerMovementCallbacks]);
+
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);
-  }, [players, deepPlayers, gameScene]);
+  }, [gameScene, players]);
 
   const deepConversationAreas = JSON.stringify(
-    conversationAreas.map((area: ServerConversationArea) => ({
+    conversationAreas.map((area: ConversationArea) => ({
       label: area.label,
       topic: area.topic,
     })),
@@ -649,6 +666,7 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     gameScene?.updateConversationAreas(conversationAreas);
   }, [conversationAreas, deepConversationAreas, gameScene]);
+
 
   const newConversationModal = useMemo(() => {
     if (newConversation)

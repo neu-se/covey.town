@@ -13,7 +13,7 @@ import React, {
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import './App.css';
-import { ServerConversationArea } from './classes/ConversationArea';
+import ConversationArea, { ServerConversationArea } from './classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
@@ -28,11 +28,16 @@ import { Callback } from './components/VideoCall/VideoFrontend/types';
 import useConnectionOptions from './components/VideoCall/VideoFrontend/utils/useConnectionOptions/useConnectionOptions';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import WorldMap from './components/world/WorldMap';
+import ConversationAreasContext from './contexts/ConversationAreasContext';
 import CoveyAppContext from './contexts/CoveyAppContext';
 import NearbyPlayersContext from './contexts/NearbyPlayersContext';
+import PlayerMovementContext, { PlayerMovementCallback } from './contexts/PlayerMovementContext';
+import PlayersInTownContext from './contexts/PlayersInTownContext';
 import VideoContext from './contexts/VideoContext';
-import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
+import { CoveyAppState } from './CoveyTypes';
 
+export const MOVEMENT_UPDATE_DELAY_MS = 0;
+export const CALCULATE_NEARBY_PLAYERS_MOVING_DELAY_MS = 300;
 type CoveyAppUpdate =
   | {
       action: 'doConnect';
@@ -44,23 +49,13 @@ type CoveyAppUpdate =
         sessionToken: string;
         myPlayerID: string;
         socket: Socket;
-        players: Player[];
-        conversationAreas: ServerConversationArea[];
         emitMovement: (location: UserLocation) => void;
       };
     }
-  | { action: 'updateConversation'; conversationArea: ServerConversationArea }
-  | { action: 'destroyConversation'; conversationArea: ServerConversationArea }
-  | { action: 'addPlayer'; player: Player }
-  | { action: 'playerMoved'; player: Player }
-  | { action: 'playerDisconnect'; player: Player }
-  | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' };
 
 function defaultAppState(): CoveyAppState {
   return {
-    nearbyPlayers: { nearbyPlayers: [] },
-    players: [],
     myPlayerID: '',
     currentTownFriendlyName: '',
     currentTownID: '',
@@ -68,15 +63,8 @@ function defaultAppState(): CoveyAppState {
     sessionToken: '',
     userName: '',
     socket: null,
-    currentLocation: {
-      x: 0,
-      y: 0,
-      rotation: 'front',
-      moving: false,
-    },
     emitMovement: () => {},
     apiClient: new TownsServiceClient(),
-    conversationAreas: [],
   };
 }
 function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyAppState {
@@ -86,41 +74,13 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     currentTownID: state.currentTownID,
     currentTownIsPubliclyListed: state.currentTownIsPubliclyListed,
     myPlayerID: state.myPlayerID,
-    players: state.players,
-    currentLocation: state.currentLocation,
-    nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
     socket: state.socket,
     emitMovement: state.emitMovement,
-    apiClient: state.apiClient,
-    conversationAreas: state.conversationAreas,
+    apiClient: state.apiClient
   };
 
-  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
-    const isWithinCallRadius = (p: Player, location: UserLocation) => {
-      if (p.location && location) {
-        if(location.conversationLabel || p.location.conversationLabel){
-          return p.location.conversationLabel === location.conversationLabel;
-        }
-        const dx = p.location.x - location.x;
-        const dy = p.location.y - location.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        return d < 80;
-      }
-      return false;
-    };
-    return { nearbyPlayers: players.filter(p => isWithinCallRadius(p, currentLocation)) };
-  }
 
-  function samePlayers(a1: NearbyPlayers, a2: NearbyPlayers) {
-    if (a1.nearbyPlayers.length !== a2.nearbyPlayers.length) return false;
-    const ids1 = a1.nearbyPlayers.map(p => p.id).sort();
-    const ids2 = a2.nearbyPlayers.map(p => p.id).sort();
-    return !ids1.some((val, idx) => val !== ids2[idx]);
-  }
-
-  let updatePlayer;
-  let updatedConversationArea;
   switch (update.action) {
     case 'doConnect':
       nextState.sessionToken = update.data.sessionToken;
@@ -131,64 +91,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.userName = update.data.userName;
       nextState.emitMovement = update.data.emitMovement;
       nextState.socket = update.data.socket;
-      nextState.players = update.data.players;
-      nextState.conversationAreas = update.data.conversationAreas;
-      break;
-    case 'updateConversation':
-      updatedConversationArea = nextState.conversationAreas.find(
-        c => c.label === update.conversationArea.label,
-      );
-      if (updatedConversationArea) {
-        updatedConversationArea.topic = update.conversationArea.topic;
-        updatedConversationArea.occupantsByID = update.conversationArea.occupantsByID;
-      } else{
-        nextState.conversationAreas = nextState.conversationAreas.concat([update.conversationArea]);
-      }
-      break;
-    case 'destroyConversation':
-      nextState.conversationAreas = nextState.conversationAreas.filter(
-        c => c.label !== update.conversationArea.label,
-      );
-      break;
-    case 'addPlayer':
-      nextState.players = nextState.players.concat([update.player]);
-      break;
-    case 'playerMoved':
-      updatePlayer = nextState.players.find(p => p.id === update.player.id);
-      if (updatePlayer) {
-        updatePlayer.location = update.player.location;
-      } else {
-        nextState.players = nextState.players.concat([update.player]);
-      }
-      nextState.nearbyPlayers = calculateNearbyPlayers(
-        nextState.players,
-        nextState.currentLocation
-      );
-      if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
-        nextState.nearbyPlayers = state.nearbyPlayers;
-      }
-      break;
-    case 'weMoved':
-      nextState.currentLocation = update.location;
-      nextState.nearbyPlayers = calculateNearbyPlayers(
-        nextState.players,
-        nextState.currentLocation,
-      );
-      if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
-        nextState.nearbyPlayers = state.nearbyPlayers;
-      }
-
-      break;
-    case 'playerDisconnect':
-      nextState.players = nextState.players.filter(player => player.id !== update.player.id);
-
-      nextState.nearbyPlayers = calculateNearbyPlayers(
-        nextState.players,
-        nextState.currentLocation,
-      );
-      if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
-        nextState.nearbyPlayers = state.nearbyPlayers;
-      }
       break;
     case 'disconnect':
       state.socket?.disconnect();
@@ -200,76 +102,147 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
   return nextState;
 }
 
-async function GameController(
-  initData: TownJoinResponse,
-  dispatchAppUpdate: (update: CoveyAppUpdate) => void,
-) {
-  // Now, set up the game sockets
-  const gamePlayerID = initData.coveyUserID;
-  const sessionToken = initData.coveySessionToken;
-  const url = process.env.REACT_APP_TOWNS_SERVICE_URL;
-  assert(url);
-  const video = Video.instance();
-  assert(video);
-  const roomName = video.townFriendlyName;
-  assert(roomName);
-
-  const socket = io(url, { auth: { token: sessionToken, coveyTownID: video.coveyTownID } });
-  socket.on('newPlayer', (player: ServerPlayer) => {
-    dispatchAppUpdate({
-      action: 'addPlayer',
-      player: Player.fromServerPlayer(player),
-    });
-  });
-  socket.on('playerMoved', (player: ServerPlayer) => {
-    if (player._id !== gamePlayerID) {
-      dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player) });
-    }
-  });
-  socket.on('playerDisconnect', (player: ServerPlayer) => {
-    dispatchAppUpdate({ action: 'playerDisconnect', player: Player.fromServerPlayer(player) });
-  });
-  socket.on('conversationUpdated', (conversationArea: ServerConversationArea) => {
-    dispatchAppUpdate({ action: 'updateConversation', conversationArea });
-  });
-  socket.on('conversationDestroyed', (conversationArea: ServerConversationArea) => {
-    dispatchAppUpdate({ action: 'destroyConversation', conversationArea });
-  });
-  socket.on('disconnect', () => {
-    dispatchAppUpdate({ action: 'disconnect' });
-  });
-  const emitMovement = (location: UserLocation) => {
-    socket.emit('playerMovement', location);
-    dispatchAppUpdate({ action: 'weMoved', location });
-  };
-
-  dispatchAppUpdate({
-    action: 'doConnect',
-    data: {
-      sessionToken,
-      userName: video.userName,
-      townFriendlyName: roomName,
-      townID: video.coveyTownID,
-      myPlayerID: gamePlayerID,
-      townIsPubliclyListed: video.isPubliclyListed,
-      emitMovement,
-      socket,
-      players: initData.currentPlayers.map(sp => Player.fromServerPlayer(sp)),
-      conversationAreas: initData.conversationAreas,
-    },
-  });
-  return true;
-}
+  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
+    const isWithinCallRadius = (p: Player, location: UserLocation) => {
+      if (p.location && location) {
+        if (location.conversationLabel || p.location.conversationLabel) {
+          return p.location.conversationLabel === location.conversationLabel;
+        }
+        const dx = p.location.x - location.x;
+        const dy = p.location.y - location.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        return d < 80;
+      }
+      return false;
+    };
+    return players.filter(p => isWithinCallRadius(p, currentLocation));
+  }
+  function samePlayers(a1: Player[], a2: Player[]) {
+    if (a1.length !== a2.length) return false;
+    const ids1 = a1.map(p => p.id).sort();
+    const ids2 = a2.map(p => p.id).sort();
+    return !ids1.some((val, idx) => val !== ids2[idx]);
+  }
 
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
+  const [playerMovementCallbacks] = useState<PlayerMovementCallback[]>([]);
+  const [playersInTown, setPlayersInTown] = useState<Player[]>([]);
+  const [nearbyPlayers, setNearbyPlayers] = useState<Player[]>([]);
+  // const [currentLocation, setCurrentLocation] = useState<UserLocation>({moving: false, rotation: 'front', x: 0, y: 0});
+  const [conversationAreas, setConversationAreas] = useState<ConversationArea[]>([]);
 
   const setupGameController = useCallback(
     async (initData: TownJoinResponse) => {
-      await GameController(initData, dispatchAppUpdate);
+      const gamePlayerID = initData.coveyUserID;
+      const sessionToken = initData.coveySessionToken;
+      const url = process.env.REACT_APP_TOWNS_SERVICE_URL;
+      assert(url);
+      const video = Video.instance();
+      assert(video);
+      const roomName = video.townFriendlyName;
+      assert(roomName);
+    
+      const socket = io(url, { auth: { token: sessionToken, coveyTownID: video.coveyTownID } });
+      socket.on('disconnect', () => {
+        dispatchAppUpdate({ action: 'disconnect' });
+      });
+      let lastMovement = 0;
+      let lastRecalculateNearbyPlayers = 0;
+      let currentLocation :UserLocation = {moving: false, rotation: 'front', x: 0, y: 0};
+      const emitMovement = (location: UserLocation) => {
+        const now = Date.now();
+        currentLocation = location;
+        if (now - lastMovement > MOVEMENT_UPDATE_DELAY_MS || !location.moving) {
+          lastMovement = now;
+          socket.emit('playerMovement', location);
+          if (
+            now - lastRecalculateNearbyPlayers > CALCULATE_NEARBY_PLAYERS_MOVING_DELAY_MS ||
+            !location.moving
+          ) {
+            lastRecalculateNearbyPlayers = now;
+            // setCurrentLocation(location);
+          }
+        }
+      };
+    
+      let localPlayers = initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp));
+      let localConversationAreas = initData.conversationAreas.map((sa) => ConversationArea.fromServerConversationArea(sa));
+      let localNearbyPlayers :Player[] = [];
+      setPlayersInTown(localPlayers);
+      setConversationAreas(localConversationAreas);
+      setNearbyPlayers(localNearbyPlayers);
+
+      const recalculateNearbyPlayers = () => {
+        const newNearbyPlayers = calculateNearbyPlayers(localPlayers, currentLocation)
+        if (!samePlayers(localNearbyPlayers, newNearbyPlayers)) {
+          localNearbyPlayers = newNearbyPlayers;
+          setNearbyPlayers(localNearbyPlayers);
+        }
+      }
+      socket.on('newPlayer', (player: ServerPlayer) => {
+        localPlayers = localPlayers.concat(Player.fromServerPlayer(player));
+        recalculateNearbyPlayers();
+      });
+      socket.on('playerMoved', (player: ServerPlayer) => {
+        if (player._id !== gamePlayerID) {
+          const now = Date.now();
+          playerMovementCallbacks.forEach(cb => cb(player));
+          if (
+            !player.location.moving ||
+            now - lastRecalculateNearbyPlayers > CALCULATE_NEARBY_PLAYERS_MOVING_DELAY_MS
+          ) {
+            lastRecalculateNearbyPlayers = now;
+            const updatePlayer = localPlayers.find(p => p.id === player._id);
+            if(updatePlayer){
+              updatePlayer.location = player.location;
+            }else{
+              localPlayers = localPlayers.concat(Player.fromServerPlayer(player));
+              setPlayersInTown(localPlayers);
+            }
+            recalculateNearbyPlayers();
+          }
+        }
+      });
+      socket.on('playerDisconnect', (disconnectedPlayer: ServerPlayer) => {
+        localPlayers = localPlayers.filter(player => player.id !== disconnectedPlayer._id);
+        setPlayersInTown(localPlayers);
+        recalculateNearbyPlayers();
+      });
+      socket.on('conversationUpdated', (conversationArea: ServerConversationArea) => {
+        const updatedConversationArea = localConversationAreas.find(
+          c => c.label === conversationArea.label,
+        );
+        if (updatedConversationArea) {
+          updatedConversationArea.topic = conversationArea.topic;
+          updatedConversationArea.occupants = conversationArea.occupantsByID;
+        } else {
+          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(conversationArea)]);
+        }
+        setConversationAreas(localConversationAreas);
+
+      });
+      socket.on('conversationDestroyed', (conversationArea: ServerConversationArea) => {
+        localConversationAreas = localConversationAreas.filter(a => a.label !== conversationArea.label);
+        setConversationAreas(localConversationAreas);
+      });
+      dispatchAppUpdate({
+        action: 'doConnect',
+        data: {
+          sessionToken,
+          userName: video.userName,
+          townFriendlyName: roomName,
+          townID: video.coveyTownID,
+          myPlayerID: gamePlayerID,
+          townIsPubliclyListed: video.isPubliclyListed,
+          emitMovement,
+          socket,
+        },
+      });
+
       return true;
     },
-    [dispatchAppUpdate],
+    [dispatchAppUpdate, playerMovementCallbacks, setPlayersInTown, setNearbyPlayers, setConversationAreas],
   );
   const videoInstance = Video.instance();
 
@@ -300,9 +273,16 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   return (
     <CoveyAppContext.Provider value={appState}>
       <VideoContext.Provider value={Video.instance()}>
-        <NearbyPlayersContext.Provider value={appState.nearbyPlayers}>
-          {page}
+          <PlayerMovementContext.Provider value={playerMovementCallbacks}>
+        <PlayersInTownContext.Provider value={playersInTown}>
+        <NearbyPlayersContext.Provider value={nearbyPlayers}>
+          <ConversationAreasContext.Provider value={conversationAreas}>
+
+            {page}
+          </ConversationAreasContext.Provider>
         </NearbyPlayersContext.Provider>
+</PlayersInTownContext.Provider>
+          </PlayerMovementContext.Provider>
       </VideoContext.Provider>
     </CoveyAppContext.Provider>
   );
