@@ -616,7 +616,10 @@ export default function WorldMap(): JSX.Element {
       backgroundColor: '#000000',
       parent: 'map-container',
       pixelArt: true,
+      autoRound: 10,
       minWidth: 800,
+      fps: {target: 30},
+      powerPreference: 'high-performance',
       minHeight: 600,
       physics: {
         default: 'arcade',
