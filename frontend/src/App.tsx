@@ -150,21 +150,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       let lastMovement = 0;
       let lastRecalculateNearbyPlayers = 0;
       let currentLocation :UserLocation = {moving: false, rotation: 'front', x: 0, y: 0};
-      const emitMovement = (location: UserLocation) => {
-        const now = Date.now();
-        currentLocation = location;
-        if (now - lastMovement > MOVEMENT_UPDATE_DELAY_MS || !location.moving) {
-          lastMovement = now;
-          socket.emit('playerMovement', location);
-          if (
-            now - lastRecalculateNearbyPlayers > CALCULATE_NEARBY_PLAYERS_MOVING_DELAY_MS ||
-            !location.moving
-          ) {
-            lastRecalculateNearbyPlayers = now;
-            // setCurrentLocation(location);
-          }
-        }
-      };
     
       let localPlayers = initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp));
       let localConversationAreas = initData.conversationAreas.map((sa) => ConversationArea.fromServerConversationArea(sa));
@@ -180,6 +165,22 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           setNearbyPlayers(localNearbyPlayers);
         }
       }
+      const emitMovement = (location: UserLocation) => {
+        const now = Date.now();
+        currentLocation = location;
+        if (now - lastMovement > MOVEMENT_UPDATE_DELAY_MS || !location.moving) {
+          lastMovement = now;
+          socket.emit('playerMovement', location);
+          if (
+            now - lastRecalculateNearbyPlayers > CALCULATE_NEARBY_PLAYERS_MOVING_DELAY_MS ||
+            !location.moving
+          ) {
+            lastRecalculateNearbyPlayers = now;
+            recalculateNearbyPlayers();
+            // setCurrentLocation(location);
+          }
+        }
+      };
       socket.on('newPlayer', (player: ServerPlayer) => {
         localPlayers = localPlayers.concat(Player.fromServerPlayer(player));
         recalculateNearbyPlayers();
