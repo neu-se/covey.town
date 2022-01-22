@@ -206,10 +206,10 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
-    onConversationDestroyed(conversation: ServerConversationArea){
+    onConversationAreaDestroyed(conversation: ServerConversationArea){
       socket.emit('conversationDestroyed', conversation);
     },
-    onConversationUpdated(conversation: ServerConversationArea){
+    onConversationAreaUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);
     },
   };
