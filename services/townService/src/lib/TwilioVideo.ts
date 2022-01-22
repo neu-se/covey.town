@@ -59,6 +59,10 @@ export default class TwilioVideo implements IVideoClient {
 
   async createConversationIfNotExisting(conversationID: string, clientIdentity: string): Promise<void> {
     assert(this._twilioConversationsSid);
+    if (this._twilioConversationsSid === 'IS..'){
+      // Do not try to create a conversation if we don't have a real account SID
+      return;
+    }
     const conversationsClient= this._twilioClient.conversations.services(this._twilioConversationsSid);
     try {
       // Does it exist?
