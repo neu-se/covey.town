@@ -217,7 +217,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         data: {
           sessionToken,
           userName: video.userName,
-          townFriendlyName: roomName,
+          townFriendlyName: townName,
           townID: video.coveyTownID,
           myPlayerID: gamePlayerID,
           townIsPubliclyListed: video.isPubliclyListed,
