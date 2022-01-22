@@ -4,7 +4,12 @@ import { UserLocation } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
-type BoundingBox = {
+
+/**
+ * A bounding box, with a coordinate system that matches the frontend game engine's coordinates
+ * The x,y position specifies the center of the box (NOT a corner). 
+ */
+export type BoundingBox = {
   x: number,
   y: number,
   width: number,
@@ -46,6 +51,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** Conversation areas */
+  conversationAreas: ServerConversationArea[];
 }
 
 /**
@@ -91,10 +98,13 @@ export interface TownUpdateRequest {
   isPubliclyListed?: boolean;
 }
 
-export interface ConversationCreateRequest {
+/**
+ * Payload sent by the client to create a new conversation area
+ */
+export interface ConversationAreaCreateRequest {
   coveyTownID: string;
   sessionToken: string;
-  conversation: ServerConversationArea;
+  conversationArea: ServerConversationArea;
 }
 
 /**
@@ -160,6 +170,11 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async createConversationArea(requestData: ConversationAreaCreateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

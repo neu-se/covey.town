@@ -5,6 +5,8 @@ import {Socket as ServerSocket} from 'socket.io';
 import {AddressInfo} from 'net';
 import http from 'http';
 import { UserLocation } from '../CoveyTypes';
+import { BoundingBox, ServerConversationArea } from './TownsServiceClient';
+import { nanoid } from 'nanoid';
 
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
@@ -91,3 +93,15 @@ export function setSessionTokenAndTownID(coveyTownID: string, sessionToken: stri
   socket.handshake.auth = {token: sessionToken, coveyTownID};
 }
 
+export function createConversationForTesting(params?:{conversationLabel?: string,
+   conversationTopic?: string,
+   boundingBox?: BoundingBox
+  }) : ServerConversationArea {
+
+  return {
+    boundingBox: params?.boundingBox || {height: 100, width: 100, x: 400, y: 400},
+    label: params?.conversationLabel || nanoid(),
+    occupantsByID: [],
+    topic: params?.conversationTopic || nanoid()
+  }
+}

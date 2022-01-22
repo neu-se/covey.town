@@ -105,6 +105,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
     const isWithinCallRadius = (p: Player, location: UserLocation) => {
       if (p.location && location) {
+        if (location.conversationLabel || p.location.conversationLabel) {
+          return p.location.conversationLabel === location.conversationLabel;
+        }
         const dx = p.location.x - location.x;
         const dy = p.location.y - location.y;
         const d = Math.sqrt(dx * dx + dy * dy);
@@ -207,14 +210,22 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         recalculateNearbyPlayers();
       });
       socket.on('conversationUpdated', (_conversationArea: ServerConversationArea) => {
-        //This method should probably do something besides add each updated conversation area to the list of conversation areas
-        //We included this line only to satisfy the linter: you will eventually need to mutate localConversationAreas, and this is
-        //the simplest way to avoid the linting error that `localConversationAreas` should be `const`
-        localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(_conversationArea)]); 
-        setConversationAreas(localConversationAreas); // TODO HW2
+        const updatedConversationArea = localConversationAreas.find(
+          c => c.label === _conversationArea.label,
+        );
+        if (updatedConversationArea) {
+          updatedConversationArea.topic = _conversationArea.topic;
+          updatedConversationArea.occupants = _conversationArea.occupantsByID;
+        } else {
+          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(conversationArea)]);
+        }
+        setConversationAreas(localConversationAreas);
+        recalculateNearbyPlayers();
       });
       socket.on('conversationDestroyed', (_conversationArea: ServerConversationArea) => {
-        setConversationAreas(localConversationAreas); // TODO HW2
+        localConversationAreas = localConversationAreas.filter(a => a.label !== _conversationArea.label);
+        setConversationAreas(localConversationAreas);
+        recalculateNearbyPlayers();
       });
       dispatchAppUpdate({
         action: 'doConnect',
