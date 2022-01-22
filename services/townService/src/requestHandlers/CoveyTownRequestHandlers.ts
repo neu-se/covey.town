@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -170,7 +170,15 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 }
 
-export async function conversationCreateHandler(_requestData: ConversationCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
+/**
+ * A handler to process the "Create Conversation Area" request
+ * The intended flow of this handler is:
+ * * Fetch the town controller for the specified town ID
+ * * Validate that the sessionToken is valid for that town
+ * * Ask the TownController to create the conversation area
+ * @param _requestData Conversation area create request
+ */
+export async function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
   return {
     isOK: false,
     response: {},

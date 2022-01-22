@@ -16,7 +16,7 @@ export default class Player {
   private readonly _userName: string;
 
   /** The current ConversationArea that the player is in, or undefined if they are not located within one */
-  private _activeConversation?: ServerConversationArea;
+  private _activeConversationArea?: ServerConversationArea;
 
   constructor(userName: string) {
     this.location = {
@@ -35,6 +35,14 @@ export default class Player {
 
   get id(): string {
     return this._id;
+  }
+
+  get activeConversationArea(): ServerConversationArea | undefined {
+    return this._activeConversationArea;
+  }
+
+  set activeConversationArea(conversationArea: ServerConversationArea | undefined) {
+    this._activeConversationArea = conversationArea;
   }
 
   updateLocation(location: UserLocation): void {

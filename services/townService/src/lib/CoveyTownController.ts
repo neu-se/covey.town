@@ -50,8 +50,8 @@ export default class CoveyTownController {
     return this._coveyTownID;
   }
 
-  get conversations(): ServerConversationArea[] {
-    return this._conversations;
+  get conversationAreas(): ServerConversationArea[] {
+    return this._conversationAreas;
   }
 
   /** The list of players currently in the town * */
@@ -67,7 +67,7 @@ export default class CoveyTownController {
   private _listeners: CoveyTownListener[] = [];
 
   /** The list of currently active ConversationAreas in this town */
-  private _conversations: ServerConversationArea[] = [];
+  private _conversationAreas: ServerConversationArea[] = [];
 
   private readonly _coveyTownID: string;
 
@@ -78,7 +78,6 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
-
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -125,6 +124,11 @@ export default class CoveyTownController {
 
   /**
    * Updates the location of a player within the town
+   * 
+   * If the player has changed conversation areas, this method also updates the
+   * corresponding ConversationArea objects tracked by the town controller, and dispatches
+   * any onConversationUpdated events as appropriate
+   * 
    * @param player Player to update location for
    * @param location New location for this player
    */
@@ -136,18 +140,17 @@ export default class CoveyTownController {
   /**
    * Creates a new conversation area in this town if there is not currently an active
    * conversation with the same label.
-   * 
-   * When a conversation is created, this method is responsible for:
-   *  1. Checking that the label is not in use by another conversation area in this town
-   *  2. Adds any players in the region defined by this conversation area to it
-   *  3. Notifies any CoveyTownListeners that the conversation has been updated 
-   * 
-   * @param _conversation Information describing the conversation area to create. Ignores any
+   *
+   * Adds any players who are in the region defined by the conversation area to it.
+   *
+   * Notifies any CoveyTownListeners that the conversation has been updated
+   *
+   * @param _conversationArea Information describing the conversation area to create. Ignores any
    *  occupantsById that are set on the conversation area that is passed to this method.
-   * 
+   *
    * @returns true if the conversation is successfully created, or false if not
    */
-  createConversation(_conversation: ServerConversationArea): boolean {
+  addConversationArea(_conversationArea: ServerConversationArea): boolean {
     return false;
   }
 

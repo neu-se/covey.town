@@ -29,14 +29,14 @@ export default interface CoveyTownListener {
   onTownDestroyed(): void;
 
   /**
-   * Called when a conversation is created or updated
-   * @param conversation the conversation that is updated or created
+   * Called when a conversation area is created or updated
+   * @param conversationArea the conversation area that is updated or created
    */
-  onConversationUpdated(conversation: ServerConversationArea) : void;
+  onConversationAreaUpdated(conversationArea: ServerConversationArea) : void;
 
   /**
-   * Called when a conversation is destroyed
-   * @param conversation the conversation that has been destroyed
+   * Called when a conversation area is destroyed
+   * @param conversationArea the conversation area that has been destroyed
    */
-  onConversationDestroyed(conversation: ServerConversationArea): void;
+  onConversationAreaDestroyed(conversationArea: ServerConversationArea): void;
 }
