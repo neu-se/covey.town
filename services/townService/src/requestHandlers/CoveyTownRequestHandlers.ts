@@ -118,7 +118,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       providerVideoToken: newSession.videoToken,
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
-      isPubliclyListed: coveyTownController.isPubliclyListed
+      isPubliclyListed: coveyTownController.isPubliclyListed,
     },
   };
 }
@@ -174,8 +174,8 @@ export async function conversationCreateHandler(_requestData: ConversationCreate
   return {
     isOK: false,
     response: {},
-    message: 'This feature is not yet implemented'
-  }
+    message: 'This feature is not yet implemented',
+  };
 }
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
@@ -203,7 +203,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     },
     onConversationUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);
-    }
+    },
   };
 }
 

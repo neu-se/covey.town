@@ -118,7 +118,7 @@ class CoveyGameScene extends Phaser.Scene {
       this._onGameReadyListeners.push(() => {
         this.updateConversationAreas(conversationAreas);
       });
-      return;
+      
     }
   }
 
@@ -595,7 +595,7 @@ class CoveyGameScene extends Phaser.Scene {
       // sprites....
       this.players.forEach(p => this.updatePlayerLocation(p));
     }
-    //Call any listeners that are waiting for the game to be initialized
+    // Call any listeners that are waiting for the game to be initialized
     this._onGameReadyListeners.forEach(listener => listener());
     this._onGameReadyListeners = [];
   }

@@ -9,7 +9,7 @@ type BoundingBox = {
   y: number,
   width: number,
   height: number
-}
+};
 export type ServerConversationArea = {
   label: string;
   topic: string;

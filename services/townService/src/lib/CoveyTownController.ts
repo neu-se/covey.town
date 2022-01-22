@@ -147,7 +147,7 @@ export default class CoveyTownController {
    * 
    * @returns true if the conversation is successfully created, or false if not
    */
-   createConversation(_conversation: ServerConversationArea): boolean {
+  createConversation(_conversation: ServerConversationArea): boolean {
     return false;
   }
 

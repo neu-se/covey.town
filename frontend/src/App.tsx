@@ -207,10 +207,14 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         recalculateNearbyPlayers();
       });
       socket.on('conversationUpdated', (_conversationArea: ServerConversationArea) => {
-        setConversationAreas(localConversationAreas); //TODO HW2
+        //This method should probably do something besides add each updated conversation area to the list of conversation areas
+        //We included this line only to satisfy the linter: you will eventually need to mutate localConversationAreas, and this is
+        //the simplest way to avoid the linting error that `localConversationAreas` should be `const`
+        localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(_conversationArea)]); 
+        setConversationAreas(localConversationAreas); // TODO HW2
       });
       socket.on('conversationDestroyed', (_conversationArea: ServerConversationArea) => {
-        setConversationAreas(localConversationAreas); //TODO HW2
+        setConversationAreas(localConversationAreas); // TODO HW2
       });
       dispatchAppUpdate({
         action: 'doConnect',
