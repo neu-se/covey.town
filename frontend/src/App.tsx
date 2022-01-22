@@ -137,8 +137,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       assert(url);
       const video = Video.instance();
       assert(video);
-      const roomName = video.townFriendlyName;
-      assert(roomName);
+      const townName = video.townFriendlyName;
+      assert(townName);
     
       const socket = io(url, { auth: { token: sessionToken, coveyTownID: video.coveyTownID } });
       socket.on('disconnect', () => {

@@ -96,7 +96,7 @@ function wrappedTownSelection() {
     <TownSelection doLogin={doLoginMock}/></ChatProvider></CoveyAppContext.Provider></ChakraProvider>;
 }
 
-describe('Part 1 - Public room listing', () => {
+describe('Part 1 - Public town listing', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     mocklistTowns.mockReset();
