@@ -120,6 +120,10 @@ export default class CoveyTownController {
     this._players = this._players.filter(p => p.id !== session.player.id);
     this._sessions = this._sessions.filter(s => s.sessionToken !== session.sessionToken);
     this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
+    const conversation = session.player.activeConversationArea;
+    if (conversation) {
+      this.removePlayerFromConversationArea(session.player, conversation);
+    }
   }
 
   /**
@@ -134,7 +138,30 @@ export default class CoveyTownController {
    */
   updatePlayerLocation(player: Player, location: UserLocation): void {
     player.updateLocation(location);
+    const conversation = this.conversationAreas.find(conv => conv.label === location.conversationLabel);
+    const prevConversation = player.activeConversationArea;
+    player.activeConversationArea = conversation;
+    if (conversation !== prevConversation) {
+      if (prevConversation) {
+        this.removePlayerFromConversationArea(player, prevConversation);
+      }
+      if (conversation) {
+        conversation.occupantsByID.push(player.id);
+        this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+      }
+    }
+
     this._listeners.forEach(listener => listener.onPlayerMoved(player));
+  }
+
+  removePlayerFromConversationArea(player: Player, conversation: ServerConversationArea) {
+    conversation.occupantsByID = conversation.occupantsByID.filter(p => p != player.id);
+    if (conversation.occupantsByID.length == 0) {
+      this._conversationAreas = this._conversationAreas.filter(conv => conv !== conversation);
+      this._listeners.forEach(listener => listener.onConversationAreaDestroyed(conversation));
+    } else {
+      this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+    }
   }
 
   /**
@@ -151,7 +178,22 @@ export default class CoveyTownController {
    * @returns true if the conversation is successfully created, or false if not
    */
   addConversationArea(_conversationArea: ServerConversationArea): boolean {
-    return false;
+    if (
+      this._conversationAreas.find(
+        eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
+      )
+    )
+      return false;
+    this._conversationAreas.push(_conversationArea);
+    const playersInThisConversation = this.players.filter(player =>
+      player.isWithin(_conversationArea),
+    );
+    playersInThisConversation.forEach(
+      player => (player.activeConversationArea = _conversationArea),
+    );
+    _conversationArea.occupantsByID = playersInThisConversation.map(player => player.id);
+    this._listeners.forEach(listener => listener.onConversationAreaUpdated(_conversationArea));
+    return true;
   }
 
   /**

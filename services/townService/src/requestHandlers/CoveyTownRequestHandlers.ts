@@ -35,6 +35,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** Conversation areas currently active in this town */
+  conversationAreas: ServerConversationArea[];
 }
 
 /**
@@ -119,6 +121,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
+      conversationAreas: coveyTownController.conversationAreas
     },
   };
 }
@@ -179,11 +182,19 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
  * @param _requestData Conversation area create request
  */
 export async function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
+  if(!townController?.getSessionByToken(_requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: 'Not authorized'
+    }
+  }
+  const success = townController.addConversationArea(_requestData.conversationArea);
   return {
-    isOK: false,
+    isOK: success,
     response: {},
-    message: 'This feature is not yet implemented',
-  };
+    message: !success ? `Unable to create conversation ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined
+  }
 }
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
@@ -206,10 +217,10 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
-    onConversationDestroyed(conversation: ServerConversationArea){
+    onConversationAreaDestroyed(conversation: ServerConversationArea){
       socket.emit('conversationDestroyed', conversation);
     },
-    onConversationUpdated(conversation: ServerConversationArea){
+    onConversationAreaUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);
     },
   };
