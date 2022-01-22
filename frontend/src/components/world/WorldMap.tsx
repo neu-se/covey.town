@@ -7,8 +7,10 @@ import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
+import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 
+// Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
@@ -47,7 +49,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private setNewConversation: (conv: ConversationArea) => void;
 
-  private pendingInitConversationAreas?: ConversationArea[];
+  private _onGameReadyListeners: Callback[] = [];
 
   constructor(
     video: Video,
@@ -66,7 +68,10 @@ class CoveyGameScene extends Phaser.Scene {
     // this.load.image("logo", logoImg);
     this.load.image('Room_Builder_32x32', '/assets/tilesets/Room_Builder_32x32.png');
     this.load.image('22_Museum_32x32', '/assets/tilesets/22_Museum_32x32.png');
-    this.load.image('5_Classroom_and_library_32x32', '/assets/tilesets/5_Classroom_and_library_32x32.png');
+    this.load.image(
+      '5_Classroom_and_library_32x32',
+      '/assets/tilesets/5_Classroom_and_library_32x32.png',
+    );
     this.load.image('12_Kitchen_32x32', '/assets/tilesets/12_Kitchen_32x32.png');
     this.load.image('1_Generic_32x32', '/assets/tilesets/1_Generic_32x32.png');
     this.load.image('13_Conference_Hall_32x32', '/assets/tilesets/13_Conference_Hall_32x32.png');
@@ -76,33 +81,44 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
-  updateConversationAreas(conversationAreas: ConversationArea[]) {
-    this.pendingInitConversationAreas = conversationAreas;
-    if (!this.ready) {
-      return;
-    }
-    this._updateConversationAreas();
+  _updateConversationAreas(_conversationAreas: ConversationArea[]) {
+    _conversationAreas.forEach(eachUpdatedArea => {
+      const existingArea = this.conversationAreas.find(
+        eachExistingArea => eachExistingArea.label === eachUpdatedArea.label,
+      );
+      if (existingArea) {
+        if (existingArea.topic !== eachUpdatedArea.topic) {
+          existingArea.onTopicChange(eachUpdatedArea.topic);
+        }
+      }
+    });
+    this.conversationAreas.forEach(eachArea => {
+      const serverArea = _conversationAreas?.find(a => a.label === eachArea.label);
+      if (!serverArea) {
+        eachArea.destroy();
+      }
+    });
   }
 
-  _updateConversationAreas() {
-    if (this.pendingInitConversationAreas) {
-      this.pendingInitConversationAreas.forEach(eachUpdatedArea => {
-        const existingArea = this.conversationAreas.find(
-          eachExistingArea => eachExistingArea.label === eachUpdatedArea.label,
-        );
-        if (existingArea) {
-          if (existingArea.topic !== eachUpdatedArea.topic) {
-            existingArea.onTopicChange(eachUpdatedArea.topic);
-          }
-        }
+  /**
+   * Update the WorldMap's view of the current conversation areas, updating their topics and
+   * participants, as necessary
+   *
+   * @param conversationAreas
+   * @returns
+   */
+  updateConversationAreas(conversationAreas: ConversationArea[]) {
+    if (!this.ready) {
+      /*
+       * Due to the asynchronous nature of setting up a Phaser game scene (it requires gathering
+       * some resources using asynchronous operations), it is possible that this could be called
+       * in the period between when the player logs in and when the game is ready. Hence, we
+       * register a callback to complete the initialization once the game is ready
+       */
+      this._onGameReadyListeners.push(() => {
+        this.updateConversationAreas(conversationAreas);
       });
-      this.conversationAreas.forEach(eachArea => {
-        const serverArea = this.pendingInitConversationAreas?.find(a => a.label === eachArea.label);
-        if (!serverArea) {
-          eachArea.destroy();
-        }
-      });
-      this.pendingInitConversationAreas = undefined;
+      return;
     }
   }
 
@@ -273,7 +289,6 @@ class CoveyGameScene extends Phaser.Scene {
             )
           ) {
             this.infoTextBox?.setVisible(false);
-            this.currentConversationArea.onCurrentPlayerExits();
             this.currentConversationArea = undefined;
             this.lastLocation.conversationLabel = undefined;
           }
@@ -369,10 +384,11 @@ class CoveyGameScene extends Phaser.Scene {
       );
       sprite.setTintFill();
       sprite.setAlpha(0.3);
-      const conversationAreaObj = new ConversationArea(
-        sprite.name,undefined,
-        { labelText, topicText, sprite },
-      );
+      const conversationAreaObj = new ConversationArea(sprite.name, undefined, {
+        labelText,
+        topicText,
+        sprite,
+      });
       sprite.setData('conversation', conversationAreaObj);
       this.conversationAreas.push(conversationAreaObj);
     });
@@ -483,7 +499,6 @@ class CoveyGameScene extends Phaser.Scene {
             this.infoTextBox?.setVisible(false);
           }
           this.currentConversationArea = conv;
-          conv.onCurrentPlayerEntered();
         }
       },
     );
@@ -580,9 +595,9 @@ class CoveyGameScene extends Phaser.Scene {
       // sprites....
       this.players.forEach(p => this.updatePlayerLocation(p));
     }
-    if (this.pendingInitConversationAreas) {
-      this._updateConversationAreas();
-    }
+    //Call any listeners that are waiting for the game to be initialized
+    this._onGameReadyListeners.forEach(listener => listener());
+    this._onGameReadyListeners = [];
   }
 
   pause() {
@@ -618,7 +633,7 @@ export default function WorldMap(): JSX.Element {
       pixelArt: true,
       autoRound: 10,
       minWidth: 800,
-      fps: {target: 30},
+      fps: { target: 30 },
       powerPreference: 'high-performance',
       minHeight: 600,
       physics: {
@@ -649,11 +664,11 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     const movementDispatcher = (player: ServerPlayer) => {
       gameScene?.updatePlayerLocation(Player.fromServerPlayer(player));
-    }
+    };
     playerMovementCallbacks.push(movementDispatcher);
     return () => {
-      playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher),1);
-    }
+      playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
+    };
   }, [gameScene, playerMovementCallbacks]);
 
   useEffect(() => {
@@ -669,7 +684,6 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     gameScene?.updateConversationAreas(conversationAreas);
   }, [conversationAreas, deepConversationAreas, gameScene]);
-
 
   const newConversationModal = useMemo(() => {
     if (newConversation)

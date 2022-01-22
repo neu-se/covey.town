@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useState,
+  useState
 } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
@@ -105,9 +105,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
   function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
     const isWithinCallRadius = (p: Player, location: UserLocation) => {
       if (p.location && location) {
-        if (location.conversationLabel || p.location.conversationLabel) {
-          return p.location.conversationLabel === location.conversationLabel;
-        }
         const dx = p.location.x - location.x;
         const dy = p.location.y - location.y;
         const d = Math.sqrt(dx * dx + dy * dy);
@@ -177,7 +174,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           ) {
             lastRecalculateNearbyPlayers = now;
             recalculateNearbyPlayers();
-            // setCurrentLocation(location);
           }
         }
       };
@@ -210,22 +206,11 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         setPlayersInTown(localPlayers);
         recalculateNearbyPlayers();
       });
-      socket.on('conversationUpdated', (conversationArea: ServerConversationArea) => {
-        const updatedConversationArea = localConversationAreas.find(
-          c => c.label === conversationArea.label,
-        );
-        if (updatedConversationArea) {
-          updatedConversationArea.topic = conversationArea.topic;
-          updatedConversationArea.occupants = conversationArea.occupantsByID;
-        } else {
-          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(conversationArea)]);
-        }
-        setConversationAreas(localConversationAreas);
-
+      socket.on('conversationUpdated', (_conversationArea: ServerConversationArea) => {
+        setConversationAreas(localConversationAreas); //TODO HW2
       });
-      socket.on('conversationDestroyed', (conversationArea: ServerConversationArea) => {
-        localConversationAreas = localConversationAreas.filter(a => a.label !== conversationArea.label);
-        setConversationAreas(localConversationAreas);
+      socket.on('conversationDestroyed', (_conversationArea: ServerConversationArea) => {
+        setConversationAreas(localConversationAreas); //TODO HW2
       });
       dispatchAppUpdate({
         action: 'doConnect',
@@ -278,7 +263,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         <PlayersInTownContext.Provider value={playersInTown}>
         <NearbyPlayersContext.Provider value={nearbyPlayers}>
           <ConversationAreasContext.Provider value={conversationAreas}>
-
             {page}
           </ConversationAreasContext.Provider>
         </NearbyPlayersContext.Provider>

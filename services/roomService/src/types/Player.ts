@@ -15,6 +15,7 @@ export default class Player {
   /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
 
+  /** The current ConversationArea that the player is in, or undefined if they are not located within one */
   private _activeConversation?: ServerConversationArea;
 
   constructor(userName: string) {
@@ -26,14 +27,6 @@ export default class Player {
     };
     this._userName = userName;
     this._id = nanoid();
-  }
-
-  get activeConversation(): ServerConversationArea | undefined {
-    return this._activeConversation;
-  }
-
-  set activeConversation(conversation: ServerConversationArea | undefined) {
-    this._activeConversation = conversation;
   }
 
   get userName(): string {
@@ -48,12 +41,4 @@ export default class Player {
     this.location = location;
   }
 
-  isWithin(conversation: ServerConversationArea) {
-    return (
-      this.location.x >= conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
-      this.location.x <= conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
-      this.location.y >= conversation.boundingBox.y - conversation.boundingBox.height / 2 &&
-      this.location.y <= conversation.boundingBox.y + conversation.boundingBox.height / 2
-    );
-  }
 }

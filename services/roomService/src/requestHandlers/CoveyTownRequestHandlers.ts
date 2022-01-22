@@ -35,8 +35,6 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
-  /** Active conversation areas */
-  conversationAreas: ServerConversationArea[];
 }
 
 /**
@@ -120,8 +118,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       providerVideoToken: newSession.videoToken,
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
-      isPubliclyListed: coveyTownController.isPubliclyListed,
-      conversationAreas: coveyTownController.conversations
+      isPubliclyListed: coveyTownController.isPubliclyListed
     },
   };
 }
@@ -173,19 +170,11 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 }
 
-export async function conversationCreateHandler(requestData: ConversationCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
-  const townsStore = CoveyTownsStore.getInstance();
-  const townController = townsStore.getControllerForTown(requestData.coveyTownID);
-  if(!townController?.getSessionByToken(requestData.sessionToken)){
-    return {
-      isOK: false, response: {}, message: 'Not authorized'
-    }
-  }
-  const success = townController.createConversation(requestData.conversation);
+export async function conversationCreateHandler(_requestData: ConversationCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
   return {
-    isOK: success,
+    isOK: false,
     response: {},
-    message: !success ? `Unable to create conversation ${requestData.conversation.label} with topic ${requestData.conversation.topic}` : undefined
+    message: 'This feature is not yet implemented'
   }
 }
 /**
