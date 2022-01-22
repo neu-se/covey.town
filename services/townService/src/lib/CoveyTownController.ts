@@ -151,7 +151,7 @@ export default class CoveyTownController {
    * @returns true if the conversation is successfully created, or false if not
    */
   addConversationArea(_conversationArea: ServerConversationArea): boolean {
-    return false;
+    return this._capacity > 0; // TODO delete this when you implement HW2, it is here just to satisfy the linter
   }
 
   /**

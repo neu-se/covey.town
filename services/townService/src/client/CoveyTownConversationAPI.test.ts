@@ -78,7 +78,7 @@ describe('Create Conversation Area API', () => {
     });
     const {conversationAreas} = await apiClient.joinTown({
       userName: nanoid(),
-      coveyTownID: testingTown.coveyTownID
+      coveyTownID: testingTown.coveyTownID,
     });
     expect(conversationAreas.length).toBe(1);
     expect(conversationAreas[0].label).toEqual(convArea.label);
