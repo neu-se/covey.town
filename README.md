@@ -10,7 +10,7 @@ The figure above depicts the high-level architecture of Covey.Town.
 The frontend client (in the `frontend` directory of this repository) uses the [PhaserJS Game Library](https://phaser.io) to create a 2D game interface, using tilemaps and sprites.
 The frontend implements video chat using the [Twilio Programmable Video](https://www.twilio.com/docs/video) API, and that aspect of the interface relies heavily on [Twilio's React Starter App](https://github.com/twilio/twilio-video-app-react). Twilio's React Starter App is packaged and reused under the Apache License, 2.0.
 
-A backend service (in the `services/roomService` directory) implements the application logic: tracking which "towns" are available to be joined, and the state of each of those towns.
+A backend service (in the `services/townService` directory) implements the application logic: tracking which "towns" are available to be joined, and the state of each of those towns.
 
 ## Running this app locally
 
@@ -23,7 +23,7 @@ To create an account and configure your local environment:
 
 1. Go to [Twilio](https://www.twilio.com/) and create an account. You do not need to provide a credit card to create a trial account.
 2. Create an API key and secret (select "API Keys" on the left under "Settings")
-3. Create a `.env` file in the `services/roomService` directory, setting the values as follows:
+3. Create a `.env` file in the `services/townService` directory, setting the values as follows:
 
 | Config Value            | Description                               |
 | ----------------------- | ----------------------------------------- |
@@ -34,12 +34,12 @@ To create an account and configure your local environment:
 
 ### Starting the backend
 
-Once your backend is configured, you can start it by running `npm start` in the `services/roomService` directory (the first time you run it, you will also need to run `npm install`).
-The backend will automatically restart if you change any of the files in the `services/roomService/src` directory.
+Once your backend is configured, you can start it by running `npm start` in the `services/townService` directory (the first time you run it, you will also need to run `npm install`).
+The backend will automatically restart if you change any of the files in the `services/townService/src` directory.
 
 ### Configuring the frontend
 
-Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWNS_SERVICE_URL=http://localhost:8081` (if you deploy the rooms/towns service to another location, put that location here instead)
+Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWNS_SERVICE_URL=http://localhost:8081` (if you deploy the towns service to another location, put that location here instead)
 
 ### Running the frontend
 
