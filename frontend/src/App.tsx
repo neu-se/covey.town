@@ -217,7 +217,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           updatedConversationArea.topic = _conversationArea.topic;
           updatedConversationArea.occupants = _conversationArea.occupantsByID;
         } else {
-          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(conversationArea)]);
+          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(_conversationArea)]);
         }
         setConversationAreas(localConversationAreas);
         recalculateNearbyPlayers();
