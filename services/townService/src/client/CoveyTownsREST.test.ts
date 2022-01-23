@@ -241,8 +241,8 @@ describe('TownsServiceAPIREST', () => {
         userName: nanoid(),
         coveyTownID: testingTown.coveyTownID,
       });
-      await apiClient.createConversation({
-        conversation: createConversationForTesting(),
+      await apiClient.createConversationArea({
+        conversationArea: createConversationForTesting(),
         coveyTownID: testingTown.coveyTownID,
         sessionToken: testingSession.coveySessionToken,
       });

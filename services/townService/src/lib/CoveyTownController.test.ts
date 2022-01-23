@@ -256,28 +256,28 @@ describe('CoveyTownController', () => {
     });
   });
   describe('updatePlayerLocation', () =>{
-      let testingTown: CoveyTownController;
-      beforeEach(() => {
-        const townName = `updatePlayerLocation test town ${nanoid()}`;
-        testingTown = new CoveyTownController(townName, false);
-      });
-      it('should set the player\'s _activeConversationArea property when the player moves into a conversation area', async ()=>{
-        const newConversationArea = TestUtils.createConversationForTesting({boundingBox: {x: 100, y: 100, height: 20, width: 20}});
-        const result = testingTown.addConversationArea(newConversationArea);
-        expect(result).toBe(true);
-        const player = new Player(nanoid());
-        await testingTown.addPlayer(player);
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should set a conversation area\'s occupantsByID property when a player moves into a conversation area', async ()=>{
+      const newConversationArea = TestUtils.createConversationForTesting({boundingBox: {x: 100, y: 100, height: 20, width: 20}});
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
 
-        const newLocation:UserLocation = {moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label};
-        testingTown.updatePlayerLocation(player, newLocation);
-        expect(player.activeConversationArea?.label).toEqual(newConversationArea.label);
-        expect(player.activeConversationArea?.topic).toEqual(newConversationArea.topic);
-        expect(player.activeConversationArea?.boundingBox).toEqual(newConversationArea.boundingBox);
+      const newLocation:UserLocation = {moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label};
+      testingTown.updatePlayerLocation(player, newLocation);
+      expect(player.activeConversationArea?.label).toEqual(newConversationArea.label);
+      expect(player.activeConversationArea?.topic).toEqual(newConversationArea.topic);
+      expect(player.activeConversationArea?.boundingBox).toEqual(newConversationArea.boundingBox);
 
-        const areas = testingTown.conversationAreas;
-        expect(areas[0].occupantsByID.length).toBe(1);
-        expect(areas[0].occupantsByID[0]).toBe(player.id);
+      const areas = testingTown.conversationAreas;
+      expect(areas[0].occupantsByID.length).toBe(1);
+      expect(areas[0].occupantsByID[0]).toBe(player.id);
 
-      }); 
-  })
+    }); 
+  });
 });

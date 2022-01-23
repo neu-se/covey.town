@@ -20,11 +20,11 @@ function mockCoveyListener(): CoveyTownListener {
     },
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
-    },onConversationDestroyed(_conversationArea : ServerConversationArea){
+    }, onConversationAreaDestroyed(_conversationArea : ServerConversationArea){
 
-    },onConversationUpdated(_conversationArea: ServerConversationArea){
+    }, onConversationAreaUpdated(_conversationArea: ServerConversationArea){
 
-    }
+    },
   };
 }
 
