@@ -121,7 +121,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
-      conversationAreas: coveyTownController.conversationAreas
+      conversationAreas: coveyTownController.conversationAreas,
     },
   };
 }
@@ -184,18 +184,18 @@ export function townUpdateHandler(requestData: TownUpdateRequest): ResponseEnvel
 export function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
-  if(!townController?.getSessionByToken(_requestData.sessionToken)){
+  if (!townController?.getSessionByToken(_requestData.sessionToken)){
     return {
-      isOK: false, response: {}, message: 'Not authorized'
-    }
+      isOK: false, response: {}, message: 'Not authorized',
+    };
   }
   const success = townController.addConversationArea(_requestData.conversationArea);
 
   return {
     isOK: success,
     response: {},
-    message: !success ? `Unable to create conversation ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined
-  }
+    message: !success ? `Unable to create conversation ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined,
+  };
 }
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)

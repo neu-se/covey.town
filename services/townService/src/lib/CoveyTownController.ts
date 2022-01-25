@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { ServerConversationArea } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
@@ -137,10 +137,9 @@ export default class CoveyTownController {
    * @param location New location for this player
    */
   updatePlayerLocation(player: Player, location: UserLocation): void {
-    player.updateLocation(location);
     const conversation = this.conversationAreas.find(conv => conv.label === location.conversationLabel);
     const prevConversation = player.activeConversationArea;
-    player.activeConversationArea = conversation;
+    player.updateLocation(location, conversation);
     if (conversation !== prevConversation) {
       if (prevConversation) {
         this.removePlayerFromConversationArea(player, prevConversation);
@@ -154,10 +153,10 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onPlayerMoved(player));
   }
 
-  removePlayerFromConversationArea(player: Player, conversation: ServerConversationArea) {
-    conversation.occupantsByID = conversation.occupantsByID.filter(p => p != player.id);
-    if (conversation.occupantsByID.length == 0) {
-      this._conversationAreas = this._conversationAreas.filter(conv => conv !== conversation);
+  removePlayerFromConversationArea(player: Player, conversation: ServerConversationArea) : void {
+    conversation.occupantsByID.splice(conversation.occupantsByID.findIndex(p=>p === player.id), 1);
+    if (conversation.occupantsByID.length === 0) {
+      this._conversationAreas.splice(this._conversationAreas.findIndex(conv => conv === conversation), 1);
       this._listeners.forEach(listener => listener.onConversationAreaDestroyed(conversation));
     } else {
       this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
@@ -184,16 +183,31 @@ export default class CoveyTownController {
       )
     )
       return false;
-    this._conversationAreas.push(_conversationArea);
+    if (_conversationArea.topic ===''){
+      return false;
+    }
+    if (this._conversationAreas.find(eachExistingConversation => CoveyTownController.boxesOverlap(eachExistingConversation.boundingBox, _conversationArea.boundingBox)) !== undefined){
+      return false;
+    }
+    const newArea :ServerConversationArea = Object.assign(_conversationArea);
+    this._conversationAreas.push(newArea);
     const playersInThisConversation = this.players.filter(player =>
-      player.isWithin(_conversationArea),
+      player.isWithin(newArea),
     );
     playersInThisConversation.forEach(
-      player => (player.activeConversationArea = _conversationArea),
+      player => (player.updateLocation(player.location, newArea)),
     );
-    _conversationArea.occupantsByID = playersInThisConversation.map(player => player.id);
-    this._listeners.forEach(listener => listener.onConversationAreaUpdated(_conversationArea));
+    newArea.occupantsByID = playersInThisConversation.map(player => player.id);
+    this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
     return true;
+  }
+
+  static boxesOverlap(box1: BoundingBox, box2: BoundingBox):boolean{
+    const toRectPoints = (box: BoundingBox) => ({x1: box.x - box.width /2, x2: box.x + box.width/2, y1: box.y-box.height/2, y2: box.y+box.height/2});
+    const rect1 = toRectPoints(box1);
+    const rect2 = toRectPoints(box2);
+    const noOverlap = rect1.x1 > rect2.x2 || rect2.x1 > rect1.x2 || rect1.y1 > rect2.y2 || rect2.y1 > rect1.y2;
+    return !noOverlap;
   }
 
   /**

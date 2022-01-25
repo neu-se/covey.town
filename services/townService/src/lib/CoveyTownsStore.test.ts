@@ -21,9 +21,9 @@ function mockCoveyListener(): CoveyTownListener {
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
     }, onConversationAreaDestroyed(_conversationArea : ServerConversationArea){
-
+      mockCoveyListenerOtherFns(_conversationArea);
     }, onConversationAreaUpdated(_conversationArea: ServerConversationArea){
-
+      mockCoveyListenerOtherFns(_conversationArea);
     },
   };
 }

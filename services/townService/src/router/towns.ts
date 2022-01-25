@@ -113,7 +113,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       const result = await conversationAreaCreateHandler({
         coveyTownID: req.params.townID,
         sessionToken: req.body.sessionToken,
-        conversationArea: req.body.conversationArea
+        conversationArea: req.body.conversationArea,
       });
       res.status(StatusCodes.OK)
         .json(result);

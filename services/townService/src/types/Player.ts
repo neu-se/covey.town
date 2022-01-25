@@ -45,11 +45,12 @@ export default class Player {
     this._activeConversationArea = conversationArea;
   }
 
-  updateLocation(location: UserLocation): void {
+  updateLocation(location: UserLocation, conversation: ServerConversationArea | undefined): void {
     this.location = location;
+    this._activeConversationArea = conversation;
   }
 
-  isWithin(conversation: ServerConversationArea) {
+  isWithin(conversation: ServerConversationArea): boolean {
     return (
       this.location.x >= conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
       this.location.x <= conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
