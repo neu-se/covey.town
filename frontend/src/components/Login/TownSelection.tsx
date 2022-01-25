@@ -81,7 +81,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       if (loggedIn) {
         assert(initData.providerVideoToken);
         await videoConnect(initData.providerVideoToken);
-        if(process.env.REACT_APP_DISABLE_TWILIO_CONVERSATIONS !== 'true')
+        if(process.env.REACT_APP_ENABLE_TWILIO_CONVERSATIONS === 'true')
         {
           chatConnect(initData.providerVideoToken);
         }
