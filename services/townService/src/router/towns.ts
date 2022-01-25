@@ -38,7 +38,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.delete('/towns/:townID/:townPassword', express.json(), async (req, res) => {
     try {
-      const result = await townDeleteHandler({
+      const result = townDeleteHandler({
         coveyTownID: req.params.townID,
         coveyTownPassword: req.params.townPassword,
       });
@@ -58,7 +58,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.get('/towns', express.json(), async (_req, res) => {
     try {
-      const result = await townListHandler();
+      const result = townListHandler();
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -75,7 +75,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.post('/towns', express.json(), async (req, res) => {
     try {
-      const result = await townCreateHandler(req.body);
+      const result = townCreateHandler(req.body);
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -91,7 +91,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.patch('/towns/:townID', express.json(), async (req, res) => {
     try {
-      const result = await townUpdateHandler({
+      const result = townUpdateHandler({
         coveyTownID: req.params.townID,
         isPubliclyListed: req.body.isPubliclyListed,
         friendlyName: req.body.friendlyName,

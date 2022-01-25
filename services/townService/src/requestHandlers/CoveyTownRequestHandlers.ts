@@ -123,7 +123,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
   };
 }
 
-export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
+export function townListHandler(): ResponseEnvelope<TownListResponse> {
   const townsStore = CoveyTownsStore.getInstance();
   return {
     isOK: true,
@@ -131,7 +131,7 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   };
 }
 
-export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
+export function townCreateHandler(requestData: TownCreateRequest): ResponseEnvelope<TownCreateResponse> {
   const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
@@ -149,7 +149,7 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   };
 }
 
-export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export function townDeleteHandler(requestData: TownDeleteRequest): ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   return {
@@ -159,7 +159,7 @@ export async function townDeleteHandler(requestData: TownDeleteRequest): Promise
   };
 }
 
-export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export function townUpdateHandler(requestData: TownUpdateRequest): ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
   return {
@@ -178,7 +178,7 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
  * * Ask the TownController to create the conversation area
  * @param _requestData Conversation area create request
  */
-export async function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : Promise<ResponseEnvelope<Record<string, null>>> {
+export function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : ResponseEnvelope<Record<string, null>> {
   return {
     isOK: false,
     response: {},
