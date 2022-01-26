@@ -199,7 +199,7 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalled();
       });
 
-      it('Returns the correct error message [T1.2]', () => {
+      it('Returns the correct error message [T1.2b]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
         expect(response.message).toEqual(`Unable to create conversation ${conversationArea.label} with topic ${conversationArea.topic}`)
@@ -224,7 +224,7 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).not.toHaveBeenCalled();
       });
 
-      it('Returns the correct error message [T1.2]', () => {
+      it('Returns the correct error message [T1.2b]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
         expect(response.message).toEqual('Not authorized');
@@ -250,20 +250,20 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalled();
       });
 
-      it('Provides exactly the correct response and message upon success [T1.2]', () => {
+      it('Provides exactly the correct response and message upon success [T1.2b]', () => {
         expect(response.isOK).toBe(true);
         expect(response.response).toEqual({});
         expect(response.message).toBeUndefined();
       });
-      it('Passes the correct conversation area to addController [T1.2]', () => {
+      it('Passes the correct conversation area to addController [T1.2b]', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalledWith(conversationArea);
       });
 
-      it('Invokes addConversationArea on the correct town controller [T1.2]', () => {
+      it('Invokes addConversationArea on the correct town controller [T1.2b]', () => {
         expect(mockCoveyTownStore.getControllerForTown).toHaveBeenCalledWith(coveyTownID);
       });
     });
-    it('Checks for a valid session token before creating a conversation [T1.2]', () => {
+    it('Checks for a valid session token before creating a conversation [T1.2b]', () => {
       const coveyTownID = nanoid();
       const conversationArea = generateConversationArea();
       const response = requestHandlers.conversationAreaCreateHandler({

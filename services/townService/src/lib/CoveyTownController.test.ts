@@ -391,13 +391,13 @@ testingTown.players.push(corner);
       }
     }
     describe('addConversationArea', () => {
-      it('should add the conversation area to the list of conversation areas [T1.2]', ()=>{
+      it('should add the conversation area to the list of conversation areas [T1.2a]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting();
         const result = testingTown.addConversationArea(newConversationArea);
         expect(result).toBe(true);
         expectConversationAreas([newConversationArea]);
       });
-      it('should check to see if a conversation area exists with the given label [T1.2]', ()=>{
+      it('should check to see if a conversation area exists with the given label [T1.2a]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting({boundingBox: box1});
         const dupArea = TestUtils.createConversationForTesting({conversationLabel: newConversationArea.label, boundingBox: box2});
 
@@ -414,7 +414,7 @@ testingTown.players.push(corner);
         expectConversationAreas([newConversationArea]);
 
       });
-      it('should allow multiple conversations with the same topic [T1.2]', ()=>{
+      it('should allow multiple conversations with the same topic [T1.2a]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting({boundingBox: box1});
         const dupArea = TestUtils.createConversationForTesting({conversationTopic: newConversationArea.topic, boundingBox: box2});
 
@@ -426,7 +426,7 @@ testingTown.players.push(corner);
         expect(testingTown.addConversationArea(dupArea)).toBe(true);
         expectConversationAreas([newConversationArea, dupArea]);
       });
-      it('should not allow an empty topic [T1.2]', () =>{
+      it('should not allow an empty topic [T1.2a]', () =>{
         const validArea = TestUtils.createConversationForTesting({boundingBox: box1});
         const emptyTopic = TestUtils.createConversationForTesting({boundingBox: box3});
         emptyTopic.topic = '';
@@ -437,7 +437,7 @@ testingTown.players.push(corner);
         expect(testingTown.addConversationArea(emptyTopic)).toBe(false);
         expectConversationAreas([validArea]);
       });
-      it('should check for overlapping bounding boxes [T1.2]', async ()=>{
+      it('should check for overlapping bounding boxes [T1.2a]', async ()=>{
         const validAreas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
         const invalidAreas = overlappingBoxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
         validAreas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
@@ -445,7 +445,7 @@ testingTown.players.push(corner);
         invalidAreas.forEach(invalidArea => expect(testingTown.addConversationArea(invalidArea)).toBe(false));
         expectConversationAreas(validAreas);
       });
-      it('should allow adjacent bounding boxes [T1.2]', async () =>{
+      it('should allow adjacent bounding boxes [T1.2a]', async () =>{
         function box(x:number,y:number) : BoundingBox{
           return {x:x, y:y, width: 1, height: 1};
         }
@@ -457,14 +457,14 @@ testingTown.players.push(corner);
         expectConversationAreas(adjacentAreas);
 
       })
-      it('should include players in the bounding box as occupants when a conversation is created and set their activeConversation property [T1.2]', async ()=>{
+      it('should include players in the bounding box as occupants when a conversation is created and set their activeConversation property [T1.2a]', async ()=>{
         const playersByBox = boxes.map((box)=>createPlayersInBox(box, 10));
         boxes.map(box => createPlayersNotInBox(box));
         const areas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
         areas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         expectConversationAreas(areas, playersByBox);
       });
-      it('should notify all listeners when a conversation area is created [T1.2]', ()=>{
+      it('should notify all listeners when a conversation area is created [T1.2a]', ()=>{
 
         // Create some valid areas, add them, check for listener messages
         const areas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
@@ -585,7 +585,7 @@ testingTown.players.push(corner);
           }
         });
       };
-      it('should set a conversation area\'s occupantsByID property when a player moves into a conversation area [T1.2]', ()=>{
+      it('should set a conversation area\'s occupantsByID property when a player moves into a conversation area [T2.1]', ()=>{
         const newConversationArea = preCreatedAreas[0];
         const newLocation:UserLocation = {moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label};
         testingTown.updatePlayerLocation(testingPlayer, newLocation);
