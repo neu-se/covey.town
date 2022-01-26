@@ -282,9 +282,43 @@ describe('CoveyTownController', () => {
 
     const box4:BoundingBox={height: 10, width: 10, x: 200, y: 200}; 
 
-    const boxes = [box1, box2, box3, box4];
-    const overlappingBoxes = [box1Overlap, box2Overlap, box3Overlap];
+    const [gridBase, gridOverlap] = generateOverlappingBoxes();
+    const boxes = [box1, box2, box3, box4].concat(gridBase);
+    const overlappingBoxes = [box1Overlap, box2Overlap, box3Overlap].concat(gridOverlap);
 
+    /*
+    Here's a great testing homework: how to satisfy all possible ways that boxes
+    can overlap.
+    */
+    function generateOverlappingBoxes(): BoundingBox[][]{
+      function box(x:number,y:number,kind:'tall'|'flat'|'square') : BoundingBox{
+        return {x:x, y:y, width: (kind!='tall' ? 0.9:0.5), height: (kind !='flat'? 0.9: 0.5)};
+      }
+      function boxT(x:number,y:number,kind:'tall'|'flat'|'square') : BoundingBox{
+        return {x:x, y:y, width: 2*(kind!='tall' ? 0.9:0.5), height: 2*(kind !='flat'? 0.9: 0.5)};
+      }
+      const baseX = 10000;
+      const baseY = 10000;
+      function translate(box: BoundingBox): BoundingBox{
+        return {
+          x: box.x*2 + baseX,
+          y : box.y*2+baseY,
+          height: box.height*2,
+          width: box.width* 2
+        }
+      }
+      const base = [
+        box(1,1,'square'),box(2,1,'square'),box(3,1,'square'),
+        box(1,2,'square'),box(2,2,'square'),box(3,2,'square'),
+        box(1,3,'square'),box(2,3,'square'),box(3,3,'square'),
+        ].map(translate);
+      const above = [
+        boxT(0,0.5,'square'), boxT(1.5,0.5,'tall'),boxT(3,0.5,'square'),
+        boxT(0,2,'flat'), {x:2,y:2,width:0.5,height:0.5}, boxT(3.5,2,'flat'),
+        boxT(0,3.5,'square'),boxT(1.5,3.5,'tall'),boxT(3.5,3.5,'square')
+      ].map(translate);
+      return [base, above];
+    }
     function randomInt(_min:number, _max:number): number {
       const min = Math.ceil(_min) + 1;
       const max = Math.floor(_max);
@@ -301,6 +335,26 @@ describe('CoveyTownController', () => {
         ret.push(player.id);
       }
       return ret;
+    }
+    function createPlayersNotInBox(box:BoundingBox) : string[]{
+      const left = new Player(nanoid());
+      left.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      const right = new Player(nanoid());
+      right.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      const top = new Player(nanoid());
+
+      top.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      const bottom = new Player(nanoid());
+      bottom.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+     const corner = new Player(nanoid());
+      corner.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+
+      testingTown.players.push(left);
+testingTown.players.push(right);
+testingTown.players.push(top);
+testingTown.players.push(bottom);
+testingTown.players.push(corner);
+      return [left.id, right.id, top.id, bottom.id, corner.id];
     }
     function expectConversationAreas(expected:ServerConversationArea[], expectedOccupants:string[][]=[]){
       const actual = testingTown.conversationAreas;
@@ -390,10 +444,22 @@ describe('CoveyTownController', () => {
         expectConversationAreas(validAreas);
         invalidAreas.forEach(invalidArea => expect(testingTown.addConversationArea(invalidArea)).toBe(false));
         expectConversationAreas(validAreas);
-      // TODO there can probably be a lot more interesting overlap cases to test here, especially considering the different ways students might implement this 
       });
+      it('should allow adjacent bounding boxes [T1.2]', async () =>{
+        function box(x:number,y:number) : BoundingBox{
+          return {x:x, y:y, width: 1, height: 1};
+        }
+        const adjacentBoxes = [box(0,0), box(1,0), box(2,0),
+                               box(0,1), box(1,1), box(2,1),
+                               box(0,2), box(1,2), box(2,2)];
+        const adjacentAreas = adjacentBoxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
+        adjacentAreas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
+        expectConversationAreas(adjacentAreas);
+
+      })
       it('should include players in the bounding box as occupants when a conversation is created and set their activeConversation property [T1.2]', async ()=>{
         const playersByBox = boxes.map((box)=>createPlayersInBox(box, 10));
+        boxes.map(box => createPlayersNotInBox(box));
         const areas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
         areas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         expectConversationAreas(areas, playersByBox);
@@ -618,8 +684,10 @@ describe('CoveyTownController', () => {
         });
       });
       it('should emit onConversationAreaDestroyed when a conversation is destroyed [T2.3]', async ()=>{
-        putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[0]);
+        putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[1]);
         removePlayerFromConversationAreaAndExpectUpdate(testingPlayer);
+        const removedAreaLabel = preCreatedAreas[1].label;
+        expectConversationAreas(preCreatedAreas.filter(a => a.label != removedAreaLabel));
       });
       it('should not emit onConversationAreaDestroyed when a conversation is not destroyed [T2.3]', async ()=>{
         const newPlayer = new Player('will move a lot');

@@ -52,10 +52,10 @@ export default class Player {
 
   isWithin(conversation: ServerConversationArea): boolean {
     return (
-      this.location.x >= conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
-      this.location.x <= conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
-      this.location.y >= conversation.boundingBox.y - conversation.boundingBox.height / 2 &&
-      this.location.y <= conversation.boundingBox.y + conversation.boundingBox.height / 2
+      this.location.x > conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
+      this.location.x < conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
+      this.location.y > conversation.boundingBox.y - conversation.boundingBox.height / 2 &&
+      this.location.y < conversation.boundingBox.y + conversation.boundingBox.height / 2
     );
   }
 

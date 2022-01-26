@@ -179,7 +179,7 @@ describe('Create Conversation Area API', () => {
       mockCoveyTownStore.getControllerForTown.mockReturnValue(mockCoveyTownController);
     });
 
-    describe('On an unsuccessful request', () => {
+    describe('On a request where a conversation exists with this name', () => {
       let coveyTownID : string;
       let conversationArea : ServerConversationArea;
       let response: ResponseEnvelope<Record<string, null>>;
@@ -199,10 +199,35 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalled();
       });
 
-      it('Returns the correct error message if a conversation exists with that label [T1.2]', () => {
+      it('Returns the correct error message [T1.2]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
         expect(response.message).toEqual(`Unable to create conversation ${conversationArea.label} with topic ${conversationArea.topic}`)
+      });
+    });
+    describe('On a request with an invalid coveyTownID', () => {
+      let coveyTownID : string;
+      let conversationArea : ServerConversationArea;
+      let response: ResponseEnvelope<Record<string, null>>;
+      let playerSession: PlayerSession;
+      beforeEach(() => {
+        mockCoveyTownStore.getControllerForTown.mockReturnValue(undefined);
+        coveyTownID = nanoid();
+        conversationArea = generateConversationArea();
+        playerSession = new PlayerSession(new Player(nanoid()));
+        response = requestHandlers.conversationAreaCreateHandler({
+          conversationArea,
+          coveyTownID,
+          sessionToken: playerSession.sessionToken,
+        });
+        expect(mockCoveyTownController.getSessionByToken).not.toHaveBeenCalled();
+        expect(mockCoveyTownController.addConversationArea).not.toHaveBeenCalled();
+      });
+
+      it('Returns the correct error message [T1.2]', () => {
+        expect(response.isOK).toBe(false);
+        expect(response.response).toEqual({});
+        expect(response.message).toEqual('Not authorized');
       });
     });
     describe('On a successful request', () => {

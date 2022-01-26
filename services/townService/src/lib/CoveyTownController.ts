@@ -206,7 +206,7 @@ export default class CoveyTownController {
     const toRectPoints = (box: BoundingBox) => ({x1: box.x - box.width /2, x2: box.x + box.width/2, y1: box.y-box.height/2, y2: box.y+box.height/2});
     const rect1 = toRectPoints(box1);
     const rect2 = toRectPoints(box2);
-    const noOverlap = rect1.x1 > rect2.x2 || rect2.x1 > rect1.x2 || rect1.y1 > rect2.y2 || rect2.y1 > rect1.y2;
+    const noOverlap = rect1.x1 >= rect2.x2 || rect2.x1 >= rect1.x2 || rect1.y1 >= rect2.y2 || rect2.y1 >= rect1.y2;
     return !noOverlap;
   }
 
