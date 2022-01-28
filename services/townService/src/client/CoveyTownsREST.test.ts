@@ -5,7 +5,6 @@ import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import addTownRoutes from '../router/towns';
-import { createConversationForTesting } from './TestUtils';
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 
 type TestTownData = {

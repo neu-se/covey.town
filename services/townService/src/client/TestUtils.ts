@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {io, Socket} from 'socket.io-client';
-import {Socket as ServerSocket} from 'socket.io';
+import { io, Socket } from 'socket.io-client';
+import { Socket as ServerSocket } from 'socket.io';
 
-import {AddressInfo} from 'net';
+import { AddressInfo } from 'net';
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
@@ -50,7 +50,7 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
 } {
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
-    auth: {token: sessionToken, coveyTownID},
+    auth: { token: sessionToken, coveyTownID },
     reconnection: false, timeout: 5000,
   });
   const connectPromise = new Promise<void>((resolve) => {
@@ -93,13 +93,13 @@ export function setSessionTokenAndTownID(coveyTownID: string, sessionToken: stri
   socket.handshake.auth = {token: sessionToken, coveyTownID};
 }
 
-export function createConversationForTesting(params?:{conversationLabel?: string,
+export function createConversationForTesting(params?:{ conversationLabel?: string,
   conversationTopic?: string,
   boundingBox?: BoundingBox
 }) : ServerConversationArea {
 
   return {
-    boundingBox: params?.boundingBox || {height: 100, width: 100, x: 400, y: 400},
+    boundingBox: params?.boundingBox || { height: 100, width: 100, x: 400, y: 400 },
     label: params?.conversationLabel || nanoid(),
     occupantsByID: [],
     topic: params?.conversationTopic || nanoid(),

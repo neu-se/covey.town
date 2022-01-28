@@ -271,51 +271,32 @@ describe('CoveyTownController', () => {
       mockListeners.forEach(listener => testingTown.addTownListener(listener));
     });
 
-    const box1 :BoundingBox= {height: 10, width: 5, x: 10, y: 10};
-    const box1Overlap :BoundingBox = {height: 4, width: 4, x: 8, y: 4}; 
-
-    const box2:BoundingBox={height: 10, width:10, x: 40, y: 50};
-    const box2Overlap:BoundingBox={height: 20, x: 45, y: 36, width: 2}; 
-
-    const box3: BoundingBox={height: 40, width:28, x: 60, y: 50};
-    const box3Overlap:BoundingBox={height: 10, width: 4, x:60, y:70};
-
-    const box4:BoundingBox={height: 10, width: 10, x: 200, y: 200}; 
-
-    const [gridBase, gridOverlap] = generateOverlappingBoxes();
-    const boxes = [box1, box2, box3, box4].concat(gridBase);
-    const overlappingBoxes = [box1Overlap, box2Overlap, box3Overlap].concat(gridOverlap);
-
-    /*
-    Here's a great testing homework: how to satisfy all possible ways that boxes
-    can overlap.
-    */
     function generateOverlappingBoxes(): BoundingBox[][]{
-      function box(x:number,y:number,kind:'tall'|'flat'|'square') : BoundingBox{
-        return {x:x, y:y, width: (kind!='tall' ? 0.9:0.5), height: (kind !='flat'? 0.9: 0.5)};
+      function box(x:number, y:number, kind:'tall' | 'flat' | 'square') : BoundingBox{
+        return { x, y, width: (kind !== 'tall' ? 0.9 : 0.5), height: (kind !== 'flat' ? 0.9 : 0.5) };
       }
-      function boxT(x:number,y:number,kind:'tall'|'flat'|'square') : BoundingBox{
-        return {x:x, y:y, width: 2*(kind!='tall' ? 0.9:0.5), height: 2*(kind !='flat'? 0.9: 0.5)};
+      function boxT(x:number, y:number, kind:'tall' | 'flat' | 'square') : BoundingBox{
+        return { x, y, width: 2 * (kind !== 'tall' ? 0.9 : 0.5), height: 2 * (kind !== 'flat' ? 0.9 : 0.5) };
       }
       const baseX = 10000;
       const baseY = 10000;
-      function translate(box: BoundingBox): BoundingBox{
+      function translate(_box: BoundingBox): BoundingBox{
         return {
-          x: box.x*2 + baseX,
-          y : box.y*2+baseY,
-          height: box.height*2,
-          width: box.width* 2
-        }
+          x: _box.x * 2 + baseX,
+          y : _box.y * 2 + baseY,
+          height: _box.height * 2,
+          width: _box.width * 2,
+        };
       }
       const base = [
-        box(1,1,'square'),box(2,1,'square'),box(3,1,'square'),
-        box(1,2,'square'),box(2,2,'square'),box(3,2,'square'),
-        box(1,3,'square'),box(2,3,'square'),box(3,3,'square'),
-        ].map(translate);
+        box(1, 1, 'square'), box(2, 1, 'square'), box(3, 1, 'square'),
+        box(1, 2, 'square'), box(2, 2, 'square'), box(3, 2, 'square'),
+        box(1, 3, 'square'), box(2, 3, 'square'), box(3, 3, 'square'),
+      ].map(translate);
       const above = [
-        boxT(0,0.5,'square'), boxT(1.5,0.5,'tall'),boxT(3,0.5,'square'),
-        boxT(0,2,'flat'), {x:2,y:2,width:0.5,height:0.5}, boxT(3.5,2,'flat'),
-        boxT(0,3.5,'square'),boxT(1.5,3.5,'tall'),boxT(3.5,3.5,'square')
+        boxT(0, 0.5, 'square'), boxT(1.5, 0.5, 'tall'), boxT(3, 0.5, 'square'),
+        boxT(0, 2, 'flat'), { x:2, y:2, width:0.5, height:0.5 }, boxT(3.5, 2, 'flat'),
+        boxT(0, 3.5, 'square'), boxT(1.5, 3.5, 'tall'), boxT(3.5, 3.5, 'square'),
       ].map(translate);
       return [base, above];
     }
@@ -326,11 +307,11 @@ describe('CoveyTownController', () => {
     }
     function createPlayersInBox(boxInside: BoundingBox, numPlayers: number): string[]{
       const ret = [];
-      for (let i = 0; i <numPlayers; i+=1){
-        const x = randomInt(boxInside.x - boxInside.width/2, boxInside.x+boxInside.width/2);
-        const y = randomInt(boxInside.y - boxInside.height/2, boxInside.y + boxInside.height/2);
+      for (let i = 0; i < numPlayers; i += 1){
+        const x = randomInt(boxInside.x - boxInside.width / 2, boxInside.x + boxInside.width / 2);
+        const y = randomInt(boxInside.y - boxInside.height / 2, boxInside.y + boxInside.height / 2);
         const player = new Player(nanoid());
-        player.location = {x, y, moving: false, rotation: 'front'};
+        player.location = { x, y, moving: false, rotation: 'front' };
         testingTown.players.push(player);
         ret.push(player.id);
       }
@@ -338,30 +319,30 @@ describe('CoveyTownController', () => {
     }
     function createPlayersNotInBox(box:BoundingBox) : string[]{
       const left = new Player(nanoid());
-      left.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      left.location = { x : box.x - box.width / 2, y: box.y - box.height / 2, moving: false, rotation:'front' };
       const right = new Player(nanoid());
-      right.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      right.location = { x : box.x - box.width / 2, y: box.y - box.height / 2, moving: false, rotation:'front' };
       const top = new Player(nanoid());
 
-      top.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      top.location = { x : box.x - box.width / 2, y: box.y - box.height / 2, moving: false, rotation:'front' };
       const bottom = new Player(nanoid());
-      bottom.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
-     const corner = new Player(nanoid());
-      corner.location = {x : box.x - box.width/2, y: box.y - box.height/2, moving: false,rotation:'front'};
+      bottom.location = { x : box.x - box.width / 2, y: box.y - box.height / 2, moving: false, rotation:'front' };
+      const corner = new Player(nanoid());
+      corner.location = { x : box.x - box.width / 2, y: box.y - box.height / 2, moving: false, rotation:'front' };
 
       testingTown.players.push(left);
-testingTown.players.push(right);
-testingTown.players.push(top);
-testingTown.players.push(bottom);
-testingTown.players.push(corner);
+      testingTown.players.push(right);
+      testingTown.players.push(top);
+      testingTown.players.push(bottom);
+      testingTown.players.push(corner);
       return [left.id, right.id, top.id, bottom.id, corner.id];
     }
-    function expectConversationAreas(expected:ServerConversationArea[], expectedOccupants:string[][]=[]){
+    function expectConversationAreas(expected:ServerConversationArea[], expectedOccupants:string[][] = []){
       const actual = testingTown.conversationAreas;
       expect(actual.length).toBe(expected.length);
-      for (let i=0; i < expected.length; i+=1){
+      for (let i = 0; i < expected.length; i += 1){
         const expectedArea = expected[i];
-        let expectedAreaOccupants:string[]= [];
+        let expectedAreaOccupants:string[] = [];
         if (expectedOccupants.length > i){
           expectedAreaOccupants = expectedOccupants[i];
         }
@@ -371,7 +352,7 @@ testingTown.players.push(corner);
           expect(actualArea.boundingBox).toEqual(expectedArea.boundingBox);
           expect(actualArea.topic).toEqual(expectedArea.topic);
           expect(actualArea.occupantsByID.length).toEqual(expectedAreaOccupants.length);
-          for (let k =0; k < expectedAreaOccupants.length; k+=1){
+          for (let k = 0; k < expectedAreaOccupants.length; k += 1){
             const playerID = expectedAreaOccupants[k];
             expect(actualArea.occupantsByID.find(id => id === playerID)).toBeDefined();
             const player = testingTown.players.find(p => p.id === playerID);
@@ -390,6 +371,21 @@ testingTown.players.push(corner);
         expectArraysToContainSameMembers(actual.occupantsByID, expectedOccupants);
       }
     }
+
+    const box1 :BoundingBox = { height: 10, width: 5, x: 10, y: 10 };
+    const box1Overlap :BoundingBox = { height: 4, width: 4, x: 8, y: 4 }; 
+
+    const box2:BoundingBox = { height: 10, width:10, x: 40, y: 50 };
+    const box2Overlap:BoundingBox = { height: 20, x: 45, y: 36, width: 2 }; 
+
+    const box3: BoundingBox = { height: 40, width:28, x: 60, y: 50 };
+    const box3Overlap:BoundingBox = { height: 10, width: 4, x:60, y:70 };
+
+    const box4:BoundingBox = { height: 10, width: 10, x: 200, y: 200 }; 
+
+    const [gridBase, gridOverlap] = generateOverlappingBoxes();
+    const boxes = [box1, box2, box3, box4].concat(gridBase);
+    const overlappingBoxes = [box1Overlap, box2Overlap, box3Overlap].concat(gridOverlap);
     describe('addConversationArea', () => {
       it('should add the conversation area to the list of conversation areas [T1.2a]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting();
@@ -398,8 +394,8 @@ testingTown.players.push(corner);
         expectConversationAreas([newConversationArea]);
       });
       it('should check to see if a conversation area exists with the given label [T1.2a]', ()=>{
-        const newConversationArea = TestUtils.createConversationForTesting({boundingBox: box1});
-        const dupArea = TestUtils.createConversationForTesting({conversationLabel: newConversationArea.label, boundingBox: box2});
+        const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: box1 });
+        const dupArea = TestUtils.createConversationForTesting({ conversationLabel: newConversationArea.label, boundingBox: box2 });
 
         // Add a valid area
         expect(testingTown.addConversationArea(newConversationArea)).toBe(true);
@@ -415,8 +411,8 @@ testingTown.players.push(corner);
 
       });
       it('should allow multiple conversations with the same topic [T1.2a]', ()=>{
-        const newConversationArea = TestUtils.createConversationForTesting({boundingBox: box1});
-        const dupArea = TestUtils.createConversationForTesting({conversationTopic: newConversationArea.topic, boundingBox: box2});
+        const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: box1 });
+        const dupArea = TestUtils.createConversationForTesting({ conversationTopic: newConversationArea.topic, boundingBox: box2 });
 
         // Add a valid area
         expect(testingTown.addConversationArea(newConversationArea)).toBe(true);
@@ -427,8 +423,8 @@ testingTown.players.push(corner);
         expectConversationAreas([newConversationArea, dupArea]);
       });
       it('should not allow an empty topic [T1.2a]', () =>{
-        const validArea = TestUtils.createConversationForTesting({boundingBox: box1});
-        const emptyTopic = TestUtils.createConversationForTesting({boundingBox: box3});
+        const validArea = TestUtils.createConversationForTesting({ boundingBox: box1 });
+        const emptyTopic = TestUtils.createConversationForTesting({ boundingBox: box3 });
         emptyTopic.topic = '';
 
         expect(testingTown.addConversationArea(validArea)).toBe(true);
@@ -438,36 +434,36 @@ testingTown.players.push(corner);
         expectConversationAreas([validArea]);
       });
       it('should check for overlapping bounding boxes [T1.2a]', async ()=>{
-        const validAreas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
-        const invalidAreas = overlappingBoxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
+        const validAreas = boxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
+        const invalidAreas = overlappingBoxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         validAreas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         expectConversationAreas(validAreas);
         invalidAreas.forEach(invalidArea => expect(testingTown.addConversationArea(invalidArea)).toBe(false));
         expectConversationAreas(validAreas);
       });
       it('should allow adjacent bounding boxes [T1.2a]', async () =>{
-        function box(x:number,y:number) : BoundingBox{
-          return {x:x, y:y, width: 1, height: 1};
+        function box(x:number, y:number) : BoundingBox{
+          return { x, y, width: 1, height: 1 };
         }
-        const adjacentBoxes = [box(0,0), box(1,0), box(2,0),
-                               box(0,1), box(1,1), box(2,1),
-                               box(0,2), box(1,2), box(2,2)];
-        const adjacentAreas = adjacentBoxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
+        const adjacentBoxes = [box(0, 0), box(1, 0), box(2, 0),
+          box(0, 1), box(1, 1), box(2, 1),
+          box(0, 2), box(1, 2), box(2, 2)];
+        const adjacentAreas = adjacentBoxes.map(_box => TestUtils.createConversationForTesting({ boundingBox: _box }));
         adjacentAreas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         expectConversationAreas(adjacentAreas);
 
-      })
+      });
       it('should include players in the bounding box as occupants when a conversation is created and set their activeConversation property [T1.2a]', async ()=>{
         const playersByBox = boxes.map((box)=>createPlayersInBox(box, 10));
         boxes.map(box => createPlayersNotInBox(box));
-        const areas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
+        const areas = boxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         areas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         expectConversationAreas(areas, playersByBox);
       });
       it('should notify all listeners when a conversation area is created [T1.2a]', ()=>{
 
         // Create some valid areas, add them, check for listener messages
-        const areas = boxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
+        const areas = boxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         areas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         mockListeners.forEach(listener => {
           expect(listener.onConversationAreaDestroyed).toBeCalledTimes(0);
@@ -482,7 +478,7 @@ testingTown.players.push(corner);
         mockListeners.forEach(listener => listener.onConversationAreaUpdated.mockClear());
 
         // Create some invalid ones, then assert no listener calls
-        const invalidAreas = overlappingBoxes.map(box => TestUtils.createConversationForTesting({boundingBox: box}));
+        const invalidAreas = overlappingBoxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         invalidAreas.forEach(invalid => expect(testingTown.addConversationArea(invalid)).toBe(false));
         mockListeners.forEach(listener =>{
           expect(listener.onConversationAreaUpdated).toHaveBeenCalledTimes(0);
@@ -497,13 +493,13 @@ testingTown.players.push(corner);
         testingPlayer = new Player(nanoid());
         await testingTown.addPlayer(testingPlayer);
         preCreatedAreas = [];
-        for (let i = 0; i < boxes.length; i+=1) {
-          preCreatedAreas.push(TestUtils.createConversationForTesting({boundingBox: boxes[i], conversationLabel: `Label${i}`, conversationTopic: `Topic${i}`}));
+        for (let i = 0; i < boxes.length; i += 1) {
+          preCreatedAreas.push(TestUtils.createConversationForTesting({ boundingBox: boxes[i], conversationLabel: `Label${i}`, conversationTopic: `Topic${i}` }));
         }
         preCreatedAreas.forEach(area => expect(testingTown.addConversationArea(area)).toBe(true));
       });
-      const removePlayerFromConversationAreaAndExpectUpdate =(player: Player) =>{
-        const newLocation: UserLocation = {...player.location};
+      const removePlayerFromConversationAreaAndExpectUpdate = (player: Player) =>{
+        const newLocation: UserLocation = { ...player.location };
         const previousArea = player.activeConversationArea;
         if (!previousArea){
           expect(previousArea).toBeDefined();
@@ -537,10 +533,10 @@ testingTown.players.push(corner);
         player: Player,
         area: ServerConversationArea,
       ) => {
-        const newLocation: UserLocation = {...player.location};
+        const newLocation: UserLocation = { ...player.location };
         const previousArea = player.activeConversationArea;
         const expectedPreviousAreaMembers = previousArea?.occupantsByID.filter(id => id !== player.id);
-        const expectedAreaEntered: ServerConversationArea = {...area};
+        const expectedAreaEntered: ServerConversationArea = { ...area };
         expectedAreaEntered.occupantsByID = expectedAreaEntered.occupantsByID.concat([player.id]);
         newLocation.conversationLabel = area.label;
         resetMockListeners();
@@ -587,7 +583,7 @@ testingTown.players.push(corner);
       };
       it('should set a conversation area\'s occupantsByID property when a player moves into a conversation area [T2.1]', ()=>{
         const newConversationArea = preCreatedAreas[0];
-        const newLocation:UserLocation = {moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label};
+        const newLocation:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label };
         testingTown.updatePlayerLocation(testingPlayer, newLocation);
         expect(testingPlayer.activeConversationArea?.label).toEqual(newConversationArea.label);
         expect(testingPlayer.activeConversationArea?.topic).toEqual(newConversationArea.topic);
@@ -622,10 +618,10 @@ testingTown.players.push(corner);
       });
       it('should emit onConversationUpdated when players enter or exit [T2.1]', async ()=>{
         const newPlayer = new Player('will move a lot');
-        newPlayer.location = {x: 10000, y: 10000, moving: false, rotation: 'front'};
+        newPlayer.location = { x: 10000, y: 10000, moving: false, rotation: 'front' };
         testingTown.players.push(newPlayer);
         const areaOneHolder = new Player('will make sure area 1 doesnt close');
-        areaOneHolder.location = {x: 10000, y: 10000, moving: false, rotation: 'front'};
+        areaOneHolder.location = { x: 10000, y: 10000, moving: false, rotation: 'front' };
         testingTown.players.push(newPlayer);
         expectConversationAreas(preCreatedAreas);
 
@@ -647,7 +643,7 @@ testingTown.players.push(corner);
       it('should only emit onConversationUpdated events for conversations that update [T2.1]', async ()=>{
         putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[0]);
         resetMockListeners();
-        const updatedLocation = {...testingPlayer.location};
+        const updatedLocation = { ...testingPlayer.location };
         updatedLocation.conversationLabel = preCreatedAreas[0].label;
         updatedLocation.x += 1;
         updatedLocation.y += 1;
@@ -657,7 +653,7 @@ testingTown.players.push(corner);
       });
       it('should remove a participant if they disconnect [T2.2]', async ()=>{
         const newPlayer = new Player('will move a lot');
-        newPlayer.location = {x: 10000, y: 10000, moving: false, rotation: 'front'};
+        newPlayer.location = { x: 10000, y: 10000, moving: false, rotation: 'front' };
         const newPlayerSession = await testingTown.addPlayer(newPlayer);
         putPlayerInConversationAreaAndExpectUpdate(newPlayer, preCreatedAreas[0]);
         putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[0]);
@@ -667,14 +663,14 @@ testingTown.players.push(corner);
       });
       it('should emit onConversationUpdated when a participant disconnects [T2.2]', async ()=>{
         const newPlayer = new Player('will move a lot');
-        newPlayer.location = {x: 10000, y: 10000, moving: false, rotation: 'front'};
+        newPlayer.location = { x: 10000, y: 10000, moving: false, rotation: 'front' };
         const newPlayerSession = await testingTown.addPlayer(newPlayer);
         putPlayerInConversationAreaAndExpectUpdate(newPlayer, preCreatedAreas[0]);
         putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[0]);
         expectConversationAreaToHaveMembers(preCreatedAreas[0].label, [newPlayer.id, testingPlayer.id]);
         resetMockListeners();
 
-        const expectedAreaUpdateMessage :ServerConversationArea = {...preCreatedAreas[0]};
+        const expectedAreaUpdateMessage :ServerConversationArea = { ...preCreatedAreas[0] };
         expectedAreaUpdateMessage.occupantsByID = [testingPlayer.id];
         testingTown.destroySession(newPlayerSession);
         mockListeners.forEach(listener => {
@@ -687,11 +683,11 @@ testingTown.players.push(corner);
         putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[1]);
         removePlayerFromConversationAreaAndExpectUpdate(testingPlayer);
         const removedAreaLabel = preCreatedAreas[1].label;
-        expectConversationAreas(preCreatedAreas.filter(a => a.label != removedAreaLabel));
+        expectConversationAreas(preCreatedAreas.filter(a => a.label !== removedAreaLabel));
       });
       it('should not emit onConversationAreaDestroyed when a conversation is not destroyed [T2.3]', async ()=>{
         const newPlayer = new Player('will move a lot');
-        newPlayer.location = {x: 10000, y: 10000, moving: false, rotation: 'front'};
+        newPlayer.location = { x: 10000, y: 10000, moving: false, rotation: 'front' };
         await testingTown.addPlayer(newPlayer);
         putPlayerInConversationAreaAndExpectUpdate(testingPlayer, preCreatedAreas[0]);
         putPlayerInConversationAreaAndExpectUpdate(newPlayer, preCreatedAreas[0]);

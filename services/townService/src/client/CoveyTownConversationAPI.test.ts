@@ -82,7 +82,7 @@ describe('Create Conversation Area API', () => {
         spy = jest
           .spyOn(requestHandlers, 'conversationAreaCreateHandler')
           .mockImplementation(() => {
-            throw errorMessage;
+            throw new Error(errorMessage);
           });
         errorSpy = jest.spyOn(utils, 'logError').mockImplementation(() => {});
       });
@@ -105,7 +105,7 @@ describe('Create Conversation Area API', () => {
           });
           fail('Expected an error to be thrown by the client');
         } catch (err) {
-          expect(err.toString()).toEqual('Error: Request failed with status code 500');
+          expect((err as Error).toString()).toEqual('Error: Request failed with status code 500');
         }
       });
       it('Logs errors that occur during invocation of the request handler [T1.1]', async () => {
@@ -123,10 +123,10 @@ describe('Create Conversation Area API', () => {
             sessionToken: testingSession.coveySessionToken,
           });
         } catch (err) {
-          //expected
+          // expected
         }
         expect(errorSpy).toHaveBeenCalledTimes(1);
-        expect(errorSpy.mock.calls[0][0].toString()).toEqual(errorMessage);
+        expect(errorSpy.mock.calls[0][0].toString()).toEqual(`Error: ${  errorMessage}`);
       });
     });
     it('Includes newly created conversations when a new player joins [T1.3]', async () => {
@@ -167,7 +167,7 @@ describe('Create Conversation Area API', () => {
   }
   describe('conversationAreaCreateHandler', () => {
 
-    let spys: jest.SpyInstance[] = [];
+    const spys: jest.SpyInstance[] = [];
     const mockCoveyTownStore = mock<CoveyTownsStore>();
     const mockCoveyTownController = mock<CoveyTownController>();
     beforeAll(() => {
@@ -202,7 +202,7 @@ describe('Create Conversation Area API', () => {
       it('Returns the correct error message [T1.2b]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
-        expect(response.message).toEqual(`Unable to create conversation ${conversationArea.label} with topic ${conversationArea.topic}`)
+        expect(response.message).toEqual(`Unable to create conversation ${conversationArea.label} with topic ${conversationArea.topic}`);
       });
     });
     describe('On a request with an invalid coveyTownID', () => {
@@ -279,7 +279,7 @@ describe('Create Conversation Area API', () => {
     });
   });
   describe('townJoinHandler', () => {
-    let spys: jest.SpyInstance[] = [];
+    const spys: jest.SpyInstance[] = [];
     const mockCoveyTownStore = mock<CoveyTownsStore>();
     const mockCoveyTownController = mockDeep<CoveyTownController>();
     beforeAll(() => {
@@ -299,15 +299,16 @@ describe('Create Conversation Area API', () => {
       mockCoveyTownStore.getControllerForTown.mockReturnValue(mockCoveyTownController);
       coveyTownID = nanoid();
       userName = nanoid();
-      player = new Player(userName)
+      player = new Player(userName);
       playerSession = new PlayerSession(player);
       playerSession.videoToken = nanoid();
       mockCoveyTownController.friendlyName = friendlyName;
       mockCoveyTownController.isPubliclyListed = isPubliclyListed;
       conversationAreas = [generateConversationArea(), generateConversationArea()];
+      // eslint-disable-next-line
       ((mockCoveyTownController as any))._conversationAreas = conversationAreas;
       mockCoveyTownController.addPlayer.mockResolvedValue(playerSession);
-      response = await requestHandlers.townJoinHandler({coveyTownID, userName});
+      response = await requestHandlers.townJoinHandler({ coveyTownID, userName });
     });
     it('Should behave normally and return exactly the set of conversations in the town controller when a player joins [T1.3]', async () => {
       expect(mockCoveyTownStore.getControllerForTown).toHaveBeenCalledWith(coveyTownID);
