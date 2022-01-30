@@ -199,7 +199,7 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalled();
       });
 
-      it('Returns the correct error message [T1.2b]', () => {
+      it('Returns the correct error message [T1.2a]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
         expect(response.message).toEqual(`Unable to create conversation area ${conversationArea.label} with topic ${conversationArea.topic}`);
@@ -224,7 +224,7 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).not.toHaveBeenCalled();
       });
 
-      it('Returns the correct error message [T1.2b]', () => {
+      it('Returns the correct error message [T1.2a]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
         expect(response.message).toEqual(`Unable to create conversation area ${conversationArea.label} with topic ${conversationArea.topic}`);
@@ -250,16 +250,16 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalled();
       });
 
-      it('Provides exactly the correct response and message upon success [T1.2b]', () => {
+      it('Provides exactly the correct response and message upon success [T1.2a]', () => {
         expect(response.isOK).toBe(true);
         expect(response.response).toEqual({});
         expect(response.message).toBeUndefined();
       });
-      it('Passes the correct conversation area to addController [T1.2b]', () => {
+      it('Passes the correct conversation area to addController [T1.2a]', () => {
         expect(mockCoveyTownController.addConversationArea).toHaveBeenCalledWith(conversationArea);
       });
 
-      it('Invokes addConversationArea on the correct town controller [T1.2b]', () => {
+      it('Invokes addConversationArea on the correct town controller [T1.2a]', () => {
         expect(mockCoveyTownStore.getControllerForTown).toHaveBeenCalledWith(coveyTownID);
       });
     });
