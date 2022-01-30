@@ -592,7 +592,7 @@ describe('CoveyTownController', () => {
         expectedOccupantsByArea[0] = [testingPlayer.id];
         expectConversationAreas(preCreatedAreas, expectedOccupantsByArea);
       }); 
-      it('should use the player\'s choice of conversation area [T2.1]', async ()=>{
+      it('should respect the `activeConversationArea` property reported by the player, and not override it when a player moves into a different, existing conversation area [T2.1]', async ()=>{
         const playerLocatedInArea3ID = createPlayersInBox(box3, 1)[0];
         const playerLocatedInArea3 = testingTown.players.find(player => player.id === playerLocatedInArea3ID);
         expect(playerLocatedInArea3).toBeDefined();

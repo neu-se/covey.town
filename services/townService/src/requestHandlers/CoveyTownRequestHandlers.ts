@@ -186,7 +186,7 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
   const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
   if (!townController?.getSessionByToken(_requestData.sessionToken)){
     return {
-      isOK: false, response: {}, message: 'Not authorized',
+      isOK: false, response: {}, message: `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}`,
     };
   }
   const success = townController.addConversationArea(_requestData.conversationArea);
@@ -194,7 +194,7 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
   return {
     isOK: success,
     response: {},
-    message: !success ? `Unable to create conversation ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined,
+    message: !success ? `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined,
   };
 }
 /**

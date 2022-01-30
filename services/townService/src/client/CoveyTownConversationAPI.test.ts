@@ -202,7 +202,7 @@ describe('Create Conversation Area API', () => {
       it('Returns the correct error message [T1.2b]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
-        expect(response.message).toEqual(`Unable to create conversation ${conversationArea.label} with topic ${conversationArea.topic}`);
+        expect(response.message).toEqual(`Unable to create conversation area ${conversationArea.label} with topic ${conversationArea.topic}`);
       });
     });
     describe('On a request with an invalid coveyTownID', () => {
@@ -227,7 +227,7 @@ describe('Create Conversation Area API', () => {
       it('Returns the correct error message [T1.2b]', () => {
         expect(response.isOK).toBe(false);
         expect(response.response).toEqual({});
-        expect(response.message).toEqual('Not authorized');
+        expect(response.message).toEqual(`Unable to create conversation area ${conversationArea.label} with topic ${conversationArea.topic}`);
       });
     });
     describe('On a successful request', () => {
@@ -273,7 +273,7 @@ describe('Create Conversation Area API', () => {
       });
       expect(response.isOK).toBe(false);
       expect(response.response).toEqual({});
-      expect(response.message).toEqual('Not authorized');
+      expect(response.message).toEqual(`Unable to create conversation area ${conversationArea.label} with topic ${conversationArea.topic}`);
       expect(mockCoveyTownController.getSessionByToken).toHaveBeenCalledTimes(1);
       expect(mockCoveyTownController.addConversationArea).not.toHaveBeenCalled();
     });
