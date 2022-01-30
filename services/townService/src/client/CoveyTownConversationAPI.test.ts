@@ -263,7 +263,7 @@ describe('Create Conversation Area API', () => {
         expect(mockCoveyTownStore.getControllerForTown).toHaveBeenCalledWith(coveyTownID);
       });
     });
-    it('Checks for a valid session token before creating a conversation [T1.2b]', () => {
+    it('Checks for a valid session token before creating a conversation [T1.2a]', () => {
       const coveyTownID = nanoid();
       const conversationArea = generateConversationArea();
       const response = requestHandlers.conversationAreaCreateHandler({

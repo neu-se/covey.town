@@ -387,13 +387,13 @@ describe('CoveyTownController', () => {
     const boxes = [box1, box2, box3, box4].concat(gridBase);
     const overlappingBoxes = [box1Overlap, box2Overlap, box3Overlap].concat(gridOverlap);
     describe('addConversationArea', () => {
-      it('should add the conversation area to the list of conversation areas [T1.2a]', ()=>{
+      it('should add the conversation area to the list of conversation areas [T1.2b]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting();
         const result = testingTown.addConversationArea(newConversationArea);
         expect(result).toBe(true);
         expectConversationAreas([newConversationArea]);
       });
-      it('should check to see if a conversation area exists with the given label [T1.2a]', ()=>{
+      it('should check to see if a conversation area exists with the given label [T1.2b]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: box1 });
         const dupArea = TestUtils.createConversationForTesting({ conversationLabel: newConversationArea.label, boundingBox: box2 });
 
@@ -410,7 +410,7 @@ describe('CoveyTownController', () => {
         expectConversationAreas([newConversationArea]);
 
       });
-      it('should allow multiple conversations with the same topic [T1.2a]', ()=>{
+      it('should allow multiple conversations with the same topic [T1.2b]', ()=>{
         const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: box1 });
         const dupArea = TestUtils.createConversationForTesting({ conversationTopic: newConversationArea.topic, boundingBox: box2 });
 
@@ -422,7 +422,7 @@ describe('CoveyTownController', () => {
         expect(testingTown.addConversationArea(dupArea)).toBe(true);
         expectConversationAreas([newConversationArea, dupArea]);
       });
-      it('should not allow an empty topic [T1.2a]', () =>{
+      it('should not allow an empty topic [T1.2b]', () =>{
         const validArea = TestUtils.createConversationForTesting({ boundingBox: box1 });
         const emptyTopic = TestUtils.createConversationForTesting({ boundingBox: box3 });
         emptyTopic.topic = '';
@@ -433,7 +433,7 @@ describe('CoveyTownController', () => {
         expect(testingTown.addConversationArea(emptyTopic)).toBe(false);
         expectConversationAreas([validArea]);
       });
-      it('should check for overlapping bounding boxes [T1.2a]', async ()=>{
+      it('should check for overlapping bounding boxes [T1.2b]', async ()=>{
         const validAreas = boxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         const invalidAreas = overlappingBoxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         validAreas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
@@ -441,7 +441,7 @@ describe('CoveyTownController', () => {
         invalidAreas.forEach(invalidArea => expect(testingTown.addConversationArea(invalidArea)).toBe(false));
         expectConversationAreas(validAreas);
       });
-      it('should allow adjacent bounding boxes [T1.2a]', async () =>{
+      it('should allow adjacent bounding boxes [T1.2b]', async () =>{
         function box(x:number, y:number) : BoundingBox{
           return { x, y, width: 1, height: 1 };
         }
@@ -453,14 +453,14 @@ describe('CoveyTownController', () => {
         expectConversationAreas(adjacentAreas);
 
       });
-      it('should include players in the bounding box as occupants when a conversation is created and set their activeConversation property [T1.2a]', async ()=>{
+      it('should include players in the bounding box as occupants when a conversation is created and set their activeConversation property [T1.2b]', async ()=>{
         const playersByBox = boxes.map((box)=>createPlayersInBox(box, 10));
         boxes.map(box => createPlayersNotInBox(box));
         const areas = boxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
         areas.forEach(validArea => expect(testingTown.addConversationArea(validArea)).toBe(true));
         expectConversationAreas(areas, playersByBox);
       });
-      it('should notify all listeners when a conversation area is created [T1.2a]', ()=>{
+      it('should notify all listeners when a conversation area is created [T1.2b]', ()=>{
 
         // Create some valid areas, add them, check for listener messages
         const areas = boxes.map(box => TestUtils.createConversationForTesting({ boundingBox: box }));
