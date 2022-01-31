@@ -598,18 +598,27 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   pause() {
-    this.paused = true;
-    this.previouslyCapturedKeys = this.input.keyboard.getCaptures();
-    this.input.keyboard.clearCaptures();
+    if (!this.paused) {
+      this.paused = true;
+      if(this.player){
+        this.player?.sprite.anims.stop();
+        const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
+        body.setVelocity(0);
+      }
+      this.previouslyCapturedKeys = this.input.keyboard.getCaptures();
+      this.input.keyboard.clearCaptures();
+    }
   }
 
   resume() {
-    this.paused = false;
-    if (Video.instance()) {
-      // If the game is also in process of being torn down, the keyboard could be undefined
-      this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+    if (this.paused) {
+      this.paused = false;
+      if (Video.instance()) {
+        // If the game is also in process of being torn down, the keyboard could be undefined
+        this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+      }
+      this.previouslyCapturedKeys = [];
     }
-    this.previouslyCapturedKeys = [];
   }
 }
 
@@ -682,17 +691,31 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updateConversationAreas(conversationAreas);
   }, [conversationAreas, deepConversationAreas, gameScene]);
 
+  const newConversationModalOpen = newConversation !== undefined;
+  useEffect(() => {
+    if (newConversationModalOpen) {
+      video?.pauseGame();
+    } else {
+      video?.unPauseGame();
+    }
+  }, [video, newConversationModalOpen]);
+
   const newConversationModal = useMemo(() => {
-    if (newConversation)
+    if (newConversation) {
+      video?.pauseGame();
       return (
         <NewConversationModal
           isOpen={newConversation !== undefined}
-          closeModal={() => setNewConversation(undefined)}
+          closeModal={() => {
+            video?.unPauseGame();
+            setNewConversation(undefined);
+          }}
           newConversation={newConversation}
         />
       );
+    }
     return <></>;
-  }, [newConversation, setNewConversation]);
+  }, [video, newConversation, setNewConversation]);
 
   return (
     <>

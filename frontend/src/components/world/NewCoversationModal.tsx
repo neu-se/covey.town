@@ -1,6 +1,5 @@
 import {
 Button,
-
 FormControl,
 FormLabel,
 Input,
@@ -14,7 +13,7 @@ ModalOverlay,
 
 useToast
 } from '@chakra-ui/react';
-import React,{ useCallback,useEffect,useState } from 'react';
+import React,{ useCallback,useState } from 'react';
 import ConversationArea from '../../classes/ConversationArea';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
@@ -31,13 +30,6 @@ export default function NewConversationModal( {isOpen, closeModal, newConversati
 
     const toast = useToast()
     const video = useMaybeVideo()
-    useEffect(()=>{
-        if(isOpen){
-            video?.pauseGame();
-        }else{
-            video?.unPauseGame();
-        }
-    },[video, isOpen]);
 
     const createConversation = useCallback(async () => {
       if (topic) {
