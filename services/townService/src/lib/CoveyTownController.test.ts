@@ -1,13 +1,13 @@
-import {nanoid} from 'nanoid';
-import {mock, mockReset} from 'jest-mock-extended';
-import {Socket} from 'socket.io';
+import { nanoid } from 'nanoid';
+import { mock, mockReset } from 'jest-mock-extended';
+import { Socket } from 'socket.io';
 import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
 import CoveyTownController from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
-import {UserLocation} from '../CoveyTypes';
+import { UserLocation } from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
-import {townSubscriptionHandler} from '../requestHandlers/CoveyTownRequestHandlers';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 
@@ -33,13 +33,13 @@ describe('CoveyTownController', () => {
   beforeEach(() => {
     mockGetTokenForTown.mockClear();
   });
-  it('constructor should set the friendlyName property', () => { // Included in handout
+  it('constructor should set the friendlyName property', () => { 
     const townName = `FriendlyNameTest-${nanoid()}`;
     const townController = new CoveyTownController(townName, false);
     expect(townController.friendlyName)
       .toBe(townName);
   });
-  describe('addPlayer', () => { // Included in handout
+  describe('addPlayer', () => { 
     it('should use the coveyTownID and player ID properties when requesting a video token',
       async () => {
         const townName = `FriendlyNameTest-${nanoid()}`;
@@ -237,5 +237,47 @@ describe('CoveyTownController', () => {
         }
       });
     });
+  });
+  describe('addConversationArea', () => {
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `addConversationArea test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should add the conversation area to the list of conversation areas', ()=>{
+      const newConversationArea = TestUtils.createConversationForTesting();
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      const areas = testingTown.conversationAreas;
+      expect(areas.length).toEqual(1);
+      expect(areas[0].label).toEqual(newConversationArea.label);
+      expect(areas[0].topic).toEqual(newConversationArea.topic);
+      expect(areas[0].boundingBox).toEqual(newConversationArea.boundingBox);
+    });
+  });
+  describe('updatePlayerLocation', () =>{
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should respect the conversation area reported by the player userLocation.conversationLabel, and not override it based on the player\'s x,y location', async ()=>{
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+
+      const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
+      testingTown.updatePlayerLocation(player, newLocation);
+      expect(player.activeConversationArea?.label).toEqual(newConversationArea.label);
+      expect(player.activeConversationArea?.topic).toEqual(newConversationArea.topic);
+      expect(player.activeConversationArea?.boundingBox).toEqual(newConversationArea.boundingBox);
+
+      const areas = testingTown.conversationAreas;
+      expect(areas[0].occupantsByID.length).toBe(1);
+      expect(areas[0].occupantsByID[0]).toBe(player.id);
+
+    }); 
   });
 });

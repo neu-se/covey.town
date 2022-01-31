@@ -19,6 +19,10 @@ function mockCoveyListener(): CoveyTownListener {
     },
     onPlayerJoined(newPlayer: Player) {
       mockCoveyListenerOtherFns(newPlayer);
+    }, onConversationAreaDestroyed(){
+
+    }, onConversationAreaUpdated(){
+
     },
   };
 }

@@ -35,5 +35,6 @@ export type UserLocation = {
   x: number,
   y: number,
   rotation: Direction,
-  moving: boolean
+  moving: boolean,
+  conversationLabel?: string
 };

@@ -59,17 +59,21 @@ export default class TwilioVideo implements IVideoClient {
 
   async createConversationIfNotExisting(conversationID: string, clientIdentity: string): Promise<void> {
     assert(this._twilioConversationsSid);
-    const conversationsClient= this._twilioClient.conversations.services(this._twilioConversationsSid);
+    if (this._twilioConversationsSid === 'IS..'){
+      // Do not try to create a conversation if we don't have a real account SID
+      return;
+    }
+    const conversationsClient = this._twilioClient.conversations.services(this._twilioConversationsSid);
     try {
       // Does it exist?
       await conversationsClient.conversations(conversationID).fetch();
     } catch (e) {
       // Create the room
-      await conversationsClient.conversations.create({uniqueName: conversationID});
+      await conversationsClient.conversations.create({ uniqueName: conversationID });
     }
     // Add the participant to the conversation
     try {
-      await conversationsClient.conversations(conversationID).participants.create({identity: clientIdentity});
+      await conversationsClient.conversations(conversationID).participants.create({ identity: clientIdentity });
     } catch (e) {
       // Ignore "Participant already exists" error - we always try to add the participant, even if they are already in the conversation
       if (e instanceof Error && e.code !== 50433){
@@ -89,7 +93,7 @@ export default class TwilioVideo implements IVideoClient {
     token.addGrant(videoGrant);
     if (this._twilioConversationsSid){
       await this.createConversationIfNotExisting(coveyTownID, clientIdentity);
-      const chatGrant = new ChatGrant({serviceSid: this._twilioConversationsSid});
+      const chatGrant = new ChatGrant({ serviceSid: this._twilioConversationsSid });
       token.addGrant(chatGrant);
     }
 

@@ -4,6 +4,7 @@ import Player from '../types/Player';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
+import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -122,7 +123,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
   };
 }
 
-export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
+export function townListHandler(): ResponseEnvelope<TownListResponse> {
   const townsStore = CoveyTownsStore.getInstance();
   return {
     isOK: true,
@@ -130,7 +131,7 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   };
 }
 
-export async function townCreateHandler(requestData: TownCreateRequest): Promise<ResponseEnvelope<TownCreateResponse>> {
+export function townCreateHandler(requestData: TownCreateRequest): ResponseEnvelope<TownCreateResponse> {
   const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
@@ -148,7 +149,7 @@ export async function townCreateHandler(requestData: TownCreateRequest): Promise
   };
 }
 
-export async function townDeleteHandler(requestData: TownDeleteRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export function townDeleteHandler(requestData: TownDeleteRequest): ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   return {
@@ -158,7 +159,7 @@ export async function townDeleteHandler(requestData: TownDeleteRequest): Promise
   };
 }
 
-export async function townUpdateHandler(requestData: TownUpdateRequest): Promise<ResponseEnvelope<Record<string, null>>> {
+export function townUpdateHandler(requestData: TownUpdateRequest): ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.updateTown(requestData.coveyTownID, requestData.coveyTownPassword, requestData.friendlyName, requestData.isPubliclyListed);
   return {
@@ -169,6 +170,21 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 }
 
+/**
+ * A handler to process the "Create Conversation Area" request
+ * The intended flow of this handler is:
+ * * Fetch the town controller for the specified town ID
+ * * Validate that the sessionToken is valid for that town
+ * * Ask the TownController to create the conversation area
+ * @param _requestData Conversation area create request
+ */
+export function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : ResponseEnvelope<Record<string, null>> {
+  return {
+    isOK: false,
+    response: {},
+    message: `This feature is not yet implemented. Received: ${_requestData.coveyTownID}`,
+  };
+}
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -189,6 +205,12 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onTownDestroyed() {
       socket.emit('townClosing');
       socket.disconnect(true);
+    },
+    onConversationAreaDestroyed(conversation: ServerConversationArea){
+      socket.emit('conversationDestroyed', conversation);
+    },
+    onConversationAreaUpdated(conversation: ServerConversationArea){
+      socket.emit('conversationUpdated', conversation);
     },
   };
 }

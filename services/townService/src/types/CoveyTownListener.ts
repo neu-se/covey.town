@@ -1,3 +1,4 @@
+import { ServerConversationArea } from '../client/TownsServiceClient';
 import Player from './Player';
 
 /**
@@ -26,4 +27,16 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+  /**
+   * Called when a conversation area is created or updated
+   * @param conversationArea the conversation area that is updated or created
+   */
+  onConversationAreaUpdated(conversationArea: ServerConversationArea) : void;
+
+  /**
+   * Called when a conversation area is destroyed
+   * @param conversationArea the conversation area that has been destroyed
+   */
+  onConversationAreaDestroyed(conversationArea: ServerConversationArea): void;
 }

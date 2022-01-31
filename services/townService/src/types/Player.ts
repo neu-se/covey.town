@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 
 /**
@@ -13,6 +14,9 @@ export default class Player {
 
   /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
+
+  /** The current ConversationArea that the player is in, or undefined if they are not located within one */
+  private _activeConversationArea?: ServerConversationArea;
 
   constructor(userName: string) {
     this.location = {
@@ -33,7 +37,16 @@ export default class Player {
     return this._id;
   }
 
+  get activeConversationArea(): ServerConversationArea | undefined {
+    return this._activeConversationArea;
+  }
+
+  set activeConversationArea(conversationArea: ServerConversationArea | undefined) {
+    this._activeConversationArea = conversationArea;
+  }
+
   updateLocation(location: UserLocation): void {
     this.location = location;
   }
+
 }

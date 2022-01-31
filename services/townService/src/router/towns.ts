@@ -1,5 +1,4 @@
-import { Express } from 'express';
-import BodyParser from 'body-parser';
+import express, { Express } from 'express';
 import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
@@ -16,7 +15,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /*
    * Create a new session (aka join a town)
    */
-  app.post('/sessions', BodyParser.json(), async (req, res) => {
+  app.post('/sessions', express.json(), async (req, res) => {
     try {
       const result = await townJoinHandler({
         userName: req.body.userName,
@@ -36,9 +35,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Delete a town
    */
-  app.delete('/towns/:townID/:townPassword', BodyParser.json(), async (req, res) => {
+  app.delete('/towns/:townID/:townPassword', express.json(), async (req, res) => {
     try {
-      const result = await townDeleteHandler({
+      const result = townDeleteHandler({
         coveyTownID: req.params.townID,
         coveyTownPassword: req.params.townPassword,
       });
@@ -56,9 +55,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * List all towns
    */
-  app.get('/towns', BodyParser.json(), async (_req, res) => {
+  app.get('/towns', express.json(), async (_req, res) => {
     try {
-      const result = await townListHandler();
+      const result = townListHandler();
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -73,9 +72,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Create a town
    */
-  app.post('/towns', BodyParser.json(), async (req, res) => {
+  app.post('/towns', express.json(), async (req, res) => {
     try {
-      const result = await townCreateHandler(req.body);
+      const result = townCreateHandler(req.body);
       res.status(StatusCodes.OK)
         .json(result);
     } catch (err) {
@@ -89,9 +88,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Update a town
    */
-  app.patch('/towns/:townID', BodyParser.json(), async (req, res) => {
+  app.patch('/towns/:townID', express.json(), async (req, res) => {
     try {
-      const result = await townUpdateHandler({
+      const result = townUpdateHandler({
         coveyTownID: req.params.townID,
         isPubliclyListed: req.body.isPubliclyListed,
         friendlyName: req.body.friendlyName,
