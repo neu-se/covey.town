@@ -39,7 +39,7 @@ export default function NewConversationModal( {isOpen, closeModal, newConversati
           await apiClient.createConversation({
             sessionToken,
             coveyTownID: currentTownID,
-            conversation: conversationToCreate.toServerConversationArea(),
+            conversationArea: conversationToCreate.toServerConversationArea(),
           });
           toast({
             title: 'Conversation Created!',

@@ -1,0 +1,6 @@
+.env
+createHandout.sh
+.env.prod
+
+# stryker temp files
+.stryker-tmp

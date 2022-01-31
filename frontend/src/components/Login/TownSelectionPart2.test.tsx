@@ -325,7 +325,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
           }
         }
       });
-      it('disables the connect button if room is at or over capacity', async () => {
+      it('disables the connect button if town is at or over capacity', async () => {
         const rows = renderData.getAllByRole('row');
         for (const town of expectedTowns.towns) {
           if (town.currentOccupancy >= town.maximumOccupancy) {

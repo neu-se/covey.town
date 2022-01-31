@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useState,
+  useState
 } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
@@ -140,8 +140,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       assert(url);
       const video = Video.instance();
       assert(video);
-      const roomName = video.townFriendlyName;
-      assert(roomName);
+      const townName = video.townFriendlyName;
+      assert(townName);
     
       const socket = io(url, { auth: { token: sessionToken, coveyTownID: video.coveyTownID } });
       socket.on('disconnect', () => {
@@ -177,7 +177,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           ) {
             lastRecalculateNearbyPlayers = now;
             recalculateNearbyPlayers();
-            // setCurrentLocation(location);
           }
         }
       };
@@ -210,29 +209,30 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         setPlayersInTown(localPlayers);
         recalculateNearbyPlayers();
       });
-      socket.on('conversationUpdated', (conversationArea: ServerConversationArea) => {
+      socket.on('conversationUpdated', (_conversationArea: ServerConversationArea) => {
         const updatedConversationArea = localConversationAreas.find(
-          c => c.label === conversationArea.label,
+          c => c.label === _conversationArea.label,
         );
         if (updatedConversationArea) {
-          updatedConversationArea.topic = conversationArea.topic;
-          updatedConversationArea.occupants = conversationArea.occupantsByID;
+          updatedConversationArea.topic = _conversationArea.topic;
+          updatedConversationArea.occupants = _conversationArea.occupantsByID;
         } else {
-          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(conversationArea)]);
+          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(_conversationArea)]);
         }
         setConversationAreas(localConversationAreas);
-
+        recalculateNearbyPlayers();
       });
-      socket.on('conversationDestroyed', (conversationArea: ServerConversationArea) => {
-        localConversationAreas = localConversationAreas.filter(a => a.label !== conversationArea.label);
+      socket.on('conversationDestroyed', (_conversationArea: ServerConversationArea) => {
+        localConversationAreas = localConversationAreas.filter(a => a.label !== _conversationArea.label);
         setConversationAreas(localConversationAreas);
+        recalculateNearbyPlayers();
       });
       dispatchAppUpdate({
         action: 'doConnect',
         data: {
           sessionToken,
           userName: video.userName,
-          townFriendlyName: roomName,
+          townFriendlyName: townName,
           townID: video.coveyTownID,
           myPlayerID: gamePlayerID,
           townIsPubliclyListed: video.isPubliclyListed,
@@ -278,7 +278,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         <PlayersInTownContext.Provider value={playersInTown}>
         <NearbyPlayersContext.Provider value={nearbyPlayers}>
           <ConversationAreasContext.Provider value={conversationAreas}>
-
             {page}
           </ConversationAreasContext.Provider>
         </NearbyPlayersContext.Provider>

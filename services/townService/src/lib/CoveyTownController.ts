@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { ServerConversationArea } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
@@ -50,8 +50,8 @@ export default class CoveyTownController {
     return this._coveyTownID;
   }
 
-  get conversations(): ServerConversationArea[] {
-    return this._conversations;
+  get conversationAreas(): ServerConversationArea[] {
+    return this._conversationAreas;
   }
 
   /** The list of players currently in the town * */
@@ -66,6 +66,9 @@ export default class CoveyTownController {
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
   private _listeners: CoveyTownListener[] = [];
 
+  /** The list of currently active ConversationAreas in this town */
+  private _conversationAreas: ServerConversationArea[] = [];
+
   private readonly _coveyTownID: string;
 
   private _friendlyName: string;
@@ -75,8 +78,6 @@ export default class CoveyTownController {
   private _isPubliclyListed: boolean;
 
   private _capacity: number;
-
-  private _conversations: ServerConversationArea[] = [];
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -119,42 +120,94 @@ export default class CoveyTownController {
     this._players = this._players.filter(p => p.id !== session.player.id);
     this._sessions = this._sessions.filter(s => s.sessionToken !== session.sessionToken);
     this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
-    const conversation = session.player.activeConversation;
+    const conversation = session.player.activeConversationArea;
     if (conversation) {
-      this.removePlayerFromConversation(session.player, conversation);
-    }
-  }
-
-  removePlayerFromConversation(player: Player, conversation: ServerConversationArea) {
-    conversation.occupantsByID = conversation.occupantsByID.filter(p => p != player.id);
-    if (conversation.occupantsByID.length == 0) {
-      this._conversations = this._conversations.filter(conv => conv !== conversation);
-      this._listeners.forEach(listener => listener.onConversationDestroyed(conversation));
-    } else {
-      this._listeners.forEach(listener => listener.onConversationUpdated(conversation));
+      this.removePlayerFromConversationArea(session.player, conversation);
     }
   }
 
   /**
    * Updates the location of a player within the town
+   * 
+   * If the player has changed conversation areas, this method also updates the
+   * corresponding ConversationArea objects tracked by the town controller, and dispatches
+   * any onConversationUpdated events as appropriate
+   * 
    * @param player Player to update location for
    * @param location New location for this player
    */
   updatePlayerLocation(player: Player, location: UserLocation): void {
-    player.updateLocation(location);
-    const conversation = this.conversations.find(conv => conv.label === location.conversationLabel);
-    const prevConversation = player.activeConversation;
-    player.activeConversation = conversation;
+    const conversation = this.conversationAreas.find(conv => conv.label === location.conversationLabel);
+    const prevConversation = player.activeConversationArea;
+    player.updateLocation(location, conversation);
     if (conversation !== prevConversation) {
       if (prevConversation) {
-        this.removePlayerFromConversation(player, prevConversation);
+        this.removePlayerFromConversationArea(player, prevConversation);
       }
       if (conversation) {
         conversation.occupantsByID.push(player.id);
-        this._listeners.forEach(listener => listener.onConversationUpdated(conversation));
+        this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
       }
     }
+
     this._listeners.forEach(listener => listener.onPlayerMoved(player));
+  }
+
+  removePlayerFromConversationArea(player: Player, conversation: ServerConversationArea) : void {
+    conversation.occupantsByID.splice(conversation.occupantsByID.findIndex(p=>p === player.id), 1);
+    if (conversation.occupantsByID.length === 0) {
+      this._conversationAreas.splice(this._conversationAreas.findIndex(conv => conv === conversation), 1);
+      this._listeners.forEach(listener => listener.onConversationAreaDestroyed(conversation));
+    } else {
+      this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+    }
+  }
+
+  /**
+   * Creates a new conversation area in this town if there is not currently an active
+   * conversation with the same label.
+   *
+   * Adds any players who are in the region defined by the conversation area to it.
+   *
+   * Notifies any CoveyTownListeners that the conversation has been updated
+   *
+   * @param _conversationArea Information describing the conversation area to create. Ignores any
+   *  occupantsById that are set on the conversation area that is passed to this method.
+   *
+   * @returns true if the conversation is successfully created, or false if not
+   */
+  addConversationArea(_conversationArea: ServerConversationArea): boolean {
+    if (
+      this._conversationAreas.find(
+        eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
+      )
+    )
+      return false;
+    if (_conversationArea.topic === ''){
+      return false;
+    }
+    if (this._conversationAreas.find(eachExistingConversation => CoveyTownController.boxesOverlap(eachExistingConversation.boundingBox, _conversationArea.boundingBox)) !== undefined){
+      return false;
+    }
+    const newArea :ServerConversationArea = Object.assign(_conversationArea);
+    this._conversationAreas.push(newArea);
+    const playersInThisConversation = this.players.filter(player =>
+      player.isWithin(newArea),
+    );
+    playersInThisConversation.forEach(
+      player => (player.updateLocation(player.location, newArea)),
+    );
+    newArea.occupantsByID = playersInThisConversation.map(player => player.id);
+    this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
+    return true;
+  }
+
+  static boxesOverlap(box1: BoundingBox, box2: BoundingBox):boolean{
+    const toRectPoints = (box: BoundingBox) => ({ x1: box.x - box.width / 2, x2: box.x + box.width / 2, y1: box.y - box.height / 2, y2: box.y + box.height / 2 });
+    const rect1 = toRectPoints(box1);
+    const rect2 = toRectPoints(box2);
+    const noOverlap = rect1.x1 >= rect2.x2 || rect2.x1 >= rect1.x2 || rect1.y1 >= rect2.y2 || rect2.y1 >= rect1.y2;
+    return !noOverlap;
   }
 
   /**
@@ -191,18 +244,4 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onTownDestroyed());
   }
 
-  createConversation(conversation: ServerConversationArea): boolean {
-    if (
-      this._conversations.find(
-        eachExistingConversation => eachExistingConversation.label === conversation.label,
-      )
-    )
-      return false;
-    this._conversations.push(conversation);
-    const playersInThisConversation = this.players.filter(player => player.isWithin(conversation));
-    playersInThisConversation.forEach(player => (player.activeConversation = conversation));
-    conversation.occupantsByID = playersInThisConversation.map(player => player.id);
-    this._listeners.forEach(listener => listener.onConversationUpdated(conversation));
-    return true;
-  }
 }

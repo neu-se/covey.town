@@ -108,12 +108,6 @@ export default class ConversationArea {
     this._occupants = newOccupants;
   }
 
-  // eslint-disable-next-line
-  onCurrentPlayerEntered() {}
-
-  // eslint-disable-next-line
-  onCurrentPlayerExits() {}
-
   toServerConversationArea(): ServerConversationArea {
     return {
       label: this.label,
