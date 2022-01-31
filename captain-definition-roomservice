@@ -11,6 +11,6 @@
                         "ENV PORT 80",
                         "EXPOSE 80",
                         "RUN npm run heroku-postbuild",
-                        "CMD [ \"node\", \"services/roomService/build/server.js\" ]"
+                        "CMD [ \"node\", \"services/townService/build/server.js\" ]"
                     ]
  }
