@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { mock, mockReset } from 'jest-mock-extended';
+import { mock, mockDeep, mockReset } from 'jest-mock-extended';
 import { Socket } from 'socket.io';
 import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
@@ -11,14 +11,8 @@ import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHand
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 
-jest.mock('./TwilioVideo');
-
-const mockGetTokenForTown = jest.fn();
-// eslint-disable-next-line
-// @ts-ignore it's a mock
-TwilioVideo.getInstance = () => ({
-  getTokenForTown: mockGetTokenForTown,
-});
+const mockTwilioVideo = mockDeep<TwilioVideo>();
+jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
 
 function generateTestLocation(): UserLocation {
   return {
@@ -31,7 +25,7 @@ function generateTestLocation(): UserLocation {
 
 describe('CoveyTownController', () => {
   beforeEach(() => {
-    mockGetTokenForTown.mockClear();
+    mockTwilioVideo.getTokenForTown.mockClear();
   });
   it('constructor should set the friendlyName property', () => { 
     const townName = `FriendlyNameTest-${nanoid()}`;
@@ -45,8 +39,8 @@ describe('CoveyTownController', () => {
         const townName = `FriendlyNameTest-${nanoid()}`;
         const townController = new CoveyTownController(townName, false);
         const newPlayerSession = await townController.addPlayer(new Player(nanoid()));
-        expect(mockGetTokenForTown).toBeCalledTimes(1);
-        expect(mockGetTokenForTown).toBeCalledWith(townController.coveyTownID, newPlayerSession.player.id);
+        expect(mockTwilioVideo.getTokenForTown).toBeCalledTimes(1);
+        expect(mockTwilioVideo.getTokenForTown).toBeCalledWith(townController.coveyTownID, newPlayerSession.player.id);
       });
   });
   describe('town listeners and events', () => {
@@ -279,5 +273,20 @@ describe('CoveyTownController', () => {
       expect(areas[0].occupantsByID[0]).toBe(player.id);
 
     }); 
+    it('should emit an onConversationUpdated event when a conversation area gets a new occupant', async () =>{
+
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+      const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
+      testingTown.updatePlayerLocation(player, newLocation);
+      expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
+    });
   });
 });

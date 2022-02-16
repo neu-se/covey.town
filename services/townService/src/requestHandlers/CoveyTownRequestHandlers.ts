@@ -35,6 +35,8 @@ export interface TownJoinResponse {
   friendlyName: string;
   /** Is this a private town? * */
   isPubliclyListed: boolean;
+  /** Conversation areas currently active in this town */
+  conversationAreas: ServerConversationArea[];
 }
 
 /**
@@ -119,6 +121,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       currentPlayers: coveyTownController.players,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
+      conversationAreas: coveyTownController.conversationAreas,
     },
   };
 }
@@ -179,12 +182,22 @@ export function townUpdateHandler(requestData: TownUpdateRequest): ResponseEnvel
  * @param _requestData Conversation area create request
  */
 export function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : ResponseEnvelope<Record<string, null>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
+  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}`,
+    };
+  }
+  const success = townController.addConversationArea(_requestData.conversationArea);
+
   return {
-    isOK: false,
+    isOK: success,
     response: {},
-    message: `This feature is not yet implemented. Received: ${_requestData.coveyTownID}`,
+    message: !success ? `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}` : undefined,
   };
 }
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol

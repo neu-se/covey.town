@@ -3,9 +3,13 @@ import Express from 'express';
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
+import { mock, mockReset } from 'jest-mock-extended';
+import CoveyTownController from '../lib/CoveyTownController';
+import CoveyTownsStore from '../lib/CoveyTownsStore';
 import addTownRoutes from '../router/towns';
+import * as requestHandlers from '../requestHandlers/CoveyTownRequestHandlers';
 import { createConversationForTesting } from './TestUtils';
-import TownsServiceClient from './TownsServiceClient';
+import TownsServiceClient, { ServerConversationArea } from './TownsServiceClient';
 
 type TestTownData = {
   friendlyName: string;
@@ -64,26 +68,35 @@ describe('Create Conversation Area API', () => {
       sessionToken: testingSession.coveySessionToken,
     });
   });
-  it('Includes newly created conversations when a new player joins', async () =>{
-    const testingTown = await createTownForTesting(undefined, true);
-    const testingSession = await apiClient.joinTown({
-      userName: nanoid(),
-      coveyTownID: testingTown.coveyTownID,
+});
+describe('conversationAreaCreateHandler', () => {
+
+  const mockCoveyTownStore = mock<CoveyTownsStore>();
+  const mockCoveyTownController = mock<CoveyTownController>();
+  beforeAll(() => {
+    // Set up a spy for CoveyTownsStore that will always return our mockCoveyTownsStore as the singleton instance
+    jest.spyOn(CoveyTownsStore, 'getInstance').mockReturnValue(mockCoveyTownStore);
+  });
+  beforeEach(() => {
+    // Reset all mock calls, and ensure that getControllerForTown will always return the same mock controller
+    mockReset(mockCoveyTownController);
+    mockReset(mockCoveyTownStore);
+    mockCoveyTownStore.getControllerForTown.mockReturnValue(mockCoveyTownController);
+  });
+  it('Checks for a valid session token before creating a conversation area', ()=>{
+    const coveyTownID = nanoid();
+    const conversationArea :ServerConversationArea = { boundingBox: { height: 1, width: 1, x:1, y:1 }, label: nanoid(), occupantsByID: [], topic: nanoid() };
+    const invalidSessionToken = nanoid();
+
+    // Make sure to return 'undefined' regardless of what session token is passed
+    mockCoveyTownController.getSessionByToken.mockReturnValueOnce(undefined);
+
+    requestHandlers.conversationAreaCreateHandler({
+      conversationArea,
+      coveyTownID,
+      sessionToken: invalidSessionToken,
     });
-    const convArea = createConversationForTesting();
-    await apiClient.createConversationArea({
-      conversationArea: convArea,
-      coveyTownID: testingTown.coveyTownID,
-      sessionToken: testingSession.coveySessionToken,
-    });
-    const { conversationAreas } = await apiClient.joinTown({
-      userName: nanoid(),
-      coveyTownID: testingTown.coveyTownID,
-    });
-    expect(conversationAreas.length).toBe(1);
-    expect(conversationAreas[0].label).toEqual(convArea.label);
-    expect(conversationAreas[0].topic).toEqual(convArea.topic);
-    expect(conversationAreas[0].boundingBox).toEqual(convArea.boundingBox);
-    expect(conversationAreas[0].occupantsByID.length).toBe(0);
+    expect(mockCoveyTownController.getSessionByToken).toBeCalledWith(invalidSessionToken);
+    expect(mockCoveyTownController.addConversationArea).not.toHaveBeenCalled();
   });
 });

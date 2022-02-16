@@ -1,7 +1,6 @@
 import assert from 'assert';
 import dotenv from 'dotenv';
 import Twilio from 'twilio';
-import { ChatGrant } from 'twilio/lib/jwt/AccessToken';
 import IVideoClient from './IVideoClient';
 
 dotenv.config();
@@ -24,18 +23,15 @@ export default class TwilioVideo implements IVideoClient {
 
   private _twilioApiKeySecret: string;
 
-  private _twilioConversationsSid?: string;
 
   constructor(twilioAccountSid: string,
     twilioAuthToken: string,
     twilioAPIKeySID: string,
-    twilioAPIKeySecret: string,
-    twilioConversationsSid?: string) {
+    twilioAPIKeySecret: string) {
     this._twilioAccountSid = twilioAccountSid;
     this._twilioApiKeySID = twilioAPIKeySID;
     this._twilioApiKeySecret = twilioAPIKeySecret;
     this._twilioClient = Twilio(twilioAccountSid, twilioAuthToken);
-    this._twilioConversationsSid = twilioConversationsSid;
   }
 
   public static getInstance(): TwilioVideo {
@@ -51,7 +47,6 @@ export default class TwilioVideo implements IVideoClient {
       TwilioVideo._instance = new TwilioVideo(
         process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_API_AUTH_TOKEN,
         process.env.TWILIO_API_KEY_SID, process.env.TWILIO_API_KEY_SECRET,
-        process.env.CONVERSATIONS_SERVICE_SID,
       );
     }
     return TwilioVideo._instance;

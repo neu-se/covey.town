@@ -68,7 +68,10 @@ class CoveyGameScene extends Phaser.Scene {
     // this.load.image("logo", logoImg);
     this.load.image('Room_Builder_32x32', '/assets/tilesets/Room_Builder_32x32.png');
     this.load.image('22_Museum_32x32', '/assets/tilesets/22_Museum_32x32.png');
-    this.load.image('5_Classroom_and_library_32x32', '/assets/tilesets/5_Classroom_and_library_32x32.png');
+    this.load.image(
+      '5_Classroom_and_library_32x32',
+      '/assets/tilesets/5_Classroom_and_library_32x32.png',
+    );
     this.load.image('12_Kitchen_32x32', '/assets/tilesets/12_Kitchen_32x32.png');
     this.load.image('1_Generic_32x32', '/assets/tilesets/1_Generic_32x32.png');
     this.load.image('13_Conference_Hall_32x32', '/assets/tilesets/13_Conference_Hall_32x32.png');
@@ -76,25 +79,6 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.image('16_Grocery_store_32x32', '/assets/tilesets/16_Grocery_store_32x32.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/indoors.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
-  }
-
-  _updateConversationAreas(_conversationAreas: ConversationArea[]) {
-    _conversationAreas.forEach(eachUpdatedArea => {
-      const existingArea = this.conversationAreas.find(
-        eachExistingArea => eachExistingArea.label === eachUpdatedArea.label,
-      );
-      if (existingArea) {
-        if (existingArea.topic !== eachUpdatedArea.topic) {
-          existingArea.onTopicChange(eachUpdatedArea.topic);
-        }
-      }
-    });
-    this.conversationAreas.forEach(eachArea => {
-      const serverArea = _conversationAreas?.find(a => a.label === eachArea.label);
-      if (!serverArea) {
-        eachArea.destroy();
-      }
-    });
   }
 
   /**
@@ -115,8 +99,25 @@ class CoveyGameScene extends Phaser.Scene {
       this._onGameReadyListeners.push(() => {
         this.updateConversationAreas(conversationAreas);
       });
-      
+      return;
     }
+    conversationAreas.forEach(eachUpdatedArea => {
+      const existingArea = this.conversationAreas.find(
+        eachExistingArea => eachExistingArea.label === eachUpdatedArea.label,
+      );
+      if (existingArea) {
+        if (existingArea.topic !== eachUpdatedArea.topic) {
+          existingArea.onTopicChange(eachUpdatedArea.topic);
+        }
+      }
+    });
+    this.conversationAreas.forEach(eachArea => {
+      const serverArea = conversationAreas?.find(a => a.label === eachArea.label);
+      if (!serverArea) {
+        eachArea.destroy();
+      }
+    });
+
   }
 
   updatePlayersLocations(players: Player[]) {

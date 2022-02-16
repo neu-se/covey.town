@@ -45,8 +45,21 @@ export default class Player {
     this._activeConversationArea = conversationArea;
   }
 
-  updateLocation(location: UserLocation): void {
-    this.location = location;
+  /**
+   * Checks to see if a player's location is within the specified conversation area
+   * 
+   * This method is resilient to floating point errors that could arise if any of the coordinates of
+   * `this.location` are dramatically smaller than those of the conversation area's bounding box.
+   * @param conversation 
+   * @returns 
+   */
+  isWithin(conversation: ServerConversationArea) : boolean {
+    return (
+      this.location.x > conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
+      this.location.x < conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
+      this.location.y > conversation.boundingBox.y - conversation.boundingBox.height / 2 &&
+      this.location.y < conversation.boundingBox.y + conversation.boundingBox.height / 2
+    );
   }
 
 }

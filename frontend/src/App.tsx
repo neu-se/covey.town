@@ -152,7 +152,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       let currentLocation :UserLocation = {moving: false, rotation: 'front', x: 0, y: 0};
     
       let localPlayers = initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp));
-      let localConversationAreas : ConversationArea[] = []; // TODO once HW2 done: initData.conversationAreas.map((sa) => ConversationArea.fromServerConversationArea(sa));
+      let localConversationAreas = initData.conversationAreas.map((sa) => ConversationArea.fromServerConversationArea(sa));
       let localNearbyPlayers :Player[] = [];
       setPlayersInTown(localPlayers);
       setConversationAreas(localConversationAreas);

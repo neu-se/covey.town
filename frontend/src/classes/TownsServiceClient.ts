@@ -82,7 +82,7 @@ export interface TownUpdateRequest {
 export interface ConversationCreateRequest {
   coveyTownID: string;
   sessionToken: string;
-  conversation: ServerConversationArea;
+  conversationArea: ServerConversationArea;
 }
 
 /**
@@ -152,7 +152,7 @@ export default class TownsServiceClient {
   }
   
   async createConversation(requestData: ConversationCreateRequest) : Promise<void>{
-    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversations`, requestData);
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

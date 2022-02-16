@@ -5,7 +5,6 @@ import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import addTownRoutes from '../router/towns';
-import { createConversationForTesting } from './TestUtils';
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 
 type TestTownData = {
@@ -231,21 +230,6 @@ describe('TownsServiceAPIREST', () => {
       });
       expect(res2.coveySessionToken).toBeDefined();
       expect(res2.coveyUserID).toBeDefined();
-    });
-  });
-
-  describe('CreateConversationAPI', () => {
-    it('Executes without error when creating a new conversation', async () => {
-      const testingTown = await createTownForTesting(undefined, true);
-      const testingSession = await apiClient.joinTown({
-        userName: nanoid(),
-        coveyTownID: testingTown.coveyTownID,
-      });
-      await apiClient.createConversationArea({
-        conversationArea: createConversationForTesting(),
-        coveyTownID: testingTown.coveyTownID,
-        sessionToken: testingSession.coveySessionToken,
-      });
     });
   });
 });
