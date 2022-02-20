@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
+import TextConversation, { ChatMessage } from '../../../../../../classes/TextConversation';
 import clsx from 'clsx';
-import { Conversation } from '@twilio/conversations/lib/conversation';
 import FileAttachmentIcon from '../../../icons/FileAttachmentIcon';
 import { isMobile } from '../../../utils';
 import SendMessageIcon from '../../../icons/SendMessageIcon';
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface ChatInputProps {
-  conversation: Conversation;
+  conversation: TextConversation;
   isChatWindowOpen: boolean;
 }
 
@@ -113,29 +113,6 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
     }
   };
 
-  const handleSendFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      var formData = new FormData();
-      formData.append('userfile', file);
-      setIsSendingFile(true);
-      setFileSendError(null);
-      conversation
-        .sendMessage(formData)
-        .catch(e => {
-          if (e.code === 413) {
-            setFileSendError('File size is too large. Maximum file size is 150MB.');
-          } else {
-            setFileSendError('There was a problem uploading the file. Please try again.');
-          }
-          console.log('Problem sending file: ', e);
-        })
-        .finally(() => {
-          setIsSendingFile(false);
-        });
-    }
-  };
-
   return (
     <div className={classes.chatInputContainer}>
       <Snackbar
@@ -166,39 +143,6 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
           onBlur={() => setIsTextareaFocused(false)}
         />
       </div>
-
-      <Grid container alignItems="flex-end" justifyContent="flex-end" wrap="nowrap">
-        {/* Since the file input element is invisible, we can hardcode an empty string as its value.
-        This allows users to upload the same file multiple times. */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          style={{ display: 'none' }}
-          onChange={handleSendFile}
-          value={''}
-          accept={ALLOWED_FILE_TYPES}
-        />
-        <div className={classes.buttonContainer}>
-          <div className={classes.fileButtonContainer}>
-            <Button className={classes.button} onClick={() => fileInputRef.current?.click()} disabled={isSendingFile}>
-              <FileAttachmentIcon />
-            </Button>
-
-            {isSendingFile && <CircularProgress size={24} className={classes.fileButtonLoadingSpinner} />}
-          </div>
-
-          <Button
-            className={classes.button}
-            onClick={() => handleSendMessage(messageBody)}
-            color="primary"
-            variant="contained"
-            disabled={!isValidMessage}
-            data-cy-send-message-button
-          >
-            <SendMessageIcon />
-          </Button>
-        </div>
-      </Grid>
     </div>
   );
 }

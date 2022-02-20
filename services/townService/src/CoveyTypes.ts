@@ -8,3 +8,9 @@ export type UserLocation = {
 };
 export type CoveyTownList = { friendlyName: string; coveyTownID: string; currentOccupancy: number; maximumOccupancy: number }[];
 
+export type ChatMessage = {
+  author: string;
+  sid: string;
+  body: string;
+  dateCreated: Date;
+};

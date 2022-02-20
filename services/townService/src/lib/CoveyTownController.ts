@@ -1,6 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
-import { UserLocation } from '../CoveyTypes';
+import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -243,6 +243,10 @@ export default class CoveyTownController {
    */
   removeTownListener(listener: CoveyTownListener): void {
     this._listeners = this._listeners.filter(v => v !== listener);
+  }
+
+  onChatMessage(message: ChatMessage): void {
+    this._listeners.forEach(listener => listener.onChatMessage(message));
   }
 
   /**

@@ -76,9 +76,9 @@ export default function ToggleChatButton() {
   useEffect(() => {
     if (conversation && !isChatWindowOpen) {
       const handleNewMessage = () => setShouldAnimate(true);
-      conversation.on('messageAdded', handleNewMessage);
+      conversation.onMessageAdded(handleNewMessage);
       return () => {
-        conversation.off('messageAdded', handleNewMessage);
+        conversation.offMessageAdded(handleNewMessage);
       };
     }
   }, [conversation, isChatWindowOpen]);

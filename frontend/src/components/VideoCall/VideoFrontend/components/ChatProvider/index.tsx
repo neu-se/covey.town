@@ -1,52 +1,34 @@
-import React, { createContext, useCallback, useEffect, useRef, useState } from 'react';
-import { Client } from '@twilio/conversations';
-import { Conversation } from '@twilio/conversations/lib/conversation';
-import { Message } from '@twilio/conversations/lib/message';
-import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
+import React, { createContext, useEffect, useRef, useState } from 'react';
+import TextConversation, { ChatMessage } from '../../../../../classes/TextConversation';
+import useCoveyAppState from '../../../../../hooks/useCoveyAppState';
 
 type ChatContextType = {
   isChatWindowOpen: boolean;
   setIsChatWindowOpen: (isChatWindowOpen: boolean) => void;
-  connect: (token: string) => void;
   hasUnreadMessages: boolean;
-  messages: Message[];
-  conversation: Conversation | null;
+  messages: ChatMessage[];
+  conversation: TextConversation | null;
 };
 
 export const ChatContext = createContext<ChatContextType>(null!);
 
 export const ChatProvider: React.FC = ({ children }) => {
-  const { room, onError } = useVideoContext();
+  const { socket, userName } = useCoveyAppState();
   const isChatWindowOpenRef = useRef(false);
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(false);
-  const [conversation, setConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [conversation, setConversation] = useState<TextConversation | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
-  const [chatClient, setChatClient] = useState<Client>();
-
-  const connect = useCallback(
-    (token: string) => {
-      Client.create(token)
-        .then(client => {
-          //@ts-ignore
-          window.chatClient = client;
-          setChatClient(client);
-        })
-        .catch(e => {
-          console.error(e);
-          onError(new Error("There was a problem connecting to Twilio's conversation service."));
-        });
-    },
-    [onError]
-  );
 
   useEffect(() => {
     if (conversation) {
-      const handleMessageAdded = (message: Message) => setMessages(oldMessages => [...oldMessages, message]);
-      conversation.getMessages().then(newMessages => setMessages(newMessages.items));
-      conversation.on('messageAdded', handleMessageAdded);
+      const handleMessageAdded = (message: ChatMessage) =>
+        setMessages(oldMessages => [...oldMessages, message]);
+      //TODO - store entire message queue on server?
+      // conversation.getMessages().then(newMessages => setMessages(newMessages.items));
+      conversation.onMessageAdded(handleMessageAdded);
       return () => {
-        conversation.off('messageAdded', handleMessageAdded);
+        conversation.offMessageAdded(handleMessageAdded);
       };
     }
   }, [conversation]);
@@ -64,25 +46,24 @@ export const ChatProvider: React.FC = ({ children }) => {
   }, [isChatWindowOpen]);
 
   useEffect(() => {
-    if (room && chatClient) {
-      chatClient
-        .getConversationByUniqueName(room.name)
-        .then(newConversation => {
-          //@ts-ignore
-          window.chatConversation = newConversation;
-          setConversation(newConversation);
-        })
-        .catch(e => {
-          console.error(e);
-          onError(new Error('There was a problem getting the Conversation associated with this room.'));
-        });
+    if (socket) {
+      const conv = new TextConversation(socket, userName);
+      setConversation(conv);
+      return () => {
+        conv.close();
+      };
     }
-  }, [room, chatClient, onError]);
+  }, [socket, userName, setConversation]);
 
   return (
     <ChatContext.Provider
-      value={{ isChatWindowOpen, setIsChatWindowOpen, connect, hasUnreadMessages, messages, conversation }}
-    >
+      value={{
+        isChatWindowOpen,
+        setIsChatWindowOpen,
+        hasUnreadMessages,
+        messages,
+        conversation,
+      }}>
       {children}
     </ChatContext.Provider>
   );
