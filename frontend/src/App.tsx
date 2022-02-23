@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useState
+  useState,
 } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
@@ -77,9 +77,8 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     userName: state.userName,
     socket: state.socket,
     emitMovement: state.emitMovement,
-    apiClient: state.apiClient
+    apiClient: state.apiClient,
   };
-
 
   switch (update.action) {
     case 'doConnect':
@@ -102,27 +101,27 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
   return nextState;
 }
 
-  function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
-    const isWithinCallRadius = (p: Player, location: UserLocation) => {
-      if (p.location && location) {
-        if (location.conversationLabel || p.location.conversationLabel) {
-          return p.location.conversationLabel === location.conversationLabel;
-        }
-        const dx = p.location.x - location.x;
-        const dy = p.location.y - location.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        return d < 80;
+function calculateNearbyPlayers(players: Player[], currentLocation: UserLocation) {
+  const isWithinCallRadius = (p: Player, location: UserLocation) => {
+    if (p.location && location) {
+      if (location.conversationLabel || p.location.conversationLabel) {
+        return p.location.conversationLabel === location.conversationLabel;
       }
-      return false;
-    };
-    return players.filter(p => isWithinCallRadius(p, currentLocation));
-  }
-  function samePlayers(a1: Player[], a2: Player[]) {
-    if (a1.length !== a2.length) return false;
-    const ids1 = a1.map(p => p.id).sort();
-    const ids2 = a2.map(p => p.id).sort();
-    return !ids1.some((val, idx) => val !== ids2[idx]);
-  }
+      const dx = p.location.x - location.x;
+      const dy = p.location.y - location.y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      return d < 80;
+    }
+    return false;
+  };
+  return players.filter(p => isWithinCallRadius(p, currentLocation));
+}
+function samePlayers(a1: Player[], a2: Player[]) {
+  if (a1.length !== a2.length) return false;
+  const ids1 = a1.map(p => p.id).sort();
+  const ids2 = a2.map(p => p.id).sort();
+  return !ids1.some((val, idx) => val !== ids2[idx]);
+}
 
 function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefined>> }) {
   const [appState, dispatchAppUpdate] = useReducer(appStateReducer, defaultAppState());
@@ -142,29 +141,31 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       assert(video);
       const townName = video.townFriendlyName;
       assert(townName);
-    
+
       const socket = io(url, { auth: { token: sessionToken, coveyTownID: video.coveyTownID } });
       socket.on('disconnect', () => {
         dispatchAppUpdate({ action: 'disconnect' });
       });
       let lastMovement = 0;
       let lastRecalculateNearbyPlayers = 0;
-      let currentLocation :UserLocation = {moving: false, rotation: 'front', x: 0, y: 0};
-    
-      let localPlayers = initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp));
-      let localConversationAreas = initData.conversationAreas.map((sa) => ConversationArea.fromServerConversationArea(sa));
-      let localNearbyPlayers :Player[] = [];
+      let currentLocation: UserLocation = { moving: false, rotation: 'front', x: 0, y: 0 };
+
+      let localPlayers = initData.currentPlayers.map(sp => Player.fromServerPlayer(sp));
+      let localConversationAreas = initData.conversationAreas.map(sa =>
+        ConversationArea.fromServerConversationArea(sa),
+      );
+      let localNearbyPlayers: Player[] = [];
       setPlayersInTown(localPlayers);
       setConversationAreas(localConversationAreas);
       setNearbyPlayers(localNearbyPlayers);
 
       const recalculateNearbyPlayers = () => {
-        const newNearbyPlayers = calculateNearbyPlayers(localPlayers, currentLocation)
+        const newNearbyPlayers = calculateNearbyPlayers(localPlayers, currentLocation);
         if (!samePlayers(localNearbyPlayers, newNearbyPlayers)) {
           localNearbyPlayers = newNearbyPlayers;
           setNearbyPlayers(localNearbyPlayers);
         }
-      }
+      };
       const emitMovement = (location: UserLocation) => {
         const now = Date.now();
         currentLocation = location;
@@ -194,9 +195,9 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           ) {
             lastRecalculateNearbyPlayers = now;
             const updatePlayer = localPlayers.find(p => p.id === player._id);
-            if(updatePlayer){
+            if (updatePlayer) {
               updatePlayer.location = player.location;
-            }else{
+            } else {
               localPlayers = localPlayers.concat(Player.fromServerPlayer(player));
               setPlayersInTown(localPlayers);
             }
@@ -217,13 +218,17 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           updatedConversationArea.topic = _conversationArea.topic;
           updatedConversationArea.occupants = _conversationArea.occupantsByID;
         } else {
-          localConversationAreas = localConversationAreas.concat([ConversationArea.fromServerConversationArea(_conversationArea)]);
+          localConversationAreas = localConversationAreas.concat([
+            ConversationArea.fromServerConversationArea(_conversationArea),
+          ]);
         }
         setConversationAreas(localConversationAreas);
         recalculateNearbyPlayers();
       });
       socket.on('conversationDestroyed', (_conversationArea: ServerConversationArea) => {
-        localConversationAreas = localConversationAreas.filter(a => a.label !== _conversationArea.label);
+        localConversationAreas = localConversationAreas.filter(
+          a => a.label !== _conversationArea.label,
+        );
         setConversationAreas(localConversationAreas);
         recalculateNearbyPlayers();
       });
@@ -243,7 +248,13 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
 
       return true;
     },
-    [dispatchAppUpdate, playerMovementCallbacks, setPlayersInTown, setNearbyPlayers, setConversationAreas],
+    [
+      dispatchAppUpdate,
+      playerMovementCallbacks,
+      setPlayersInTown,
+      setNearbyPlayers,
+      setConversationAreas,
+    ],
   );
   const videoInstance = Video.instance();
 
@@ -274,15 +285,17 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   return (
     <CoveyAppContext.Provider value={appState}>
       <VideoContext.Provider value={Video.instance()}>
+        <ChatProvider>
           <PlayerMovementContext.Provider value={playerMovementCallbacks}>
-        <PlayersInTownContext.Provider value={playersInTown}>
-        <NearbyPlayersContext.Provider value={nearbyPlayers}>
-          <ConversationAreasContext.Provider value={conversationAreas}>
-            {page}
-          </ConversationAreasContext.Provider>
-        </NearbyPlayersContext.Provider>
-</PlayersInTownContext.Provider>
+            <PlayersInTownContext.Provider value={playersInTown}>
+              <NearbyPlayersContext.Provider value={nearbyPlayers}>
+                <ConversationAreasContext.Provider value={conversationAreas}>
+                  {page}
+                </ConversationAreasContext.Provider>
+              </NearbyPlayersContext.Provider>
+            </PlayersInTownContext.Provider>
           </PlayerMovementContext.Provider>
+        </ChatProvider>
       </VideoContext.Provider>
     </CoveyAppContext.Provider>
   );
@@ -296,9 +309,7 @@ function EmbeddedTwilioAppWrapper() {
     <UnsupportedBrowserWarning>
       <VideoProvider options={connectionOptions} onError={setError} onDisconnect={onDisconnect}>
         <ErrorDialog dismissError={() => setError(null)} error={error} />
-        <ChatProvider>
-          <App setOnDisconnect={setOnDisconnect} />
-        </ChatProvider>
+        <App setOnDisconnect={setOnDisconnect} />
       </VideoProvider>
     </UnsupportedBrowserWarning>
   );

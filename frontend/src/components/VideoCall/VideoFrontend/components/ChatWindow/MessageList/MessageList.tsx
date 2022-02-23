@@ -1,18 +1,16 @@
 import React from 'react';
-import { Message } from '@twilio/conversations/lib/message';
+import { ChatMessage } from '../../../../../../classes/TextConversation';
 import MessageInfo from './MessageInfo/MessageInfo';
 import MessageListScrollContainer from './MessageListScrollContainer/MessageListScrollContainer';
 import TextMessage from './TextMessage/TextMessage';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import MediaMessage from './MediaMessage/MediaMessage';
-import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
 import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
 
 interface MessageListProps {
-  messages: Message[];
+  messages: ChatMessage[];
 }
 
-const getFormattedTime = (message?: Message) =>
+const getFormattedTime = (message?: ChatMessage) =>
   message?.dateCreated.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }).toLowerCase();
 
 export default function MessageList({ messages }: MessageListProps) {
@@ -39,8 +37,7 @@ export default function MessageList({ messages }: MessageListProps) {
             {shouldDisplayMessageInfo && (
               <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time} />
             )}
-            {message.type === 'text' && <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} />}
-            {message.type === 'media' && <MediaMessage media={message.media} />}
+            <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} />
           </React.Fragment>
         );
       })}

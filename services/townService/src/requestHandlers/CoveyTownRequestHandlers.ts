@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import Player from '../types/Player';
-import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
@@ -225,6 +225,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onConversationAreaUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);
     },
+    onChatMessage(message: ChatMessage){
+      socket.emit('chatMessage', message);
+    },
   };
 }
 
@@ -261,6 +264,8 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.removeTownListener(listener);
     townController.destroySession(s);
   });
+
+  socket.on('chatMessage', (message: ChatMessage) => { townController.onChatMessage(message); });
 
   // Register an event listener for the client socket: if the client updates their
   // location, inform the CoveyTownController
