@@ -1,18 +1,4 @@
-import assert from 'assert';
-import Phaser from 'phaser';
-
-type ConversationGameObjects = {
-  labelText: Phaser.GameObjects.Text;
-  topicText: Phaser.GameObjects.Text;
-  sprite: Phaser.GameObjects.Sprite;
-};
-
-type BoundingBox = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import BoundingBox from './BoundingBox';
 
 export type ServerConversationArea = {
   label: string;
@@ -21,6 +7,10 @@ export type ServerConversationArea = {
   boundingBox: BoundingBox;
 };
 
+export type ConversationAreaListener = {
+  onTopicChange?: (newTopic: string | undefined) => void;
+  onOccupantsChange?: (newOccupants: string[]) => void;
+};
 export default class ConversationArea {
   private _occupants: string[] = [];
 
@@ -28,29 +18,12 @@ export default class ConversationArea {
 
   private _topic?: string;
 
-  private _gameObjects?: ConversationGameObjects;
-
   private _boundingBox: BoundingBox;
 
-  constructor(
-    label: string,
-    topic?: string,
-    gameObjects?: ConversationGameObjects,
-    boundingBox?: BoundingBox,
-  ) {
-    if (gameObjects) {
-      this._boundingBox = {
-        x: gameObjects.sprite.x,
-        y: gameObjects.sprite.y,
-        width: gameObjects.sprite.displayWidth,
-        height: gameObjects.sprite.displayHeight,
-      };
-    } else if (boundingBox) {
-      this._boundingBox = boundingBox;
-    } else {
-      throw new Error('Must provide gameObjects or boundingBox');
-    }
-    this._gameObjects = gameObjects;
+  private _listeners: ConversationAreaListener[] = [];
+
+  constructor(label: string, boundingBox: BoundingBox, topic?: string) {
+    this._boundingBox = boundingBox;
     this._label = label;
     this._topic = topic;
   }
@@ -60,14 +33,21 @@ export default class ConversationArea {
   }
 
   set occupants(newOccupants: string[]) {
-    this._occupants = newOccupants;
+    if(newOccupants.length !== this._occupants.length || 
+      !this._occupants.every(oldOccupant => newOccupants.includes(oldOccupant))){
+      this._listeners.forEach(listener => listener.onOccupantsChange?.(newOccupants));
+      this._occupants = newOccupants;
+    }
   }
 
   get occupants() {
     return this._occupants;
   }
 
-  set topic(newTopic: string|undefined) {
+  set topic(newTopic: string | undefined) {
+    if(this._topic !== newTopic){
+      this._listeners.forEach(listener => listener.onTopicChange?.(newTopic));
+    }
     this._topic = newTopic;
   }
 
@@ -79,33 +59,8 @@ export default class ConversationArea {
     return this._topic === undefined;
   }
 
-  getBounds(): Phaser.Geom.Rectangle {
-    assert(this._gameObjects);
-    return this._gameObjects.sprite.getBounds();
-  }
-
   getBoundingBox(): BoundingBox {
     return this._boundingBox;
-  }
-
-  destroy() {
-    this.onTopicChange(undefined);
-    this.occupants = [];
-  }
-
-  onTopicChange(newTopic?: string) {
-    this._topic = newTopic;
-    if (this._gameObjects) {
-      if (newTopic) {
-        this._gameObjects.topicText.text = newTopic;
-      } else {
-        this._gameObjects.topicText.text = '(No topic)';
-      }
-    }
-  }
-
-  onOccupantsChange(newOccupants: string[]) {
-    this._occupants = newOccupants;
   }
 
   toServerConversationArea(): ServerConversationArea {
@@ -117,8 +72,16 @@ export default class ConversationArea {
     };
   }
 
+  addListener(listener: ConversationAreaListener) {
+    this._listeners.push(listener);
+  }
+
+  removeListener(listener: ConversationAreaListener) {
+    this._listeners = this._listeners.filter(eachListener => eachListener !== listener);
+  }
+
   static fromServerConversationArea(serverArea: ServerConversationArea): ConversationArea {
-    const ret = new ConversationArea(serverArea.label, serverArea.topic, undefined, serverArea.boundingBox);
+    const ret = new ConversationArea(serverArea.label, serverArea.boundingBox, serverArea.topic);
     ret.occupants = serverArea.occupantsByID;
     return ret;
   }

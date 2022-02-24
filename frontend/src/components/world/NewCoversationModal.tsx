@@ -34,7 +34,7 @@ export default function NewConversationModal( {isOpen, closeModal, newConversati
     const createConversation = useCallback(async () => {
       if (topic) {
           const conversationToCreate = newConversation;
-        conversationToCreate.onTopicChange(topic);
+          conversationToCreate.topic = topic;
         try {
           await apiClient.createConversation({
             sessionToken,

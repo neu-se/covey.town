@@ -226,9 +226,12 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         recalculateNearbyPlayers();
       });
       socket.on('conversationDestroyed', (_conversationArea: ServerConversationArea) => {
-        localConversationAreas = localConversationAreas.filter(
-          a => a.label !== _conversationArea.label,
-        );
+        const existingArea = localConversationAreas.find(a => a.label === _conversationArea.label);
+        if(existingArea){
+          existingArea.topic = undefined;
+          existingArea.occupants = [];
+        }
+        localConversationAreas = localConversationAreas.filter(a => a.label !== _conversationArea.label);
         setConversationAreas(localConversationAreas);
         recalculateNearbyPlayers();
       });
