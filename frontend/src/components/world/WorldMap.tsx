@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
+import BoundingBox from '../../classes/BoundingBox';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
@@ -12,6 +13,15 @@ import NewConversationModal from './NewCoversationModal';
 
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
+
+type ConversationGameObjects = {
+  labelText: Phaser.GameObjects.Text;
+  topicText: Phaser.GameObjects.Text;
+  sprite: Phaser.GameObjects.Sprite;
+  label: string;
+  conversationArea?: ConversationArea;
+};
+
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -22,7 +32,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private players: Player[] = [];
 
-  private conversationAreas: ConversationArea[] = [];
+  private conversationAreas: ConversationGameObjects[] = [];
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -43,7 +53,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  private currentConversationArea?: ConversationArea;
+  private currentConversationArea?: ConversationGameObjects;
 
   private infoTextBox?: Phaser.GameObjects.Text;
 
@@ -101,23 +111,32 @@ class CoveyGameScene extends Phaser.Scene {
       });
       return;
     }
-    conversationAreas.forEach(eachUpdatedArea => {
-      const existingArea = this.conversationAreas.find(
-        eachExistingArea => eachExistingArea.label === eachUpdatedArea.label,
-      );
+    conversationAreas.forEach(eachNewArea => {
+      const existingArea = this.conversationAreas.find(area => area.label === eachNewArea.label);
+      // TODO - if it becomes necessary to support new conversation areas (dynamically created), need to create sprites here to enable rendering on phaser
+      // assert(existingArea);
       if (existingArea) {
-        if (existingArea.topic !== eachUpdatedArea.topic) {
-          existingArea.onTopicChange(eachUpdatedArea.topic);
-        }
+        // assert(!existingArea.conversationArea);
+        existingArea.conversationArea = eachNewArea;
+        const updateListener = {
+          onTopicChange: (newTopic: string | undefined) => {
+            if (newTopic) {
+              existingArea.topicText.text = newTopic;
+            } else {
+              existingArea.topicText.text = '(No topic)';
+            }
+          },
+        };
+        eachNewArea.addListener(updateListener);
+        updateListener.onTopicChange(eachNewArea.topic);
       }
     });
     this.conversationAreas.forEach(eachArea => {
       const serverArea = conversationAreas?.find(a => a.label === eachArea.label);
       if (!serverArea) {
-        eachArea.destroy();
+        eachArea.conversationArea = undefined;
       }
     });
-
   }
 
   updatePlayersLocations(players: Player[]) {
@@ -279,10 +298,12 @@ class CoveyGameScene extends Phaser.Scene {
         this.lastLocation.rotation = primaryDirection || 'front';
         this.lastLocation.moving = isMoving;
         if (this.currentConversationArea) {
-          this.lastLocation.conversationLabel = this.currentConversationArea.label;
+          if(this.currentConversationArea.conversationArea){
+            this.lastLocation.conversationLabel = this.currentConversationArea.label;
+          }
           if (
             !Phaser.Geom.Rectangle.Overlaps(
-              this.currentConversationArea.getBounds(),
+              this.currentConversationArea.sprite.getBounds(),
               this.player.sprite.getBounds(),
             )
           ) {
@@ -377,18 +398,18 @@ class CoveyGameScene extends Phaser.Scene {
       const topicText = this.add.text(
         sprite.x - sprite.displayWidth / 2,
         sprite.y + sprite.displayHeight / 2,
-        'Loading...',
+        '(No Topic)',
         { color: '#000000' },
       );
       sprite.setTintFill();
       sprite.setAlpha(0.3);
-      const conversationAreaObj = new ConversationArea(sprite.name, undefined, {
+
+      this.conversationAreas.push({
         labelText,
         topicText,
         sprite,
+        label: conversation.name,
       });
-      sprite.setData('conversation', conversationAreaObj);
-      this.conversationAreas.push(conversationAreaObj);
     });
 
     this.infoTextBox = this.add
@@ -486,17 +507,20 @@ class CoveyGameScene extends Phaser.Scene {
       sprite,
       conversationSprites,
       (overlappingPlayer, conversationSprite) => {
-        const conv = conversationSprite.getData('conversation') as ConversationArea;
-        if (conv) {
-          if (conv.isEmpty()) {
-            if (cursorKeys.space.isDown) {
-              this.setNewConversation(conv);
-            }
-            this.infoTextBox?.setVisible(true);
-          } else {
-            this.infoTextBox?.setVisible(false);
+        const conversationLabel = conversationSprite.name;
+        const conv = this.conversationAreas.find(area => area.label === conversationLabel);
+        this.currentConversationArea = conv;
+        if (conv?.conversationArea) {
+          this.infoTextBox?.setVisible(false);
+        } else {
+          if (cursorKeys.space.isDown) {
+            const newConversation = new ConversationArea(
+              conversationLabel,
+              BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),
+            );
+            this.setNewConversation(newConversation);
           }
-          this.currentConversationArea = conv;
+          this.infoTextBox?.setVisible(true);
         }
       },
     );
@@ -682,15 +706,9 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [gameScene, players]);
 
-  const deepConversationAreas = JSON.stringify(
-    conversationAreas.map((area: ConversationArea) => ({
-      label: area.label,
-      topic: area.topic,
-    })),
-  );
   useEffect(() => {
     gameScene?.updateConversationAreas(conversationAreas);
-  }, [conversationAreas, deepConversationAreas, gameScene]);
+  }, [conversationAreas, gameScene]);
 
   const newConversationModalOpen = newConversation !== undefined;
   useEffect(() => {
