@@ -24,4 +24,13 @@ module.exports = {
     'no-param-reassign': 0,
     'no-restricted-syntax': 0,
   },
+  overrides: [
+    {
+      files: ['*.test.tsx'],
+      rules: {
+        'no-await-in-loop': 0,
+        '@typescript-eslint/no-explicit-any': 0,
+      },
+    },
+  ],
 };

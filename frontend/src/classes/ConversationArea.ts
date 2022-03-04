@@ -11,6 +11,7 @@ export type ConversationAreaListener = {
   onTopicChange?: (newTopic: string | undefined) => void;
   onOccupantsChange?: (newOccupants: string[]) => void;
 };
+export const NO_TOPIC_STRING = '(No topic)';
 export default class ConversationArea {
   private _occupants: string[] = [];
 
@@ -33,8 +34,7 @@ export default class ConversationArea {
   }
 
   set occupants(newOccupants: string[]) {
-    if(newOccupants.length !== this._occupants.length || 
-      !this._occupants.every(oldOccupant => newOccupants.includes(oldOccupant))){
+    if(newOccupants.length !== this._occupants.length || !newOccupants.every((val, index) => val === this._occupants[index])){
       this._listeners.forEach(listener => listener.onOccupantsChange?.(newOccupants));
       this._occupants = newOccupants;
     }
@@ -52,7 +52,7 @@ export default class ConversationArea {
   }
 
   get topic() {
-    return this._topic || '(No topic)';
+    return this._topic || NO_TOPIC_STRING;
   }
 
   isEmpty(): boolean {
@@ -80,8 +80,15 @@ export default class ConversationArea {
     this._listeners = this._listeners.filter(eachListener => eachListener !== listener);
   }
 
+  copy() : ConversationArea{
+    const ret = new ConversationArea(this.label,this._boundingBox,this.topic);
+    ret.occupants = this.occupants.concat([]);
+    this._listeners.forEach(listener => ret.addListener(listener));
+    return ret;
+  }
+
   static fromServerConversationArea(serverArea: ServerConversationArea): ConversationArea {
-    const ret = new ConversationArea(serverArea.label, serverArea.boundingBox, serverArea.topic);
+    const ret = new ConversationArea(serverArea.label, BoundingBox.fromStruct(serverArea.boundingBox), serverArea.topic);
     ret.occupants = serverArea.occupantsByID;
     return ret;
   }

@@ -8,6 +8,7 @@ import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
+import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 
@@ -512,6 +513,11 @@ class CoveyGameScene extends Phaser.Scene {
         this.currentConversationArea = conv;
         if (conv?.conversationArea) {
           this.infoTextBox?.setVisible(false);
+          const localLastLocation = this.lastLocation;
+          if(localLastLocation && localLastLocation.conversationLabel !== conv.conversationArea.label){
+            localLastLocation.conversationLabel = conv.conversationArea.label;
+            this.emitMovement(localLastLocation);
+          }
         } else {
           if (cursorKeys.space.isDown) {
             const newConversation = new ConversationArea(
@@ -597,7 +603,7 @@ class CoveyGameScene extends Phaser.Scene {
       .text(
         16,
         16,
-        `Arrow keys to move\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`,
+        `Arrow keys to move`,
         {
           font: '18px monospace',
           color: '#000000',
@@ -737,9 +743,12 @@ export default function WorldMap(): JSX.Element {
   }, [video, newConversation, setNewConversation]);
 
   return (
-    <>
+    <div id='app-container'>
       {newConversationModal}
       <div id='map-container' />
-    </>
+      <div id='social-container'>
+        <SocialSidebar />
+      </div>
+    </div>
   );
 }

@@ -183,6 +183,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       };
       socket.on('newPlayer', (player: ServerPlayer) => {
         localPlayers = localPlayers.concat(Player.fromServerPlayer(player));
+        setPlayersInTown(localPlayers);
         recalculateNearbyPlayers();
       });
       socket.on('playerMoved', (player: ServerPlayer) => {

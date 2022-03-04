@@ -110,7 +110,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
 
   app.post('/towns/:townID/conversationAreas', express.json(), async (req, res) => {
     try {
-      const result = await conversationAreaCreateHandler({
+      const result = conversationAreaCreateHandler({
         coveyTownID: req.params.townID,
         sessionToken: req.body.sessionToken,
         conversationArea: req.body.conversationArea,
