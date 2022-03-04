@@ -226,7 +226,8 @@ describe('ConversationAreasList', () => {
     it('Creates a listener and adds it to the conversation area when mounted', async () => {
       const renderData = renderConversationAreaList();
       await expectProperlyRenderedConversationAreas(renderData, areas, playersByArea);
-      addListenerSpys.forEach(listener => expect(listener).toBeCalled());
+      useEffectSpy.mock.calls.forEach(mockCallArgs => mockCallArgs[0]()); // call each UseEffect's callbacks
+      addListenerSpys.forEach(listener => expect(listener).toHaveBeenCalled());
     });
     it('Calls removeListener from the cleanup callback', () => {
       renderConversationAreaList();
