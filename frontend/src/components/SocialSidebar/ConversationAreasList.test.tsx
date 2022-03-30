@@ -166,7 +166,7 @@ describe('ConversationAreasList', () => {
       await expectProperlyRenderedConversationAreas(renderData, shuffledAreas);
     });
   });
-  it('[T2] When checking usernames, it sorts conversation areas by topic and lists player usernames in provided order', async () => {
+  it('[T2] When checking usernames, it sorts conversation areas by label and lists player usernames in provided order', async () => {
     const areasProvidedInSortOrder = areas;
     useConversationAreasSpy.mockReturnValue(areasProvidedInSortOrder);
     const renderData = renderConversationAreaList();
