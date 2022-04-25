@@ -201,8 +201,8 @@ class CoveyGameScene extends Phaser.Scene {
       if (!sprite.anims) return;
       sprite.setX(player.location.x);
       sprite.setY(player.location.y);
-      myPlayer.label?.setX(player.location.x);
-      myPlayer.label?.setY(player.location.y - 20);
+      myPlayer.label?.setX(sprite.body.position.x);
+      myPlayer.label?.setY(sprite.body.position.y - 20);
       if (player.location.moving) {
         sprite.anims.play(`misa-${player.location.rotation}-walk`, true);
       } else {
@@ -281,8 +281,8 @@ class CoveyGameScene extends Phaser.Scene {
       this.player.label.setY(body.y - 20);
       if (
         !this.lastLocation ||
-        this.lastLocation.x !== body.x ||
-        this.lastLocation.y !== body.y ||
+        this.lastLocation.x !== (body.right + body.left) / 2 ||
+        this.lastLocation.y !== (body.top + body.bottom) / 2 ||
         (isMoving && this.lastLocation.rotation !== primaryDirection) ||
         this.lastLocation.moving !== isMoving
       ) {
@@ -294,9 +294,9 @@ class CoveyGameScene extends Phaser.Scene {
             moving: isMoving,
           };
         }
-        this.lastLocation.x = body.x;
-        this.lastLocation.y = body.y;
-        this.lastLocation.rotation = primaryDirection || 'front';
+        this.lastLocation.x = (body.right + body.left) / 2;
+        this.lastLocation.y = (body.top + body.bottom) / 2;
+        this.lastLocation.rotation = primaryDirection || this.lastLocation.rotation || 'front';
         this.lastLocation.moving = isMoving;
         if (this.currentConversationArea) {
           if(this.currentConversationArea.conversationArea){
