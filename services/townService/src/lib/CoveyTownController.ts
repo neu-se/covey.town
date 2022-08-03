@@ -1,6 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
-import { ChatMessage, UserLocation } from '../CoveyTypes';
+import { ChatMessage, MessageType, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -60,6 +60,9 @@ export default class CoveyTownController {
   /** The list of valid sessions for this town * */
   private _sessions: PlayerSession[] = [];
 
+  /** The map of playerId to their session * */
+  private _mapPlayerIdToSession: Map<string, PlayerSession> = new Map<string, PlayerSession>();
+
   /** The videoClient that this CoveyTown will use to provision video resources * */
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
@@ -98,6 +101,7 @@ export default class CoveyTownController {
 
     this._sessions.push(theSession);
     this._players.push(newPlayer);
+    this._mapPlayerIdToSession.set(newPlayer.id, theSession);
 
     // Create a video token for this user to join this town
     theSession.videoToken = await this._videoClient.getTokenForTown(
@@ -119,6 +123,7 @@ export default class CoveyTownController {
   destroySession(session: PlayerSession): void {
     this._players = this._players.filter(p => p.id !== session.player.id);
     this._sessions = this._sessions.filter(s => s.sessionToken !== session.sessionToken);
+    this._mapPlayerIdToSession.delete(session.player.id);
     this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
     const conversation = session.player.activeConversationArea;
     if (conversation) {
@@ -246,7 +251,19 @@ export default class CoveyTownController {
   }
 
   onChatMessage(message: ChatMessage): void {
-    this._listeners.forEach(listener => listener.onChatMessage(message));
+    // if global, send to all
+    // if group, send to the members in the same area currently
+    // if direct, send to the given users
+    // error message
+    if (message.type === MessageType.GLOBAL_MESSAGE) {
+      this._listeners.forEach(listener => listener.onChatMessage(message));
+    } else if (message.type === MessageType.GROUP_MESSAGE) {
+      this._mapPlayerIdToSession.get(message.authorId)?.player.activeConversationArea?.occupantsByID
+        .forEach(id => this._mapPlayerIdToSession.get(id)?.findSessionListener()?.onChatMessage(message));
+    } else if (message.type === MessageType.DIRECT_MESSAGE && message.receivers) {
+      message.receivers.forEach(receiver =>
+        this._mapPlayerIdToSession.get(receiver)?.findSessionListener()?.onChatMessage(message));
+    }
   }
 
   /**

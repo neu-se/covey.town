@@ -3,6 +3,7 @@ import { Socket } from 'socket.io';
 import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
+import SessionListener from '../types/SessionListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
 
@@ -231,6 +232,14 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
   };
 }
 
+function sessionSocketAdapter(socket: Socket): SessionListener {
+  return {
+    onChatMessage(message: ChatMessage){
+      socket.emit('chatMessage', message);
+    },
+  };
+}
+
 /**
  * A handler to process a remote player's subscription to updates for a town
  *
@@ -256,6 +265,10 @@ export function townSubscriptionHandler(socket: Socket): void {
   // events that the socket protocol knows about
   const listener = townSocketAdapter(socket);
   townController.addTownListener(listener);
+
+  // Create an adapter that will emit message from the PlayerSession
+  const sessionListener = sessionSocketAdapter(socket);
+  s.sessionListener = sessionListener;
 
   // Register an event listener for the client socket: if the client disconnects,
   // clean up our listener adapter, and then let the CoveyTownController know that the

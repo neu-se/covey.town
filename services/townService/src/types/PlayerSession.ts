@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import Player from './Player';
+import SessionListener from './SessionListener';
 
 /*
  A session represents a connection of a player to a town, storing the secret tokens
@@ -12,6 +13,8 @@ export default class PlayerSession {
   /** The secret token that allows this client to access our Covey.Town service for this town * */
   private readonly _sessionToken: string;
 
+  private _sessionListener?: SessionListener;
+
   /** The secret token that allows this client to access our video resources for this town * */
   private _videoToken?: string;
 
@@ -19,6 +22,10 @@ export default class PlayerSession {
     this._player = player;
     // Session tokens are randomly generated strings
     this._sessionToken = nanoid();
+  }
+
+  set sessionListener(listener: SessionListener) {
+    this._sessionListener = listener;
   }
 
   set videoToken(value: string | undefined) {
@@ -35,5 +42,9 @@ export default class PlayerSession {
 
   get sessionToken(): string {
     return this._sessionToken;
+  }
+
+  findSessionListener(): SessionListener | undefined {
+    return this._sessionListener;
   }
 }
