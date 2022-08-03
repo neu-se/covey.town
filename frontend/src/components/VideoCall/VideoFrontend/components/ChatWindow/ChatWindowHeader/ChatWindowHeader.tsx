@@ -3,6 +3,7 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import CloseIcon from '../../../icons/CloseIcon';
 
 import useChatContext from '../../../hooks/useChatContext/useChatContext';
+import { Button, Stack } from '@chakra-ui/react';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -24,20 +25,34 @@ const useStyles = makeStyles(() =>
       background: 'transparent',
       border: '0',
       padding: '0.4em',
-    },
+    }
   })
 );
 
 export default function ChatWindowHeader() {
   const classes = useStyles();
-  const { setIsChatWindowOpen } = useChatContext();
+  const { setIsChatWindowOpen, global, setGlobal, group, setGroup, direct, setDirect } = useChatContext();
 
   return (
-    <div className={classes.container}>
-      <div className={classes.text}>Chat</div>
-      <button className={classes.closeChatWindow} onClick={() => setIsChatWindowOpen(false)}>
-        <CloseIcon />
-      </button>
-    </div>
+    <>
+      <div className={classes.container}>
+        <div className={classes.text}>Chat</div>
+        <button className={classes.closeChatWindow} onClick={() => setIsChatWindowOpen(false)}>
+          <CloseIcon />
+        </button>
+      </div>
+      <Stack direction='row' spacing={4} align='center'>
+        <Button colorScheme='teal' variant={global ? 'solid' : 'outline'} onClick={() => setGlobal(!global)}>
+          Global
+        </Button>
+        <Button colorScheme='teal' variant={group ? 'solid' : 'outline'} onClick={() => setGroup(!group)}>
+          Group
+        </Button>
+        <Button colorScheme='teal' variant={direct ? 'solid' : 'outline'} onClick={() => setDirect(!direct)}>
+          Direct
+        </Button>
+      </Stack>
+    </>
+
   );
 }

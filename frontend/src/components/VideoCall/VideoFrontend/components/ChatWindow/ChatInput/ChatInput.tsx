@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
-import TextConversation, { ChatMessage } from '../../../../../../classes/TextConversation';
+import TextConversation, { ChatMessage, MessageType } from '../../../../../../classes/TextConversation';
 import clsx from 'clsx';
 import FileAttachmentIcon from '../../../icons/FileAttachmentIcon';
 import { isMobile } from '../../../utils';
@@ -8,6 +8,9 @@ import SendMessageIcon from '../../../icons/SendMessageIcon';
 import Snackbar from '../../Snackbar/Snackbar';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import useMaybeVideo from '../../../../../../hooks/useMaybeVideo';
+import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
+import SendingOptions from '../SendingOptions/SendingOptions';
+import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
 
 const useStyles = makeStyles(theme => ({
   chatInputContainer: {
@@ -78,11 +81,14 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const video = useMaybeVideo()
+  const [messageType, setMessageType] = useState<MessageType>(MessageType.GLOBAL_MESSAGE)
+  const [receivers, setReceivers] = useState<string[]>([])
+  const playerId = useCoveyAppState().myPlayerID
 
   useEffect(() => {
-    if(isTextareaFocused){
+    if (isTextareaFocused) {
       video?.pauseGame();
-    }else{
+    } else {
       video?.unPauseGame();
     }
   }, [isTextareaFocused, video]);
@@ -108,13 +114,19 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
 
   const handleSendMessage = (message: string) => {
     if (isValidMessage) {
-      conversation.sendMessage(message.trim());
+      conversation.sendMessage(message.trim(), receivers, messageType, playerId);
       setMessageBody('');
     }
   };
 
   return (
     <div className={classes.chatInputContainer}>
+      <SendingOptions
+        messageType={messageType}
+        setMessageType={setMessageType}
+        receivers={receivers}
+        setReceivers={setReceivers}
+      />
       <Snackbar
         open={Boolean(fileSendError)}
         headline="Error"
