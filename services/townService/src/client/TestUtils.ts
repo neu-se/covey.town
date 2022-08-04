@@ -7,6 +7,10 @@ import http from 'http';
 import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
 import { BoundingBox, ServerConversationArea } from './TownsServiceClient';
+import CoveyTownController from '../lib/CoveyTownController';
+import Player from '../types/Player';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
+import PlayerSession from '../types/PlayerSession';
 
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
@@ -104,4 +108,14 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
     occupantsByID: [],
     topic: params?.conversationTopic || nanoid(),
   };
+}
+
+export async function createSubscribedPlayerSession(town: CoveyTownController, socket: ServerSocket): Promise<PlayerSession> {
+  const player = new Player(nanoid());
+  const playerSession = await town.addPlayer(player);
+  const playerMockSocket = socket;
+  setSessionTokenAndTownID(town.coveyTownID, playerSession.sessionToken, playerMockSocket);
+  townSubscriptionHandler(playerMockSocket);
+
+  return playerSession;
 }

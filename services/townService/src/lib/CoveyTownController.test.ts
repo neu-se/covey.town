@@ -1,15 +1,15 @@
-import { nanoid } from 'nanoid';
 import { mock, mockDeep, mockReset } from 'jest-mock-extended';
+import { nanoid } from 'nanoid';
 import { Socket } from 'socket.io';
-import TwilioVideo from './TwilioVideo';
-import Player from '../types/Player';
-import CoveyTownController from './CoveyTownController';
-import CoveyTownListener from '../types/CoveyTownListener';
-import { UserLocation } from '../CoveyTypes';
-import PlayerSession from '../types/PlayerSession';
-import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
-import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import { ChatMessage, MessageType, UserLocation } from '../CoveyTypes';
+import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
+import CoveyTownListener from '../types/CoveyTownListener';
+import Player from '../types/Player';
+import PlayerSession from '../types/PlayerSession';
+import CoveyTownController from './CoveyTownController';
+import CoveyTownsStore from './CoveyTownsStore';
+import TwilioVideo from './TwilioVideo';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -20,6 +20,18 @@ function generateTestLocation(): UserLocation {
     moving: Math.random() < 0.5,
     x: Math.floor(Math.random() * 100),
     y: Math.floor(Math.random() * 100),
+  };
+}
+
+function generateTestMessage(body: string, sender: Player, tag: MessageType, receiver?: Player): ChatMessage {
+  return {
+    sid: nanoid(),
+    body,
+    receivers: receiver ? [receiver.id] : [],
+    type: tag,
+    author: sender.userName,
+    authorId: sender.id,
+    dateCreated: new Date(),
   };
 }
 
@@ -130,6 +142,54 @@ describe('CoveyTownController', () => {
       expect(listenerRemoved.onTownDestroyed).not.toBeCalled();
 
     });
+    it("should notify the receiver's listener when there is a direct message", async () => {
+      const receiverSocket = mock<Socket>();
+      const receiverSession = await TestUtils.createSubscribedPlayerSession(testingTown, receiverSocket);
+      const mockListener = mock<CoveyTownListener>();
+      receiverSession.sessionListener = mockListener;
+
+      const dm = generateTestMessage('test message', new Player('god'), MessageType.DIRECT_MESSAGE, receiverSession.player);
+      testingTown.onChatMessage(dm);
+
+      expect(mockListener.onChatMessage).toBeCalledWith(dm);
+    });
+
+    it('should not notify other listeners when it is a direct message', async () => {
+      const receiverSocket = mock<Socket>();
+      const receiverSession = await TestUtils.createSubscribedPlayerSession(testingTown, receiverSocket);
+      const mockListener = mock<CoveyTownListener>();
+      receiverSession.sessionListener = mockListener;
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
+
+      const dm = generateTestMessage('test message', new Player('god'), MessageType.DIRECT_MESSAGE, receiverSession.player);
+      testingTown.onChatMessage(dm);
+
+      expect(mockListener.onChatMessage).toBeCalledWith(dm);
+      mockListeners.forEach(listener => expect(listener.onChatMessage).not.toBeCalled());
+    });
+
+    it("should notify the in-group receivers' listeners when there is a group message", async () => {
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      const receiverSession1 = await TestUtils.createSubscribedPlayerSession(testingTown, mock<Socket>());
+      const receiverSession2 = await TestUtils.createSubscribedPlayerSession(testingTown, mock<Socket>());
+      const mockListener1 = mock<CoveyTownListener>();
+      receiverSession1.sessionListener = mockListener1;
+      const mockListener2 = mock<CoveyTownListener>();
+      receiverSession2.sessionListener = mockListener2;
+      mockListeners.forEach(listener => testingTown.addTownListener(listener));
+      const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
+      testingTown.updatePlayerLocation(receiverSession1.player, newLocation);
+      testingTown.updatePlayerLocation(receiverSession2.player, newLocation);
+
+      const gm = generateTestMessage('test message', receiverSession1.player, MessageType.GROUP_MESSAGE);
+      testingTown.onChatMessage(gm);
+
+      expect(mockListener1.onChatMessage).toBeCalledWith(gm);
+      expect(mockListener2.onChatMessage).toBeCalledWith(gm);
+      mockListeners.forEach(listener => expect(listener.onChatMessage).not.toBeCalled());
+    });
   });
   describe('townSubscriptionHandler', () => {
     const mockSocket = mock<Socket>();
@@ -228,6 +288,26 @@ describe('CoveyTownController', () => {
           expect(mockListener.onPlayerMoved).toHaveBeenCalledWith(player);
         } else {
           fail('No playerMovement handler registered');
+        }
+      });
+      it('should forward global chatMessage events from the socket to subscribed listeners', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+        const mockListeners = [
+          mock<CoveyTownListener>(),
+          mock<CoveyTownListener>(),
+          mock<CoveyTownListener>(),
+        ];
+        mockListeners.forEach(listener => testingTown.addTownListener(listener));
+
+        // find the 'chatMessage' event handler for the socket, which should have been registered after the socket was connected
+        const chatMessageHandler = mockSocket.on.mock.calls.find(call => call[0] === 'chatMessage');
+        if (chatMessageHandler && chatMessageHandler[1]) {
+          const newMessage = generateTestMessage('test message', player, MessageType.GLOBAL_MESSAGE);
+          chatMessageHandler[1](newMessage);
+          mockListeners.forEach(listener => expect(listener.onChatMessage).toBeCalledWith(newMessage));
+        } else {
+          fail('No chatMessage handler registered');
         }
       });
     });
