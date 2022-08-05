@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import {
   Box,
@@ -7,9 +7,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  SimpleGrid,
   useDisclosure,
-  useRadioGroup,
 } from '@chakra-ui/react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
@@ -18,30 +16,58 @@ import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
 import { MessageType } from '../../../../../../classes/TextConversation';
 import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
 import { CUIAutoComplete, Item } from 'chakra-ui-autocomplete';
+import useConversationAreas from '../../../../../../hooks/useConversationAreas';
 
 interface SendingOptionsProps {
   messageType: MessageType;
   setMessageType: (messageType: MessageType) => void;
-  receivers: string[];
-  setReceivers: (playerIds: string[]) => void;
+  receiverId: string;
+  setReceiverId: (playerId: string) => void;
+  setReceiverName: (playerName: string) => void;
 }
 
-export default function SendingOptions({ messageType, setMessageType, receivers, setReceivers }: SendingOptionsProps) {
+export default function SendingOptions({ messageType, setMessageType, receiverId, setReceiverId, setReceiverName }: SendingOptionsProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const video = useMaybeVideo()
-  const { currentTownFriendlyName } = useCoveyAppState();
-  // other player joins in / leaves
   // should know if I am in a conversation area
   const players = usePlayersInTown()
   const { myPlayerID } = useCoveyAppState()
   const globalOption: Item = { value: MessageType.GLOBAL_MESSAGE, label: 'Global' }
   const groupOption: Item = { value: MessageType.GROUP_MESSAGE, label: 'Group' }
-  const options: Item[] = [globalOption, groupOption]
-  players.filter(player => player.id != myPlayerID).forEach(player => {
-    options.push({ value: player.id, label: player.userName })
-  })
-  const [optionItems, setOptionItems] = useState(options)
+  const [optionItems, setOptionItems] = useState([globalOption, groupOption])
   const [selectedItem, setSelectedItem] = useState(globalOption)
+  const conversationAreas = useConversationAreas()
+  // const [isInArea, setIsInArea] = useState(false)
+
+  useEffect(() => {
+    const options: Item[] = [globalOption, groupOption]
+    players.filter(player => player.id != myPlayerID).forEach(player => {
+      options.push({ value: player.id, label: player.userName })
+    })
+    setOptionItems(options)
+    if (receiverId && !options.some(option => option.value === receiverId)) {
+      setMessageType(MessageType.GLOBAL_MESSAGE);
+      setReceiverId("")
+      setReceiverName("")
+      setSelectedItem(globalOption)
+    }
+  }, [players])
+
+  // useEffect(() => {
+  //   const isInAnyArea = conversationAreas.some(area => area.occupants.includes(myPlayerID))
+  //   setIsInArea(isInAnyArea)
+  //   if (!isInAnyArea) {
+  //     setOptionItems(optionItems.filter(item => item != groupOption))
+  //     setMessageType(MessageType.GLOBAL_MESSAGE);
+  //     setReceiverId("")
+  //     setReceiverName("")
+  //     setSelectedItem(globalOption)
+  //   } else {
+  //     if (!optionItems.includes(groupOption)) {
+  //       setOptionItems([...optionItems, groupOption])
+  //     }
+  //   }
+  // }, [conversationAreas])
 
   const openSettings = useCallback(() => {
     onOpen();
@@ -53,20 +79,21 @@ export default function SendingOptions({ messageType, setMessageType, receivers,
     video?.unPauseGame();
   }, [onClose, video]);
 
-  const onChange = (event: string) => {
-    if (event === MessageType.GLOBAL_MESSAGE) {
+  const onChange = ({ value, label }: Item) => {
+    if (value === MessageType.GLOBAL_MESSAGE) {
       setMessageType(MessageType.GLOBAL_MESSAGE);
-      setReceivers([])
-    } else if (event === MessageType.GROUP_MESSAGE) {
+      setReceiverId("")
+      setReceiverName("")
+    } else if (value === MessageType.GROUP_MESSAGE) {
       setMessageType(MessageType.GROUP_MESSAGE)
-      setReceivers([])
+      setReceiverId("")
+      setReceiverName("")
     } else {
       setMessageType(MessageType.DIRECT_MESSAGE)
-      setReceivers([event, myPlayerID])
+      setReceiverId(value)
+      setReceiverName(label)
     }
-    console.log(event)
   }
-
 
   return <>
     <MenuItem data-testid='openMenuButton' onClick={openSettings}>
@@ -75,7 +102,7 @@ export default function SendingOptions({ messageType, setMessageType, receivers,
           ? 'To Town'
           : messageType === MessageType.GROUP_MESSAGE
             ? 'To Conversation Area'
-            : 'To ' + players.find(player => player.id === receivers[0])?.userName
+            : 'To ' + players.find(player => player.id === receiverId)?.userName
         }
       </Typography>
     </MenuItem>
@@ -97,7 +124,7 @@ export default function SendingOptions({ messageType, setMessageType, receivers,
             onSelectedItemsChange={(change) => {
               if (change.selectedItems && change.selectedItems[0] !== change.selectedItems[1]) {
                 setSelectedItem(change.selectedItems[1])
-                onChange(change.selectedItems[1].value)
+                onChange(change.selectedItems[1])
               }
               closeSettings()
             }}

@@ -82,7 +82,8 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const video = useMaybeVideo()
   const [messageType, setMessageType] = useState<MessageType>(MessageType.GLOBAL_MESSAGE)
-  const [receivers, setReceivers] = useState<string[]>([])
+  const [receiverId, setReceiverId] = useState("")
+  const [receiverName, setReceiverName] = useState("")
   const playerId = useCoveyAppState().myPlayerID
 
   useEffect(() => {
@@ -114,7 +115,7 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
 
   const handleSendMessage = (message: string) => {
     if (isValidMessage) {
-      conversation.sendMessage(message.trim(), receivers, messageType, playerId);
+      conversation.sendMessage(message.trim(), messageType, playerId, receiverName, receiverId);
       setMessageBody('');
     }
   };
@@ -124,8 +125,9 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
       <SendingOptions
         messageType={messageType}
         setMessageType={setMessageType}
-        receivers={receivers}
-        setReceivers={setReceivers}
+        receiverId={receiverId}
+        setReceiverId={setReceiverId}
+        setReceiverName={setReceiverName}
       />
       <Snackbar
         open={Boolean(fileSendError)}
