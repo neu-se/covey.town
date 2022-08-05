@@ -21,9 +21,10 @@ export enum MessageType {
 // export type MessageType = GLOBAL_MESSAGE | 'group' | 'direct';
 
 export type ChatMessage = {
-  author: string;
+  authorName: string;
   authorId: string;
-  receivers: string[];
+  receiverName: string;
+  receiverId: string;
   type: MessageType;
   sid: string;
   body: string;

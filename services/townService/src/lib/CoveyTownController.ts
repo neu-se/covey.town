@@ -260,9 +260,9 @@ export default class CoveyTownController {
     } else if (message.type === MessageType.GROUP_MESSAGE) {
       this._mapPlayerIdToSession.get(message.authorId)?.player.activeConversationArea?.occupantsByID
         .forEach(id => this._mapPlayerIdToSession.get(id)?.findSessionListener()?.onChatMessage(message));
-    } else if (message.type === MessageType.DIRECT_MESSAGE && message.receivers) {
-      message.receivers.forEach(receiver =>
-        this._mapPlayerIdToSession.get(receiver)?.findSessionListener()?.onChatMessage(message));
+    } else if (message.type === MessageType.DIRECT_MESSAGE && message.receiverId) {
+      this._mapPlayerIdToSession.get(message.receiverId)?.findSessionListener()?.onChatMessage(message);
+      this._mapPlayerIdToSession.get(message.authorId)?.findSessionListener()?.onChatMessage(message);
     }
   }
 

@@ -27,9 +27,10 @@ function generateTestMessage(body: string, sender: Player, tag: MessageType, rec
   return {
     sid: nanoid(),
     body,
-    receivers: receiver ? [receiver.id] : [],
+    receiverId: receiver ? receiver.id : '',
+    receiverName: receiver ? receiver.userName : '',
     type: tag,
-    author: sender.userName,
+    authorName: sender.userName,
     authorId: sender.id,
     dateCreated: new Date(),
   };
