@@ -5,6 +5,7 @@ import MessageListScrollContainer from './MessageListScrollContainer/MessageList
 import TextMessage from './TextMessage/TextMessage';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
 import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
+import useCoveyAppState from '../../../../../../hooks/useCoveyAppState';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -17,8 +18,6 @@ export default function MessageList({ messages }: MessageListProps) {
   const { room } = useVideoContext();
   const localParticipant = room!.localParticipant;
 
-  const players = usePlayersInTown();
-
   return (
     <MessageListScrollContainer messages={messages}>
       {messages.map((message, idx) => {
@@ -26,18 +25,20 @@ export default function MessageList({ messages }: MessageListProps) {
         const previousTime = getFormattedTime(messages[idx - 1]);
 
         // Display the MessageInfo component when the author or formatted timestamp differs from the previous message
-        const shouldDisplayMessageInfo = time !== previousTime || message.author !== messages[idx - 1]?.author;
+        // and when type or receivers are changed
+        const shouldDisplayMessageInfo = time !== previousTime
+          || message.authorId !== messages[idx - 1]?.authorId
+          || message.type !== messages[idx - 1]?.type
+          || message.receiverId !== messages[idx - 1]?.receiverId;
 
-        const isLocalParticipant = localParticipant.identity === message.author;
-
-        const profile = players.find(p => p.id == message.author);
+        const isLocalParticipant = localParticipant.identity === message.authorId;
 
         return (
           <React.Fragment key={message.sid}>
             {shouldDisplayMessageInfo && (
-              <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time} />
+              <MessageInfo isLocalParticipant={isLocalParticipant} message={message} dateCreated={time} />
             )}
-            <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} />
+            <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} messageType={message.type} />
           </React.Fragment>
         );
       })}
