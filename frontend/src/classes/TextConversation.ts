@@ -28,8 +28,12 @@ export default class TextConversation {
     });
   }
 
-  private onChatMessage(message: ChatMessage) {
-    this._callbacks.forEach(cb => cb(message));
+  private onChatMessage(message: ChatMessage, userId?:string) {
+    if(!userId){
+      this._callbacks.forEach(cb => cb(message));
+    }
+    // when user id is specified
+    // edit here
   }
 
   /**

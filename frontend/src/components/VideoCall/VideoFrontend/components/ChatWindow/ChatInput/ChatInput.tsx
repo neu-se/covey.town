@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
-import TextConversation, { ChatMessage } from '../../../../../../classes/TextConversation';
-import clsx from 'clsx';
-import FileAttachmentIcon from '../../../icons/FileAttachmentIcon';
-import { isMobile } from '../../../utils';
-import SendMessageIcon from '../../../icons/SendMessageIcon';
-import Snackbar from '../../Snackbar/Snackbar';
+import { FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import clsx from 'clsx';
+import { default as React, useEffect, useRef, useState } from 'react';
+import TextConversation from '../../../../../../classes/TextConversation';
 import useMaybeVideo from '../../../../../../hooks/useMaybeVideo';
+import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
+import { isMobile } from '../../../utils';
+import Snackbar from '../../Snackbar/Snackbar';
+// import Select, { SelectChangeEvent } from '@material-ui/core/Select';
 
 const useStyles = makeStyles(theme => ({
   chatInputContainer: {
@@ -78,7 +78,15 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const video = useMaybeVideo()
-
+  const [selectedUser, setUser] = React.useState('everyone');
+  const handleChange1 = (event: React.ChangeEvent<{ value: unknown }>) => {
+    console.log("12")
+    setUser(event.target.value as string);
+  };
+  const players=usePlayersInTown()
+  useEffect(()=>{
+    console.log(players)
+  },[])
   useEffect(() => {
     if(isTextareaFocused){
       video?.pauseGame();
@@ -122,6 +130,26 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
         variant="error"
         handleClose={() => setFileSendError(null)}
       />
+      <div>
+      <FormControl fullWidth>
+  <InputLabel id="demo-simple-select-label">To:</InputLabel>
+  <Select
+    labelId="demo-simple-select-label"
+    id="demo-simple-select"
+    value={selectedUser}
+    label="Age"
+    onChange={handleChange1}
+  >
+    <MenuItem value="everyone" >everyone</MenuItem>
+    {players.map((player)=>{
+      return <MenuItem value={player.id} key={player.id}>{player.userName}</MenuItem>
+    })}
+    {/* <MenuItem value={10}>Ten</MenuItem>
+    <MenuItem value={20}>Twenty</MenuItem>
+    <MenuItem value={30}>Thirty</MenuItem> */}
+  </Select>
+</FormControl>
+      </div>
       <div className={clsx(classes.textAreaContainer, { [classes.isTextareaFocused]: isTextareaFocused })}>
         {/* 
         Here we add the "isTextareaFocused" class when the user is focused on the TextareaAutosize component.
