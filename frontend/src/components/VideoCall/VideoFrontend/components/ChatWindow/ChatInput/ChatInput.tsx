@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { default as React, useEffect, useRef, useState } from 'react';
 import TextConversation from '../../../../../../classes/TextConversation';
 import useMaybeVideo from '../../../../../../hooks/useMaybeVideo';
+import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
 import { isMobile } from '../../../utils';
 import Snackbar from '../../Snackbar/Snackbar';
 // import Select, { SelectChangeEvent } from '@material-ui/core/Select';
@@ -77,11 +78,15 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const video = useMaybeVideo()
-  const [age, setAge] = React.useState('');
+  const [selectedUser, setUser] = React.useState('everyone');
   const handleChange1 = (event: React.ChangeEvent<{ value: unknown }>) => {
     console.log("12")
-    setAge(event.target.value as string);
+    setUser(event.target.value as string);
   };
+  const players=usePlayersInTown()
+  useEffect(()=>{
+    console.log(players)
+  },[])
   useEffect(() => {
     if(isTextareaFocused){
       video?.pauseGame();
@@ -131,13 +136,17 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   <Select
     labelId="demo-simple-select-label"
     id="demo-simple-select"
-    value={age}
+    value={selectedUser}
     label="Age"
     onChange={handleChange1}
   >
-    <MenuItem value={10}>Ten</MenuItem>
+    <MenuItem value="everyone" >everyone</MenuItem>
+    {players.map((player)=>{
+      return <MenuItem value={player.id} key={player.id}>{player.userName}</MenuItem>
+    })}
+    {/* <MenuItem value={10}>Ten</MenuItem>
     <MenuItem value={20}>Twenty</MenuItem>
-    <MenuItem value={30}>Thirty</MenuItem>
+    <MenuItem value={30}>Thirty</MenuItem> */}
   </Select>
 </FormControl>
       </div>
