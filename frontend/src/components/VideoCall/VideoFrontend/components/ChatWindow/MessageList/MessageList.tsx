@@ -1,10 +1,10 @@
 import React from 'react';
 import { ChatMessage } from '../../../../../../classes/TextConversation';
+import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
+import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
 import MessageInfo from './MessageInfo/MessageInfo';
 import MessageListScrollContainer from './MessageListScrollContainer/MessageListScrollContainer';
 import TextMessage from './TextMessage/TextMessage';
-import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -35,7 +35,7 @@ export default function MessageList({ messages }: MessageListProps) {
         return (
           <React.Fragment key={message.sid}>
             {shouldDisplayMessageInfo && (
-              <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time} />
+              <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time}/>
             )}
             <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} />
           </React.Fragment>
