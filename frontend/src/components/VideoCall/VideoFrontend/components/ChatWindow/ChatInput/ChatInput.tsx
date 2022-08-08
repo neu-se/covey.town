@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
-import TextConversation, { ChatMessage } from '../../../../../../classes/TextConversation';
-import clsx from 'clsx';
-import FileAttachmentIcon from '../../../icons/FileAttachmentIcon';
-import { isMobile } from '../../../utils';
-import SendMessageIcon from '../../../icons/SendMessageIcon';
-import Snackbar from '../../Snackbar/Snackbar';
+import { FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import clsx from 'clsx';
+import { default as React, useEffect, useRef, useState } from 'react';
+import TextConversation from '../../../../../../classes/TextConversation';
 import useMaybeVideo from '../../../../../../hooks/useMaybeVideo';
+import { isMobile } from '../../../utils';
+import Snackbar from '../../Snackbar/Snackbar';
+// import Select, { SelectChangeEvent } from '@material-ui/core/Select';
 
 const useStyles = makeStyles(theme => ({
   chatInputContainer: {
@@ -78,7 +77,11 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const video = useMaybeVideo()
-
+  const [age, setAge] = React.useState('');
+  const handleChange1 = (event: React.ChangeEvent<{ value: unknown }>) => {
+    console.log("12")
+    setAge(event.target.value as string);
+  };
   useEffect(() => {
     if(isTextareaFocused){
       video?.pauseGame();
@@ -122,6 +125,22 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
         variant="error"
         handleClose={() => setFileSendError(null)}
       />
+      <div>
+      <FormControl fullWidth>
+  <InputLabel id="demo-simple-select-label">To:</InputLabel>
+  <Select
+    labelId="demo-simple-select-label"
+    id="demo-simple-select"
+    value={age}
+    label="Age"
+    onChange={handleChange1}
+  >
+    <MenuItem value={10}>Ten</MenuItem>
+    <MenuItem value={20}>Twenty</MenuItem>
+    <MenuItem value={30}>Thirty</MenuItem>
+  </Select>
+</FormControl>
+      </div>
       <div className={clsx(classes.textAreaContainer, { [classes.isTextareaFocused]: isTextareaFocused })}>
         {/* 
         Here we add the "isTextareaFocused" class when the user is focused on the TextareaAutosize component.
