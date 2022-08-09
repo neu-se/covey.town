@@ -166,6 +166,22 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               <Button colorScheme='blue' data-testid="signUpButton" onClick={handleCreate}>Sign up!</Button>
             </FormControl>
           </Box>
+          <Box p="4" borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg">Return User?</Heading>
+            <FormControl>
+              <FormLabel htmlFor="name">Email</FormLabel>
+              <Input autoFocus name="name" placeholder="Your email"
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
+              />
+              <FormLabel htmlFor="name">Password</FormLabel>
+              <Input autoFocus name="name" placeholder="Your password"
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
+              />
+              <Button colorScheme='blue' data-testid="SinginButton" onClick={handleCreate}>Sign in!</Button>
+            </FormControl>
+          </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
             <Flex p="4">
