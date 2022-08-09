@@ -163,7 +163,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      value={userName}
                      onChange={event => setUserName(event.target.value)}
               />
-              <Button colorScheme='blue' data-testid="newTownButton" onClick={handleCreate}>Sign up!</Button>
+              <Button colorScheme='blue' data-testid="signUpButton" onClick={handleCreate}>Sign up!</Button>
             </FormControl>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
@@ -197,7 +197,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
             <Box borderWidth="1px" borderRadius="lg">
-              <Flex p="4"><FormControl>
+              <Flex p="4">
+              <FormControl>
                 <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
                 <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
                        value={townIDToJoin}
