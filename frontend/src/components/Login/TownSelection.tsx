@@ -141,14 +141,29 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Select a username</Heading>
-
+            <Heading as="h2" size="lg">New User?</Heading>
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
                      value={userName}
                      onChange={event => setUserName(event.target.value)}
               />
+              <FormLabel htmlFor="name">Email</FormLabel>
+              <Input autoFocus name="name" placeholder="Your email"
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
+              />
+              <FormLabel htmlFor="name">Password</FormLabel>
+              <Input autoFocus name="name" placeholder="Your password"
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
+              />
+              <FormLabel htmlFor="name">Confirm your password</FormLabel>
+              <Input autoFocus name="name" placeholder="Confirm your password"
+                     value={userName}
+                     onChange={event => setUserName(event.target.value)}
+              />
+              <Button colorScheme='blue' data-testid="signUpButton" onClick={handleCreate}>Sign up!</Button>
             </FormControl>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
@@ -162,15 +177,16 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                          onChange={event => setNewTownName(event.target.value)}
                   />
                 </FormControl>
-              </Box><Box>
-              <FormControl>
-                <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
-                <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
-                          onChange={(e) => {
-                            setNewTownIsPublic(e.target.checked)
-                          }}/>
-              </FormControl>
-            </Box>
+              </Box>
+              <Box>
+                <FormControl>
+                  <FormLabel htmlFor="isPublic">Publicly Listed</FormLabel>
+                  <Checkbox id="isPublic" name="isPublic" isChecked={newTownIsPublic}
+                            onChange={(e) => {
+                              setNewTownIsPublic(e.target.checked)
+                            }}/>
+                </FormControl>
+              </Box>
               <Box>
                 <Button data-testid="newTownButton" onClick={handleCreate}>Create</Button>
               </Box>
@@ -181,7 +197,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Join an Existing Town</Heading>
             <Box borderWidth="1px" borderRadius="lg">
-              <Flex p="4"><FormControl>
+              <Flex p="4">
+              <FormControl>
                 <FormLabel htmlFor="townIDToJoin">Town ID</FormLabel>
                 <Input name="townIDToJoin" placeholder="ID of town to join, or select from list"
                        value={townIDToJoin}
