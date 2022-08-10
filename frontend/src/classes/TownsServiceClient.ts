@@ -138,7 +138,7 @@ export default class TownsServiceClient {
   }
 
   async signUp(requestData: SignUpRequest): Promise<void> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<void>>('/signUp', requestData);
+    const responseWrapper = await this._axios.post<ResponseEnvelope<void>>('/auth/signup', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
