@@ -8,6 +8,9 @@ import {
   ConversationAreaCreateRequest,
   ServerConversationArea,
 } from '../client/TownsServiceClient';
+import prisma from '../client/prismaClient';
+import { hashPassword } from '../Utils';
+import { createUser } from '../client/prismaFunctions';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -83,6 +86,22 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+/**
+ * Create a new user request
+ */
+export interface CreateUserRequest {
+  userName: string;
+  password: string;
+  email: string;
+}
+
+/**
+ * The response when creating a new user
+ */
+export interface CreateUserResponse {
+  userName: string;
 }
 
 /**
@@ -298,4 +317,27 @@ export function townSubscriptionHandler(socket: Socket): void {
   socket.on('playerMovement', (movementData: UserLocation) => {
     townController.updatePlayerLocation(s.player, movementData);
   });
+}
+
+export async function authSignupHandler(
+  requestData: CreateUserRequest,
+): Promise<ResponseEnvelope<CreateUserResponse>> {
+  const hashedPassword = await hashPassword(requestData.password);
+  assert(requestData.userName, 'userName is required');
+  assert(requestData.password, 'password is required');
+  await createUser({
+    email: requestData.email,
+    user_name: requestData.userName,
+    hash_password: hashedPassword,
+    previous_town: 0,
+    banned: false,
+    is_admin: false,
+  });
+  return {
+    isOK: true,
+    response: {
+      userName: 'user',
+    },
+    message: 'created',
+  };
 }
