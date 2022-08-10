@@ -3,6 +3,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import clsx from 'clsx';
 import { default as React, useEffect, useRef, useState } from 'react';
 import TextConversation from '../../../../../../classes/TextConversation';
+import { UserProfile } from '../../../../../../CoveyTypes';
 import useMaybeVideo from '../../../../../../hooks/useMaybeVideo';
 import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
 import { isMobile } from '../../../utils';
@@ -78,12 +79,14 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const video = useMaybeVideo()
-  const [selectedUser, setUser] = React.useState('everyone');
+  const [selectedUser, setUser] = React.useState<string>('everyone');
   const handleChange1 = (event: React.ChangeEvent<{ value: unknown }>) => {
     console.log("12")
     setUser(event.target.value as string);
   };
-  const players=usePlayersInTown()
+  const players:UserProfile[]=usePlayersInTown().map((item)=>{
+    return {displayName:item.userName,id:item.id}
+  })
   useEffect(()=>{
     console.log(players)
   },[])
@@ -116,7 +119,18 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
 
   const handleSendMessage = (message: string) => {
     if (isValidMessage) {
-      conversation.sendMessage(message.trim());
+      if(selectedUser!='everyone'){
+        let user:UserProfile|undefined
+        for(let i=0;i<players.length;i++){
+          if(selectedUser===players[i].id){
+            user={displayName:players[i].displayName,id:selectedUser}
+            break;
+          }
+        }
+        conversation.sendMessage(message.trim(),user);
+      }else{
+        conversation.sendMessage(message.trim());
+      }
       setMessageBody('');
     }
   };
@@ -142,7 +156,7 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   >
     <MenuItem value="everyone" >everyone</MenuItem>
     {players.map((player)=>{
-      return <MenuItem value={player.id} key={player.id}>{player.userName}</MenuItem>
+      return <MenuItem value={player.id} key={player.id}>{player.displayName}</MenuItem>
     })}
     {/* <MenuItem value={10}>Ten</MenuItem>
     <MenuItem value={20}>Twenty</MenuItem>

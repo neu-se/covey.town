@@ -35,7 +35,7 @@ export default function MessageList({ messages }: MessageListProps) {
         return (
           <React.Fragment key={message.sid}>
             {shouldDisplayMessageInfo && (
-              <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time}/>
+              <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time} receiver={message.receiver}/>
             )}
             <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} />
           </React.Fragment>

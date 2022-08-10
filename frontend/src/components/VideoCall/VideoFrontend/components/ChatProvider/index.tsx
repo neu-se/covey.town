@@ -13,7 +13,7 @@ type ChatContextType = {
 export const ChatContext = createContext<ChatContextType>(null!);
 
 export const ChatProvider: React.FC = ({ children }) => {
-  const { socket, userName } = useCoveyAppState();
+  const { socket, userName,myPlayerID } = useCoveyAppState();
   const isChatWindowOpenRef = useRef(false);
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(false);
   const [conversation, setConversation] = useState<TextConversation | null>(null);
@@ -47,13 +47,13 @@ export const ChatProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (socket) {
-      const conv = new TextConversation(socket, userName);
+      const conv = new TextConversation(socket, userName,myPlayerID);
       setConversation(conv);
       return () => {
         conv.close();
       };
     }
-  }, [socket, userName, setConversation]);
+  }, [socket, userName, setConversation,myPlayerID]);
 
   return (
     <ChatContext.Provider

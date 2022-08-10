@@ -1,4 +1,5 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { UserProfile } from '../../../../../../../CoveyTypes';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -17,7 +18,7 @@ interface MessageInfoProps {
   author: string;
   dateCreated: string;
   isLocalParticipant: boolean;
-  receiver?:string;
+  receiver?:UserProfile;
 }
 
 export default function MessageInfo({ author, dateCreated, isLocalParticipant, receiver }: MessageInfoProps) {
@@ -26,7 +27,7 @@ export default function MessageInfo({ author, dateCreated, isLocalParticipant, r
   return (
     <div className={classes.messageInfoContainer}>
       
-      <div>{isLocalParticipant ? `${author} (You)` : author} to {receiver?receiver:"everyone"}</div>
+      <div>{isLocalParticipant ? `${author} (You)` : author} to {receiver?receiver.displayName:"everyone"}</div>
       <div>{dateCreated}</div>
     </div>
   );
