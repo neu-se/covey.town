@@ -4,6 +4,17 @@ import { ServerPlayer } from './Player';
 import { ServerConversationArea } from './ConversationArea';
 
 /**
+ * The format of a request to sign up the user.
+ */
+export interface SignUpRequest {
+  // user unique user name.
+  userName: string;
+  // user unique email.
+  email: string;
+  // user password
+  password: string;
+}
+/**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
 export interface TownJoinRequest {
@@ -124,6 +135,11 @@ export default class TownsServiceClient {
       return response.data.response;
     }
     throw new Error(`Error processing request: ${response.data.message}`);
+  }
+
+  async signUp(requestData: SignUpRequest): Promise<void> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<void>>('/signUp', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {

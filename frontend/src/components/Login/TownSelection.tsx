@@ -31,6 +31,10 @@ interface TownSelectionProps {
 export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
   const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
+  const [newUserName, setNewUserName] = useState<string>('');
+  const [newEmail, setNewEmail] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
@@ -135,6 +139,55 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
     }
   };
+  /**
+   * Handler sign up user. 
+   */
+  const handleSignUp = async () => {
+    if (!newUserName || newUserName.length === 0) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'Please enter a username before sign up user',
+        status: 'error',
+      });
+      return;
+    }
+    if (!newEmail || newEmail.length === 0) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'Please enter a email before sign up user',
+        status: 'error',
+      });
+    if (!newPassword || newPassword.length === 0) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'Please enter a newPassword before sign up user',
+        status: 'error',
+      });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'Confirm password not match',
+        status: 'error',
+      });
+      return;
+    }
+    try {
+      const newUser = await apiClient.signUp({
+        userName: newUserName,
+        email: newEmail,
+        password: newPassword
+      });
+    } catch (err) {
+      toast({
+        title: 'Unable to create user',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  };
+};
 
   return (
     <>
@@ -144,33 +197,33 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Heading as="h2" size="lg">New User?</Heading>
             <FormControl>
               <FormLabel htmlFor="name">Name</FormLabel>
-              <Input autoFocus name="name" placeholder="Your name"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
+              <Input autoFocus name="name" placeholder="Your user name"
+                     value={newUserName}
+                     onChange={event => setNewUserName(event.target.value)}
               />
               <FormLabel htmlFor="name">Email</FormLabel>
               <Input autoFocus name="name" placeholder="Your email"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
+                     value={newEmail}
+                     onChange={event => setNewEmail(event.target.value)}
               />
               <FormLabel htmlFor="name">Password</FormLabel>
               <Input autoFocus name="name" placeholder="Your password"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
+                     value={newPassword}
+                     onChange={event => setNewPassword(event.target.value)}
               />
               <FormLabel htmlFor="name">Confirm your password</FormLabel>
               <Input autoFocus name="name" placeholder="Confirm your password"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
+                     value={confirmPassword}
+                     onChange={event => setConfirmPassword(event.target.value)}
               />
-              <Button colorScheme='blue' data-testid="signUpButton" onClick={handleCreate}>Sign up!</Button>
+              <Button colorScheme='blue' data-testid="signUpButton" onClick={handleSignUp}>Sign up!</Button>
             </FormControl>
           </Box>
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Return User?</Heading>
             <FormControl>
               <FormLabel htmlFor="name">Email</FormLabel>
-              <Input autoFocus name="name" placeholder="Your email"
+              <Input autoFocus name="name" placeholder="Your name"
                      value={userName}
                      onChange={event => setUserName(event.target.value)}
               />
