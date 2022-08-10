@@ -32,8 +32,10 @@ const doLoginMock = jest.fn();
 const mocklistTowns = jest.fn();
 const mockCreateTown = jest.fn();
 const mockVideoSetup = jest.fn();
+const mockSignUp = jest.fn();
 TownsServiceClient.prototype.listTowns = mocklistTowns;
 TownsServiceClient.prototype.createTown = mockCreateTown;
+TownsServiceClient.prototype.signUp = mockSignUp;
 Video.setup = mockVideoSetup;
 
 
@@ -137,6 +139,17 @@ describe('Sign up functionality', () => {
       expect(newEmailField.value).toBe('tom@example.com')
       expect(newPasswordField.value).toBe('123456')
       expect(newConfirmPasswordField.value).toBe('123456')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Successfully sign up!',
+          status: 'success',
+        })
+      expect(mockSignUp)
+        .toBeCalledWith({
+          userName: 'Nice guy',
+          email: 'tom@example.com',
+          password: '123456'
+        })
     })
   })
 })
