@@ -1,8 +1,6 @@
-import { describe } from 'pm2';
 import { createUser, updateUser, deleteUser } from './prismaFunctions';
-import { prismaMock } from './singleton';
+import prismaMock from './singleton';
 
-// describe('Test user CRUD operations', () => {
 it('should create new user ', async () => {
   const user = {
     id: 243790057,
@@ -79,7 +77,6 @@ it('should delete a user', async () => {
   };
 
   prismaMock.user.delete.mockResolvedValue(user);
-  // deleteUser(user);
   await expect(deleteUser(user)).resolves.toEqual({
     id: 243790057,
     user_name: 'Victor',

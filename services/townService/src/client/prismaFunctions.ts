@@ -9,11 +9,12 @@ interface CreateUser {
   is_admin: boolean;
 }
 
-export async function createUser(user: CreateUser) {
+export async function createUser(user: CreateUser): Promise<CreateUser> {
   try {
-    return await prisma.user.create({
+    const result = await prisma.user.create({
       data: user,
     });
+    return result;
   } catch (err) {
     throw new Error('User already exists!');
   }
@@ -25,19 +26,21 @@ interface UpdateUser {
   email: string;
 }
 
-export async function updateUser(user: UpdateUser) {
-  return await prisma.user.update({
+export async function updateUser(user: UpdateUser): Promise<UpdateUser> {
+  const result = await prisma.user.update({
     where: { id: user.id },
     data: user,
   });
+  return result;
 }
 
 interface DeleteUser {
   email: string;
 }
 
-export async function deleteUser(user: DeleteUser) {
-  return await prisma.user.delete({
+export async function deleteUser(user: DeleteUser): Promise<DeleteUser> {
+  const result = await prisma.user.delete({
     where: { email: user.email },
   });
+  return result;
 }
