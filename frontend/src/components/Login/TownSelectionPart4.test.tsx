@@ -116,6 +116,7 @@ describe('Sign up functionality', () => {
     mockToast.mockReset();
     mockVideoSetup.mockReset();
     mockCreateTown.mockReset();
+    mockSignUp.mockReset();
 
     // Assemble all the testing envirnment
     mocklistTowns.mockImplementation(() => listTowns(nanoid()));
@@ -133,7 +134,7 @@ describe('Sign up functionality', () => {
     userEvent.type(newPasswordField, '123456');
     userEvent.type(newConfirmPasswordField, '123456');
     userEvent.click(signUpButton);
-    // // Start to Assert
+    // Start to Assert
     await waitFor(() => {
       expect(newUserNameField.value).toBe('Nice guy')
       expect(newEmailField.value).toBe('tom@example.com')
@@ -150,6 +151,90 @@ describe('Sign up functionality', () => {
           email: 'tom@example.com',
           password: '123456'
         })
+    })
+  })
+
+  it('should failed when two password are not match', async () => {
+    userEvent.type(newUserNameField, 'Nice guy');
+    userEvent.type(newEmailField, 'tom@example.com');
+    userEvent.type(newPasswordField, '123456');
+    userEvent.type(newConfirmPasswordField, '13456');
+    userEvent.click(signUpButton);
+    await waitFor(() => {
+      expect(newUserNameField.value).toBe('Nice guy')
+      expect(newEmailField.value).toBe('tom@example.com')
+      expect(newPasswordField.value).toBe('123456')
+      expect(newConfirmPasswordField.value).toBe('13456')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to sign up user',
+          description: 'Confirm password not match',
+          status: 'error',
+        })
+      expect(mockSignUp).not.toHaveBeenCalled()
+    })
+  })
+
+  it('zero length user name should failed', async () => {
+    userEvent.type(newUserNameField, '');
+    userEvent.type(newEmailField, 'tom@example.com');
+    userEvent.type(newPasswordField, '123456');
+    userEvent.type(newConfirmPasswordField, '13456');
+    userEvent.click(signUpButton);
+    await waitFor(() => {
+      expect(newUserNameField.value).toBe('')
+      expect(newEmailField.value).toBe('tom@example.com')
+      expect(newPasswordField.value).toBe('123456')
+      expect(newConfirmPasswordField.value).toBe('13456')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to sign up user',
+          description: 'Please enter a username before sign up user',
+          status: 'error',
+        })
+      expect(mockSignUp).not.toHaveBeenCalled()
+    })
+  })
+
+  it('zero length email should failed', async () => {
+    userEvent.type(newUserNameField, 'Nice guy');
+    userEvent.type(newEmailField, '');
+    userEvent.type(newPasswordField, '123456');
+    userEvent.type(newConfirmPasswordField, '13456');
+    userEvent.click(signUpButton);
+    await waitFor(() => {
+      expect(newUserNameField.value).toBe('Nice guy')
+      expect(newEmailField.value).toBe('')
+      expect(newPasswordField.value).toBe('123456')
+      expect(newConfirmPasswordField.value).toBe('13456')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to sign up user',
+          description: 'Please enter a email before sign up user',
+          status: 'error',
+        })
+      expect(mockSignUp).not.toHaveBeenCalled()
+    })
+  })
+
+  it('zero password should failed', async () => {
+    userEvent.type(newUserNameField, 'Nice guy');
+    userEvent.type(newEmailField, 'tom@example.com');
+    userEvent.type(newPasswordField, '');
+    userEvent.type(newConfirmPasswordField, '');
+    userEvent.click(signUpButton);
+    await waitFor(() => {
+      expect(newUserNameField.value).toBe('Nice guy')
+      expect(newEmailField.value).toBe('tom@example.com')
+      expect(newPasswordField.value).toBe('')
+      expect(newConfirmPasswordField.value).toBe('')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to sign up user',
+          description: 'Please enter a newPassword before sign up user',
+          status: 'error',
+        })
+      expect(mockSignUp).not.toHaveBeenCalled()
     })
   })
 })
