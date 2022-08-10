@@ -157,6 +157,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         description: 'Please enter a email before sign up user',
         status: 'error',
       });
+      return;
+    }
     if (!newPassword || newPassword.length === 0) {
       toast({
         title: 'Unable to sign up user',
@@ -187,7 +189,6 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       })
     }
   };
-};
 
   return (
     <>
