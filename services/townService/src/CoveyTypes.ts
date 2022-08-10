@@ -7,10 +7,14 @@ export type UserLocation = {
   conversationLabel?: string;
 };
 export type CoveyTownList = { friendlyName: string; coveyTownID: string; currentOccupancy: number; maximumOccupancy: number }[];
-
+export type UserProfile={
+  displayName:String;
+  id:string;
+}
 export type ChatMessage = {
   author: string;
   sid: string;
   body: string;
   dateCreated: Date;
+  receiver?:UserProfile
 };
