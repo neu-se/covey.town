@@ -1,3 +1,6 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
+const bcrypt = require('bcryptjs');
+
 /**
  * This function exists solely to help satisfy the linter + typechecker when it looks over the
  * stubbed (not yet implemented by you) functions. Remove calls to it as you go.
@@ -16,6 +19,5 @@ export function logError(err: any): void {
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  const bcrypt = require('bcryptjs');
   return bcrypt.hash(password, 10);
 }

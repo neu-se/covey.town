@@ -8,7 +8,6 @@ import {
   ConversationAreaCreateRequest,
   ServerConversationArea,
 } from '../client/TownsServiceClient';
-import prisma from '../client/prismaClient';
 import { hashPassword } from '../Utils';
 import { createUser } from '../client/prismaFunctions';
 
