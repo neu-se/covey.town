@@ -181,6 +181,10 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
         email: newEmail,
         password: newPassword
       });
+      toast({
+        title: 'Successfully sign up!',
+        status: 'success',
+      })
     } catch (err) {
       toast({
         title: 'Unable to create user',
