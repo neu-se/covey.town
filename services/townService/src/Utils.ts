@@ -14,3 +14,8 @@ export function logError(err: any): void {
   // eslint-disable-next-line no-console
   console.trace(err);
 }
+
+export async function hashPassword(password: string): Promise<string> {
+  const bcrypt = require('bcryptjs');
+  return bcrypt.hash(password, 10);
+}
