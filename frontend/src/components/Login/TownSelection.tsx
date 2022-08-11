@@ -35,6 +35,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newEmail, setNewEmail] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [loginEmail, setLoginEmail] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<CoveyTownInfo[]>();
@@ -228,16 +230,27 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <Heading as="h2" size="lg">Return User?</Heading>
             <FormControl>
               <FormLabel htmlFor="name">Email</FormLabel>
+              <Input autoFocus name="name" placeholder="Your Email"
+                     value={loginEmail}
+                     onChange={event => setLoginEmail(event.target.value)}
+              />
+              <FormLabel htmlFor="name">Password</FormLabel>
+              <Input autoFocus name="name" placeholder="Your login password"
+                     value={loginPassword}
+                     onChange={event => setLoginPassword(event.target.value)}
+              />
+              <Button colorScheme='blue' data-testid="SinginButton" onClick={handleCreate}>Sign in!</Button>
+            </FormControl>
+          </Box>
+          <Box p="4" borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg">Try Covey Town?</Heading>
+
+            <FormControl>
+              <FormLabel htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your name"
                      value={userName}
                      onChange={event => setUserName(event.target.value)}
               />
-              <FormLabel htmlFor="name">Password</FormLabel>
-              <Input autoFocus name="name" placeholder="Your login password"
-                     value={userName}
-                     onChange={event => setUserName(event.target.value)}
-              />
-              <Button colorScheme='blue' data-testid="SinginButton" onClick={handleCreate}>Sign in!</Button>
             </FormControl>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
