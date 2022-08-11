@@ -237,4 +237,25 @@ describe('Sign up functionality', () => {
       expect(mockSignUp).not.toHaveBeenCalled()
     })
   })
+  it('should correctly show error message', async () => {
+    mockSignUp.mockImplementation(() => {throw new Error()});
+    userEvent.type(newUserNameField, 'Nice guy');
+    userEvent.type(newEmailField, 'tom@example.com');
+    userEvent.type(newPasswordField, '123456');
+    userEvent.type(newConfirmPasswordField, '123456');
+    userEvent.click(signUpButton);
+    await waitFor(() => {
+      expect(newUserNameField.value).toBe('Nice guy')
+      expect(newEmailField.value).toBe('tom@example.com')
+      expect(newPasswordField.value).toBe('123456')
+      expect(newConfirmPasswordField.value).toBe('123456')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to create user',
+          description: 'Error',
+          status: 'error',
+        })
+    })
+
+  })
 })
