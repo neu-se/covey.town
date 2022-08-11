@@ -233,7 +233,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      onChange={event => setUserName(event.target.value)}
               />
               <FormLabel htmlFor="name">Password</FormLabel>
-              <Input autoFocus name="name" placeholder="Your password"
+              <Input autoFocus name="name" placeholder="Your login password"
                      value={userName}
                      onChange={event => setUserName(event.target.value)}
               />
