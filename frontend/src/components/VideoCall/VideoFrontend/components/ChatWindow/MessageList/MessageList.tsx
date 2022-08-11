@@ -28,14 +28,14 @@ export default function MessageList({ messages }: MessageListProps) {
         // Display the MessageInfo component when the author or formatted timestamp differs from the previous message
         const shouldDisplayMessageInfo = time !== previousTime || message.author !== messages[idx - 1]?.author;
 
-        const isLocalParticipant = localParticipant.identity === message.author;
+        const isLocalParticipant = localParticipant.identity === message.author.id;
 
-        const profile = players.find(p => p.id == message.author);
+        const profile = players.find(p => p.id == message.author.id);
 
         return (
           <React.Fragment key={message.sid}>
             {shouldDisplayMessageInfo && (
-              <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time} receiver={message.receiver}/>
+              <MessageInfo author={message.author.displayName} isLocalParticipant={isLocalParticipant} dateCreated={time} receiver={message.receiver}/>
             )}
             <TextMessage body={message.body} isLocalParticipant={isLocalParticipant} />
           </React.Fragment>
