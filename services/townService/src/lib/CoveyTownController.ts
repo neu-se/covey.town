@@ -53,6 +53,10 @@ export default class CoveyTownController {
   get conversationAreas(): ServerConversationArea[] {
     return this._conversationAreas;
   }
+  
+  get messageRecords():Map<string,Date|boolean>{
+    return this._messageRecords;
+  }
 
   /** The list of players currently in the town * */
   private _players: Player[] = [];
@@ -79,12 +83,15 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
+  private _messageRecords: Map<string,Date|boolean>;
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    this._messageRecords=new Map<string,Date|boolean>();
   }
 
   /**
@@ -246,7 +253,58 @@ export default class CoveyTownController {
   }
 
   onChatMessage(message: ChatMessage): void {
-    this._listeners.forEach(listener => listener.onChatMessage(message));
+    // for(let i=0;i<this._listeners.length;i++){
+    //   message.body=this._players[i].userName
+    //   this._listeners[i].onChatMessage(message)
+    // }
+    // this._listeners.forEach(listener => listener.onChatMessage(message));
+    // console.log(new Date(message.dateCreated).getTime())
+
+    if(!message.receiver){
+      this._listeners.forEach(listener => listener.onChatMessage(message));
+      return;
+    }
+    // console.log(message.body)
+    const keyAtoB=message.author.id+':'+message.receiver.id
+    const keyBtoA=message.receiver.id+':'+message.author.id
+    this._messageRecords.set(keyBtoA,true);
+    let record=this._messageRecords.get(keyAtoB);
+    // console.log(record)
+    const receiverIdx=this.players.findIndex((player)=>{
+      return player.id===message.receiver?.id
+    })
+    const senderIdx=this.players.findIndex((player)=>{
+      return player.id===message.author.id
+    })
+    // console.log("senderIdx",senderIdx)
+    // console.log("recIdx",receiverIdx)
+    if(senderIdx<0||receiverIdx<0){
+      return;
+    }
+    
+    const sender=this._listeners[senderIdx]
+    const receiver=this._listeners[receiverIdx]
+    if(!record){
+      this._messageRecords.set(keyAtoB,message.dateCreated);
+      sender.onChatMessage(message)
+      receiver.onChatMessage(message)
+    }else if(typeof(record)==="boolean"){
+      if(record){
+        sender.onChatMessage(message)
+        receiver.onChatMessage(message)
+      }
+    }else{
+      const diff=new Date(message.dateCreated).getTime()-new Date(record).getTime();
+      if(diff<30*1000){
+        message.body="fail"
+        sender.onChatMessage(message)
+      }else{
+        this._messageRecords.set(keyAtoB,message.dateCreated);
+        sender.onChatMessage(message)
+        receiver.onChatMessage(message)
+      }
+    }
+    
   }
 
   /**

@@ -12,7 +12,7 @@ export type UserProfile={
   id:string;
 }
 export type ChatMessage = {
-  author: string;
+  author: UserProfile;
   sid: string;
   body: string;
   dateCreated: Date;

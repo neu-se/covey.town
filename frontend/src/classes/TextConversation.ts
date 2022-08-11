@@ -34,7 +34,7 @@ export default class TextConversation {
 
   private onChatMessage(message: ChatMessage) {
     if(message.receiver){
-      if(this._authorId===message.receiver.id||this._authorName===message.author){
+      if(this._authorId===message.receiver.id||this._authorId===message.author.id){
         this._callbacks.forEach(cb => cb(message));
       }
     }else{
@@ -53,7 +53,7 @@ export default class TextConversation {
     const msg: ChatMessage = {
       sid: nanoid(),
       body: message,
-      author: this._authorName,
+      author: {displayName:this._authorName,id:this._authorId},
       dateCreated: new Date()
     };
     if(receiver){
@@ -88,7 +88,7 @@ export default class TextConversation {
 }
 type MessageCallback = (message: ChatMessage) => void;
 export type ChatMessage = {
-  author: string;
+  author: UserProfile;
   sid: string;
   body: string;
   dateCreated: Date;
