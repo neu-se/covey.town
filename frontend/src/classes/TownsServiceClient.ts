@@ -14,6 +14,28 @@ export interface SignUpRequest {
   // user password
   password: string;
 }
+
+/**
+ * The format of a request to sign up the user.
+ */
+export interface SignInRequest {
+  // user unique email.
+  email: string;
+  // user password
+  password: string;
+}
+
+/**
+ * The format of a response to signin
+ * middleware
+ */
+export interface SignInResponse {
+  // user name
+  userName: string;
+  // JWT token
+  JWTToken: string;
+}
+
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
@@ -135,6 +157,11 @@ export default class TownsServiceClient {
       return response.data.response;
     }
     throw new Error(`Error processing request: ${response.data.message}`);
+  }
+
+  async signIn(requestData: SignInRequest): Promise<SignInResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<SignInResponse>>('/auth/signin', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
   async signUp(requestData: SignUpRequest): Promise<void> {
