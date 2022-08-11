@@ -196,6 +196,45 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  /**
+   * Handler signin user. 
+   */
+  const handleSignIn = async () => {
+    if (!loginEmail || loginEmail.length === 0) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'Please enter a email before signin',
+        status: 'error',
+      });
+      return;
+    }
+    if (!loginPassword || loginPassword.length === 0) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'Please enter your password before signin',
+        status: 'error',
+      });
+      return;
+    }
+    try {
+      const returnUser = await apiClient.signIn({
+        email: loginEmail,
+        password: loginPassword
+      });
+      toast({
+        title: 'Successfully sign in!',
+        status: 'success',
+      })
+      setUserName(returnUser.userName);
+    } catch (err) {
+      toast({
+        title: 'Unable to sign in',
+        description: err.toString(),
+        status: 'error'
+      })
+    }
+  };
+
   return (
     <>
       <form>
@@ -239,7 +278,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                      value={loginPassword}
                      onChange={event => setLoginPassword(event.target.value)}
               />
-              <Button colorScheme='blue' data-testid="SinginButton" onClick={handleCreate}>Sign in!</Button>
+              <Button colorScheme='blue' data-testid="SinginButton" onClick={handleSignIn}>Sign in!</Button>
             </FormControl>
           </Box>
           <Box p="4" borderWidth="1px" borderRadius="lg">
