@@ -123,8 +123,8 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     try {
       const result = await authSignupHandler({
         userName: req.body.userName,
-        email: req.body.password,
-        password: req.body.email,
+        email: req.body.email,
+        password: req.body.password,
       });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
