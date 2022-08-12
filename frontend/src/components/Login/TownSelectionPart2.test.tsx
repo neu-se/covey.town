@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop,@typescript-eslint/no-loop-func,no-restricted-syntax */
 import React from 'react'
 import '@testing-library/jest-dom'
 import { ChakraProvider } from '@chakra-ui/react'
