@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import prisma from './prismaClient';
 
 interface CreateUser {
@@ -43,4 +44,29 @@ export async function deleteUser(user: DeleteUser): Promise<DeleteUser> {
     where: { email: user.email },
   });
   return result;
+}
+
+interface FindUser {
+  email: string;
+  password: string;
+}
+
+interface FindUserResult {
+  user_name: string;
+  hash_password: string;
+}
+
+export async function findUser(user: FindUser): Promise<FindUserResult> {
+  const result = await prisma.user.findUnique({
+    where: { email: user.email },
+    select: {
+      user_name: true,
+      hash_password: true,
+    },
+  });
+  if (result) {
+    return result;
+  } else {
+    throw new Error('User not found!');
+  }
 }

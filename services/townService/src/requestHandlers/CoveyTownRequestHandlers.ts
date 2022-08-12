@@ -9,7 +9,7 @@ import {
   ServerConversationArea,
 } from '../client/TownsServiceClient';
 import { hashPassword } from '../Utils';
-import { createUser } from '../client/prismaFunctions';
+import { createUser, findUser } from '../client/prismaFunctions';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -101,6 +101,18 @@ export interface CreateUserRequest {
  */
 export interface CreateUserResponse {
   userName: string;
+}
+
+// Interface for the request data when users try to login
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+// Interface for the response when users login
+export interface LoginResponse {
+  username: string;
+  message: string;
 }
 
 /**
@@ -318,6 +330,7 @@ export function townSubscriptionHandler(socket: Socket): void {
   });
 }
 
+// Handler to create new accounts for players
 export async function authSignupHandler(
   requestData: CreateUserRequest,
 ): Promise<ResponseEnvelope<CreateUserResponse>> {
@@ -338,5 +351,33 @@ export async function authSignupHandler(
       userName: 'user',
     },
     message: 'created',
+  };
+}
+
+// Handler to login existing accounts for players
+export async function authLoginHandler(
+  requestData: LoginRequest,
+): Promise<ResponseEnvelope<LoginResponse>> {
+  const hashedPassword = await hashPassword(requestData.password);
+  const user = await findUser({
+    email: requestData.email,
+    password: hashedPassword,
+  });
+  if (!user || hashedPassword != user.hash_password) {
+    return {
+      isOK: false,
+      response: {
+        username: '',
+        message: 'Invalid user name or password',
+      },
+    };
+  }
+   return {
+    isOK: true,
+    response: {
+      username: user.user_name,
+      message: 'Welcome back!',
+    },
+    message: 'logged in',
   };
 }
