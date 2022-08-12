@@ -37,12 +37,9 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newEmail, setNewEmail] = useState<string>('');
 
   const [newPassword, setNewPassword] = useState<string>('');
-  const [showNewPassword, showSetNewPassword] = useState(false);
-  const changeNewPassword = () => showSetNewPassword(!showNewPassword)
-
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [showConfirmPassword, showSetConfirmPassword] = useState(false);
-  const changeConfirmPassword = () => showSetConfirmPassword(!showConfirmPassword)
+  const [PasswordVisibility, TogglePasswordVisibility] = useState(false);
+  const changeConfirmPassword = () => TogglePasswordVisibility(!PasswordVisibility)
 
   const [loginEmail, setLoginEmail] = useState<string>('');
   const [loginPassword, setLoginPassword] = useState<string>('');
@@ -266,12 +263,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
             <InputGroup size='md'>
               <Input autoFocus name="name"
                      onChange={event => setNewPassword(event.target.value)}
-                    type={showNewPassword ? newPassword : 'password'}
+                    type={PasswordVisibility ? newPassword : 'password'}
                     placeholder="Your password"
               />
               <InputRightElement width='4.5rem'>
-                <Button h='1.75rem' size='sm' onClick={changeNewPassword}>
-                  {showNewPassword ? 'Hide' : 'Show'}
+                <Button h='1.75rem' size='sm' onClick={changeConfirmPassword}>
+                  {PasswordVisibility ? 'Hide' : 'Show'}
                 </Button>
               </InputRightElement>
             </InputGroup>
@@ -280,12 +277,12 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
               <Input autoFocus name="name"
                 //  value={confirmPassword}
                 onChange={event => setConfirmPassword(event.target.value)}
-                type={showConfirmPassword ? confirmPassword : 'password'}
+                type={PasswordVisibility ? confirmPassword : 'password'}
                 placeholder="Confirm your password"
               />
               <InputRightElement width='4.5rem'>
                 <Button h='1.75rem' size='sm' onClick={changeConfirmPassword}>
-                  {showConfirmPassword ? 'Hide' : 'Show'}
+                  {PasswordVisibility ? 'Hide' : 'Show'}
                 </Button>
               </InputRightElement>
             </InputGroup>
