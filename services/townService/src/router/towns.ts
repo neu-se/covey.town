@@ -11,6 +11,7 @@ import {
   townSubscriptionHandler,
   townUpdateHandler,
   authSignupHandler,
+  authLoginHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -116,12 +117,28 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  // Allows users to create a new account
   app.post('/auth/signup', express.json(), async (req, res) => {
     try {
       const result = await authSignupHandler({
         userName: req.body.userName,
         email: req.body.password,
         password: req.body.email,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  // Allows users to login
+  app.post('/auth/login', express.json(), async (req, res) => {
+    try {
+      const result = await authLoginHandler({
+        email: req.body.email,
+        password: req.body.password,
       });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {

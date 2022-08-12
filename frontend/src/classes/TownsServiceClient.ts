@@ -160,7 +160,7 @@ export default class TownsServiceClient {
   }
 
   async signIn(requestData: SignInRequest): Promise<SignInResponse> {
-    const responseWrapper = await this._axios.post<ResponseEnvelope<SignInResponse>>('/auth/signin', requestData);
+    const responseWrapper = await this._axios.post<ResponseEnvelope<SignInResponse>>('/auth/login', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
