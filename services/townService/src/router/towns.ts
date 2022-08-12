@@ -146,7 +146,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         message: 'Internal server error, please see log in server for more details',
       });
     }
-  }),
+  });
 
   const socketServer = new io.Server(http, { cors: { origin: '*' } });
   socketServer.on('connection', townSubscriptionHandler);

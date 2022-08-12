@@ -363,7 +363,7 @@ export async function authLoginHandler(
     email: requestData.email,
     password: hashedPassword,
   });
-  if (!user || hashedPassword != user.hash_password) {
+  if (!user || hashedPassword !== user.hash_password) {
     return {
       isOK: false,
       response: {
@@ -372,7 +372,7 @@ export async function authLoginHandler(
       },
     };
   }
-   return {
+  return {
     isOK: true,
     response: {
       username: user.user_name,
