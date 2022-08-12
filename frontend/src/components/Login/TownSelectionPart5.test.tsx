@@ -144,17 +144,35 @@ describe('Sign up functionality', () => {
   })
 
   it('zero length returning user should failed', async () => {
-    userEvent.type(returningLoginField, 'Nice guy');
+    userEvent.type(returningLoginField, 'jacky@gmail.com');
     userEvent.type(returningPasswordField, '');
     userEvent.click(signInButton);
 
     await waitFor(() => {
-      expect(returningLoginField.value).toBe('Nice guy')
+      expect(returningLoginField.value).toBe('jacky@gmail.com')
       expect(returningPasswordField.value).toBe('')
       expect(mockToast)
         .toBeCalledWith({
           title: 'Unable to sign in user',
           description: 'Please enter your password before signin',
+          status: 'error',
+        })
+      expect(mockSignIn).not.toHaveBeenCalled()
+    })
+  })
+
+  it('email should include @ symbol', async () => {
+    userEvent.type(returningLoginField, 'jackygmail.com');
+    userEvent.type(returningPasswordField, '');
+    userEvent.click(signInButton);
+
+    await waitFor(() => {
+      expect(returningLoginField.value).toBe('jackygmail.com')
+      expect(returningPasswordField.value).toBe('')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to sign in user',
+          description: 'An email should contain the @ symbol',
           status: 'error',
         })
       expect(mockSignIn).not.toHaveBeenCalled()

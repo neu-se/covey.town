@@ -213,6 +213,27 @@ describe('Sign up functionality', () => {
           status: 'error',
         })
       expect(mockSignUp).not.toHaveBeenCalled()
+    })  
+  })
+
+  it('an email should contain the @ symbol', async () => {
+    userEvent.type(newUserNameField, 'jacky');
+    userEvent.type(newEmailField, 'jackygmail.com');
+    userEvent.type(newPasswordField, '123456');
+    userEvent.type(newConfirmPasswordField, '123456');
+    userEvent.click(signUpButton);
+    await waitFor(() => {
+      expect(newUserNameField.value).toBe('jacky')
+      expect(newEmailField.value).toBe('jackygmail.com')
+      expect(newPasswordField.value).toBe('123456')
+      expect(newConfirmPasswordField.value).toBe('123456')
+      expect(mockToast)
+        .toBeCalledWith({
+          title: 'Unable to sign up user',
+          description: 'An email should contain the @ symbol',
+          status: 'error',
+        })
+      expect(mockSignUp).not.toHaveBeenCalled()
     })
   })
 
@@ -236,6 +257,7 @@ describe('Sign up functionality', () => {
       expect(mockSignUp).not.toHaveBeenCalled()
     })
   })
+
   it('should correctly show error message', async () => {
     mockSignUp.mockImplementation(() => {throw new Error()});
     userEvent.type(newUserNameField, 'Nice guy');
@@ -255,6 +277,5 @@ describe('Sign up functionality', () => {
           status: 'error',
         })
     })
-
   })
 })
