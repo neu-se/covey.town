@@ -208,7 +208,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const handleSignIn = async () => {
     if (!loginEmail || loginEmail.length === 0) {
       toast({
-        title: 'Unable to sign up user',
+        title: 'Unable to sign in user',
         description: 'Please enter a email before signin',
         status: 'error',
       });
@@ -216,7 +216,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
     if (!loginPassword || loginPassword.length === 0) {
       toast({
-        title: 'Unable to sign up user',
+        title: 'Unable to sign in user',
         description: 'Please enter your password before signin',
         status: 'error',
       });
