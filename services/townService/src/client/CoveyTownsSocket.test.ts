@@ -4,6 +4,7 @@ import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import * as TestUtils from './TestUtils';
+import * as utils from '../Utils';
 
 import { UserLocation } from '../CoveyTypes';
 import TownsServiceClient from './TownsServiceClient';
@@ -43,6 +44,8 @@ describe('TownServiceApiSocket', () => {
     const address = server.address() as AddressInfo;
 
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+
+    jest.spyOn(utils, 'verifyAccessToken').mockResolvedValue('validUser');
   });
   afterAll(async () => {
     server.close();

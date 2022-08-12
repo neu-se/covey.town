@@ -8,7 +8,7 @@ import {
   ConversationAreaCreateRequest,
   ServerConversationArea,
 } from '../client/TownsServiceClient';
-import { hashPassword } from '../Utils';
+import { hashPassword, verifyAccessToken, signAccessToken } from '../Utils';
 import { createUser, findUser } from '../client/prismaFunctions';
 
 /**
@@ -19,6 +19,8 @@ export interface TownJoinRequest {
   userName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
+  /** Valid JWT token to make sure user is loged in */
+  accessToken: string;
 }
 
 /**
@@ -113,6 +115,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   username: string;
   message: string;
+  accessToken: string;
 }
 
 /**
@@ -135,6 +138,7 @@ export interface ResponseEnvelope<T> {
 export async function townJoinHandler(
   requestData: TownJoinRequest,
 ): Promise<ResponseEnvelope<TownJoinResponse>> {
+  verifyAccessToken(requestData.accessToken);
   const townsStore = CoveyTownsStore.getInstance();
 
   const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
@@ -369,6 +373,18 @@ export async function authLoginHandler(
       response: {
         username: '',
         message: 'Invalid user name or password',
+        accessToken: '',
+      },
+    };
+  }
+  const token = await signAccessToken(user.user_name);
+  if (!token) {
+    return {
+      isOK:false,
+      response: {
+        username: '',
+        message: 'Server error',
+        accessToken: '',
       },
     };
   }
@@ -377,6 +393,7 @@ export async function authLoginHandler(
     response: {
       username: user.user_name,
       message: 'Welcome back!',
+      accessToken: token,
     },
     message: 'logged in',
   };

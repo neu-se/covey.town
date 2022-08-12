@@ -5,6 +5,7 @@ import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import addTownRoutes from '../router/towns';
+import * as utils from '../Utils';
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 
 type TestTownData = {
@@ -59,6 +60,8 @@ describe('TownsServiceAPIREST', () => {
     const address = server.address() as AddressInfo;
 
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+
+    jest.spyOn(utils, 'verifyAccessToken').mockResolvedValue('validUser');
   });
   afterAll(async () => {
     await server.close();
