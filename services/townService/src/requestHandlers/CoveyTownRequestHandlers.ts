@@ -19,6 +19,8 @@ export interface TownJoinRequest {
   userName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
+  /** Valid JWT token to make sure user is loged in */
+  accessToken: string;
 }
 
 /**
@@ -136,6 +138,7 @@ export interface ResponseEnvelope<T> {
 export async function townJoinHandler(
   requestData: TownJoinRequest,
 ): Promise<ResponseEnvelope<TownJoinResponse>> {
+  verifyAccessToken(requestData.accessToken);
   const townsStore = CoveyTownsStore.getInstance();
 
   const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
