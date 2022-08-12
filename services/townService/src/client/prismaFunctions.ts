@@ -66,7 +66,6 @@ export async function findUser(user: FindUser): Promise<FindUserResult> {
   });
   if (result) {
     return result;
-  } else {
-    throw new Error('User not found!');
-  }
+  } 
+  throw new Error('User not found!');
 }
