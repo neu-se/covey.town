@@ -8,7 +8,7 @@ import {
   ConversationAreaCreateRequest,
   ServerConversationArea,
 } from '../client/TownsServiceClient';
-import { hashPassword } from '../Utils';
+import { hashPassword, verifyAccessToken, signAccessToken} from '../Utils';
 import { createUser, findUser } from '../client/prismaFunctions';
 
 /**
@@ -113,6 +113,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   username: string;
   message: string;
+  accessToken: string;
 }
 
 /**
@@ -369,6 +370,18 @@ export async function authLoginHandler(
       response: {
         username: '',
         message: 'Invalid user name or password',
+        accessToken: '',
+      },
+    };
+  }
+  const token = await signAccessToken(user.user_name);
+  if (!token) {
+    return {
+      isOK:false,
+      response: {
+        username: '',
+        message: 'Server error',
+        accessToken: '',
       },
     };
   }
@@ -377,6 +390,7 @@ export async function authLoginHandler(
     response: {
       username: user.user_name,
       message: 'Welcome back!',
+      accessToken: token,
     },
     message: 'logged in',
   };
