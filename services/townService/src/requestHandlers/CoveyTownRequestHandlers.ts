@@ -8,7 +8,7 @@ import {
   ConversationAreaCreateRequest,
   ServerConversationArea,
 } from '../client/TownsServiceClient';
-import { hashPassword, verifyAccessToken, signAccessToken} from '../Utils';
+import { hashPassword, verifyAccessToken, signAccessToken } from '../Utils';
 import { createUser, findUser } from '../client/prismaFunctions';
 
 /**

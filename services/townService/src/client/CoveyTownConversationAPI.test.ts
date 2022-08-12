@@ -10,6 +10,7 @@ import addTownRoutes from '../router/towns';
 import * as requestHandlers from '../requestHandlers/CoveyTownRequestHandlers';
 import { createConversationForTesting } from './TestUtils';
 import TownsServiceClient, { ServerConversationArea } from './TownsServiceClient';
+import * as utils from '../Utils';
 
 type TestTownData = {
   friendlyName: string;
@@ -52,6 +53,8 @@ describe('Create Conversation Area API', () => {
     const address = server.address() as AddressInfo;
 
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
+
+    jest.spyOn(utils, 'verifyAccessToken').mockResolvedValue('validUser');
   });
   afterAll(async () => {
     await server.close();
