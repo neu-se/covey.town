@@ -9,6 +9,8 @@ import {
   FormLabel,
   Heading,
   Input,
+  InputGroup,
+  InputRightElement,
   Stack,
   Table,
   TableCaption,
@@ -33,8 +35,15 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const [newTownName, setNewTownName] = useState<string>('');
   const [newUserName, setNewUserName] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
+
   const [newPassword, setNewPassword] = useState<string>('');
+  const [showNewPassword, showSetNewPassword] = useState(false);
+  const changeNewPassword = () => showSetNewPassword(!showNewPassword)
+
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [showConfirmPassword, showSetConfirmPassword] = useState(false);
+  const changeConfirmPassword = () => showSetConfirmPassword(!showConfirmPassword)
+
   const [loginEmail, setLoginEmail] = useState<string>('');
   const [loginPassword, setLoginPassword] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
@@ -242,43 +251,61 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">New User?</Heading>
             <FormControl>
-              <FormLabel htmlFor="name">Name</FormLabel>
+              <FormLabel mt={2} mb={0} htmlFor="name">Name</FormLabel>
               <Input autoFocus name="name" placeholder="Your user name"
-                     value={newUserName}
-                     onChange={event => setNewUserName(event.target.value)}
+                    value={newUserName}
+                    onChange={event => setNewUserName(event.target.value)}
+
               />
-              <FormLabel htmlFor="name">Email</FormLabel>
+              <FormLabel mt={2} mb={0} htmlFor="name">Email</FormLabel>
               <Input autoFocus name="name" placeholder="Your email"
                      value={newEmail}
                      onChange={event => setNewEmail(event.target.value)}
               />
-              <FormLabel htmlFor="name">Password</FormLabel>
-              <Input autoFocus name="name" placeholder="Your password"
-                     value={newPassword}
+            <FormLabel mt={2} mb={0} htmlFor="name">Password</FormLabel>
+            <InputGroup size='md'>
+              <Input autoFocus name="name"
                      onChange={event => setNewPassword(event.target.value)}
+                    type={showNewPassword ? newPassword : 'password'}
+                    placeholder="Your password"
               />
-              <FormLabel htmlFor="name">Confirm your password</FormLabel>
-              <Input autoFocus name="name" placeholder="Confirm your password"
-                     value={confirmPassword}
-                     onChange={event => setConfirmPassword(event.target.value)}
+              <InputRightElement width='4.5rem'>
+                <Button h='1.75rem' size='sm' onClick={changeNewPassword}>
+                  {showNewPassword ? 'Hide' : 'Show'}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            <FormLabel mt={2} mb={0} htmlFor="name">Confirm your password</FormLabel>
+            <InputGroup size='md'>
+              <Input autoFocus name="name"
+                //  value={confirmPassword}
+                onChange={event => setConfirmPassword(event.target.value)}
+                type={showConfirmPassword ? confirmPassword : 'password'}
+                placeholder="Confirm your password"
               />
-              <Button colorScheme='blue' data-testid="signUpButton" onClick={handleSignUp}>Sign up!</Button>
+              <InputRightElement width='4.5rem'>
+                <Button h='1.75rem' size='sm' onClick={changeConfirmPassword}>
+                  {showConfirmPassword ? 'Hide' : 'Show'}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            <Button mt={2} colorScheme='blue' data-testid="signUpButton" onClick={handleSignUp}>Sign up!</Button>
             </FormControl>
           </Box>
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Return User?</Heading>
             <FormControl>
-              <FormLabel htmlFor="name">Email</FormLabel>
+              <FormLabel mt={2} mb={0} htmlFor="name">Email</FormLabel>
               <Input autoFocus name="name" placeholder="Your Email"
                      value={loginEmail}
                      onChange={event => setLoginEmail(event.target.value)}
               />
-              <FormLabel htmlFor="name">Password</FormLabel>
+              <FormLabel mt={2} mb={0} htmlFor="name">Password</FormLabel>
               <Input autoFocus name="name" placeholder="Your login password"
                      value={loginPassword}
                      onChange={event => setLoginPassword(event.target.value)}
               />
-              <Button colorScheme='blue' data-testid="SinginButton" onClick={handleSignIn}>Sign in!</Button>
+              <Button mt={2} colorScheme='blue' data-testid="SinginButton" onClick={handleSignIn}>Sign in!</Button>
             </FormControl>
           </Box>
           <Box p="4" borderWidth="1px" borderRadius="lg">
