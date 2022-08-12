@@ -1,7 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { ChakraProvider } from '@chakra-ui/react'
-import { render, RenderResult, waitFor, within } from '@testing-library/react'
+import { render, RenderResult, waitFor} from '@testing-library/react'
 import { nanoid } from 'nanoid';
 import userEvent, { TargetElement } from '@testing-library/user-event';
 import TownsServiceClient from '../../classes/TownsServiceClient';
