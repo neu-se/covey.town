@@ -1,8 +1,10 @@
 import express, { Express } from 'express';
-import io from 'socket.io';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
+import io from 'socket.io';
 import {
+  authLoginHandler,
+  authSignupHandler,
   conversationAreaCreateHandler,
   townCreateHandler,
   townDeleteHandler,
@@ -10,8 +12,6 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
-  authSignupHandler,
-  authLoginHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 

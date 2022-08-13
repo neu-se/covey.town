@@ -1,15 +1,16 @@
 import assert from 'assert';
+import bcrypt from 'bcryptjs';
 import { Socket } from 'socket.io';
-import Player from '../types/Player';
-import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
-import CoveyTownListener from '../types/CoveyTownListener';
-import CoveyTownsStore from '../lib/CoveyTownsStore';
+import { createUser, findUser } from '../client/prismaFunctions';
 import {
   ConversationAreaCreateRequest,
   ServerConversationArea,
 } from '../client/TownsServiceClient';
-import { hashPassword, verifyAccessToken, signAccessToken } from '../Utils';
-import { createUser, findUser } from '../client/prismaFunctions';
+import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
+import CoveyTownsStore from '../lib/CoveyTownsStore';
+import CoveyTownListener from '../types/CoveyTownListener';
+import Player from '../types/Player';
+import { hashPassword, signAccessToken, verifyAccessToken } from '../Utils';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -138,6 +139,7 @@ export interface ResponseEnvelope<T> {
 export async function townJoinHandler(
   requestData: TownJoinRequest,
 ): Promise<ResponseEnvelope<TownJoinResponse>> {
+  console.log(verifyAccessToken(requestData.accessToken));
   verifyAccessToken(requestData.accessToken);
   const townsStore = CoveyTownsStore.getInstance();
 
@@ -370,7 +372,7 @@ export async function authLoginHandler(
     email: requestData.email,
     password: hashedPassword,
   });
-  if (!user || hashedPassword !== user.hash_password) {
+  if (!user || !bcrypt.compareSync(requestData.password, user.hash_password)) {
     return {
       isOK: false,
       response: {
@@ -380,10 +382,10 @@ export async function authLoginHandler(
       },
     };
   }
-  const token = await signAccessToken(user.user_name);
+  const token = await signAccessToken(requestData.email);
   if (!token) {
     return {
-      isOK:false,
+      isOK: false,
       response: {
         username: '',
         message: 'Server error',
