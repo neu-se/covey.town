@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import prisma from './prismaClient';
 
 export interface CreateUser {

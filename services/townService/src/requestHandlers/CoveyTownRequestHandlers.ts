@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
+import bcrypt from 'bcryptjs';
 import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -370,7 +371,7 @@ export async function authLoginHandler(
     email: requestData.email,
     password: hashedPassword,
   });
-  if (!user || hashedPassword !== user.hash_password) {
+  if (!user || !bcrypt.compareSync(requestData.password, user.hash_password)) {
     return {
       isOK: false,
       response: {

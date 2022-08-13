@@ -3,7 +3,6 @@ import Express from 'express';
 import http from 'http';
 import { AddressInfo } from 'net';
 import addTownRoutes from '../router/towns';
-import * as utils from '../Utils';
 import TownsServiceClient from './TownsServiceClient';
 import * as prismaFunctions from './prismaFunctions';
 import * as requestHandlers from '../requestHandlers/CoveyTownRequestHandlers';
