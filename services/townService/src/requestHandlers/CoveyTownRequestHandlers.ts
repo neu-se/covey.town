@@ -340,6 +340,7 @@ export async function authSignupHandler(
 ): Promise<ResponseEnvelope<CreateUserResponse>> {
   const hashedPassword = await hashPassword(requestData.password);
   assert(requestData.userName, 'userName is required');
+  assert(requestData.email, 'email is required');
   assert(requestData.password, 'password is required');
   await createUser({
     email: requestData.email,
@@ -362,6 +363,8 @@ export async function authSignupHandler(
 export async function authLoginHandler(
   requestData: LoginRequest,
 ): Promise<ResponseEnvelope<LoginResponse>> {
+  assert(requestData.email, 'userName is required');
+  assert(requestData.password, 'password is required');
   const hashedPassword = await hashPassword(requestData.password);
   const user = await findUser({
     email: requestData.email,
