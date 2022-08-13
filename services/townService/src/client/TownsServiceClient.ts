@@ -23,6 +23,39 @@ export type ServerConversationArea = {
 };
 
 /**
+ * The format of a request to sign up the user.
+ */
+export interface SignUpRequest {
+  // user unique user name.
+  userName: string;
+  // user unique email.
+  email: string;
+  // user password
+  password: string;
+}
+
+/**
+ * The format of a request to sign up the user.
+ */
+export interface SignInRequest {
+  // user unique email.
+  email: string;
+  // user password
+  password: string;
+}
+
+/**
+ * The format of a response to signin
+ * middleware
+ */
+export interface SignInResponse {
+  // user name
+  userName: string;
+  // JWT token
+  JWTToken: string;
+}
+
+/**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
 export interface TownJoinRequest {
@@ -30,6 +63,8 @@ export interface TownJoinRequest {
   userName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
+  /** AccessToken enable user to join the covey towns. */
+  accessToken?: string;
 }
 
 /**
@@ -178,4 +213,13 @@ export default class TownsServiceClient {
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 
+  async signIn(requestData: SignInRequest): Promise<SignInResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<SignInResponse>>('/auth/login', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async signUp(requestData: SignUpRequest): Promise<void> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<void>>('/auth/signup', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
 }
