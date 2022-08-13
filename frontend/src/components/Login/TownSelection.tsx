@@ -167,6 +167,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       });
       return;
     }
+    if (!newEmail.includes('@')) {
+      toast({
+        title: 'Unable to sign up user',
+        description: 'An email should contain the @ symbol',
+        status: 'error',
+      });
+      return;
+    }
     if (!newPassword || newPassword.length === 0) {
       toast({
         title: 'Unable to sign up user',
@@ -184,7 +192,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       return;
     }
     try {
-      await apiClient.signUp({
+      const newUser = await apiClient.signUp({
         userName: newUserName,
         email: newEmail,
         password: newPassword
@@ -210,6 +218,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       toast({
         title: 'Unable to sign in user',
         description: 'Please enter a email before signin',
+        status: 'error',
+      });
+      return;
+    }
+    if (!loginEmail.includes('@')) {
+      toast({
+        title: 'Unable to sign in user',
+        description: 'An email should contain the @ symbol',
         status: 'error',
       });
       return;
