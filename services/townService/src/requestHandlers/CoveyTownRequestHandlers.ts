@@ -139,7 +139,6 @@ export interface ResponseEnvelope<T> {
 export async function townJoinHandler(
   requestData: TownJoinRequest,
 ): Promise<ResponseEnvelope<TownJoinResponse>> {
-  console.log(verifyAccessToken(requestData.accessToken));
   verifyAccessToken(requestData.accessToken);
   const townsStore = CoveyTownsStore.getInstance();
 
@@ -367,10 +366,8 @@ export async function authLoginHandler(
 ): Promise<ResponseEnvelope<LoginResponse>> {
   assert(requestData.email, 'userName is required');
   assert(requestData.password, 'password is required');
-  const hashedPassword = await hashPassword(requestData.password);
   const user = await findUser({
     email: requestData.email,
-    password: hashedPassword,
   });
   if (!user || !bcrypt.compareSync(requestData.password, user.hash_password)) {
     return {
