@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { CoveyTownInfo, TownJoinResponse } from '../../classes/TownsServiceClient';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import { setJwtToken } from '../../utils';
+import { getJwtToken, setJwtToken } from '../../utils';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 
 interface TownSelectionProps {
@@ -84,8 +84,15 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           return;
         }
         const initData = await Video.setup(userName, coveyRoomID);
-
         const loggedIn = await doLogin(initData);
+        if (getJwtToken() === undefined) {
+          toast({
+            title: 'Unable to join town',
+            description: 'Please login to join a town',
+            status: 'error',
+          });
+          return;
+        }
         if (loggedIn) {
           assert(initData.providerVideoToken);
           await videoConnect(initData.providerVideoToken);
