@@ -83,9 +83,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           });
           return;
         }
-        const initData = await Video.setup(userName, coveyRoomID);
-        const loggedIn = await doLogin(initData);
-        if (getJwtToken() === undefined) {
+        if (getJwtToken() === null) {
           toast({
             title: 'Unable to join town',
             description: 'Please login to join a town',
@@ -93,6 +91,8 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           });
           return;
         }
+        const initData = await Video.setup(userName, coveyRoomID);
+        const loggedIn = await doLogin(initData);
         if (loggedIn) {
           assert(initData.providerVideoToken);
           await videoConnect(initData.providerVideoToken);
@@ -125,6 +125,14 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       });
       return;
     }
+    if (getJwtToken() === null) {
+      toast({
+        title: 'Unable to join town',
+        description: 'Please login to join a town',
+        status: 'error',
+      });
+      return;
+    }
     try {
       const newTownInfo = await apiClient.createTown({
         friendlyName: newTownName,
@@ -139,22 +147,23 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           </p>
         );
       }
-      toast({
-        title: `Town ${newTownName} is ready to go!`,
-        description: (
-          <>
-            {privateMessage}Please record these values in case you need to change the town:
-            <br />
-            Town ID: {newTownInfo.coveyTownID}
-            <br />
-            Town Editing Password: {newTownInfo.coveyTownPassword}
-          </>
-        ),
-        status: 'success',
-        isClosable: true,
-        duration: null,
+      await handleJoin(newTownInfo.coveyTownID).then(() => {
+        toast({
+          title: `Town ${newTownName} is ready to go!`,
+          description: (
+            <>
+              {privateMessage}Please record these values in case you need to change the town:
+              <br />
+              Town ID: {newTownInfo.coveyTownID}
+              <br />
+              Town Editing Password: {newTownInfo.coveyTownPassword}
+            </>
+          ),
+          status: 'success',
+          isClosable: true,
+          duration: null,
+        });
       });
-      await handleJoin(newTownInfo.coveyTownID);
     } catch (err) {
       toast({
         title: 'Unable to connect to Towns Service',
