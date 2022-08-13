@@ -3,11 +3,12 @@ import Express from 'express';
 import http from 'http';
 import { AddressInfo } from 'net';
 import { nanoid } from 'nanoid';
-import bcrypt from 'bcryptjs';
 import addTownRoutes from '../router/towns';
-import TownsServiceClient from './TownsServiceClient';
+import TownsServiceClient, { SignInResponse } from './TownsServiceClient';
 import * as prismaFunctions from './prismaFunctions';
 import * as requestHandlers from '../requestHandlers/CoveyTownRequestHandlers';
+import * as utils from '../Utils';
+import { StatusCodes } from 'http-status-codes';
 
 describe('TownsServiceAPIREST', () => {
   let server: http.Server;
@@ -34,10 +35,10 @@ describe('TownsServiceAPIREST', () => {
       previous_town: 0,
     };
     jest.spyOn(prismaFunctions, 'createUser').mockResolvedValue(user);
-    
   });
 
   afterAll(async () => {
+    jest.spyOn(prismaFunctions, 'createUser').mockClear()
     await server.close();
   });
 
@@ -112,9 +113,115 @@ describe('TownsServiceAPIREST', () => {
         password: '123456abc',
       });
     });
-  });
-  describe('Sigin function tests', () => {
-    it('should fail when two hashed password is not the same', () => {
+    it('should throw an error when hash function not working', async () => {
+      const mockHashFunction = jest.spyOn(utils, 'hashPassword').mockRejectedValue(new Error());
+      try {
+        await apiClient.signUp({
+          userName: 'frank',
+          email: 'frank@example.com',
+          password: '123456abc',
+        });
+        fail('should throw an errow');
+      } catch (err) {
+      }
+      mockHashFunction.mockReset();
     });
+  });
+
+  describe('Sigin function tests', () => {
+    let email: string;
+    let password: string;
+    let userName: string;
+    let token: string;
+    beforeAll(() => {
+      email = 'fran@example.com';
+      password = nanoid();
+      userName = nanoid();
+      token = nanoid();
+    })
+    it('http router should receive correct message', async () => {
+      const mockLoginHandler = jest.spyOn(requestHandlers, 'authLoginHandler').mockResolvedValue({
+        isOK: true,
+        response: {
+          username: userName,
+          message: 'Welcome back!',
+          accessToken: token,
+        },
+        message: 'logged in',
+      })
+      try {
+        const result: SignInResponse = await apiClient.signIn({
+          email: email,
+          password: password,
+        });
+        expect(mockLoginHandler).toBeCalledWith({
+          email: email,
+          password: password,
+        })
+      } catch (err) {
+        fail('Expected login successfully');
+      }
+      mockLoginHandler.mockReset();
+    });
+    it('should throw an error when authLoginhandler not working', async () => {
+      const mockLoginHandler = jest.spyOn(requestHandlers, 'authLoginHandler')
+        .mockImplementation(() => {
+          throw Error()
+        });
+      await apiClient.signIn({
+        email: email,
+        password: password,
+      })
+        .then(() => fail('shoud not resolve'))
+        .catch((err) => {
+          expect(err.response.status).toStrictEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+          expect(err.response.data.message)
+            .toStrictEqual('Internal server error, please see log in server for more details');
+        })
+      mockLoginHandler.mockReset();
+    });
+    it('should throw an error when with empty email', async () => {
+      try {
+        await apiClient.signIn({
+          email: '',
+          password: password,
+        });
+        fail('Should throw an error');
+      } catch (err) {
+        if (err instanceof Error) {
+          expect(err.message).toBe('Request failed with status code 500');
+        }
+      }
+    })
+    it('should throw an error when with empty password', async () => {
+      try {
+        await apiClient.signIn({
+          email: email,
+          password: '',
+        });
+        fail('Should throw an error');
+      } catch (err) {
+        if (err instanceof Error) {
+          expect(err.message).toBe('Request failed with status code 500');
+        }
+      }
+    })
+    it('should throw an error if user not in database', async () => {
+      const mockLoginHandler = jest.spyOn(prismaFunctions, 'findUser')
+        .mockImplementation(() => {
+          throw Error()
+        });
+      try {
+        await apiClient.signIn({
+          email: email,
+          password: '',
+        });
+        fail('Should throw an error');
+      } catch (err) {
+        if (err instanceof Error) {
+          expect(err.message).toBe('Request failed with status code 500');
+        }
+      }
+    })
   });
 });

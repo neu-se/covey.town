@@ -47,7 +47,7 @@ export async function deleteUser(user: DeleteUser): Promise<DeleteUser> {
 
 interface FindUser {
   email: string;
-  password: string;
+  password?: string;
 }
 
 interface FindUserResult {
