@@ -33,8 +33,8 @@ export async function hashPassword(password: string): Promise<string> {
  * @param userName use for generate JWT token
  * @returns generated JWT token
  */
-export async function signAccessToken(userName: string): Promise<string> {
-  return jwt.sign(userName, process.env.JWT_SECRET);
+export async function signAccessToken(email: string): Promise<string> {
+  return jwt.sign({ userName: email }, process.env.JWT_SECRET);
 }
 
 /**
