@@ -208,7 +208,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       return;
     }
     try {
-      const newUser = await apiClient.signUp({
+      await apiClient.signUp({
         userName: newUserName,
         email: newEmail,
         password: newPassword,
