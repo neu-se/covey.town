@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
+import bcrypt from 'bcryptjs';
 import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -370,7 +371,6 @@ export async function authLoginHandler(
     email: requestData.email,
     password: hashedPassword,
   });
-  const bcrypt = require('bcryptjs');
   if (!user || !bcrypt.compareSync(requestData.password, user.hash_password)) {
     return {
       isOK: false,
@@ -381,11 +381,8 @@ export async function authLoginHandler(
       },
     };
   }
-  console.log('hello1')
   const token = await signAccessToken(user.user_name);
-  console.log('hello2')
   if (!token) {
-    console.log('no work')
     return {
       isOK:false,
       response: {
@@ -395,7 +392,6 @@ export async function authLoginHandler(
       },
     };
   }
-  console.log('works')
   return {
     isOK: true,
     response: {
