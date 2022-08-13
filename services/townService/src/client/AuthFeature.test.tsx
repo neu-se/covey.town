@@ -2,8 +2,9 @@ import CORS from 'cors';
 import Express from 'express';
 import http from 'http';
 import { AddressInfo } from 'net';
+import { nanoid } from 'nanoid';
+import bcrypt from 'bcryptjs';
 import addTownRoutes from '../router/towns';
-import * as utils from '../Utils';
 import TownsServiceClient from './TownsServiceClient';
 import * as prismaFunctions from './prismaFunctions';
 import * as requestHandlers from '../requestHandlers/CoveyTownRequestHandlers';
@@ -110,6 +111,10 @@ describe('TownsServiceAPIREST', () => {
         email: 'frank@example.com',
         password: '123456abc',
       });
+    });
+  });
+  describe('Sigin function tests', () => {
+    it('should fail when two hashed password is not the same', () => {
     });
   });
 });
