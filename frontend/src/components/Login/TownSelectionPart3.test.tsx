@@ -10,6 +10,7 @@ import TownSelection from './TownSelection';
 import Video from '../../classes/Video/Video';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 import { ChatProvider } from '../VideoCall/VideoFrontend/components/ChatProvider'
+import * as utils from '../../utils'
 
 const mockConnect = jest.fn(() => Promise.resolve());
 
@@ -183,6 +184,9 @@ describe('Town Selection - depends on Part 1 passing', () => {
         });
       });
       describe('with valid values', () => {
+        beforeAll(() => {
+          jest.spyOn(utils, 'getJwtToken').mockReturnValue(nanoid());
+        })
 
         it('calls createTown on the apiClient with the provided values (public town)', async () => {
           const townID = nanoid();
