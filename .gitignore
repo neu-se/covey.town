@@ -117,3 +117,6 @@ ngrok.yml
 
 # Local Netlify folder
 .netlify
+
+# Mac OS Junk file
+.DS_Stroe
