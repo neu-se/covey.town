@@ -147,22 +147,21 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           </p>
         );
       }
-      await handleJoin(newTownInfo.coveyTownID).then(() => {
-        toast({
-          title: `Town ${newTownName} is ready to go!`,
-          description: (
-            <>
-              {privateMessage}Please record these values in case you need to change the town:
-              <br />
-              Town ID: {newTownInfo.coveyTownID}
-              <br />
-              Town Editing Password: {newTownInfo.coveyTownPassword}
-            </>
-          ),
-          status: 'success',
-          isClosable: true,
-          duration: null,
-        });
+      await handleJoin(newTownInfo.coveyTownID);
+      toast({
+        title: `Town ${newTownName} is ready to go!`,
+        description: (
+          <>
+            {privateMessage}Please record these values in case you need to change the town:
+            <br />
+            Town ID: {newTownInfo.coveyTownID}
+            <br />
+            Town Editing Password: {newTownInfo.coveyTownPassword}
+          </>
+        ),
+        status: 'success',
+        isClosable: true,
+        duration: null,
       });
     } catch (err) {
       toast({
