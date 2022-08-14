@@ -1,6 +1,5 @@
-/* eslint @typescript-eslint/no-var-requires: "off" */
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 /**
  * This function exists solely to help satisfy the linter + typechecker when it looks over the
@@ -34,7 +33,7 @@ export async function hashPassword(password: string): Promise<string> {
  * @returns generated JWT token
  */
 export async function signAccessToken(email: string): Promise<string> {
-  return jwt.sign({ userName: email }, process.env.JWT_SECRET);
+  return jwt.sign({ userName: email }, process.env.JWT_SECRET as string);
 }
 
 /**
@@ -42,6 +41,13 @@ export async function signAccessToken(email: string): Promise<string> {
  * @param token user's JWT token
  * @returns userName if it is valid. And return undefined if it is not valid.
  */
-export async function verifyAccessToken(token: string): Promise<string> {
-  return jwt.verify(token, process.env.JWT_SECRET);
+export async function verifyAccessToken(
+  token: string,
+): Promise<string | jwt.JwtPayload | undefined> {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    return decoded;
+  } catch (err) {
+    return undefined;
+  }
 }

@@ -53,6 +53,8 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  /** Valid JWT token to make sure user is loged in */
+  accessToken: string;
 }
 
 /**
@@ -139,7 +141,13 @@ export interface ResponseEnvelope<T> {
 export async function townJoinHandler(
   requestData: TownJoinRequest,
 ): Promise<ResponseEnvelope<TownJoinResponse>> {
-  verifyAccessToken(requestData.accessToken);
+  const token = await verifyAccessToken(requestData.accessToken);
+  if (!token) {
+    return {
+      isOK: false,
+      message: 'Invalid access token',
+    };
+  }
   const townsStore = CoveyTownsStore.getInstance();
 
   const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
@@ -177,6 +185,8 @@ export function townListHandler(): ResponseEnvelope<TownListResponse> {
 export function townCreateHandler(
   requestData: TownCreateRequest,
 ): ResponseEnvelope<TownCreateResponse> {
+  const result = verifyAccessToken(requestData.accessToken);
+  assert(result);
   const townsStore = CoveyTownsStore.getInstance();
   if (requestData.friendlyName.length === 0) {
     return {
