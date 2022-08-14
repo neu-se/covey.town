@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 import { render, RenderResult, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mock } from 'jest-mock-extended';
+import { mockDeep } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import Player, { UserLocation } from '../../classes/Player';
@@ -82,7 +82,7 @@ describe('PlayersInTownList', () => {
     usePlayersInTownSpy.mockReturnValue(players);
     townID = nanoid();
     townFriendlyName = nanoid();
-    const mockAppState = mock<CoveyAppState>();
+    const mockAppState = mockDeep<CoveyAppState>();
     mockAppState.currentTownFriendlyName = townFriendlyName;
     mockAppState.currentTownID = townID;
     useCoveyAppStateSpy.mockReturnValue(mockAppState);

@@ -16,6 +16,9 @@ function mockCoveyListener(): CoveyTownListener {
     onPlayerMoved(movedPlayer: Player): void {
       mockCoveyListenerOtherFns(movedPlayer);
     },
+    onPlayerStatusChanged(statusChangedPlayer: Player): void {
+      mockCoveyListenerOtherFns(statusChangedPlayer);
+    },
     onTownDestroyed() {
       mockCoveyListenerTownDestroyed();
     },
