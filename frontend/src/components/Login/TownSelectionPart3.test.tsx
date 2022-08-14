@@ -185,6 +185,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
       });
       describe('with valid values', () => {
         beforeAll(() => {
+          // To mock getJwtToken to make it compatiable with orginal test suits
           jest.spyOn(utils, 'getJwtToken').mockReturnValue(nanoid());
         })
 

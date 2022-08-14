@@ -127,6 +127,7 @@ describe('Town Selection - depends on Part 1 passing', () => {
     mockVideoSetup.mockReset();
     mockCreateTown.mockReset();
 
+    // To mock getJwtToken to make it compatiable with orginal test suits
     jest.spyOn(utils, 'getJwtToken').mockReturnValue(nanoid());
     const suffix = nanoid();
     expectedTowns = await listTowns(suffix);
@@ -174,7 +175,6 @@ describe('Town Selection - depends on Part 1 passing', () => {
       });
       it('displays an error toast "Unable to join town" if the username is empty', async () => {
         const coveyTownID = nanoid();
-        const userName = '';
         await joinTownWithOptions({
           coveyTownID,
           userName: '',
