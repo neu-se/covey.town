@@ -134,7 +134,7 @@ describe('Sign up functionality', () => {
     newConfirmPasswordField = renderData.getByPlaceholderText(
       'Confirm your password',
     ) as HTMLInputElement;
-    signUpButton = renderData.getByRole('button', { name: 'Sign up!' });
+    signUpButton = renderData.getByTestId('signUpButton');
   });
   it('should send out sign up request', async () => {
     // Start to Act
