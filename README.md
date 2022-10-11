@@ -1,3 +1,6 @@
+# Knucklebones
+A game of risk and chance involving two 3x3 boards and a die.
+
 # Covey.Town
 
 Covey.Town provides a virtual meeting space where different groups of people can have simultaneous video calls, allowing participants to drift between different conversations, just like in real life.
