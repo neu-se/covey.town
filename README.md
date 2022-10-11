@@ -1,5 +1,5 @@
 # Knucklebones
-A game of risk and chance involving two 3x3 boards and a die.
+A game of risk and chance involving two 3x3 boards and a die. Built on an existing codebase provided by CS4530.
 
 # Covey.Town
 
