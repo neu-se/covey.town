@@ -1,0 +1,9 @@
+.env
+createHandout.sh
+.env.prod
+
+generated
+
+# stryker temp files
+.stryker-tmp
+reports

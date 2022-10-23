@@ -6,13 +6,13 @@
       "dom.iterable",
       "esnext"
     ],
+	  "types": ["jest"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -21,9 +21,13 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "rootDirs": ["./src/", "./generated/"],
+    "alwaysStrict": true /* Parse in strict mode and emit "use strict" for each source file. */,
   },
   "include": [
-    "src"
-  ]
+    "src",
+    "generated"
+  ],
+  "references": [{"path": "../shared/"}]
 }

@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useRef, useState } from 'react';
-import TextConversation, { ChatMessage } from '../../../../../classes/TextConversation';
-import useCoveyAppState from '../../../../../hooks/useCoveyAppState';
+import TextConversation from '../../../../../classes/TextConversation';
+import useTownController from '../../../../../hooks/useTownController';
+import { ChatMessage } from '../../../../../types/CoveyTownSocket';
 
 type ChatContextType = {
   isChatWindowOpen: boolean;
@@ -13,7 +14,7 @@ type ChatContextType = {
 export const ChatContext = createContext<ChatContextType>(null!);
 
 export const ChatProvider: React.FC = ({ children }) => {
-  const { socket, userName } = useCoveyAppState();
+  const coveyTownController = useTownController();
   const isChatWindowOpenRef = useRef(false);
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(false);
   const [conversation, setConversation] = useState<TextConversation | null>(null);
@@ -46,14 +47,12 @@ export const ChatProvider: React.FC = ({ children }) => {
   }, [isChatWindowOpen]);
 
   useEffect(() => {
-    if (socket) {
-      const conv = new TextConversation(socket, userName);
-      setConversation(conv);
-      return () => {
-        conv.close();
-      };
-    }
-  }, [socket, userName, setConversation]);
+    const conv = new TextConversation(coveyTownController);
+    setConversation(conv);
+    return () => {
+      conv.close();
+    };
+  }, [coveyTownController, setConversation]);
 
   return (
     <ChatContext.Provider

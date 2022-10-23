@@ -3,9 +3,9 @@ import React from 'react';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-import TextConversation, { ChatMessage } from '../../../../../../../classes/TextConversation';
 import throttle from 'lodash.throttle';
 import { withStyles, WithStyles, createStyles } from '@material-ui/core/styles';
+import { ChatMessage } from '../../../../../../../types/CoveyTownSocket';
 
 const styles = createStyles({
   outerContainer: {
@@ -67,6 +67,7 @@ export class MessageListScrollContainer extends React.Component<
   MessageListScrollContainerState
 > {
   chatThreadRef = React.createRef<HTMLDivElement>();
+
   state = { isScrolledToBottom: true, showButton: false, messageNotificationCount: 0 };
 
   scrollToBottom() {

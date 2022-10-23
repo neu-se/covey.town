@@ -1,0 +1,33 @@
+## Looking into WorldMap
+
+### How to create a react pop-up from within the Phaser code?
+Overall approach to trigger React from Phaser:
+1. Create some state that we will change from Phaser: `  const [newConversation, setNewConversation] = useState<ConversationArea>();`
+2. Use that state variable to determine to show a react component or not
+3. Pass the state setter into Phaser
+4. Trigger that state setter from within the game when something happens (e.g. space bar down)
+
+### How to find out where players are in the world, from within React?
+`usePlayerMovement()`
+
+Example:
+```
+  useEffect(() => {
+    const movementDispatcher = (player: ServerPlayer) => {
+      gameScene?.updatePlayerLocation(Player.fromServerPlayer(player));
+    };
+    playerMovementCallbacks.push(movementDispatcher);
+    return () => {
+      playerMovementCallbacks.splice(playerMovementCallbacks.indexOf(movementDispatcher), 1);
+    };
+  }, [gameScene, playerMovementCallbacks]);
+```
+
+### How to draw labels ontop of players in Phaser?
+Two places:
+1. When the world gets initialized (`create`)
+2. Any other time. 
+
+Current player's label: stored in `this.player`, updated in `updated`
+
+For other players: in `updatePlayerLocation`

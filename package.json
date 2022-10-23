@@ -4,9 +4,11 @@
     "description": "Development setup",
     "main": "index.js",
     "scripts": {
-        "heroku-postbuild": "cd services/townService && npm ci && npm run build",
-        "run-services-actions": "heroku local -p 3001 web",
-        "lint": "cd services/townService && npm run-script lint && cd ../../frontend && npm run-script lint"
+        "install": "cd townService && npm install && npm run prestart && cd ../frontend && npm install && npm run prestart && cd ../shared && npm install",
+        "heroku-postbuild": "cd townService && npm install && npm run build",
+        "run-townservice": "heroku local -p 3001 web",
+        "lint": "cd townService && npm run-script lint && cd ../frontend && npm run-script lint && cd ../shared && npm run-script lint",
+		"zip": "npm-pack-zip"
     },
     "repository": {
         "type": "git",
@@ -28,6 +30,7 @@
         "eslint-plugin-react-hooks": "^4.2.0",
         "husky": "^4.3.0",
         "lint-staged": "^10.5.1",
+        "npm-pack-zip": "^1.3.0",
         "prettier": "^2.1.2",
         "prettier-plugin-organize-imports": "^1.1.1",
         "typescript": "^4.1.2"
@@ -41,12 +44,22 @@
         "*.{js,css,md}": "prettier --write"
     },
     "engines": {
-        "node": "16.13.x",
-        "npm": "8.1.x"
+        "node": "18.x.x",
+        "npm": "8.x.x"
     },
     "dependencies": {
         "@types/ramda": "^0.27.34",
         "ramda": "^0.27.1",
         "typescript-is": "^0.17.0"
-    }
+    },
+    "files": [
+        "townService/src/town/Town.ts",
+        "townService/src/town/TownsController.ts",
+        "frontend/src/classes/TownController.ts",
+        "frontend/src/classes/ConversationAreaController.ts",
+        "frontend/src/classes/ConversationAreaController.test.ts",
+        "frontend/src/classes/ViewingAreaController.ts",
+        "frontend/src/classes/ViewingAreaController.test.ts",
+        "frontend/src/components/Town/interactables/ViewingAreaVideo.tsx"
+    ]
 }

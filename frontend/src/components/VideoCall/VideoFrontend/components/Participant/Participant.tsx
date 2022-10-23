@@ -3,6 +3,7 @@ import ParticipantInfo from '../ParticipantInfo/ParticipantInfo';
 import ParticipantTracks from '../ParticipantTracks/ParticipantTracks';
 import { Participant as IParticipant } from 'twilio-video';
 import { UserProfile } from '../../../../../CoveyTypes';
+import { Container } from '@chakra-ui/react';
 
 interface ParticipantProps {
   participant: IParticipant;
@@ -30,22 +31,23 @@ export default function Participant({
   insideGrid,
 }: ParticipantProps) {
   return (
-    <ParticipantInfo
-      participant={participant}
-      profile={profile}
-      onClick={onClick}
-      isSelected={isSelected}
-      isLocalParticipant={isLocalParticipant}
-      hideParticipant={hideParticipant}
-      slot={slot}
-      insideGrid={insideGrid}
-    >
-      <ParticipantTracks
+    <div className="participant-wrapper">
+      <ParticipantInfo
         participant={participant}
-        videoOnly={videoOnly}
-        enableScreenShare={enableScreenShare}
+        profile={profile}
+        onClick={onClick}
+        isSelected={isSelected}
         isLocalParticipant={isLocalParticipant}
-      />
-    </ParticipantInfo>
+        hideParticipant={hideParticipant}
+        slot={slot}
+        insideGrid={insideGrid}>
+        <ParticipantTracks
+          participant={participant}
+          videoOnly={videoOnly}
+          enableScreenShare={enableScreenShare}
+          isLocalParticipant={isLocalParticipant}
+        />
+      </ParticipantInfo>
+    </div>
   );
 }

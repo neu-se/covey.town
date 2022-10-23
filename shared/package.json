@@ -1,0 +1,37 @@
+{
+  "name": "covey-town-shared-libraries",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shared library for common files and types for the Covey.Town project",
+  "main": "types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neu-se/covey.town.git"
+  },
+  "author": "Jonathan Bell",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/neu-se/covey.town/issues"
+  },
+  "homepage": "https://github.com/neu-se/covey.town#readme",
+  "scripts": {
+    "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "types": "./types/index.d.ts",
+  "keywords": [],
+  "devDependencies": {
+    "@types/node": "*",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.30.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  }
+}
