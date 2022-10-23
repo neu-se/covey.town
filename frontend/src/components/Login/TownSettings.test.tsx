@@ -1,294 +1,260 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { ChakraProvider } from '@chakra-ui/react';
+import { UseDisclosureReturn, ChakraProvider } from '@chakra-ui/react';
 import React from 'react';
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react';
 import { nanoid } from 'nanoid';
-import { TargetElement } from '@testing-library/user-event';
 import TownSettings from './TownSettings';
-import TownsServiceClient from '../../classes/TownsServiceClient';
-import CoveyAppContext from '../../contexts/CoveyAppContext';
+import TownController from '../../classes/TownController';
+import { mock, mockClear, MockProxy } from 'jest-mock-extended';
+import { mockTownController } from '../../TestUtils';
+import TownControllerContext from '../../contexts/TownControllerContext';
 
-const mockUseCoveyAppState = jest.fn(() => (Promise.resolve()));
 const mockToast = jest.fn();
-const mockUseDisclosure = {isOpen: true, onOpen: jest.fn(), onClose: jest.fn()};
+const mockUseDisclosure = mock<UseDisclosureReturn>();
+mockUseDisclosure.isOpen = true;
 
-jest.mock('../../classes/TownsServiceClient');
-jest.mock('../../hooks/useCoveyAppState', () => ({
-  __esModule: true, // this property makes it work
-  default: () => (mockUseCoveyAppState)
-}));
-jest.mock("@chakra-ui/react", () => {
-  const ui = jest.requireActual("@chakra-ui/react");
+jest.mock('@chakra-ui/react', () => {
+  const ui = jest.requireActual('@chakra-ui/react');
   return {
     ...ui,
-    useToast: ()=>(mockToast),
-    useDisclosure: ()=>(mockUseDisclosure),
-  };
-})
-const mockUpdateTown = jest.fn();
-const mockDeleteTown = jest.fn();
-TownsServiceClient.prototype.updateTown = mockUpdateTown;
-TownsServiceClient.prototype.deleteTown = mockDeleteTown;
-// @ts-ignore
-mockUseCoveyAppState.apiClient = new TownsServiceClient();
-
-function wrappedTownSettings() {
-  return <ChakraProvider><CoveyAppContext.Provider value={{
-    myPlayerID: '',
-    currentTownID: '',
-    currentTownFriendlyName: '',
-    currentTownIsPubliclyListed: false,
-    sessionToken: '',
-    userName: '',
-    socket: null,
-    emitMovement: () => {
+    useToast: () => mockToast,
+    useDisclosure: () => {
+      return mockUseDisclosure;
     },
-    apiClient: new TownsServiceClient(),
-  }}>
-    <TownSettings/></CoveyAppContext.Provider></ChakraProvider>;
-}
+  };
+});
 
-describe('Part 4 - Town Settings', () => {
+describe('Town Settings Panel', () => {
   let renderData: RenderResult;
   let friendlyNameField: HTMLInputElement;
-  let passwordField: HTMLInputElement
+  let passwordField: HTMLInputElement;
   let isPublicCheck: HTMLInputElement;
-  let deleteButton: TargetElement;
-  let updateButton: TargetElement;
+  let deleteButton: HTMLElement;
+  let updateButton: HTMLElement;
+  let mockedTownController: MockProxy<TownController>;
 
-  const openSettingsPane = async (params: { friendlyName: string, isPubliclyListed: boolean, townID: string }) => {
-    // @ts-ignore
-    mockUseCoveyAppState.currentTownID = params.townID;
-    // @ts-ignore
-    mockUseCoveyAppState.currentTownFriendlyName = params.friendlyName;
-    // @ts-ignore
-    mockUseCoveyAppState.currentTownIsPubliclyListed = params.isPubliclyListed;
-    renderData = render(wrappedTownSettings());
-    // const openMenuButton = renderData.getByTestId('openMenuButton');
-    // fireEvent.click(openMenuButton);
-    await waitFor(() => (renderData.getByText('Friendly Name')));
+  const openSettingsPane = async (params: {
+    friendlyName: string;
+    isPubliclyListed: boolean;
+    townID: string;
+  }) => {
+    mockedTownController = mockTownController({
+      friendlyName: params.friendlyName,
+      townID: params.townID,
+      townIsPubliclyListed: params.isPubliclyListed,
+    });
+
+    renderData = render(
+      <ChakraProvider>
+        <TownControllerContext.Provider value={mockedTownController}>
+          <TownSettings />
+        </TownControllerContext.Provider>
+      </ChakraProvider>,
+    );
+
+    await waitFor(() => renderData.getByText('Friendly Name'));
     friendlyNameField = renderData.getByLabelText('Friendly Name') as HTMLInputElement;
     passwordField = renderData.getByTestId('updatePassword') as HTMLInputElement;
     isPublicCheck = renderData.getByLabelText('Publicly Listed') as HTMLInputElement;
     deleteButton = renderData.getByTestId('deletebutton');
     updateButton = renderData.getByTestId('updatebutton');
-  }
+  };
+
   beforeEach(async () => {
-    mockUpdateTown.mockReset();
-    mockDeleteTown.mockReset();
     mockUseDisclosure.onClose.mockReset();
+    mockClear(mockToast);
   });
-  it("Loads the default form values from the current app state", async () => {
+  it('Loads the default form values from the current app state', async () => {
     let params = {
       friendlyName: nanoid(),
       isPubliclyListed: true,
       townID: nanoid(),
-    }
+    };
     await openSettingsPane(params);
-    await waitFor(() => expect(renderData.getByText(`Edit town ${params.friendlyName} (${params.townID})`))
-      .toBeInTheDocument());
-    await waitFor(() => expect(friendlyNameField.value)
-      .toBe(params.friendlyName));
-    await waitFor(() => expect(isPublicCheck.checked)
-      .toBe(true));
+    await waitFor(() =>
+      expect(
+        renderData.getByText(`Edit town ${params.friendlyName} (${params.townID})`),
+      ).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(friendlyNameField.value).toBe(params.friendlyName));
+    await waitFor(() => expect(isPublicCheck.checked).toBe(true));
     renderData.unmount();
 
     params = {
       friendlyName: nanoid(),
       isPubliclyListed: false,
       townID: nanoid(),
-    }
+    };
     await openSettingsPane(params);
-    await waitFor(() => expect(renderData.getByText(`Edit town ${params.friendlyName} (${params.townID})`))
-      .toBeInTheDocument());
-    await waitFor(() => expect(friendlyNameField.value)
-      .toBe(params.friendlyName));
-    await waitFor(() => expect(isPublicCheck.checked)
-      .toBe(false));
+    await waitFor(() =>
+      expect(
+        renderData.getByText(`Edit town ${params.friendlyName} (${params.townID})`),
+      ).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(friendlyNameField.value).toBe(params.friendlyName));
+    await waitFor(() => expect(isPublicCheck.checked).toBe(false));
     renderData.unmount();
   }, 10000);
-  describe("Updating a town", () => {
-    it("Passes the form values to apiClient.updateTown", async () => {
+  describe('Updating a town', () => {
+    it('Passes the form values to apiClient.updateTown', async () => {
       const params = {
         friendlyName: nanoid(),
         isPubliclyListed: false,
         townID: nanoid(),
-      }
+      };
       await openSettingsPane(params);
 
       const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
-      await waitFor(() => expect(friendlyNameField.value)
-        .toBe(friendlyName));
+      await waitFor(() => expect(friendlyNameField.value).toBe(friendlyName));
       fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
-      await waitFor(() => expect(passwordField.value)
-        .toBe(coveyTownPassword));
+      await waitFor(() => expect(passwordField.value).toBe(coveyTownPassword));
       fireEvent.click(isPublicCheck);
-      await waitFor(() => expect(isPublicCheck.checked)
-        .toBe(true));
+      await waitFor(() => expect(isPublicCheck.checked).toBe(true));
       fireEvent.click(updateButton);
-      await waitFor(() => expect(mockUpdateTown)
-        .toBeCalledWith({
-          coveyTownID: params.townID,
-          coveyTownPassword,
+      await waitFor(() =>
+        expect(mockedTownController.updateTown).toBeCalledWith(coveyTownPassword, {
           friendlyName,
-          isPubliclyListed: true
-        }));
-      expect(mockDeleteTown).not.toBeCalled();
-
+          isPubliclyListed: true,
+        }),
+      );
+      expect(mockedTownController.deleteTown).not.toBeCalled();
     }, 10000);
     it("Displays a toast 'Town updated' and closes on successful update", async () => {
       const params = {
         friendlyName: nanoid(),
         isPubliclyListed: false,
         townID: nanoid(),
-      }
-
-      mockUpdateTown.mockReturnValue(Promise.resolve());
+      };
 
       await openSettingsPane(params);
 
       const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
-      await waitFor(() => expect(friendlyNameField.value)
-        .toBe(friendlyName));
+      await waitFor(() => expect(friendlyNameField.value).toBe(friendlyName));
       fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
-      await waitFor(() => expect(passwordField.value)
-        .toBe(coveyTownPassword));
+      await waitFor(() => expect(passwordField.value).toBe(coveyTownPassword));
       fireEvent.click(updateButton);
 
-      await waitFor(() => expect(mockToast)
-        .toBeCalledWith({
+      await waitFor(() =>
+        expect(mockToast).toBeCalledWith({
           title: 'Town updated',
           description: 'To see the updated town, please exit and re-join this town',
-          status: 'success'
-        }));
-      expect(mockDeleteTown).not.toBeCalled();
+          status: 'success',
+        }),
+      );
+      expect(mockedTownController.deleteTown).not.toBeCalled();
 
-      await waitFor(()=>expect(mockUseDisclosure.onClose).toBeCalled());
+      await waitFor(() => expect(mockUseDisclosure.onClose).toBeCalled());
     }, 10000);
-    it("Displays a toast 'Unable to update town' if an error is thrown by apiClient.updateTown", async () => {
+    it("Displays a toast 'Unable to update town' if an error is thrown by updateTown", async () => {
       const params = {
         friendlyName: nanoid(),
         isPubliclyListed: false,
         townID: nanoid(),
-      }
-
-      const message = `Error${nanoid()}`;
-      mockUpdateTown.mockRejectedValue(new Error(message));
+      };
 
       await openSettingsPane(params);
+
+      const message = `Error${nanoid()}`;
+      mockedTownController.updateTown.mockRejectedValue(new Error(message));
 
       const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
-      await waitFor(() => expect(friendlyNameField.value)
-        .toBe(friendlyName));
+      await waitFor(() => expect(friendlyNameField.value).toBe(friendlyName));
       fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
-      await waitFor(() => expect(passwordField.value)
-        .toBe(coveyTownPassword));
+      await waitFor(() => expect(passwordField.value).toBe(coveyTownPassword));
       fireEvent.click(updateButton);
 
-      await waitFor(() => expect(mockToast)
-        .toBeCalledWith({
+      await waitFor(() =>
+        expect(mockToast).toBeCalledWith({
           title: 'Unable to update town',
           description: `Error: ${message}`,
-          status: 'error'
-        }));
+          status: 'error',
+        }),
+      );
 
-      expect(mockDeleteTown).not.toBeCalled();
-
+      expect(mockedTownController.deleteTown).not.toBeCalled();
     }, 10000);
   });
-  describe("Deleting a town", () => {
-    it("Passes the form values to apiClient.deleteTown", async () => {
+  describe('Deleting a town', () => {
+    it('Passes the form values to apiClient.deleteTown', async () => {
       const params = {
         friendlyName: nanoid(),
         isPubliclyListed: true,
         townID: nanoid(),
-      }
+      };
       await openSettingsPane(params);
 
       const coveyTownPassword = nanoid();
       const friendlyName = nanoid();
       fireEvent.change(friendlyNameField, { target: { value: friendlyName } });
-      await waitFor(() => expect(friendlyNameField.value)
-        .toBe(friendlyName));
+      await waitFor(() => expect(friendlyNameField.value).toBe(friendlyName));
       fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
-      await waitFor(() => expect(passwordField.value)
-        .toBe(coveyTownPassword));
+      await waitFor(() => expect(passwordField.value).toBe(coveyTownPassword));
       fireEvent.click(isPublicCheck);
-      await waitFor(() => expect(isPublicCheck.checked)
-        .toBe(false));
+      await waitFor(() => expect(isPublicCheck.checked).toBe(false));
       fireEvent.click(deleteButton);
-      await waitFor(() => expect(mockDeleteTown)
-        .toBeCalledWith({
-          coveyTownID: params.townID,
-          coveyTownPassword,
-        }));
-      expect(mockUpdateTown).not.toBeCalled();
-
+      await waitFor(() =>
+        expect(mockedTownController.deleteTown).toBeCalledWith(coveyTownPassword),
+      );
+      expect(mockedTownController.updateTown).not.toBeCalled();
     }, 10000);
     it("Displays a toast 'Town deleted' and closes on successful update", async () => {
       const params = {
         friendlyName: nanoid(),
         isPubliclyListed: true,
         townID: nanoid(),
-      }
-      mockDeleteTown.mockReturnValue(Promise.resolve());
+      };
 
       await openSettingsPane(params);
 
       const coveyTownPassword = nanoid();
       fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
-      await waitFor(() => expect(passwordField.value)
-        .toBe(coveyTownPassword));
+      await waitFor(() => expect(passwordField.value).toBe(coveyTownPassword));
       fireEvent.click(deleteButton);
-      await waitFor(() => expect(mockDeleteTown)
-        .toBeCalledWith({
-          coveyTownID: params.townID,
-          coveyTownPassword,
-        }));
+      await waitFor(() =>
+        expect(mockedTownController.deleteTown).toBeCalledWith(coveyTownPassword),
+      );
 
-      await waitFor(() => expect(mockToast)
-        .toBeCalledWith({
+      await waitFor(() =>
+        expect(mockToast).toBeCalledWith({
           title: 'Town deleted',
-          status: 'success'
-        }));
-      expect(mockUpdateTown).not.toBeCalled();
-      await waitFor(()=>expect(mockUseDisclosure.onClose).toBeCalled());
-
+          status: 'success',
+        }),
+      );
+      expect(mockedTownController.updateTown).not.toBeCalled();
+      await waitFor(() => expect(mockUseDisclosure.onClose).toBeCalled());
     }, 10000);
     it("Displays a toast 'Unable to delete town' if an error is thrown by apiClient.deleteTown", async () => {
       const params = {
         friendlyName: nanoid(),
         isPubliclyListed: false,
         townID: nanoid(),
-      }
-
-      const message = `Error${nanoid()}`;
-      mockDeleteTown.mockRejectedValue(new Error(message));
+      };
 
       await openSettingsPane(params);
 
+      const message = `Error${nanoid()}`;
+      mockedTownController.deleteTown.mockRejectedValue(new Error(message));
+
       const coveyTownPassword = nanoid();
       fireEvent.change(passwordField, { target: { value: coveyTownPassword } });
-      await waitFor(() => expect(passwordField.value)
-        .toBe(coveyTownPassword));
+      await waitFor(() => expect(passwordField.value).toBe(coveyTownPassword));
       fireEvent.click(deleteButton);
 
-      await waitFor(() => expect(mockToast)
-        .toBeCalledWith({
+      await waitFor(() =>
+        expect(mockToast).toBeCalledWith({
           title: 'Unable to delete town',
           description: `Error: ${message}`,
-          status: 'error'
-        }));
+          status: 'error',
+        }),
+      );
 
-      expect(mockUpdateTown).not.toBeCalled();
-
+      expect(mockedTownController.updateTown).not.toBeCalled();
     }, 10000);
   });
-})
+});

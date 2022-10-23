@@ -4,45 +4,58 @@ import { findAllByRole, render, RenderResult, waitFor } from '@testing-library/r
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import BoundingBox from '../../classes/BoundingBox';
-import ConversationArea, { ConversationAreaListener } from '../../classes/ConversationArea';
-import Player from '../../classes/Player';
-import * as useConversationAreas from '../../hooks/useConversationAreas';
-import * as usePlayersInTown from '../../hooks/usePlayersInTown';
+import ConversationAreaController from '../../classes/ConversationAreaController';
+import PlayerController from '../../classes/PlayerController';
 import ConversationAreasList from './ConversationAreasList';
-import * as PlayerName from './PlayerName';
+import TownController from '../../classes/TownController';
+import { LoginController } from '../../contexts/LoginControllerContext';
+import { mock, mockClear } from 'jest-mock-extended';
+import { BoundingBox, CoveyTownSocket } from '../../types/CoveyTownSocket';
+import { getEventListener, mockTownControllerConnection } from '../../TestUtils';
+import TownControllerContext from '../../contexts/TownControllerContext';
+
+/**
+ * Mocks the socket-io client constructor such that it will always return the same
+ * mockSocket instance. Returns that mockSocket instance to the caller of this function,
+ * allowing tests to make assertions about the messages emitted to the socket, and also to
+ * simulate the receipt of events, @see getEventListener
+ */
+const mockSocket = mock<CoveyTownSocket>();
+jest.mock('socket.io-client', () => {
+  const actual = jest.requireActual('socket.io-client');
+  return {
+    ...actual,
+    io: () => mockSocket,
+  };
+});
 
 function createConversationForTesting(params?: {
   label?: string;
   boundingBox?: BoundingBox;
-  occupantIDs?: string[];
+  occupants?: PlayerController[];
   emptyTopic?: boolean;
-}): ConversationArea {
-  const area = new ConversationArea(
+}): ConversationAreaController {
+  const area = new ConversationAreaController(
     params?.label || nanoid(),
-    params?.boundingBox || new BoundingBox(400, 400, 100, 100),
-    params?.emptyTopic ? '' : nanoid(),
+    params?.emptyTopic ? undefined : nanoid(),
   );
-  if (params?.occupantIDs) {
-    area.occupants = params?.occupantIDs;
+  if (params?.occupants) {
+    area.occupants = params?.occupants;
   }
   return area;
 }
 
-describe('ConversationAreasList', () => {
-  const renderConversationAreaList = () =>
-    render(
-      <ChakraProvider>
-        <React.StrictMode>
-          <ConversationAreasList />
-        </React.StrictMode>
-      </ChakraProvider>,
-    );
+process.env.REACT_APP_TOWNS_SERVICE_URL = 'testing';
 
+describe('ConversationAreasList', () => {
+  /**
+   * Check that the conversation areas rendered precisely follow the specification for formatting,
+   * and that each area has the correct topic and players.
+   */
   const expectProperlyRenderedConversationAreas = async (
     renderData: RenderResult,
-    areas: ConversationArea[],
-    players?: Player[][],
+    areas: ConversationAreaController[],
+    players?: PlayerController[][],
   ) => {
     if (areas.length === 0) {
       const expectedText = await renderData.findByText('No active conversation areas');
@@ -53,10 +66,10 @@ describe('ConversationAreasList', () => {
       const areaLabels = await renderData.findAllByRole('heading', { level: 3 });
       expect(areaLabels.length).toBe(areas.length);
       areas.sort((a1, a2) =>
-        a1.label.localeCompare(a2.label, undefined, { numeric: true, sensitivity: 'base' }),
+        a1.id.localeCompare(a2.id, undefined, { numeric: true, sensitivity: 'base' }),
       );
       for (let i = 0; i < areas.length; i += 1) {
-        expect(areaLabels[i]).toHaveTextContent(`${areas[i].label}: ${areas[i].topic}`);
+        expect(areaLabels[i]).toHaveTextContent(`${areas[i].id}: ${areas[i].topic}`);
         if (players) {
           const { parentElement } = areaLabels[i];
           expect(parentElement).toBeDefined();
@@ -78,15 +91,10 @@ describe('ConversationAreasList', () => {
     }
   };
 
-  let useConversationAreasSpy: jest.SpyInstance<ConversationArea[], []>;
   let consoleErrorSpy: jest.SpyInstance<void, [message?: any, ...optionalParms: any[]]>;
-  let usePlayersInTownSpy: jest.SpyInstance<Player[], []>;
+  let testController: TownController;
 
-  let addListenerSpys: jest.SpyInstance<void, [listener: ConversationAreaListener]>[] = [];
-  let removeListenerSpys: jest.SpyInstance<void, [listener: ConversationAreaListener]>[] = [];
   beforeAll(() => {
-    useConversationAreasSpy = jest.spyOn(useConversationAreas, 'default');
-
     // Spy on console.error and intercept react key warnings to fail test
     consoleErrorSpy = jest.spyOn(global.console, 'error');
     consoleErrorSpy.mockImplementation((message?, ...optionalParams) => {
@@ -99,35 +107,37 @@ describe('ConversationAreasList', () => {
       // eslint-disable-next-line no-console -- we are wrapping the console with a spy to find react warnings
       console.warn(message, ...optionalParams);
     });
-
-    usePlayersInTownSpy = jest.spyOn(usePlayersInTown, 'default');
   });
   afterAll(() => {
-    useConversationAreasSpy.mockRestore();
     consoleErrorSpy.mockRestore();
-    usePlayersInTownSpy.mockRestore();
   });
-  let playersByArea: Player[][] = [];
-  let areas: ConversationArea[] = [];
+  let playersByArea: PlayerController[][] = [];
+  let areas: ConversationAreaController[] = [];
+  let renderConversationAreaList: (
+    expectedAreas?: ConversationAreaController[],
+  ) => Promise<RenderResult>;
 
-  const NUM_AREAS = 20;
-  const NUM_PLAYERS_PER_AREA = 5;
+  const numAreas = 20;
+  const numPlayersPerArea = 5;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    mockClear(mockSocket); //Be sure to clear the past calls, otherwise we'll have test order dependencies
+
+    //Build up some default testing data
     playersByArea = [];
     areas = [];
-    let allPlayers: Player[] = [];
-    for (let areaID = 0; areaID < NUM_AREAS; areaID += 1) {
-      const playersInThisArea: Player[] = [];
-      for (let playerNum = 0; playerNum < NUM_PLAYERS_PER_AREA; playerNum += 1) {
+    let allPlayers: PlayerController[] = [];
+    for (let areaID = 0; areaID < numAreas; areaID += 1) {
+      const playersInThisArea: PlayerController[] = [];
+      for (let playerNum = 0; playerNum < numPlayersPerArea; playerNum += 1) {
         playersInThisArea.push(
-          new Player(
+          new PlayerController(
             `area${areaID}.${playerNum}playerID:${nanoid()}`,
             `area${areaID}.${playerNum}userName:${nanoid()}`,
             {
               x: 0,
               y: 0,
-              conversationLabel: nanoid(), // should not be checked by conversation area list
+              interactableID: nanoid(), // should not be checked by conversation area list
               rotation: 'front',
               moving: false,
             },
@@ -138,45 +148,45 @@ describe('ConversationAreasList', () => {
       playersByArea.push(playersInThisArea);
       const area = createConversationForTesting({
         label: `areaLabel${areaID}`,
-        occupantIDs: playersInThisArea.map(player => player.id),
+        occupants: playersInThisArea,
       });
       areas.push(area);
     }
-    usePlayersInTownSpy.mockReturnValue(allPlayers);
-    addListenerSpys = areas.map(area => jest.spyOn(area, 'addListener'));
-    removeListenerSpys = areas.map(area => jest.spyOn(area, 'removeListener'));
+    /**
+     * Renders a conversation area list component, providing the testController as the
+     * TownController, which will allow us to integration test behaviors that include
+     * the TownController and the React hooks + components.
+     */
+    renderConversationAreaList = async (areasToRender?: ConversationAreaController[]) => {
+      testController = new TownController({
+        userName: nanoid(),
+        townID: nanoid(),
+        loginController: mock<LoginController>(),
+      });
+      if (areasToRender === undefined) {
+        areasToRender = areas;
+      }
+      await mockTownControllerConnection(testController, mockSocket, {
+        interactables: areasToRender.map(eachArea => eachArea.toConversationAreaModel()),
+        currentPlayers: allPlayers.map(eachPlayer => eachPlayer.toPlayerModel()),
+        friendlyName: nanoid(),
+        isPubliclyListed: true,
+        providerVideoToken: nanoid(),
+        sessionToken: nanoid(),
+        userID: nanoid(),
+      });
+      return render(
+        <ChakraProvider>
+          <React.StrictMode>
+            <TownControllerContext.Provider value={testController}>
+              <ConversationAreasList />
+            </TownControllerContext.Provider>
+          </React.StrictMode>
+        </ChakraProvider>,
+      );
+    };
   });
-  describe('[T1] Without checking the player IDs', () => {
-    it('Renders the topic and label for a single conversation area', async () => {
-      const singleArea = [areas[0]];
-      useConversationAreasSpy.mockReturnValue(singleArea);
-      const renderData = renderConversationAreaList();
-      await expectProperlyRenderedConversationAreas(renderData, singleArea);
-    });
-    it('Renders the topic and label for multiple conversation areas', async () => {
-      const areasProvidedInSortOrder = areas;
-      useConversationAreasSpy.mockReturnValue(areasProvidedInSortOrder);
-      const renderData = renderConversationAreaList();
-      await expectProperlyRenderedConversationAreas(renderData, areasProvidedInSortOrder);
-    });
-    it('Renders the topic and label for multiple conversation areas, and sorts them by label ascending', async () => {
-      const shuffledAreas = areas.sort(() => 1);
-      useConversationAreasSpy.mockReturnValue(shuffledAreas);
-      const renderData = renderConversationAreaList();
-      await expectProperlyRenderedConversationAreas(renderData, shuffledAreas);
-    });
-  });
-  it('[T2] When checking usernames, it sorts conversation areas by topic and lists player usernames in provided order', async () => {
-    const areasProvidedInSortOrder = areas;
-    useConversationAreasSpy.mockReturnValue(areasProvidedInSortOrder);
-    const renderData = renderConversationAreaList();
-    await expectProperlyRenderedConversationAreas(
-      renderData,
-      areasProvidedInSortOrder,
-      playersByArea,
-    );
-  });
-  describe('[T3] When there are inactive conversation areas', () => {
+  describe('When there are inactive conversation areas', () => {
     it('Does not display inactive areas', async () => {
       const activeAndInactiveAreas = [
         createConversationForTesting({ emptyTopic: true }),
@@ -184,8 +194,7 @@ describe('ConversationAreasList', () => {
         createConversationForTesting({ emptyTopic: true }),
         areas[1],
       ];
-      useConversationAreasSpy.mockReturnValue(activeAndInactiveAreas);
-      const renderData = renderConversationAreaList();
+      const renderData = await renderConversationAreaList(activeAndInactiveAreas);
       await expectProperlyRenderedConversationAreas(renderData, [areas[0], areas[1]]);
     });
     it('Displays the text "No active conversation areas" when none are active', async () => {
@@ -193,157 +202,91 @@ describe('ConversationAreasList', () => {
         createConversationForTesting({ emptyTopic: true }),
         createConversationForTesting({ emptyTopic: true }),
       ];
-      useConversationAreasSpy.mockReturnValue(inactiveAreas);
-      const renderData = renderConversationAreaList();
+      const renderData = await renderConversationAreaList(inactiveAreas);
       await expectProperlyRenderedConversationAreas(renderData, []);
     });
     it('Shows "No active conversation areas" when there are no conversation areas', async () => {
-      useConversationAreasSpy.mockReturnValue([]);
-      const renderData = renderConversationAreaList();
+      const renderData = await renderConversationAreaList([]);
       await expectProperlyRenderedConversationAreas(renderData, []);
     });
   });
-  describe('[T4] Registration of listener with useEffect', () => {
-    let useEffectSpy: jest.SpyInstance<
-      void,
-      [effect: React.EffectCallback, deps?: React.DependencyList | undefined]
-    >;
-
-    beforeAll(() => {
-      useEffectSpy = jest.spyOn(React, 'useEffect').mockImplementation(() => {});
+  describe('When there are active conversation areas', () => {
+    it('Renders the topic and label', async () => {
+      const areasProvidedInSortOrder = areas;
+      const renderData = await renderConversationAreaList(areasProvidedInSortOrder);
+      await expectProperlyRenderedConversationAreas(renderData, areasProvidedInSortOrder);
     });
-    beforeEach(() => {
-      useConversationAreasSpy.mockReturnValue(areas);
-      useEffectSpy.mockClear();
+    it('Sorts the conversation areas by label, ascending', async () => {
+      const shuffledAreas = areas.sort(() => 1);
+      const renderData = await renderConversationAreaList(shuffledAreas);
+      await expectProperlyRenderedConversationAreas(renderData, shuffledAreas);
     });
-    it('Component does not call addListener, but useEffect callback does', () => {
-      renderConversationAreaList();
-      addListenerSpys.forEach(listener => expect(listener).not.toBeCalled());
-      expect(useEffectSpy).toHaveBeenCalled();
-      useEffectSpy.mock.calls.forEach(mockCallArgs => mockCallArgs[0]()); // call each UseEffect's callbacks
-      addListenerSpys.forEach(listener => expect(listener).toHaveBeenCalled());
+    it('Displays player names in the order provided', async () => {
+      const areasProvidedInSortOrder = areas;
+      const renderData = await renderConversationAreaList(areasProvidedInSortOrder);
+      await expectProperlyRenderedConversationAreas(
+        renderData,
+        areasProvidedInSortOrder,
+        playersByArea,
+      );
     });
-    it('Creates a listener and adds it to the conversation area when mounted', async () => {
-      const renderData = renderConversationAreaList();
+    it('Updates the occupants list when they change', async () => {
+      const renderData = await renderConversationAreaList(areas);
       await expectProperlyRenderedConversationAreas(renderData, areas, playersByArea);
-      useEffectSpy.mock.calls.forEach(mockCallArgs => mockCallArgs[0]()); // call each UseEffect's callbacks
-      addListenerSpys.forEach(listener => expect(listener).toHaveBeenCalled());
+      const updatedAreas = testController.conversationAreas.map(eachArea => {
+        act(() => {
+          //Note: because we are triggering a useEffect, we must wrap this line in an act()
+          eachArea.occupants = eachArea.occupants.slice(1);
+        });
+        return eachArea;
+      });
+      const updatedPlayersByArea = playersByArea.map(eachArea => eachArea.slice(1));
+      await expectProperlyRenderedConversationAreas(renderData, updatedAreas, updatedPlayersByArea);
     });
-    it('Calls removeListener from the cleanup callback', () => {
-      renderConversationAreaList();
-      expect(useEffectSpy).toHaveBeenCalled(); // each area gets rendered once, one call to use effect
-      useEffectSpy.mock.calls.forEach(mockCallArgs => {
-        const cleanupHook = mockCallArgs[0]();
-        if (cleanupHook) {
-          cleanupHook();
-        }
-      }); // call each UseEffect's cleanup
-      removeListenerSpys.forEach(listener => expect(listener).toHaveBeenCalled());
-    });
-    afterAll(() => {
-      useEffectSpy.mockRestore();
+    it('Updates the topic when it changes', async () => {
+      const renderData = await renderConversationAreaList(areas);
+      await expectProperlyRenderedConversationAreas(renderData, areas, playersByArea);
+      const updatedAreas = testController.conversationAreas.map(eachArea => {
+        act(() => {
+          //Note: because we are triggering a useEffect, we must wrap this line in an act()
+          eachArea.topic = nanoid();
+        });
+        return eachArea;
+      });
+      await expectProperlyRenderedConversationAreas(renderData, updatedAreas, playersByArea);
     });
   });
-  describe('[T5] Updating occupants from the onOccupantsChange listener', () => {
-    beforeEach(() => {
-      useConversationAreasSpy.mockReturnValue(areas);
-    });
+  describe('Updating the list of conversation areas', () => {
+    it('Updates the list when one is destroyed', async () => {
+      const renderData = await renderConversationAreaList(areas);
+      await expectProperlyRenderedConversationAreas(renderData, areas, playersByArea);
+      const listener = getEventListener(mockSocket, 'interactableUpdate');
 
-    it('Adds players when added to the occupants array', async () => {
-      const renderData = renderConversationAreaList();
-      await waitFor(() => addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)));
-      const updatedAreas: ConversationArea[] = [];
-      const updatedPlayersByArea: Player[][] = [];
-      const localAreas = areas;
-      for (let i = 0; i < localAreas.length; i += 1) {
-        const updatedArea = localAreas[i].copy();
-
-        // Trigger the listener indirectly, through the setter on ConversationArea
+      for (const eachArea of areas) {
         act(() => {
-          updatedArea.occupants = localAreas[i].occupants.concat([
-            localAreas[localAreas.length - i - 1].occupants[0],
-          ]);
+          eachArea.topic = undefined;
+          listener(eachArea.toConversationAreaModel());
         });
-
-        updatedAreas.push(updatedArea);
-        updatedPlayersByArea.push(
-          playersByArea[i].concat([playersByArea[localAreas.length - i - 1][0]]),
+        await waitFor(() =>
+          expect(renderData.queryAllByText(eachArea.topic || 'fail', { exact: false })).toEqual([]),
         );
       }
-      await expectProperlyRenderedConversationAreas(renderData, updatedAreas, updatedPlayersByArea);
-      addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)); // make sure new listeners not added
-      removeListenerSpys.forEach(listener => expect(listener).not.toHaveBeenCalled()); // make sure remove listener never called
     });
-    it('Removes players when removed from the occupants array', async () => {
-      const renderData = renderConversationAreaList();
-      await waitFor(() => addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)));
-      const updatedAreas: ConversationArea[] = [];
-      const updatedPlayersByArea: Player[][] = [];
-      const localAreas = areas;
-
-      for (let i = 0; i < localAreas.length; i += 1) {
-        const updatedArea = localAreas[i].copy();
-
-        // Trigger the listener indirectly, through the setter on ConversationArea
-        act(() => {
-          updatedArea.occupants = localAreas[i].occupants.slice(2, -1);
+    it('Updates the list when one is created', async () => {
+      areas[0].topic = undefined;
+      const renderData = await renderConversationAreaList([areas[0]]);
+      await expectProperlyRenderedConversationAreas(renderData, [], playersByArea);
+      const listener = getEventListener(mockSocket, 'interactableUpdate');
+      const newTopic = nanoid();
+      act(() => {
+        listener({
+          id: areas[0].id,
+          occupantsByID: areas[0].occupants.map(eachOccupant => eachOccupant.id),
+          topic: newTopic,
         });
+      });
 
-        updatedAreas.push(updatedArea);
-        updatedPlayersByArea.push(playersByArea[i].slice(2, -1));
-      }
-      await expectProperlyRenderedConversationAreas(renderData, updatedAreas, updatedPlayersByArea);
-      addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)); // make sure new listeners not added
-      removeListenerSpys.forEach(listener => expect(listener).not.toHaveBeenCalled()); // make sure remove listener never called
-    });
-    it('Reorders players when shuffled in the occupants array', async () => {
-      const renderData = renderConversationAreaList();
-      await waitFor(() => addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)));
-      const updatedAreas: ConversationArea[] = [];
-      const updatedPlayersByArea: Player[][] = [];
-      const localAreas = areas;
-      for (let i = 0; i < localAreas.length; i += 1) {
-        const updatedArea = localAreas[i].copy();
-
-        // Trigger the listener indirectly, through the setter on ConversationArea
-        act(() => {
-          updatedArea.occupants = localAreas[i].occupants.concat([]).reverse();
-        });
-
-        updatedAreas.push(updatedArea);
-        updatedPlayersByArea.push(playersByArea[i].concat([]).reverse());
-      }
-      await expectProperlyRenderedConversationAreas(renderData, updatedAreas, updatedPlayersByArea);
-      addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)); // make sure new listeners not added
-      removeListenerSpys.forEach(listener => expect(listener).not.toHaveBeenCalled()); // make sure remove listener never called
-    });
-    it('Removes its listener from the ConversationArea when unmounting', async () => {
-      const renderData = renderConversationAreaList();
-      // Mount, wait for addListener to be called
-      await waitFor(() => addListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)));
-      // Unmount, wait for removeListener to be called
-      renderData.unmount();
-      await waitFor(() =>
-        removeListenerSpys.forEach(listener => expect(listener).toBeCalledTimes(1)),
-      );
-      // Lastly, make sure that removeListener was called with the same listener as addListener was called with
-      for (let i = 0; i < addListenerSpys.length; i += 1) {
-        const listenerAdded = addListenerSpys[i].mock.calls[0][0];
-        const listenerRemoved = removeListenerSpys[i].mock.calls[0][0];
-        expect(listenerRemoved).toBe(listenerAdded);
-      }
-    });
-    it("Renders the players' names in a PlayerName component", async () => {
-      const mockPlayerName = jest.spyOn(PlayerName, 'default');
-      const expectedPlayers = playersByArea.reduce((prev, cur) => prev + cur.length, 0);
-      try {
-        renderConversationAreaList();
-        await waitFor(() => {
-          expect(mockPlayerName).toBeCalledTimes(expectedPlayers);
-        });
-      } finally {
-        mockPlayerName.mockRestore();
-      }
+      await waitFor(() => renderData.getAllByText(newTopic, { exact: false }));
     });
   });
 });

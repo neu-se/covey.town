@@ -3,59 +3,59 @@
  * should be using a hook.
  */
 export default class LocalStorage {
-  private static readonly currentConferenceIdKey = 'currentConferenceId';
+  private static readonly _currentConferenceIdKey = 'currentConferenceId';
 
-  private static readonly wasBannedFromNameKey = 'wasBannedFromName';
+  private static readonly _wasBannedFromNameKey = 'wasBannedFromName';
 
-  private static readonly wasManagerOrAdminKey = 'wasManagerOrAdmin';
+  private static readonly _wasManagerOrAdminKey = 'wasManagerOrAdmin';
 
-  private static readonly previousUserIdKey = 'previousUserId';
+  private static readonly _previousUserIdKey = 'previousUserId';
 
   static get currentConferenceId(): string | null {
-    return localStorage.getItem(LocalStorage.currentConferenceIdKey);
+    return localStorage.getItem(LocalStorage._currentConferenceIdKey);
   }
 
   static set currentConferenceId(value: string | null) {
     if (value) {
-      localStorage.setItem(LocalStorage.currentConferenceIdKey, value);
+      localStorage.setItem(LocalStorage._currentConferenceIdKey, value);
     } else {
-      localStorage.removeItem(LocalStorage.currentConferenceIdKey);
+      localStorage.removeItem(LocalStorage._currentConferenceIdKey);
     }
   }
 
   static get wasBannedFromName(): string | null {
-    return localStorage.getItem(LocalStorage.wasBannedFromNameKey);
+    return localStorage.getItem(LocalStorage._wasBannedFromNameKey);
   }
 
   static set wasBannedFromName(value: string | null) {
     if (value) {
-      localStorage.setItem(LocalStorage.wasBannedFromNameKey, value);
+      localStorage.setItem(LocalStorage._wasBannedFromNameKey, value);
     } else {
-      localStorage.removeItem(LocalStorage.wasBannedFromNameKey);
+      localStorage.removeItem(LocalStorage._wasBannedFromNameKey);
     }
   }
 
   static get wasManagerOrAdmin(): boolean | null {
-    return localStorage.getItem(LocalStorage.wasManagerOrAdminKey) === 'true';
+    return localStorage.getItem(LocalStorage._wasManagerOrAdminKey) === 'true';
   }
 
   static set wasManagerOrAdmin(value: boolean | null) {
     if (value) {
-      localStorage.setItem(LocalStorage.wasManagerOrAdminKey, value === true ? 'true' : 'false');
+      localStorage.setItem(LocalStorage._wasManagerOrAdminKey, value === true ? 'true' : 'false');
     } else {
-      localStorage.removeItem(LocalStorage.wasManagerOrAdminKey);
+      localStorage.removeItem(LocalStorage._wasManagerOrAdminKey);
     }
   }
 
   static get previousUserId(): string | null {
-    return localStorage.getItem(LocalStorage.previousUserIdKey);
+    return localStorage.getItem(LocalStorage._previousUserIdKey);
   }
 
   static set previousUserId(value: string | null) {
     if (value) {
-      localStorage.setItem(LocalStorage.previousUserIdKey, value);
+      localStorage.setItem(LocalStorage._previousUserIdKey, value);
     } else {
-      localStorage.removeItem(LocalStorage.previousUserIdKey);
+      localStorage.removeItem(LocalStorage._previousUserIdKey);
     }
   }
 }

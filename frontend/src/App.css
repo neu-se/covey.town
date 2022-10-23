@@ -44,3 +44,21 @@
 #social-container li {
   list-style-type: none;
 }
+.videochat-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  height: 200px;
+  text-align: center;
+}
+#map-container {
+  flex-grow: 10;
+}
+
+.participant-wrapper {
+  display: inline-block;
+  height: 200px;
+  width: 400px;
+}
