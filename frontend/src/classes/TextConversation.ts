@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
-import { Socket } from 'socket.io-client';
+import { ChatMessage } from '../types/CoveyTownSocket';
+import TownController from './TownController';
 
 /**
  * A basic representation of a text conversation, bridged over a socket.io client
@@ -7,7 +8,7 @@ import { Socket } from 'socket.io-client';
  * to make it easier to use as a drop-in replacement.
  */
 export default class TextConversation {
-  private _socket: Socket;
+  private _coveyTownController: TownController;
 
   private _callbacks: MessageCallback[] = [];
 
@@ -19,16 +20,16 @@ export default class TextConversation {
    * @param socket socket to use to send/receive messages
    * @param authorName name of message author to use as sender
    */
-  public constructor(socket: Socket, authorName: string) {
-    this._socket = socket;
-    this._authorName = authorName;
-    this._socket.on('chatMessage', (message: ChatMessage) => {
+  public constructor(coveyTownController: TownController) {
+    this._coveyTownController = coveyTownController;
+    this._authorName = coveyTownController.userName;
+    this._coveyTownController.addListener('chatMessage', (message: ChatMessage) => {
       message.dateCreated = new Date(message.dateCreated);
-      this.onChatMessage(message);
+      this._onChatMessage(message);
     });
   }
 
-  private onChatMessage(message: ChatMessage) {
+  private _onChatMessage(message: ChatMessage) {
     this._callbacks.forEach(cb => cb(message));
   }
 
@@ -43,7 +44,7 @@ export default class TextConversation {
       author: this._authorName,
       dateCreated: new Date(),
     };
-    this._socket.emit('chatMessage', msg);
+    this._coveyTownController.emitChatMessage(msg);
   }
 
   /**
@@ -67,13 +68,7 @@ export default class TextConversation {
    * Release the resources used by this conversation
    */
   public close(): void {
-    this._socket.off('chatMessage');
+    this._coveyTownController.removeAllListeners('chatMessage');
   }
 }
 type MessageCallback = (message: ChatMessage) => void;
-export type ChatMessage = {
-  author: string;
-  sid: string;
-  body: string;
-  dateCreated: Date;
-};

@@ -33,14 +33,6 @@ const useStyles = makeStyles((theme: Theme) =>
       border: `${theme.participantBorderWidth}px solid rgb(245, 248, 255)`,
       paddingTop: `calc(${(9 / 16) * 100}% - ${theme.participantBorderWidth}px)`,
       background: 'black',
-      [theme.breakpoints.down('sm')]: {
-        height: theme.sidebarMobileHeight,
-        width: `${(theme.sidebarMobileHeight * 16) / 9}px`,
-        marginRight: '8px',
-        marginBottom: '0',
-        fontSize: '12px',
-        paddingTop: `${theme.sidebarMobileHeight - 2}px`,
-      },
     },
     innerContainer: {
       position: 'absolute',

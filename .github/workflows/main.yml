@@ -2,9 +2,9 @@ name: Covey.Town CI
 on: # Controls when the action will run.
   # Triggers the workflow on push or pull request events but only for the master branch. If you want to trigger the action on other branches, add here
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -27,10 +27,10 @@ jobs:
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
-        run: cd services/townService; npm install && npm run lint && npm test
+        run: cd townService; npm install && npm run prestart && npm run lint && npm test
 
       - name: Build and test frontend components
-        run: cd frontend; npm install && npm run lint && npm test
+        run: cd frontend; npm install && npm run prestart && npm run lint && npm test
 #   deploy:
 #     if: github.ref == 'refs/heads/master'
 #     needs: build-and-test

@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
-import TextConversation, { ChatMessage } from '../../../../../../classes/TextConversation';
-import clsx from 'clsx';
-import FileAttachmentIcon from '../../../icons/FileAttachmentIcon';
-import { isMobile } from '../../../utils';
-import SendMessageIcon from '../../../icons/SendMessageIcon';
-import Snackbar from '../../Snackbar/Snackbar';
+import { makeStyles } from '@material-ui/core';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import useMaybeVideo from '../../../../../../hooks/useMaybeVideo';
+import clsx from 'clsx';
+import React, { useEffect, useRef, useState } from 'react';
+import TextConversation from '../../../../../../classes/TextConversation';
+import useTownController from '../../../../../../hooks/useTownController';
+import { isMobile } from '../../../utils';
+import Snackbar from '../../Snackbar/Snackbar';
 
 const useStyles = makeStyles(theme => ({
   chatInputContainer: {
@@ -77,15 +75,15 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
-  const video = useMaybeVideo()
+  const coveyTownController = useTownController();
 
   useEffect(() => {
     if(isTextareaFocused){
-      video?.pauseGame();
+      coveyTownController.pause();
     }else{
-      video?.unPauseGame();
+      coveyTownController.unPause();
     }
-  }, [isTextareaFocused, video]);
+  }, [isTextareaFocused, coveyTownController]);
   useEffect(() => {
     if (isChatWindowOpen) {
       // When the chat window is opened, we will focus on the text input.
@@ -98,18 +96,18 @@ export default function ChatInput({ conversation, isChatWindowOpen }: ChatInputP
     setMessageBody(event.target.value);
   };
 
+  const handleSendMessage = (message: string) => {
+    if (isValidMessage) {
+      conversation.sendMessage(message.trim());
+      setMessageBody('');
+    }
+  };
+
   // ensures pressing enter + shift creates a new line, so that enter on its own only sends the message:
   const handleReturnKeyPress = (event: React.KeyboardEvent) => {
     if (!isMobile && event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       handleSendMessage(messageBody);
-    }
-  };
-
-  const handleSendMessage = (message: string) => {
-    if (isValidMessage) {
-      conversation.sendMessage(message.trim());
-      setMessageBody('');
     }
   };
 

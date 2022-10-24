@@ -26,7 +26,9 @@ const useStyles = makeStyles((theme: Theme) => {
   //   },
   //   rightDrawerOpen: { gridTemplateColumns: `1fr ${theme.sidebarWidth}px ${theme.rightDrawerWidth}px` },
   // };
-    return {container: (props) => ({    position: 'relative',
+    return {container: (props) => ({
+      
+    position: 'relative',
     height: '100%',
     display: 'grid',
     gridTemplateColumns: `1fr ${theme.sidebarWidth}px`,

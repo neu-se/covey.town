@@ -1,7 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
-import useNearbyPlayers from '../../../../../hooks/useNearbyPlayers';
+import { usePlayersInVideoCall } from '../../../../../classes/TownController';
+import ViewingAreaVideo from '../../../../Town/interactables/ViewingAreaVideo';
 import useMainParticipant from '../../hooks/useMainParticipant/useMainParticipant';
 import useParticipants, { ParticipantWithSlot } from '../../hooks/useParticipants/useParticipants';
 import useScreenShareParticipant from '../../hooks/useScreenShareParticipant/useScreenShareParticipant';
@@ -48,18 +49,21 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     gridInnerContainer: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr 1fr 1fr',
-      gridAutoRows: '1fr',
-      [theme.breakpoints.down('md')]: {
-        gridTemplateColumns: '1fr 1fr 1fr',
-      },
-      [theme.breakpoints.down('sm')]: {
-        gridTemplateColumns: '1fr 1fr',
-      },
-      [theme.breakpoints.down('xs')]: {
-        gridTemplateColumns: '1fr',
-      },
+      display: 'flex',
+      // gridTemplateColumns: '1fr 1fr 1fr 1fr',
+      // gridAutoRows: '1fr',
+      // [theme.breakpoints.down('md')]: {
+      //   gridTemplateColumns: '1fr 1fr 1fr',
+      // },
+      // [theme.breakpoints.down('sm')]: {
+      //   gridTemplateColumns: '1fr 1fr',
+      // },
+      // [theme.breakpoints.down('xs')]: {
+      //   gridTemplateColumns: '1fr',
+      // },
+      width: '100%',
+      justifyContent: 'center',
+      alignContent: 'center'
     },
   })
 );
@@ -72,7 +76,7 @@ export default function ParticipantList() {
   const [selectedParticipant, setSelectedParticipant] = useSelectedParticipant();
   const screenShareParticipant = useScreenShareParticipant();
   const mainParticipant = useMainParticipant();
-  const nearbyPlayers = useNearbyPlayers();
+  const nearbyPlayers = usePlayersInVideoCall();
   const isRemoteParticipantScreenSharing = screenShareParticipant && screenShareParticipant !== localParticipant;
 
   const classes = useStyles('fullwidth');
@@ -119,6 +123,8 @@ export default function ParticipantList() {
                 // highlight={highlightedProfiles?.includes(localUserProfile.id) ?? false}
         slot={0}
       />
+      <ViewingAreaVideo />
+
       {participants
         .filter((p) => nearbyPlayers.find((player) => player.id == p.participant.identity))
         .sort(participantSorter).map((participantWithSlot) => {
@@ -140,7 +146,7 @@ export default function ParticipantList() {
               onClick={() => setSelectedParticipant(participant)}
               hideParticipant={hideParticipant}
               slot={participantWithSlot.slot}
-              insideGrid={true}
+              insideGrid={false}
             />
           );
         })}
@@ -148,17 +154,17 @@ export default function ParticipantList() {
   );
 
   return <main
-      className={clsx(
-        classes.gridContainer,
-        {
-          [classes.transparentBackground]: true,
-        },
-        'participants-grid-container',
-        {
-          // "single-column": preferredMode === "sidebar" && props.gridView,
-          'single-column': false,
-        },
-      )}
+      // className={clsx(
+      //   classes.gridContainer,
+      //   {
+      //     [classes.transparentBackground]: true,
+      //   },
+      //   'participants-grid-container',
+      //   {
+      //     // "single-column": preferredMode === "sidebar" && props.gridView,
+      //     'single-column': false,
+      //   },
+      // )}
     >
       <div className={classes.gridInnerContainer}>{participantsEl}</div>
     </main>

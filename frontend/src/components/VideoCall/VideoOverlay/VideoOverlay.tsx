@@ -15,11 +15,11 @@ import useVideoContext from '../VideoFrontend/hooks/useVideoContext/useVideoCont
 import useLocalVideoToggle from '../VideoFrontend/hooks/useLocalVideoToggle/useLocalVideoToggle';
 import './VideoGrid.scss';
 import MediaErrorSnackbar from '../VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
-import useMaybeVideo from '../../../hooks/useMaybeVideo';
+import useTownController from '../../../hooks/useTownController';
 
 const Container = styled('div')({
-  display: 'grid',
-  gridTemplateRows: '1fr auto',
+  // display: 'grid',
+  // gridTemplateRows: '1fr auto',
 });
 
 const Main = styled('main')(({ theme: _theme }: { theme: Theme }) => ({
@@ -41,7 +41,7 @@ interface Props {
 export default function VideoGrid(props: Props) {
   const { room } = useVideoContext();
   const roomState = useRoomState();
-  const coveyController = useMaybeVideo();
+  const coveyTownController = useTownController();
 
   const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();
   const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
@@ -50,7 +50,7 @@ export default function VideoGrid(props: Props) {
   const existingRoomRef = useRef<TwilioRoom | undefined>();
   const [mediaError, setMediaError] = useState<Error>();
 
-  let coveyRoom = coveyController?.coveyTownID;
+  let coveyRoom = coveyTownController?.townID;
   if (!coveyRoom) coveyRoom = 'Disconnected';
   useEffect(() => {
     function stop() {
@@ -113,15 +113,16 @@ export default function VideoGrid(props: Props) {
   return (
     <>
       <Prompt when={roomState !== 'disconnected'} message="Are you sure you want to leave the video room?" />
-      <Container style={{ height: '100%' }} className="video-grid">
+      <Container style={{ height: '100%' }}>
         {roomState === 'disconnected' ? (
-        // <PreJoinScreens room={{id: coveyRoom, twilioID: coveyRoom}} setMediaError={setMediaError} />
           <div>Connecting...</div>
         ) : (
           <Main style={{ paddingBottom: '90px' }}>
             <ReconnectingNotification />
             <MobileTopMenuBar />
-            <Room />
+            <Container className="videochat-container">
+              <Room />
+            </Container>
             <MenuBar />
           </Main>
         )}

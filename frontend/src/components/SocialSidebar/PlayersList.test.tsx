@@ -3,18 +3,18 @@ import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 import { render, RenderResult, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mock } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import Player, { UserLocation } from '../../classes/Player';
-import { CoveyAppState } from '../../CoveyTypes';
-import * as useCoveyAppState from '../../hooks/useCoveyAppState';
-import * as usePlayersInTown from '../../hooks/usePlayersInTown';
+import TownController, * as TownControllerHooks from '../../classes/TownController';
+import PlayerController from '../../classes/PlayerController';
+import * as useTownController from '../../hooks/useTownController';
+import { mockTownController } from '../../TestUtils';
+import { PlayerLocation } from '../../types/CoveyTownSocket';
 import * as PlayerName from './PlayerName';
 import PlayersList from './PlayersList';
 
 describe('PlayersInTownList', () => {
-  const randomLocation = (): UserLocation => ({
+  const randomLocation = (): PlayerLocation => ({
     moving: Math.random() < 0.5,
     rotation: 'front',
     x: Math.random() * 1000,
@@ -29,14 +29,14 @@ describe('PlayersInTownList', () => {
   );
   const renderPlayersList = () => render(wrappedPlayersListComponent());
   let consoleErrorSpy: jest.SpyInstance<void, [message?: any, ...optionalParms: any[]]>;
-  let usePlayersInTownSpy: jest.SpyInstance<Player[], []>;
-  let useCoveyAppStateSpy: jest.SpyInstance<CoveyAppState, []>;
-  let players: Player[] = [];
+  let usePlayersSpy: jest.SpyInstance<PlayerController[], []>;
+  let useTownControllerSpy: jest.SpyInstance<TownController, []>;
+  let players: PlayerController[] = [];
   let townID: string;
   let townFriendlyName: string;
   const expectProperlyRenderedPlayersList = async (
     renderData: RenderResult,
-    playersToExpect: Player[],
+    playersToExpect: PlayerController[],
   ) => {
     const listEntries = await renderData.findAllByRole('listitem');
     expect(listEntries.length).toBe(playersToExpect.length); // expect same number of players
@@ -46,8 +46,8 @@ describe('PlayersInTownList', () => {
     for (let i = 0; i < playersSortedCorrectly.length; i += 1) {
       expect(listEntries[i]).toHaveTextContent(playersSortedCorrectly[i]);
       const parentComponent = listEntries[i].parentNode;
-      if(parentComponent){
-          expect(parentComponent.nodeName).toBe('OL'); // list items expected to be directly nested in an ordered list
+      if (parentComponent) {
+        expect(parentComponent.nodeName).toBe('OL'); // list items expected to be directly nested in an ordered list
       }
     }
   };
@@ -64,30 +64,28 @@ describe('PlayersInTownList', () => {
       // eslint-disable-next-line no-console -- we are wrapping the console with a spy to find react warnings
       console.warn(message, ...optionalParams);
     });
-    usePlayersInTownSpy = jest.spyOn(usePlayersInTown, 'default');
-    useCoveyAppStateSpy = jest.spyOn(useCoveyAppState, 'default');
+    usePlayersSpy = jest.spyOn(TownControllerHooks, 'usePlayers');
+    useTownControllerSpy = jest.spyOn(useTownController, 'default');
   });
 
   beforeEach(() => {
     players = [];
     for (let i = 0; i < 10; i += 1) {
       players.push(
-        new Player(
+        new PlayerController(
           `testingPlayerID${i}-${nanoid()}`,
           `testingPlayerUser${i}-${nanoid()}}`,
           randomLocation(),
         ),
       );
     }
-    usePlayersInTownSpy.mockReturnValue(players);
+    usePlayersSpy.mockReturnValue(players);
     townID = nanoid();
     townFriendlyName = nanoid();
-    const mockAppState = mock<CoveyAppState>();
-    mockAppState.currentTownFriendlyName = townFriendlyName;
-    mockAppState.currentTownID = townID;
-    useCoveyAppStateSpy.mockReturnValue(mockAppState);
+    const mockedTownController = mockTownController({ friendlyName: townFriendlyName, townID });
+    useTownControllerSpy.mockReturnValue(mockedTownController);
   });
-  describe('[T1] Heading', () => {
+  describe('Heading', () => {
     it('Displays a heading "Current town: townName', async () => {
       const renderData = renderPlayersList();
       const heading = await renderData.findByRole('heading', { level: 2 });
@@ -102,12 +100,12 @@ describe('PlayersInTownList', () => {
       expect(toolTip).toHaveTextContent(`Town ID: ${townID}`);
     });
   });
-  it("[T2] Renders a list of all players' user names, without checking sort", async () => {
+  it("Renders a list of all players' user names, without checking sort", async () => {
     // players array is already sorted correctly
     const renderData = renderPlayersList();
     await expectProperlyRenderedPlayersList(renderData, players);
   });
-  it("[T2] Renders the players' names in a PlayerName component", async () => {
+  it("Renders the players' names in a PlayerName component", async () => {
     const mockPlayerName = jest.spyOn(PlayerName, 'default');
     try {
       renderPlayersList();
@@ -118,36 +116,40 @@ describe('PlayersInTownList', () => {
       mockPlayerName.mockRestore();
     }
   });
-  it("[T3] Displays players' usernames in ascending alphabetical order", async () => {
+  it("Displays players' usernames in ascending alphabetical order", async () => {
     players.reverse();
     const renderData = renderPlayersList();
     await expectProperlyRenderedPlayersList(renderData, players);
   });
-  it('[T3] Does not mutate the array returned by usePlayersInTown', async () => {
+  it('Does not mutate the array returned by usePlayersInTown', async () => {
     players.reverse();
     const copyOfArrayPassedToComponent = players.concat([]);
     const renderData = renderPlayersList();
     await expectProperlyRenderedPlayersList(renderData, players);
     expect(players).toEqual(copyOfArrayPassedToComponent); // expect that the players array is unchanged by the compoennt
   });
-  it('[T3] Adds players to the list when they are added to the town', async () => {
+  it('Adds players to the list when they are added to the town', async () => {
     const renderData = renderPlayersList();
     await expectProperlyRenderedPlayersList(renderData, players);
     for (let i = 0; i < players.length; i += 1) {
       const newPlayers = players.concat([
-        new Player(`testingPlayerID-${i}.new`, `testingPlayerUser${i}.new`, randomLocation()),
+        new PlayerController(
+          `testingPlayerID-${i}.new`,
+          `testingPlayerUser${i}.new`,
+          randomLocation(),
+        ),
       ]);
-      usePlayersInTownSpy.mockReturnValue(newPlayers);
+      usePlayersSpy.mockReturnValue(newPlayers);
       renderData.rerender(wrappedPlayersListComponent());
       await expectProperlyRenderedPlayersList(renderData, newPlayers);
     }
   });
-  it('[T3] Removes players from the list when they are removed from the town', async () => {
+  it('Removes players from the list when they are removed from the town', async () => {
     const renderData = renderPlayersList();
     await expectProperlyRenderedPlayersList(renderData, players);
     for (let i = 0; i < players.length; i += 1) {
       const newPlayers = players.splice(i, 1);
-      usePlayersInTownSpy.mockReturnValue(newPlayers);
+      usePlayersSpy.mockReturnValue(newPlayers);
       renderData.rerender(wrappedPlayersListComponent());
       await expectProperlyRenderedPlayersList(renderData, newPlayers);
     }

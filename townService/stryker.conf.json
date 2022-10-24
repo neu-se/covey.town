@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "This config was generated using 'stryker init'. Please take a look at: https://stryker-mutator.io/docs/stryker-js/configuration/ for more information",
+  "packageManager": "npm",
+  "reporters": [
+    "html",
+    "clear-text",
+    "json",
+    "progress"
+  ],
+  "buildCommand": "npm run stryker-prepare",
+  "testRunner": "jest",
+  "coverageAnalysis": "perTest",
+  "timeoutFactor": 5,
+  "timeoutMS": 15000,
+  "concurrency": 4,
+  "jest":{
+    "configFile": "jest.config.cjs"
+  },
+  "mutate": [
+    "src/town/Town.ts:148-161",
+    "src/town/TownsController.ts:146-159"
+  ]
+}

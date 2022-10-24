@@ -1,0 +1,4 @@
+{
+    "jest.jestCommandLine": "npx jest",
+    "typescript.tsdk": "./townService/node_modules/typescript/lib"
+}

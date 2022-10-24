@@ -1,10 +1,10 @@
 import React from 'react';
-import { ChatMessage } from '../../../../../../classes/TextConversation';
 import MessageInfo from './MessageInfo/MessageInfo';
 import MessageListScrollContainer from './MessageListScrollContainer/MessageListScrollContainer';
 import TextMessage from './TextMessage/TextMessage';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import usePlayersInTown from '../../../../../../hooks/usePlayersInTown';
+import { usePlayers } from '../../../../../../classes/TownController';
+import { ChatMessage } from '../../../../../../types/CoveyTownSocket';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -17,7 +17,7 @@ export default function MessageList({ messages }: MessageListProps) {
   const { room } = useVideoContext();
   const localParticipant = room!.localParticipant;
 
-  const players = usePlayersInTown();
+  const players = usePlayers();
 
   return (
     <MessageListScrollContainer messages={messages}>

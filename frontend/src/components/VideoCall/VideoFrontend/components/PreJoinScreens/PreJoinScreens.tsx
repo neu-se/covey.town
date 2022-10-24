@@ -6,16 +6,16 @@ import RoomNameScreen from './RoomNameScreen/RoomNameScreen';
 import { useAppState } from '../../state';
 import { useParams } from 'react-router-dom';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
-import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import { Heading, Text } from '@chakra-ui/react';
 import TownSelection from '../../../../Login/TownSelection';
+import { TownJoinResponse } from '../../../../../types/CoveyTownSocket';
 
 export enum Steps {
   roomNameStep,
   deviceSelectionStep,
 }
 
-export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>}) {
+export default function PreJoinScreens() {
   const { user } = useAppState();
   const { getAudioAndVideoTracks } = useVideoContext();
 
@@ -43,7 +43,7 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
         to hang out in, or join an existing one.
       </Text>
         <DeviceSelectionScreen />
-        <TownSelection doLogin={props.doLogin} />
+        <TownSelection />
     </IntroContainer>
   );
 }
