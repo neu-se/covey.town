@@ -55,6 +55,10 @@ export interface ConversationArea {
   topic?: string;
   occupantsByID: string[];
 };
+export interface KnuckleGameArea {
+  id: string;
+  occupantsByID: string[];
+};
 export interface BoundingBox {
   x: number;
   y: number;
