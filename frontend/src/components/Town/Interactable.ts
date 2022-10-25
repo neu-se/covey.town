@@ -73,8 +73,6 @@ export default abstract class Interactable extends Phaser.GameObjects.Sprite {
         this.overlap();
       }
       if (this.isOverlapping && this._scene.cursorKeys.space.isDown) {
-        console.log('interact');
-        console.log(this.townController);
         this.townController.interact(this);
         this.interact();
       }

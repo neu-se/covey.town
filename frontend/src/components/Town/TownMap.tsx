@@ -30,7 +30,6 @@ export default function TownMap(): JSX.Element {
         },
       },
     };
-    console.log('CTC changed');
 
     const game = new Phaser.Game(config);
     const newGameScene = new TownGameScene(coveyTownController);

@@ -70,9 +70,9 @@ export default class ViewingAreaController extends (EventEmitter as new () => Ty
    */
   public set video(video: string | undefined) {
     if (this._model.video !== video) {
+      this._model.video = video;
       this.emit('videoChange', video);
     }
-    this._model.video = video;
   }
 
   /**
@@ -89,8 +89,8 @@ export default class ViewingAreaController extends (EventEmitter as new () => Ty
    */
   public set elapsedTimeSec(elapsedTimeSec: number) {
     if (this._model.elapsedTimeSec != elapsedTimeSec) {
-      this.emit('progressChange', elapsedTimeSec);
       this._model.elapsedTimeSec = elapsedTimeSec;
+      this.emit('progressChange', elapsedTimeSec);
     }
   }
 
@@ -110,8 +110,8 @@ export default class ViewingAreaController extends (EventEmitter as new () => Ty
    */
   public set isPlaying(isPlaying: boolean) {
     if (this._model.isPlaying != isPlaying) {
-      this.emit('playbackChange', isPlaying);
       this._model.isPlaying = isPlaying;
+      this.emit('playbackChange', isPlaying);
     }
   }
 
