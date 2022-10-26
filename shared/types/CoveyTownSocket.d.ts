@@ -58,6 +58,13 @@ export interface ConversationArea {
 export interface KnuckleGameArea {
   id: string;
   occupantsByID: string[];
+  board1: Number[][];
+  board2: Number[][];
+  players: Player[];
+  gameRunning: boolean;
+  die1: Number;
+  die2: Number;
+  isItPlayerOneTurn: boolean;
 };
 export interface BoundingBox {
   x: number;
