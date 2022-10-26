@@ -1,7 +1,7 @@
 import { Container } from '@chakra-ui/react';
-import React,{ useEffect, useRef, useState } from 'react';
+import React,{ useEffect,useRef,useState } from 'react';
 import ReactPlayer from 'react-player';
-import { useInteractable, useViewingAreaController } from '../../../classes/TownController';
+import { useInteractable,useViewingAreaController } from '../../../classes/TownController';
 import ViewingAreaController from '../../../classes/ViewingAreaController';
 import useTownController from '../../../hooks/useTownController';
 import SelectVideoModal from './SelectVideoModal';
@@ -145,7 +145,7 @@ export function ViewingArea({
           // forces game to emit "viewingArea" event again so that
           // repoening the modal works as expected
           townController.interactEnd(viewingArea);
-        };}
+        }}
         viewingArea={viewingArea}
       />
     );
