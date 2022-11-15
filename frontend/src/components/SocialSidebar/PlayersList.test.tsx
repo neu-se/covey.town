@@ -56,9 +56,9 @@ describe('PlayersInTownList', () => {
     consoleErrorSpy = jest.spyOn(global.console, 'error');
     consoleErrorSpy.mockImplementation((message?, ...optionalParams) => {
       const stringMessage = message as string;
-      if (stringMessage.includes('children with the same key,')) {
+      if (stringMessage.includes && stringMessage.includes('children with the same key,')) {
         throw new Error(stringMessage.replace('%s', optionalParams[0]));
-      } else if (stringMessage.includes('warning-keys')) {
+      } else if (stringMessage.includes && stringMessage.includes('warning-keys')) {
         throw new Error(stringMessage.replace('%s', optionalParams[0]));
       }
       // eslint-disable-next-line no-console -- we are wrapping the console with a spy to find react warnings
