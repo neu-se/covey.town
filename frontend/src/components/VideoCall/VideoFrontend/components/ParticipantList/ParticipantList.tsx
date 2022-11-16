@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     gridInnerContainer: {
-      display: 'flex',
+      // display: 'flex',
       // gridTemplateColumns: '1fr 1fr 1fr 1fr',
       // gridAutoRows: '1fr',
       // [theme.breakpoints.down('md')]: {

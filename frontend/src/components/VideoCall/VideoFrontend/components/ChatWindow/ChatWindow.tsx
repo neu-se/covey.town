@@ -9,6 +9,7 @@ import useChatContext from '../../hooks/useChatContext/useChatContext';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     chatWindowContainer: {
+      pointerEvents: 'auto',
       background: '#FFFFFF',
       zIndex: 1000,
       display: 'flex',
