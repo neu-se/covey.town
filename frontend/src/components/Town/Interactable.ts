@@ -72,7 +72,11 @@ export default abstract class Interactable extends Phaser.GameObjects.Sprite {
         });
         this.overlap();
       }
-      if (this.isOverlapping && this._scene.cursorKeys.space.isDown) {
+      if (
+        this.isOverlapping &&
+        this._scene.cursorKeys.space.isDown &&
+        !this.townController.paused
+      ) {
         this.townController.interact(this);
         this.interact();
       }
