@@ -165,11 +165,11 @@ export default class Town {
    * @param session PlayerSession to destroy
    */
   private _removePlayer(player: Player): void {
-    this._players = this._players.filter(p => p.id !== player.id);
-    this._broadcastEmitter.emit('playerDisconnect', player.toPlayerModel());
     if (player.location.interactableID) {
       this._removePlayerFromInteractable(player);
     }
+    this._players = this._players.filter(p => p.id !== player.id);
+    this._broadcastEmitter.emit('playerDisconnect', player.toPlayerModel());
   }
 
   /**
