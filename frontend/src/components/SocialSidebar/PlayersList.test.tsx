@@ -108,9 +108,10 @@ describe('PlayersInTownList', () => {
   it("Renders the players' names in a PlayerName component", async () => {
     const mockPlayerName = jest.spyOn(PlayerName, 'default');
     try {
+      mockPlayerName.mockClear();
       renderPlayersList();
       await waitFor(() => {
-        expect(mockPlayerName).toBeCalledTimes(players.length);
+        expect(mockPlayerName).toBeCalledTimes(players.length * 2); // Called once per-player, but strict mode renders each component twice
       });
     } finally {
       mockPlayerName.mockRestore();

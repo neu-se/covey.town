@@ -11,4 +11,12 @@ module.exports = {
   testEnvironment: 'jsdom',
   transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: "tsconfig.jest.json"
+      }
+    ],
+  }
 };
