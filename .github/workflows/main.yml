@@ -17,8 +17,8 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
       - name: Build and test backend service
@@ -36,7 +36,7 @@ jobs:
 #     needs: build-and-test
 #     runs-on: ubuntu-latest
 #     steps:
-#       - uses: actions/checkout@v2
+#       - uses: actions/checkout@v3
 #       - uses: akhileshns/heroku-deploy@v3.12.12 # Deploy to Heroku action
 #         with:
 #           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
