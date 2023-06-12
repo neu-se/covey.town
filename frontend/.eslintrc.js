@@ -15,6 +15,7 @@ module.exports = {
     'prettier',
     'plugin:react-hooks/recommended',
     'plugin:react/recommended',
+    'plugin:@next/next/recommended'
   ],
   settings: {
     react: {

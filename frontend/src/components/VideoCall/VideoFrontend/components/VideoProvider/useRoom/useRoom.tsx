@@ -4,8 +4,10 @@ import Video, { ConnectOptions, LocalTrack, Room } from 'twilio-video';
 import { VideoRoomMonitor } from '@twilio/video-room-monitor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// @ts-ignore
-window.TwilioVideo = Video;
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  window.TwilioVideo = Video;
+}
 
 export default function useRoom(localTracks: LocalTrack[], onError: Callback, options?: ConnectOptions) {
   const [room, setRoom] = useState<Room | null>(null);

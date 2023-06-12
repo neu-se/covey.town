@@ -43,7 +43,7 @@ describe('TownController', () => {
   let townID: string;
   beforeAll(() => {
     mockLoginController = mock<LoginController>();
-    process.env.REACT_APP_TOWNS_SERVICE_URL = 'test';
+    process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL = 'test';
   });
   let testController: TownController;
 

@@ -1,3 +1,4 @@
+import assert from 'assert';
 import Phaser from 'phaser';
 import PlayerController from '../../classes/PlayerController';
 import TownController from '../../classes/TownController';
@@ -291,7 +292,8 @@ export default class TownGameScene extends Phaser.Scene {
   }
 
   getInteractables(): Interactable[] {
-    const typedObjects = this.map.filterObjects('Objects', obj => obj.type);
+    const typedObjects = this.map.filterObjects('Objects', obj => obj.type !== '');
+    assert(typedObjects);
     const gameObjects = this.map.createFromObjects(
       'Objects',
       typedObjects.map(obj => ({
@@ -318,22 +320,32 @@ export default class TownGameScene extends Phaser.Scene {
       '13_Conference_Hall_32x32',
       '14_Basement_32x32',
       '16_Grocery_store_32x32',
-    ].map(v => this.map.addTilesetImage(v));
+    ].map(v => {
+      const ret = this.map.addTilesetImage(v);
+      assert(ret);
+      return ret;
+    });
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
     const belowLayer = this.map.createLayer('Below Player', tileset, 0, 0);
+    assert(belowLayer);
     belowLayer.setDepth(-10);
     const wallsLayer = this.map.createLayer('Walls', tileset, 0, 0);
     const onTheWallsLayer = this.map.createLayer('On The Walls', tileset, 0, 0);
+    assert(wallsLayer);
+    assert(onTheWallsLayer);
     wallsLayer.setCollisionByProperty({ collides: true });
     onTheWallsLayer.setCollisionByProperty({ collides: true });
 
     const worldLayer = this.map.createLayer('World', tileset, 0, 0);
+    assert(worldLayer);
     worldLayer.setCollisionByProperty({ collides: true });
     const aboveLayer = this.map.createLayer('Above Player', tileset, 0, 0);
+    assert(aboveLayer);
     aboveLayer.setCollisionByProperty({ collides: true });
 
     const veryAboveLayer = this.map.createLayer('Very Above Player', tileset, 0, 0);
+    assert(veryAboveLayer);
     /* By default, everything gets depth sorted on the screen in the order we created things.
          Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
          it a depth. Higher depths will sit on top of lower depth objects.
@@ -350,7 +362,7 @@ export default class TownGameScene extends Phaser.Scene {
     ) as unknown as Phaser.GameObjects.Components.Transform;
 
     const labels = this.map.filterObjects('Objects', obj => obj.name === 'label');
-    labels.forEach(label => {
+    labels?.forEach(label => {
       if (label.x && label.y) {
         this.add.text(label.x, label.y, label.text.text, {
           color: '#FFFFFF',
@@ -358,7 +370,7 @@ export default class TownGameScene extends Phaser.Scene {
         });
       }
     });
-
+    assert(this.input.keyboard);
     this._cursorKeys = this.input.keyboard.createCursorKeys();
     this._cursors.push(this._cursorKeys);
     this._cursors.push(
@@ -524,6 +536,7 @@ export default class TownGameScene extends Phaser.Scene {
         const body = gameObjects.sprite.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(0);
       }
+      assert(this.input.keyboard);
       this._previouslyCapturedKeys = this.input.keyboard.getCaptures();
       this.input.keyboard.clearCaptures();
     }

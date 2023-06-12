@@ -203,7 +203,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         */
     this.setMaxListeners(30);
 
-    const url = process.env.REACT_APP_TOWNS_SERVICE_URL;
+    const url = process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL;
     assert(url);
     this._socket = io(url, { auth: { userName, townID } });
     this._townsService = new TownsServiceClient({ BASE: url }).towns;

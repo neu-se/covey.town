@@ -56,7 +56,6 @@ export default abstract class Interactable extends Phaser.GameObjects.Sprite {
    * size of this sprite).
    */
   addedToScene(): void {
-    this.y += this.displayHeight;
     super.addedToScene();
     this._id = this.name;
     const sprite = this.townController.ourPlayer.gameObjects?.sprite;

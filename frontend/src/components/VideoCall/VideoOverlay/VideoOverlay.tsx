@@ -13,7 +13,7 @@ import useRoomState from '../VideoFrontend/hooks/useRoomState/useRoomState';
 import useLocalAudioToggle from '../VideoFrontend/hooks/useLocalAudioToggle/useLocalAudioToggle';
 import useVideoContext from '../VideoFrontend/hooks/useVideoContext/useVideoContext';
 import useLocalVideoToggle from '../VideoFrontend/hooks/useLocalVideoToggle/useLocalVideoToggle';
-import './VideoGrid.scss';
+import './VideoGrid.module.scss';
 import MediaErrorSnackbar from '../VideoFrontend/components/PreJoinScreens/MediaErrorSnackbar/MediaErrorSnackbar';
 import useTownController from '../../../hooks/useTownController';
 

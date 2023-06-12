@@ -3,7 +3,6 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import React, { useCallback, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import './App.css';
 import TownController from './classes/TownController';
 import { ChatProvider } from './components/VideoCall/VideoFrontend/components/ChatProvider';
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
@@ -41,7 +40,7 @@ function App() {
   } else {
     page = <PreJoinScreens />;
   }
-  const url = process.env.REACT_APP_TOWNS_SERVICE_URL;
+  const url = process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL;
   assert(url);
   const townsService = new TownsServiceClient({ BASE: url }).towns;
   return (

@@ -4,7 +4,6 @@ import { useAppState } from '../../state';
 import Button from '@material-ui/core/Button';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Grid from '@material-ui/core/Grid';
-import { ReactComponent as GoogleLogo } from './google-logo.svg';
 import { InputLabel, Theme } from '@material-ui/core';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import TextField from '@material-ui/core/TextField';
@@ -93,9 +92,6 @@ export default function LoginPage() {
             Sign in to join a room
           </Typography>
           <Typography variant="body1">Sign in using your Twilio Google Account</Typography>
-          <Button variant="contained" className={classes.googleButton} onClick={login} startIcon={<GoogleLogo />}>
-            Sign in with Google
-          </Button>
         </>
       )}
 
