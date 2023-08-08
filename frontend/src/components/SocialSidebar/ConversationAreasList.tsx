@@ -1,9 +1,9 @@
 import { Box, Heading, ListItem, UnorderedList } from '@chakra-ui/react';
 import React from 'react';
 import ConversationAreaController, {
-  useConversationAreaOccupants,
   useConversationAreaTopic,
-} from '../../classes/ConversationAreaController';
+} from '../../classes/interactable/ConversationAreaController';
+import { useInteractableAreaOccupants } from '../../classes/interactable/InteractableAreaController';
 import { useActiveConversationAreas } from '../../classes/TownController';
 import PlayerName from './PlayerName';
 
@@ -21,7 +21,7 @@ type ConversationAreaViewProps = {
  * See relevant hooks: useConversationAreas, usePlayersInTown.
  */
 function ConversationAreaView({ area }: ConversationAreaViewProps): JSX.Element {
-  const occupants = useConversationAreaOccupants(area);
+  const occupants = useInteractableAreaOccupants(area);
   const topic = useConversationAreaTopic(area);
 
   return (

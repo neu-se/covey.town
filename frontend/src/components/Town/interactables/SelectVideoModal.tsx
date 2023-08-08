@@ -49,11 +49,12 @@ export default function SelectVideoModal({
 
   const createViewingArea = useCallback(async () => {
     if (video && viewingAreaController) {
-      const request: ViewingAreaModel = {
+      const request = {
         id: viewingAreaController.id,
         video,
         isPlaying: true,
         elapsedTimeSec: 0,
+        occupants: []
       };
       try {
         await coveyTownController.createViewingArea(request);

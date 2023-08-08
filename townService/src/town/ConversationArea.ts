@@ -3,9 +3,10 @@ import Player from '../lib/Player';
 import {
   BoundingBox,
   ConversationArea as ConversationAreaModel,
+  InteractableCommand,
   TownEmitter,
 } from '../types/CoveyTownSocket';
-import InteractableArea from './InteractableArea';
+import InteractableArea, { InteractableCommandError } from './InteractableArea';
 
 export default class ConversationArea extends InteractableArea {
   /* The topic of the conversation area, or undefined if it is not set */
@@ -24,7 +25,7 @@ export default class ConversationArea extends InteractableArea {
    * @param townEmitter a broadcast emitter that can be used to emit updates to players
    */
   public constructor(
-    { topic, id }: ConversationAreaModel,
+    { topic, id }: Omit<ConversationAreaModel, 'type'>,
     coordinates: BoundingBox,
     townEmitter: TownEmitter,
   ) {
@@ -55,8 +56,9 @@ export default class ConversationArea extends InteractableArea {
   public toModel(): ConversationAreaModel {
     return {
       id: this.id,
-      occupantsByID: this.occupantsByID,
+      occupants: this.occupantsByID,
       topic: this.topic,
+      type: 'ConversationArea'
     };
   }
 
@@ -75,6 +77,10 @@ export default class ConversationArea extends InteractableArea {
       throw new Error(`Malformed viewing area ${name}`);
     }
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
-    return new ConversationArea({ id: name, occupantsByID: [] }, rect, broadcastEmitter);
+    return new ConversationArea({ id: name, occupants: [] }, rect, broadcastEmitter);
+  }
+
+  public handleCommand(): undefined {
+    throw new InteractableCommandError('Unknown command type');
   }
 }

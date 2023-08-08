@@ -10,13 +10,17 @@ import {
   ConversationArea as ConversationAreaModel,
   CoveyTownSocket,
   Interactable,
+  InteractableCommand,
+  InteractableCommandBase,
   PlayerLocation,
   ServerToClientEvents,
   SocketData,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
-import InteractableArea from './InteractableArea';
+import GameArea from './games/GameArea';
+import GameAreaFactory from './games/GameAreaFactory';
+import InteractableArea, { InteractableCommandError } from './InteractableArea';
 import ViewingArea from './ViewingArea';
 
 /**
@@ -154,6 +158,52 @@ export default class Town {
         if (viewingArea) {
           (viewingArea as ViewingArea).updateModel(update);
         }
+      }
+    });
+
+    // Set up a listener to process commands to interactables.
+    // Dispatches commands to the appropriate interactable and sends the response back to the client
+    socket.on('interactableCommand', (command: InteractableCommand & InteractableCommandBase) => {
+      const interactable = this._interactables.find(
+        eachInteractable => eachInteractable.id === command.interactableID,
+      );
+      console.log(`Received command ${JSON.stringify(command)}`);
+      if (interactable) {
+        try {
+          console.log(interactable);
+          const payload = interactable.handleCommand(command, newPlayer);
+          console.log('Command handled');
+          socket.emit('commandResponse', {
+            commandID: command.commandID,
+            interactableID: command.interactableID,
+            isOK: true,
+            payload
+          });
+        } catch (err) {
+          if (err instanceof InteractableCommandError) {
+            socket.emit('commandResponse', {
+              commandID: command.commandID,
+              interactableID: command.interactableID,
+              isOK: false,
+              error: err.message
+            });
+          } else {
+            console.trace(err);
+            socket.emit('commandResponse', {
+              commandID: command.commandID,
+              interactableID: command.interactableID,
+              isOK: false,
+              error: 'Unknown error'
+            });
+          }
+        }
+      } else {
+        socket.emit('commandResponse', {
+          commandID: command.commandID,
+          interactableID: command.interactableID,
+          isOK: false,
+          error: `No such interactable ${command.interactableID}`
+        });
       }
     });
     return newPlayer;
@@ -352,7 +402,13 @@ export default class Town {
         ConversationArea.fromMapObject(eachConvAreaObj, this._broadcastEmitter),
       );
 
-    this._interactables = this._interactables.concat(viewingAreas).concat(conversationAreas);
+    const gameAreas = objectLayer.objects
+      .filter(eachObject => eachObject.type === 'GameArea')
+      .map(eachGameAreaObj =>
+        GameAreaFactory(eachGameAreaObj, this._broadcastEmitter),
+      );
+
+    this._interactables = this._interactables.concat(viewingAreas).concat(conversationAreas).concat(gameAreas);
     this._validateInteractables();
   }
 

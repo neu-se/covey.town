@@ -4,13 +4,13 @@ import { findAllByRole, render, RenderResult, waitFor } from '@testing-library/r
 import { nanoid } from 'nanoid';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import ConversationAreaController from '../../classes/ConversationAreaController';
+import ConversationAreaController from '../../classes/interactable/ConversationAreaController';
 import PlayerController from '../../classes/PlayerController';
 import ConversationAreasList from './ConversationAreasList';
 import TownController from '../../classes/TownController';
 import { LoginController } from '../../contexts/LoginControllerContext';
 import { mock, mockClear } from 'jest-mock-extended';
-import { BoundingBox, CoveyTownSocket } from '../../types/CoveyTownSocket';
+import { BoundingBox, ConversationArea, CoveyTownSocket } from '../../types/CoveyTownSocket';
 import { getEventListener, mockTownControllerConnection } from '../../TestUtils';
 import TownControllerContext from '../../contexts/TownControllerContext';
 
@@ -167,7 +167,7 @@ describe('ConversationAreasList', () => {
         areasToRender = areas;
       }
       await mockTownControllerConnection(testController, mockSocket, {
-        interactables: areasToRender.map(eachArea => eachArea.toConversationAreaModel()),
+        interactables: areasToRender.map(eachArea => eachArea.toInteractableAreaModel()),
         currentPlayers: allPlayers.map(eachPlayer => eachPlayer.toPlayerModel()),
         friendlyName: nanoid(),
         isPubliclyListed: true,
@@ -265,7 +265,7 @@ describe('ConversationAreasList', () => {
       for (const eachArea of areas) {
         act(() => {
           eachArea.topic = undefined;
-          listener(eachArea.toConversationAreaModel());
+          listener(eachArea.toInteractableAreaModel());
         });
         await waitFor(() =>
           expect(renderData.queryAllByText(eachArea.topic || 'fail', { exact: false })).toEqual([]),
@@ -281,9 +281,9 @@ describe('ConversationAreasList', () => {
       act(() => {
         listener({
           id: areas[0].id,
-          occupantsByID: areas[0].occupants.map(eachOccupant => eachOccupant.id),
+          occupants: areas[0].occupants.map(eachOccupant => eachOccupant.id),
           topic: newTopic,
-        });
+        } as ConversationArea);
       });
 
       await waitFor(() => renderData.getAllByText(newTopic, { exact: false }));

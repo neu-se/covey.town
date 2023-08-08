@@ -1,10 +1,12 @@
 import assert from 'assert';
 import EventEmitter from 'events';
 import _ from 'lodash';
+import { nanoid } from 'nanoid';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import TypedEmitter from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
+import GameArea from '../components/Town/interactables/GameArea';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
 import { LoginController } from '../contexts/LoginControllerContext';
 import { TownsService, TownsServiceClient } from '../generated/client';
@@ -12,14 +14,27 @@ import useTownController from '../hooks/useTownController';
 import {
   ChatMessage,
   CoveyTownSocket,
+  GameArea as GameAreaModel,
+  GameState,
+  InteractableCommand,
+  InteractableCommandBase,
+  InteractableCommandResponse,
+  InteractableID,
+  InteractableType,
+  PlayerID,
   PlayerLocation,
+  TicTacToeGameState,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isViewingArea } from '../types/TypeUtils';
-import ConversationAreaController from './ConversationAreaController';
+import { isConversationArea, isTicTacToeArea, isViewingArea } from '../types/TypeUtils';
+import ConversationAreaController from './interactable/ConversationAreaController';
+import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import PlayerController from './PlayerController';
-import ViewingAreaController from './ViewingAreaController';
+import TicTacToeAreaController from './interactable/TicTacToeAreaController';
+import ViewingAreaController from './interactable/ViewingAreaController';
+import InteractableAreaController from './interactable/InteractableAreaController';
+import ConversationArea from '../components/Town/interactables/ConversationArea';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 
@@ -58,17 +73,10 @@ export type TownEvents = {
    * the new location can be found on the PlayerController.
    */
   playerMoved: (movedPlayer: PlayerController) => void;
-  /**
-   * An event that indicates that the set of conversation areas has changed. This event is dispatched
-   * when a conversation area is created, or when the set of active conversations has changed. This event is dispatched
-   * after updating the town controller's record of conversation areas.
-   */
-  conversationAreasChanged: (currentConversationAreas: ConversationAreaController[]) => void;
-  /**
-   * An event that indicates that the set of viewing areas has changed. This event is emitted after updating
-   * the town controller's record of viewing areas.
-   */
-  viewingAreasChanged: (newViewingAreas: ViewingAreaController[]) => void;
+
+  // TODO docs
+  interactableAreasChanged: () => void;
+
   /**
    * An event that indicates that a new chat message has been received, which is the parameter passed to the listener
    */
@@ -126,11 +134,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   private _playersInternal: PlayerController[] = [];
 
-  /**
-   * The current list of conversation areas in the twon. Adding or removing conversation areas might
-   * replace the array with a new one; clients should take note not to retain stale references.
-   */
-  private _conversationAreasInternal: ConversationAreaController[] = [];
+  //TODO document, consider type restrictions?
+  private _interactableControllers: InteractableAreaController<any, any>[] = [];
 
   /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
@@ -187,8 +192,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * An event emitter that broadcasts interactable-specific events
    */
   private _interactableEmitter = new EventEmitter();
-
-  private _viewingAreas: ViewingAreaController[] = [];
 
   public constructor({ userName, townID, loginController }: ConnectionProperties) {
     super();
@@ -287,13 +290,16 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this._playersInternal = newPlayers;
   }
 
-  public get conversationAreas() {
-    return this._conversationAreasInternal;
+  public getPlayer(id: PlayerID) {
+    console.log(this._playersInternal);
+    const ret = this._playersInternal.find(eachPlayer => eachPlayer.id === id);
+    assert(ret);
+    return ret;
   }
 
-  private set _conversationAreas(newConversationAreas: ConversationAreaController[]) {
-    this._conversationAreasInternal = newConversationAreas;
-    this.emit('conversationAreasChanged', newConversationAreas);
+  public get conversationAreas(): ConversationAreaController[] {
+    const ret = this._interactableControllers.filter(eachInteractable => eachInteractable instanceof ConversationAreaController);
+    return ret as ConversationAreaController[];
   }
 
   public get interactableEmitter() {
@@ -301,12 +307,13 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   public get viewingAreas() {
-    return this._viewingAreas;
+    const ret = this._interactableControllers.filter(eachInteractable => eachInteractable instanceof ViewingAreaController);
+    return ret as ViewingAreaController[];
   }
 
-  public set viewingAreas(newViewingAreas: ViewingAreaController[]) {
-    this._viewingAreas = newViewingAreas;
-    this.emit('viewingAreasChanged', newViewingAreas);
+  public get gameAreas() {
+    const ret = this._interactableControllers.filter(eachInteractable => eachInteractable instanceof GameAreaController);
+    return ret as GameAreaController<any, any>[];
   }
 
   /**
@@ -399,6 +406,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       }
     });
 
+    //TODO docs
     /**
      * When an interactable's state changes, push that update into the relevant controller, which is assumed
      * to be either a Viewing Area or a Conversation Area, and which is assumed to already be represented by a
@@ -411,22 +419,24 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
      * events (@see ViewingAreaController and @see ConversationAreaController)
      */
     this._socket.on('interactableUpdate', interactable => {
-      if (isConversationArea(interactable)) {
-        const updatedConversationArea = this.conversationAreas.find(c => c.id === interactable.id);
-        if (updatedConversationArea) {
-          const emptyNow = updatedConversationArea.isEmpty();
-          updatedConversationArea.topic = interactable.topic;
-          updatedConversationArea.occupants = this._playersByIDs(interactable.occupantsByID);
-          const emptyAfterChange = updatedConversationArea.isEmpty();
-          if (emptyNow !== emptyAfterChange) {
-            this.emit('conversationAreasChanged', this._conversationAreasInternal);
+      try {
+        const controller = this._interactableControllers.find(c => c.id === interactable.id);
+        if (controller) {
+          const activeBefore = controller.isActive();
+          console.log(JSON.stringify(interactable, null, 2))
+          controller.updateFrom(interactable, this._playersByIDs(interactable.occupants));
+          const activeNow = controller.isActive();
+          if (activeBefore !== activeNow) {
+            this.emit('interactableAreasChanged');
           }
+        } else {
+          console.error(`No controller found for interactable ${interactable.id}`);
+          console.error(this._interactableControllers.map(c => c.id));
+          console.error(`^^^^`)
         }
-      } else if (isViewingArea(interactable)) {
-        const updatedViewingArea = this._viewingAreas.find(
-          eachArea => eachArea.id === interactable.id,
-        );
-        updatedViewingArea?.updateFrom(interactable);
+      } catch (err) {
+        console.error('Error updating interactable', interactable);
+        console.trace(err);
       }
     });
   }
@@ -455,6 +465,37 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   public emitChatMessage(message: ChatMessage) {
     this._socket.emit('chatMessage', message);
+  }
+
+  //TODO
+  public async sendInteractableCommand<CommandType extends InteractableCommand>(interactableID: InteractableID, command: CommandType): Promise<InteractableCommandResponse<CommandType>['payload']> {
+
+    const commandMessage: InteractableCommand & InteractableCommandBase = {
+      ...command,
+      commandID: nanoid(),
+      interactableID: interactableID,
+    }
+    return new Promise((resolve, reject) => {
+      const watchdog = setTimeout(() => {
+        reject('Command timed out');
+      }, 5000);
+
+      console.log(`Sending command ${commandMessage.commandID}, ${commandMessage.type}`)
+      const ackListener = (response: InteractableCommandResponse<CommandType>) => {
+        if (response.commandID === commandMessage.commandID) {
+          clearTimeout(watchdog);
+          this._socket.off('commandResponse', ackListener);
+          if (response.error) {
+            reject(response.error);
+          } else {
+            console.log('Got an ack for command' + commandMessage.commandID);
+            resolve(response.payload);
+          }
+        }
+      };
+      this._socket.on('commandResponse', ackListener);
+      this._socket.emit('interactableCommand', commandMessage);
+    });
   }
 
   /**
@@ -492,7 +533,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   async createConversationArea(newArea: {
     topic?: string;
     id: string;
-    occupantsByID: Array<string>;
+    occupants: Array<string>;
   }) {
     await this._townsService.createConversationArea(this.townID, this.sessionToken, newArea);
   }
@@ -504,7 +545,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    *
    * @param newArea
    */
-  async createViewingArea(newArea: ViewingAreaModel) {
+  async createViewingArea(newArea: Omit<ViewingAreaModel, 'type'>) {
     await this._townsService.createViewingArea(this.townID, this.sessionToken, newArea);
   }
 
@@ -538,18 +579,19 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           PlayerController.fromPlayerModel(eachPlayerModel),
         );
 
-        this._conversationAreas = [];
-        this._viewingAreas = [];
+        this._interactableControllers = [];
         initialData.interactables.forEach(eachInteractable => {
           if (isConversationArea(eachInteractable)) {
-            this._conversationAreasInternal.push(
+            this._interactableControllers.push(
               ConversationAreaController.fromConversationAreaModel(
                 eachInteractable,
                 this._playersByIDs.bind(this),
               ),
             );
           } else if (isViewingArea(eachInteractable)) {
-            this._viewingAreas.push(new ViewingAreaController(eachInteractable));
+            this._interactableControllers.push(new ViewingAreaController(eachInteractable));
+          } else if (isTicTacToeArea(eachInteractable)) {
+            this._interactableControllers.push(new TicTacToeAreaController(eachInteractable.id, eachInteractable, this)); 
           }
         });
         this._userID = initialData.userID;
@@ -570,20 +612,35 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * @returns
    */
   public getViewingAreaController(viewingArea: ViewingArea): ViewingAreaController {
-    const existingController = this._viewingAreas.find(
+    const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === viewingArea.name,
     );
-    if (existingController) {
+    if (existingController instanceof ViewingAreaController) {
       return existingController;
     } else {
-      const newController = new ViewingAreaController({
-        elapsedTimeSec: 0,
-        id: viewingArea.name,
-        isPlaying: false,
-        video: viewingArea.defaultVideoURL,
-      });
-      this._viewingAreas.push(newController);
-      return newController;
+      throw new Error(`No such viewing area controller ${existingController}`);
+    }
+  }
+
+  public getConversationAreaController(converationArea: ConversationArea): ConversationAreaController {
+    const existingController = this._interactableControllers.find(
+      eachExistingArea => eachExistingArea.id === converationArea.name,
+    );
+    if (existingController instanceof ConversationAreaController) {
+      return existingController;
+    } else {
+      throw new Error(`No such viewing area controller ${existingController}`);
+    }
+  }
+
+  public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(gameArea: GameArea): GameAreaController<GameType, EventsType> {
+    const existingController = this._interactableControllers.find(
+      eachExistingArea => eachExistingArea.id === gameArea.name,
+    );
+    if (existingController instanceof GameAreaController) {
+      return existingController; 
+    } else {
+      throw new Error('Game area controller not created');
     }
   }
 
@@ -593,7 +650,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    *    with the event
    */
   public emitViewingAreaUpdate(viewingArea: ViewingAreaController) {
-    this._socket.emit('interactableUpdate', viewingArea.viewingAreaModel());
+    //TODO refactor
+    this._socket.emit('interactableUpdate', viewingArea.toInteractableAreaModel());
   }
 
   /**
@@ -675,6 +733,16 @@ export function useViewingAreaController(viewingAreaID: string): ViewingAreaCont
   return viewingArea;
 }
 
+//TODO
+export function useInteractableAreaController<T>(interactableAreaID: string): T {
+  const townController = useTownController();
+  const interactableAreaController = townController.gameAreas.find(eachArea => eachArea.id == interactableAreaID);
+  if (!interactableAreaController) {
+    throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
+  }
+  return interactableAreaController as any as T; //TODO
+}
+
 /**
  * A react hook to retrieve the active conversation areas. This hook will re-render any components
  * that use it when the set of conversation areas changes. It does *not* re-render its dependent components
@@ -690,12 +758,13 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
     townController.conversationAreas.filter(eachArea => !eachArea.isEmpty()),
   );
   useEffect(() => {
-    const updater = (allAreas: ConversationAreaController[]) => {
+    const updater = () => {
+      const allAreas = townController.conversationAreas;
       setConversationAreas(allAreas.filter(eachArea => !eachArea.isEmpty()));
     };
-    townController.addListener('conversationAreasChanged', updater);
+    townController.addListener('interactableAreasChanged', updater);
     return () => {
-      townController.removeListener('conversationAreasChanged', updater);
+      townController.removeListener('interactableAreasChanged', updater);
     };
   }, [townController, setConversationAreas]);
   return conversationAreas;

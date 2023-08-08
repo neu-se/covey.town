@@ -2,13 +2,16 @@ import { mock, mockClear } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import Player from '../lib/Player';
 import { defaultLocation, getLastEmittedEvent } from '../TestUtils';
-import { BoundingBox, Interactable, TownEmitter, XY } from '../types/CoveyTownSocket';
+import { BoundingBox, Interactable, InteractableCommand, ConversationArea as ConversationAreaModel, TownEmitter, XY } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea, { PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_WIDTH } from './InteractableArea';
 
 class TestInteractableArea extends InteractableArea {
-  public toModel(): Interactable {
-    return { id: this.id, occupantsByID: [] };
+  public handleCommand(): object | undefined {
+      throw new Error('Method not implemented.');
+  }
+  public toModel() : ConversationAreaModel {
+    return { id: this.id, occupants: [], type: 'ConversationArea' };
   }
 }
 const HALF_W = PLAYER_SPRITE_WIDTH / 2;
@@ -162,7 +165,7 @@ describe('InteractableArea', () => {
       expect(
         testArea.overlaps(
           new ConversationArea(
-            { id: 'testArea', occupantsByID: [] },
+            { id: 'testArea', occupants: [] },
             intersectBox,
             mock<TownEmitter>(),
           ),
@@ -204,7 +207,7 @@ describe('InteractableArea', () => {
         expect(
           testArea.overlaps(
             new ConversationArea(
-              { id: 'testArea', occupantsByID: [] },
+              { id: 'testArea', occupants: [] },
               intersectBox,
               mock<TownEmitter>(),
             ),
@@ -245,7 +248,7 @@ describe('InteractableArea', () => {
       expect(
         testArea.overlaps(
           new ConversationArea(
-            { id: 'testArea', occupantsByID: [] },
+            { id: 'testArea', occupants: [] },
             intersectBox,
             mock<TownEmitter>(),
           ),

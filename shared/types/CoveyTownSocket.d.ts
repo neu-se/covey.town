@@ -14,10 +14,15 @@ export type TownJoinResponse = {
   /** Is this a private town? * */
   isPubliclyListed: boolean;
   /** Current state of interactables in this town */
-  interactables: Interactable[];
+  interactables: TypedInteractable[];
 }
 
-export type Interactable = ViewingArea | ConversationArea;
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea';
+export interface Interactable {
+  type: InteractableType;
+  id: InteractableID;
+  occupants: PlayerID[];
+}
 
 export type TownSettingsUpdate = {
   friendlyName?: string;
@@ -25,8 +30,10 @@ export type TownSettingsUpdate = {
 }
 
 export type Direction = 'front' | 'back' | 'left' | 'right';
+
+export type PlayerID = string;
 export interface Player {
-  id: string;
+  id: PlayerID;
   userName: string;
   location: PlayerLocation;
 };
@@ -50,10 +57,8 @@ export type ChatMessage = {
   dateCreated: Date;
 };
 
-export interface ConversationArea {
-  id: string;
+export interface ConversationArea extends Interactable {
   topic?: string;
-  occupantsByID: string[];
 };
 export interface BoundingBox {
   x: number;
@@ -62,11 +67,95 @@ export interface BoundingBox {
   height: number;
 };
 
-export interface ViewingArea {
-  id: string;
+export interface ViewingArea extends Interactable {
   video?: string;
   isPlaying: boolean;
   elapsedTimeSec: number;
+}
+
+// FALL23 GameArea New
+export type GameStatus = "IN_PROGRESS" | "WAITING_TO_START" | "OVER";
+export interface GameState {
+  status: GameStatus;
+} 
+
+export interface WinnableGameState extends GameState {
+  winner?: PlayerID;
+}
+
+export interface GameMove<MoveType> {
+  playerID: PlayerID;
+  gameID: GameInstanceID;
+  move: MoveType;
+}
+export interface TicTacToeMove {
+  gamePiece: "X" | "O";
+  x: number; //TODO row, col not x,y
+  y: number;
+}
+
+export interface TicTacToeGameState extends WinnableGameState {
+  moves: ReadonlyArray<TicTacToeMove>;
+  x?: PlayerID;
+  o?: PlayerID;
+}
+
+export type InteractableID = string;
+export type GameInstanceID = string;
+
+export interface GameResult {
+  gameID: GameInstanceID;
+  scores: { [playerName: string]: number };
+}
+
+export interface GameInstance<T extends GameState> {
+  state: T;
+  id: GameInstanceID;
+  players: PlayerID[];
+  result?: GameResult;
+}
+
+export interface GameArea<T extends GameState> extends Interactable {
+  game: GameInstance<T> | undefined;
+  history: GameResult[];
+}
+
+export type CommandID = string;
+
+interface InteractableCommandBase {
+  commandID: CommandID;
+  interactableID: InteractableID;
+  type: string;
+}
+
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand;
+export type ViewingAreaUpdateCommand = {
+  type: 'ViewingAreaUpdate';
+  update: ViewingArea;
+}
+export type JoinGameCommand = {
+  type: 'JoinGame';
+}
+export type LeaveGameCommand = {
+  type: 'LeaveGame';
+  gameID: GameInstanceID;
+}
+
+export type InteractableCommandResponseMap = {
+  JoinGame: { gameID: string }
+}
+
+export interface GameMoveCommand<MoveType> {
+  type: 'GameMove';
+  gameID: GameInstanceID;
+  move: Omit<MoveType, "gamePiece">;
+}
+
+export type InteractableCommandResponse<MessageType> = {
+  commandID: CommandID;
+  interactableID: InteractableID;
+  error?: string;
+  payload?: any; // TODO InteractableCommandResponseMap[MessageType];
 }
 
 export interface ServerToClientEvents {
@@ -78,10 +167,12 @@ export interface ServerToClientEvents {
   townClosing: () => void;
   chatMessage: (message: ChatMessage) => void;
   interactableUpdate: (interactable: Interactable) => void;
+  commandResponse: (response: InteractableCommandResponse) => void;
 }
 
 export interface ClientToServerEvents {
   chatMessage: (message: ChatMessage) => void;
   playerMovement: (movementData: PlayerLocation) => void;
   interactableUpdate: (update: Interactable) => void;
+  interactableCommand: (command: InteractableCommand & InteractableCommandBase) => void;
 }

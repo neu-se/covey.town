@@ -2,10 +2,13 @@ import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
 import Player from '../lib/Player';
 import {
   BoundingBox,
+  InteractableCommand,
+  InteractableID,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
+  ViewingAreaUpdateCommand,
 } from '../types/CoveyTownSocket';
-import InteractableArea from './InteractableArea';
+import InteractableArea, { InteractableCommandError } from './InteractableArea';
 
 export default class ViewingArea extends InteractableArea {
   private _video?: string;
@@ -34,7 +37,7 @@ export default class ViewingArea extends InteractableArea {
    * @param townEmitter a broadcast emitter that can be used to emit updates to players
    */
   public constructor(
-    { id, isPlaying, elapsedTimeSec: progress, video }: ViewingAreaModel,
+    { id, isPlaying, elapsedTimeSec: progress, video }: Omit<ViewingAreaModel, 'type'>,
     coordinates: BoundingBox,
     townEmitter: TownEmitter,
   ) {
@@ -81,6 +84,8 @@ export default class ViewingArea extends InteractableArea {
       video: this._video,
       isPlaying: this._isPlaying,
       elapsedTimeSec: this._elapsedTimeSec,
+      occupants: this.occupantsByID,
+      type: 'ViewingArea',
     };
   }
 
@@ -96,6 +101,15 @@ export default class ViewingArea extends InteractableArea {
       throw new Error(`Malformed viewing area ${name}`);
     }
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
-    return new ViewingArea({ isPlaying: false, id: name, elapsedTimeSec: 0 }, rect, townEmitter);
+    return new ViewingArea({ isPlaying: false, id: name as InteractableID, elapsedTimeSec: 0, occupants: [] }, rect, townEmitter);
+  }
+
+  public handleCommand(command: InteractableCommand): undefined {
+    if (command.type === 'ViewingAreaUpdate') {
+      const viewingArea = command as ViewingAreaUpdateCommand;
+      this.updateModel(viewingArea.update);
+      return;
+    }
+    throw new InteractableCommandError('Unknown command type');
   }
 }

@@ -232,7 +232,7 @@ describe('TownsController integration tests', () => {
       const conversationArea = createConversationForTesting({
         boundingBox: { x: 10, y: 10, width: 1, height: 1 },
         conversationID: initialData.interactables.find(
-          eachInteractable => 'occupantsByID' in eachInteractable,
+          eachInteractable => isConversationArea(eachInteractable)
         )?.id,
       });
       await controller.createConversationArea(
@@ -311,6 +311,8 @@ describe('TownsController integration tests', () => {
             id: viewingArea.id,
             video: nanoid(),
             isPlaying: true,
+            occupants: [],
+            type: 'ViewingArea'
           };
           await controller.createViewingArea(testingTown.townID, sessionToken, newViewingArea);
           // Check to see that the viewing area was successfully updated
@@ -330,6 +332,8 @@ describe('TownsController integration tests', () => {
           id: viewingArea.id,
           video: nanoid(),
           isPlaying: true,
+          occupants: [],
+          type: 'ViewingArea'
         };
         await expect(
           controller.createViewingArea(nanoid(), sessionToken, newViewingArea),
@@ -343,6 +347,8 @@ describe('TownsController integration tests', () => {
           id: viewingArea.id,
           video: nanoid(),
           isPlaying: true,
+          occupants: [],
+          type: 'ViewingArea'
         };
         await expect(
           controller.createViewingArea(testingTown.townID, invalidSessionToken, newViewingArea),

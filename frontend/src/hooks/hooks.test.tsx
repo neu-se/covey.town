@@ -6,9 +6,9 @@ import { act } from 'react-dom/test-utils';
 import ConversationAreaController, {
   ConversationAreaEvents,
   NO_TOPIC_STRING,
-  useConversationAreaOccupants,
   useConversationAreaTopic,
-} from '../classes/ConversationAreaController';
+} from '../classes/interactable/ConversationAreaController';
+import { useInteractableAreaOccupants } from '../classes/interactable/InteractableAreaController';
 import PlayerController from '../classes/PlayerController';
 import TownController, {
   TownEvents,
@@ -165,9 +165,9 @@ describe('[T3] TownController-Dependent Hooks', () => {
     });
     it('Updates its value in response to conversationAreasChanged events', () => {
       act(() => {
-        const listener = getSingleListenerAdded('conversationAreasChanged');
+        const listener = getSingleListenerAdded('interactableAreasChanged');
         conversationAreas[2].occupants.push(players[2]);
-        listener(conversationAreas);
+        listener();
       });
       hookReturnValue.sort((a, b) => (a.topic && b.topic ? a.topic.localeCompare(b.topic) : 0));
       expect(hookReturnValue).toEqual([
@@ -178,33 +178,33 @@ describe('[T3] TownController-Dependent Hooks', () => {
     });
     it('Only adds a listener once', () => {
       // Check that there was one listener added
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
       // Trigger re-render
       act(() => {
-        const listener = getTownEventListener(townController, 'conversationAreasChanged');
+        const listener = getTownEventListener(townController, 'interactableAreasChanged');
         conversationAreas[2].occupants.push(players[2]);
-        listener(conversationAreas);
+        listener();
       });
       renderData.rerender(<TestComponent />);
       // Should still be one
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
     });
     it('Removes the listener when the component is unmounted', () => {
-      const addCall = getSingleListenerAdded('conversationAreasChanged');
+      const addCall = getSingleListenerAdded('interactableAreasChanged');
       cleanup();
-      const removeCall = getSingleListenerRemoved('conversationAreasChanged');
+      const removeCall = getSingleListenerRemoved('interactableAreasChanged');
       expect(addCall).toBe(removeCall);
     });
     it('Adds a listener on first render and does not re-register a listener on each render', () => {
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
       renderData.rerender(<TestComponent />);
       renderData.rerender(<TestComponent />);
       renderData.rerender(<TestComponent />);
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
     });
 
     it('Removes the listener if the townController changes and adds one to the new controller', () => {
-      const addCall = getSingleListenerAdded('conversationAreasChanged');
+      const addCall = getSingleListenerAdded('interactableAreasChanged');
       const newController = mockTownController({
         friendlyName: nanoid(),
         townID: nanoid(),
@@ -213,9 +213,9 @@ describe('[T3] TownController-Dependent Hooks', () => {
 
       useTownControllerSpy.mockReturnValue(newController);
       renderData.rerender(<TestComponent />);
-      expect(getSingleListenerRemoved('conversationAreasChanged')).toBe(addCall);
+      expect(getSingleListenerRemoved('interactableAreasChanged')).toBe(addCall);
 
-      getSingleListenerAdded('conversationAreasChanged', newController.addListener);
+      getSingleListenerAdded('interactableAreasChanged', newController.addListener);
     });
   });
 
@@ -365,7 +365,7 @@ describe('ConversationAreaController hooks', () => {
     let testPlayers: PlayerController[];
     let renderData: RenderResult;
     function TestComponent(props: { controller?: ConversationAreaController }) {
-      hookReturnValue = useConversationAreaOccupants(
+      hookReturnValue = useInteractableAreaOccupants(
         props.controller || conversationAreaController,
       );
       return null;

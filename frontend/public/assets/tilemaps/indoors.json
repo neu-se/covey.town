@@ -510,10 +510,17 @@
                  "y":1028.66683333333
                 }, 
                 {
-                 "type":"ConversationArea",
+                 "type":"GameArea",
+                 "properties": [
+                     {
+                            "name": "type",
+                            "type": "string",
+                            "value": "TicTacToe"
+                     }
+                 ],
                  "height":223.999666666667,
                  "id":30,
-                 "name":"Basement Dining Table 1",
+                 "name":"Basement Tic Tac Toe Table 1",
                  "rotation":0,
                  "visible":true,
                  "width":164.667,

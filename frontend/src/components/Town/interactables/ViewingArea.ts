@@ -27,7 +27,6 @@ export default class ViewingArea extends Interactable {
       { color: '#FFFFFF', backgroundColor: '#000000' },
     );
     this._labelText.setVisible(false);
-    this.townController.getViewingAreaController(this);
     this.setDepth(-1);
   }
 
