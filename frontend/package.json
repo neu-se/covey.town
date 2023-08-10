@@ -60,6 +60,7 @@
     "prestart": "npm run client",
     "start": "next start",
     "build": "next build",
+    "export": "next export",
     "dev": "next dev",
     "test": "cross-env DEBUG_PRINT_LIMIT=0 jest",
     "test-watch": "jest --watch",
