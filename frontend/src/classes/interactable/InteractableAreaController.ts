@@ -11,6 +11,12 @@ import PlayerController from '../PlayerController';
 export type BaseInteractableEventMap = {
   occupantsChange: (newOccupants: PlayerController[]) => void;
 };
+
+/**
+ * A InteractableAreaController manages the local behavior of a interactable area in the frontend,
+ * implementing the logic to bridge between the townService's interpretation of interactable areas and the
+ * frontend's. The InteractableAreaController emits events when the interactable area changes.
+ */
 export default abstract class InteractableAreaController<
   EmittedEventType extends EventMap,
   InteractableModelType extends InteractableAreaModel,
@@ -19,8 +25,13 @@ export default abstract class InteractableAreaController<
 
   private _occupants: PlayerController[] = [];
 
-  private _listeners: Map<keyof EmittedEventType, EmittedEventType[keyof EmittedEventType][]> =
-    new Map();
+  private _listeners: Map<
+    keyof EmittedEventType | keyof BaseInteractableEventMap,
+    (
+      | EmittedEventType[keyof EmittedEventType]
+      | BaseInteractableEventMap[keyof BaseInteractableEventMap]
+    )[]
+  > = new Map();
 
   constructor(id: InteractableID) {
     this._id = id;
@@ -30,9 +41,19 @@ export default abstract class InteractableAreaController<
     return this._id;
   }
 
-  public addListener<E extends keyof (EmittedEventType & BaseInteractableEventMap)>(
+  /**
+   * Add a listener for an event emitted by this InteractableAreaController
+   * @param event
+   * @param listener
+   * @returns
+   */
+  public addListener<E extends keyof EmittedEventType | keyof BaseInteractableEventMap>(
     event: E,
-    listener: (EmittedEventType & BaseInteractableEventMap)[E],
+    listener: E extends keyof BaseInteractableEventMap
+      ? BaseInteractableEventMap[E]
+      : E extends keyof EmittedEventType
+      ? EmittedEventType[E]
+      : never,
   ): this {
     const listeners = this._listeners.get(event) ?? [];
     listeners.push(listener);
@@ -40,9 +61,19 @@ export default abstract class InteractableAreaController<
     return this;
   }
 
-  public removeListener<E extends keyof (EmittedEventType & BaseInteractableEventMap)>(
+  /**
+   * Remove a listener for an event emitted by this InteractableAreaController
+   * @param event
+   * @param listener
+   * @returns
+   */
+  public removeListener<E extends keyof EmittedEventType | keyof BaseInteractableEventMap>(
     event: E,
-    listener: (EmittedEventType & BaseInteractableEventMap)[E],
+    listener: E extends keyof BaseInteractableEventMap
+      ? BaseInteractableEventMap[E]
+      : E extends keyof EmittedEventType
+      ? EmittedEventType[E]
+      : never,
   ): this {
     const listeners = this._listeners.get(event) ?? [];
     _.remove(listeners, l => l === listener);
@@ -50,11 +81,24 @@ export default abstract class InteractableAreaController<
     return this;
   }
 
-  emit<E extends keyof (EmittedEventType & BaseInteractableEventMap)>(
+  /**
+   * Emit an event to all listeners for that event
+   * @param event
+   * @param args
+   * @returns
+   */
+  public emit<E extends keyof EmittedEventType | keyof BaseInteractableEventMap>(
     event: E,
-    ...args: Parameters<(EmittedEventType & BaseInteractableEventMap)[E]>
+    ...args: E extends keyof BaseInteractableEventMap
+      ? Parameters<BaseInteractableEventMap[E]>
+      : E extends keyof EmittedEventType
+      ? Parameters<EmittedEventType[E]>
+      : Parameters<never>
   ): boolean {
     const listeners = this._listeners.get(event) ?? [];
+    //TODO bounty for whoever figures out the right way to type 'listeners'
+    //eslint-disable-next-line
+    //@ts-ignore
     listeners.forEach(listener => listener(...args));
     return true;
   }
@@ -67,14 +111,14 @@ export default abstract class InteractableAreaController<
     return this._occupants;
   }
 
+  /**
+   * Set the occupants of this interactable area, emitting an event if the occupants change.
+   */
   public set occupants(newOccupants: PlayerController[]) {
     if (
       newOccupants.length !== this._occupants.length ||
       _.xor(newOccupants, this._occupants).length > 0
     ) {
-      //TODO - is there a type-safe way to do this? Child interfaces might override occupantsChange with different types, hence the type warning
-      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       this.emit('occupantsChange', newOccupants);
       this._occupants = newOccupants;
     }
@@ -82,10 +126,20 @@ export default abstract class InteractableAreaController<
 
   abstract toInteractableAreaModel(): InteractableModelType;
 
+  /**
+   * Update the state of this interactable area from a new interactable area model, and a list of occupants.
+   * @param newModel
+   * @param occupants
+   */
   updateFrom(newModel: InteractableModelType, occupants: PlayerController[]): void {
     this.occupants = occupants;
     this._updateFrom(newModel);
   }
+
+  /**
+   * Update the state of this interactable area from a new interactable area model.
+   * @param newModel
+   */
   protected abstract _updateFrom(newModel: InteractableModelType): void;
 
   public abstract isActive(): boolean;

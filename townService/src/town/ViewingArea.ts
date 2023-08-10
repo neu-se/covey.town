@@ -4,6 +4,7 @@ import Player from '../lib/Player';
 import {
   BoundingBox,
   InteractableCommand,
+  InteractableCommandReturnType,
   InteractableID,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
@@ -109,11 +110,13 @@ export default class ViewingArea extends InteractableArea {
     );
   }
 
-  public handleCommand(command: InteractableCommand): undefined {
+  public handleCommand<CommandType extends InteractableCommand>(
+    command: CommandType,
+  ): InteractableCommandReturnType<CommandType> {
     if (command.type === 'ViewingAreaUpdate') {
       const viewingArea = command as ViewingAreaUpdateCommand;
       this.updateModel(viewingArea.update);
-      return;
+      return {} as InteractableCommandReturnType<CommandType>;
     }
     throw new InvalidParametersError('Unknown command type');
   }

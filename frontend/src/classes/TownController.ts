@@ -34,7 +34,8 @@ import TicTacToeAreaController from './interactable/TicTacToeAreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import PlayerController from './PlayerController';
 
-const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
+const CALCULATE_NEARBY_PLAYERS_DELAY_MS = 300;
+const SOCKET_COMMAND_TIMEOUT_MS = 5000;
 
 export type ConnectionProperties = {
   userName: string;
@@ -72,7 +73,10 @@ export type TownEvents = {
    */
   playerMoved: (movedPlayer: PlayerController) => void;
 
-  // TODO docs
+  /**
+   * An event that indicates that the set of active interactable areas has changed. This event is dispatched
+   * after updating the set of interactable areas - the new set of interactable areas can be found on the TownController.
+   */
   interactableAreasChanged: () => void;
 
   /**
@@ -132,7 +136,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    */
   private _playersInternal: PlayerController[] = [];
 
-  //TODO document, consider type restrictions?
+  /**
+   * The current list of interactable areas in the town. Adding or removing interactable areas might replace the array.
+   */
   private _interactableControllers: InteractableAreaController<EventMap, InteractableAreaModel>[] =
     [];
 
@@ -290,7 +296,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   public getPlayer(id: PlayerID) {
-    console.log(this._playersInternal);
     const ret = this._playersInternal.find(eachPlayer => eachPlayer.id === id);
     assert(ret);
     return ret;
@@ -318,7 +323,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     const ret = this._interactableControllers.filter(
       eachInteractable => eachInteractable instanceof GameAreaController,
     );
-    return ret as GameAreaController<GameState, unknown>[];
+    return ret as GameAreaController<GameState, EventMap>[];
   }
 
   /**
@@ -403,41 +408,28 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           playerToUpdate.location = movedPlayer.location;
         }
         this.emit('playerMoved', playerToUpdate);
-      } else {
-        //TODO: It should not be possible to receive a playerMoved event for a player that is not already in the players array, right?
-        const newPlayer = PlayerController.fromPlayerModel(movedPlayer);
-        this._players = this.players.concat(newPlayer);
-        this.emit('playerMoved', newPlayer);
       }
     });
 
-    //TODO docs
     /**
-     * When an interactable's state changes, push that update into the relevant controller, which is assumed
-     * to be either a Viewing Area or a Conversation Area, and which is assumed to already be represented by a
-     * ViewingAreaController or ConversationAreaController that this TownController has.
+     * When an interactable's state changes, push that update into the relevant controller
      *
-     * If a conversation area transitions from empty to occupied (or occupied to empty), this handler will emit
-     * a conversationAreasChagned event to listeners of this TownController.
+     * If an interactable area transitions from active to inactive (or inactive to active), this handler will emit
+     * an interactableAreasChanged event to listeners of this TownController.
      *
      * If the update changes properties of the interactable, the interactable is also expected to emit its own
-     * events (@see ViewingAreaController and @see ConversationAreaController)
+     * events.
      */
     this._socket.on('interactableUpdate', interactable => {
       try {
         const controller = this._interactableControllers.find(c => c.id === interactable.id);
         if (controller) {
           const activeBefore = controller.isActive();
-          console.log(JSON.stringify(interactable, null, 2));
           controller.updateFrom(interactable, this._playersByIDs(interactable.occupants));
           const activeNow = controller.isActive();
           if (activeBefore !== activeNow) {
             this.emit('interactableAreasChanged');
           }
-        } else {
-          console.error(`No controller found for interactable ${interactable.id}`);
-          console.error(this._interactableControllers.map(c => c.id));
-          console.error(`^^^^`);
         }
       } catch (err) {
         console.error('Error updating interactable', interactable);
@@ -472,7 +464,21 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this._socket.emit('chatMessage', message);
   }
 
-  //TODO
+  /**
+   * Sends an InteractableArea command to the townService. Returns a promise that resolves
+   * when the command is acknowledged by the server.
+   *
+   * If the command is not acknowledged within SOCKET_COMMAND_TIMEOUT_MS, the promise will reject.
+   *
+   * If the command is acknowledged successfully, the promise will resolve with the payload of the response.
+   *
+   * If the command is acknowledged with an error, the promise will reject with the error.
+   *
+   * @param interactableID ID of the interactable area to send the command to
+   * @param command The command to send @see InteractableCommand
+   * @returns A promise for the InteractableResponse corresponding to the command
+   *
+   **/
   public async sendInteractableCommand<CommandType extends InteractableCommand>(
     interactableID: InteractableID,
     command: CommandType,
@@ -485,9 +491,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     return new Promise((resolve, reject) => {
       const watchdog = setTimeout(() => {
         reject('Command timed out');
-      }, 5000);
+      }, SOCKET_COMMAND_TIMEOUT_MS);
 
-      console.log(`Sending command ${commandMessage.commandID}, ${commandMessage.type}`);
       const ackListener = (response: InteractableCommandResponse<CommandType>) => {
         if (response.commandID === commandMessage.commandID) {
           clearTimeout(watchdog);
@@ -495,7 +500,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           if (response.error) {
             reject(response.error);
           } else {
-            console.log('Got an ack for command' + commandMessage.commandID);
             resolve(response.payload);
           }
         }
@@ -659,7 +663,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    *    with the event
    */
   public emitViewingAreaUpdate(viewingArea: ViewingAreaController) {
-    //TODO refactor
     this._socket.emit('interactableUpdate', viewingArea.toInteractableAreaModel());
   }
 
@@ -722,27 +725,15 @@ export function useTownSettings() {
 }
 
 /**
- * A react hook to retrieve a viewing area controller.
+ * A react hook to retrieve an interactable area controller
  *
- * This function will throw an error if the viewing area controller does not exist.
+ * This function will throw an error if the interactable area controller does not exist.
  *
  * This hook relies on the TownControllerContext.
  *
- * @param viewingAreaID The ID of the viewing area to retrieve the controller for
- *
- * @throws Error if there is no viewing area controller matching the specifeid ID
+ * @param interactableAreaID The ID of the interactable area to retrieve the controller for
+ * @throws Error if there is no interactable area controller matching the specified ID
  */
-export function useViewingAreaController(viewingAreaID: string): ViewingAreaController {
-  const townController = useTownController();
-
-  const viewingArea = townController.viewingAreas.find(eachArea => eachArea.id == viewingAreaID);
-  if (!viewingArea) {
-    throw new Error(`Requested viewing area ${viewingAreaID} does not exist`);
-  }
-  return viewingArea;
-}
-
-//TODO
 export function useInteractableAreaController<T>(interactableAreaID: string): T {
   const townController = useTownController();
   const interactableAreaController = townController.gameAreas.find(
@@ -751,7 +742,7 @@ export function useInteractableAreaController<T>(interactableAreaID: string): T 
   if (!interactableAreaController) {
     throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
   }
-  return interactableAreaController as unknown as T; //TODO
+  return interactableAreaController as unknown as T;
 }
 
 /**
@@ -860,7 +851,7 @@ export function usePlayersInVideoCall(): PlayerController[] {
     const updatePlayersInCall = () => {
       const now = Date.now();
       // To reduce re-renders, only recalculate the nearby players every so often
-      if (now - lastRecalculatedNearbyPlayers > CALCULATE_NEARBY_PLAYERS_DELAY) {
+      if (now - lastRecalculatedNearbyPlayers > CALCULATE_NEARBY_PLAYERS_DELAY_MS) {
         lastRecalculatedNearbyPlayers = now;
         const nearbyPlayers = townController.nearbyPlayers();
         if (!samePlayers(nearbyPlayers, prevNearbyPlayers)) {

@@ -48,14 +48,12 @@ export default class ConversationArea extends Interactable {
       { color: '#000000' },
     );
     this._conversationArea = this.townController.getConversationAreaController(this);
-    console.log(`Found conversation area ${this.name} with controller ${this._conversationArea}`);
     this._updateLabelText(this._conversationArea.topic);
     this._changeListener = newTopic => this._updateLabelText(newTopic);
     this._conversationArea.addListener('topicChange', this._changeListener);
   }
 
   private _updateLabelText(newTopic: string | undefined) {
-    console.log(`updateLabelText: ${newTopic}`);
     if (newTopic === undefined) {
       this._topicText.text = '(No topic)';
     } else {

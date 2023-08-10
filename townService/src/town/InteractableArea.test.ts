@@ -5,6 +5,8 @@ import { defaultLocation, getLastEmittedEvent } from '../TestUtils';
 import {
   BoundingBox,
   ConversationArea as ConversationAreaModel,
+  InteractableCommand,
+  InteractableCommandReturnType,
   TownEmitter,
   XY,
 } from '../types/CoveyTownSocket';
@@ -12,7 +14,9 @@ import ConversationArea from './ConversationArea';
 import InteractableArea, { PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_WIDTH } from './InteractableArea';
 
 class TestInteractableArea extends InteractableArea {
-  public handleCommand(): object | undefined {
+  public handleCommand<
+    CommandType extends InteractableCommand,
+  >(): InteractableCommandReturnType<CommandType> {
     throw new Error('Method not implemented.');
   }
 

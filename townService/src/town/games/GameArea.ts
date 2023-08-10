@@ -8,6 +8,10 @@ import {
 import InteractableArea from '../InteractableArea';
 import Game from './Game';
 
+/**
+ * A GameArea is an InteractableArea on the map that can host a game.
+ * At any given point in time, there is at most one game in progress in a GameArea.
+ */
 export default abstract class GameArea<
   GameType extends Game<GameState, unknown>,
 > extends InteractableArea {

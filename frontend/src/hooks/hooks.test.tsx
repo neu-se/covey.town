@@ -8,7 +8,10 @@ import ConversationAreaController, {
   NO_TOPIC_STRING,
   useConversationAreaTopic,
 } from '../classes/interactable/ConversationAreaController';
-import { useInteractableAreaOccupants } from '../classes/interactable/InteractableAreaController';
+import {
+  BaseInteractableEventMap,
+  useInteractableAreaOccupants,
+} from '../classes/interactable/InteractableAreaController';
 import PlayerController from '../classes/PlayerController';
 import TownController, {
   TownEvents,
@@ -318,16 +321,13 @@ describe('[T3] TownController-Dependent Hooks', () => {
 
 describe('ConversationAreaController hooks', () => {
   let conversationAreaController: ConversationAreaController;
-  type ConversationAreaEventName = keyof ConversationAreaEvents;
-
   let addListenerSpy: jest.SpyInstance<
     ConversationAreaController,
-    [event: ConversationAreaEventName, listener: ConversationAreaEvents[ConversationAreaEventName]]
+    Parameters<ConversationAreaController['addListener']>
   >;
-
   let removeListenerSpy: jest.SpyInstance<
     ConversationAreaController,
-    [event: ConversationAreaEventName, listener: ConversationAreaEvents[ConversationAreaEventName]]
+    Parameters<ConversationAreaController['removeListener']>
   >;
 
   beforeEach(() => {
@@ -335,21 +335,37 @@ describe('ConversationAreaController hooks', () => {
     addListenerSpy = jest.spyOn(conversationAreaController, 'addListener');
     removeListenerSpy = jest.spyOn(conversationAreaController, 'removeListener');
   });
-  function getSingleListenerAdded<Ev extends EventNames<ConversationAreaEvents>>(
+  function getSingleListenerAdded<
+    Ev extends EventNames<ConversationAreaEvents> | EventNames<BaseInteractableEventMap>,
+  >(
     eventName: Ev,
     spy = addListenerSpy,
-  ): ConversationAreaEvents[Ev] {
+  ): Ev extends EventNames<ConversationAreaEvents>
+    ? ConversationAreaEvents[Ev]
+    : Ev extends EventNames<BaseInteractableEventMap>
+    ? BaseInteractableEventMap[Ev]
+    : never {
     const addedListeners = spy.mock.calls.filter(eachCall => eachCall[0] === eventName);
     if (addedListeners.length !== 1) {
       throw new Error(
         `Expected to find exactly one addListener call for ${eventName} but found ${addedListeners.length}`,
       );
     }
-    return addedListeners[0][1] as unknown as ConversationAreaEvents[Ev];
+    return addedListeners[0][1] as unknown as Ev extends EventNames<ConversationAreaEvents>
+      ? ConversationAreaEvents[Ev]
+      : Ev extends EventNames<BaseInteractableEventMap>
+      ? BaseInteractableEventMap[Ev]
+      : never;
   }
-  function getSingleListenerRemoved<Ev extends EventNames<ConversationAreaEvents>>(
+  function getSingleListenerRemoved<
+    Ev extends EventNames<ConversationAreaEvents> | EventNames<BaseInteractableEventMap>,
+  >(
     eventName: Ev,
-  ): ConversationAreaEvents[Ev] {
+  ): Ev extends EventNames<ConversationAreaEvents>
+    ? ConversationAreaEvents[Ev]
+    : Ev extends EventNames<BaseInteractableEventMap>
+    ? BaseInteractableEventMap[Ev]
+    : never {
     const removedListeners = removeListenerSpy.mock.calls.filter(
       eachCall => eachCall[0] === eventName,
     );
@@ -358,7 +374,11 @@ describe('ConversationAreaController hooks', () => {
         `Expected to find exactly one removeListeners call for ${eventName} but found ${removedListeners.length}`,
       );
     }
-    return removedListeners[0][1] as unknown as ConversationAreaEvents[Ev];
+    return removedListeners[0][1] as unknown as Ev extends EventNames<ConversationAreaEvents>
+      ? ConversationAreaEvents[Ev]
+      : Ev extends EventNames<BaseInteractableEventMap>
+      ? BaseInteractableEventMap[Ev]
+      : never;
   }
   describe('[T3] useConversationAreaOccupants', () => {
     let hookReturnValue: PlayerController[];

@@ -1,13 +1,18 @@
-import GameArea from './GameArea';
+import InvalidParametersError from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import {
   InteractableCommand,
-  InteractableCommandResponse,
+  InteractableCommandReturnType,
   InteractableType,
 } from '../../types/CoveyTownSocket';
+import GameArea from './GameArea';
 import TicTacToeGame from './TicTacToeGame';
-import InvalidParametersError from '../../lib/InvalidParametersError';
 
+/**
+ * A TicTacToeGameArea is a GameArea that hosts a TicTacToeGame.
+ * @see TicTacToeGame
+ * @see GameArea
+ */
 export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
   protected getType(): InteractableType {
     return 'TicTacToeArea';
@@ -33,10 +38,23 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
     this._emitAreaChanged();
   }
 
+  /**
+   * Handle a command from a player in this game area.
+   * Supported commands:
+   * - GameMove (applies a move to the game)
+   * - JoinGame (joins the game, or creates a new one if none is in progress)
+   * - LeaveGame (leaves the game)
+   * @see InteractableCommand
+   *
+   * @param command command to handle
+   * @param player player making the request
+   * @returns response to the command, @see InteractableCommandResponse
+   * @throws InvalidParametersError if the command is not supported or is invalid
+   */
   public handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
     player: Player,
-  ): InteractableCommandResponse<CommandType>['payload'] {
+  ): InteractableCommandReturnType<CommandType> {
     if (command.type === 'GameMove') {
       const game = this._game;
       if (!game) {
@@ -53,8 +71,9 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
           gamePiece: player.id === game.state.x ? 'X' : 'O',
         },
       });
+      return undefined as InteractableCommandReturnType<CommandType>;
     }
-    if (command.type === 'JoinGame') {
+    else if (command.type === 'JoinGame') {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
@@ -62,9 +81,9 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
         this._game = game;
       }
       game.join(player);
-      return { gameID: game.id };
+      return { gameID: game.id } as InteractableCommandReturnType<CommandType>;
     }
-    if (command.type === 'LeaveGame') {
+    else if (command.type === 'LeaveGame') {
       const game = this._game;
       if (!game) {
         throw new InvalidParametersError('No game in progress');
@@ -73,7 +92,9 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
         throw new InvalidParametersError('Game ID mismatch');
       }
       game.leave(player);
+      return undefined as InteractableCommandReturnType<CommandType>;
+    } else {
+      throw new InvalidParametersError('Invalid command');
     }
-    throw new InvalidParametersError('Invalid command');
   }
 }

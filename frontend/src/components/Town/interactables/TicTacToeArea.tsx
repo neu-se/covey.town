@@ -23,7 +23,7 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useState, React } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import TicTacToeAreaController, {
   TicTacToeCell,
 } from '../../../classes/interactable/TicTacToeAreaController';
@@ -193,7 +193,6 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
-      console.log('game ended');
       const winner = gameAreaController.winner;
       if (!winner) {
         toast({
@@ -235,7 +234,6 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
     );
   } else {
     let joinGameButton = <></>;
-    console.log(`isPlayer=${gameAreaController.isPlayer}, over=${gameAreaController.status}`);
     if (!gameAreaController.isPlayer || gameAreaController.status === 'OVER') {
       joinGameButton = (
         <Button
@@ -313,9 +311,7 @@ export default function TicTacToeAreaWrapper(): JSX.Element {
   const gameArea = useInteractable<GameAreaInteractable>('gameArea');
   const townController = useTownController();
   const closeModal = useCallback(() => {
-    console.log('Ending');
     if (gameArea) {
-      //TODO need to abandon the game!
       townController.interactEnd(gameArea);
       const controller = townController.getGameAreaController(gameArea);
       controller.leaveGame();

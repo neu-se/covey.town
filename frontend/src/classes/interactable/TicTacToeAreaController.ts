@@ -1,22 +1,24 @@
 import { GameArea, GameStatus, TicTacToeGameState } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
-import GameAreaController, { GameEventTypes } from './GameAreaController';
+import GameAreaController from './GameAreaController';
 
 export type TicTacToeCell = 'X' | 'O' | undefined;
-export type TicTacToeEvents = GameEventTypes & {
+export type TicTacToeEvents = {
   boardChanged: (board: TicTacToeCell[][]) => void;
   turnChanged: (isOurTurn: boolean) => void;
 };
 
-export const TIC_TAC_TOE_GRID_SIZE = 3;
+/**
+ * This class is responsible for managing the state of the Tic Tac Toe game, and for sending commands to the server
+ */
 export default class TicTacToeAreaController extends GameAreaController<
   TicTacToeGameState,
   TicTacToeEvents
 > {
   protected _board: TicTacToeCell[][] = [
-    ['X', 'O', undefined],
-    ['X', undefined, undefined],
-    [undefined, undefined, 'O'],
+    [undefined, undefined, undefined],
+    [undefined, undefined, undefined],
+    [undefined, undefined, undefined],
   ];
 
   get board(): TicTacToeCell[][] {
@@ -43,6 +45,9 @@ export default class TicTacToeAreaController extends GameAreaController<
     return this._model.game?.state.moves.length || 0;
   }
 
+  /**
+   * Returns the winner of the game, if there is one
+   */
   get winner(): PlayerController | undefined {
     const winner = this._model.game?.state.winner;
     if (winner) {
@@ -51,11 +56,13 @@ export default class TicTacToeAreaController extends GameAreaController<
     return undefined;
   }
 
+  /**
+   * Returns the player whose turn it is, if the game is in progress
+   */
   get whoseTurn(): PlayerController | undefined {
     const x = this.x;
     const o = this.o;
     if (!x || !o || this._model.game?.state.status !== 'IN_PROGRESS') {
-      console.log('Returning undefined');
       return undefined;
     }
     if (this.moveCount % 2 === 0) {
@@ -83,6 +90,10 @@ export default class TicTacToeAreaController extends GameAreaController<
     return this._model.game?.state.status === 'IN_PROGRESS';
   }
 
+  /**
+   * Updates the internal state of this TicTacToeAreaController to match the new model
+   * @param newModel
+   */
   protected _updateFrom(newModel: GameArea<TicTacToeGameState>): void {
     super._updateFrom(newModel);
     const newState = newModel.game;
@@ -93,28 +104,31 @@ export default class TicTacToeAreaController extends GameAreaController<
         [undefined, undefined, undefined],
       ];
       newState.state.moves.forEach(move => {
-        this._board[move.x][move.y] = move.gamePiece;
+        this._board[move.row][move.col] = move.gamePiece;
       });
-      console.log(`BoardChagned, moves = ${this._model.game?.state.moves.length}`);
       this.emit('boardChanged', this._board);
     }
     const isOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
-    console.log(`TurnChanged, isOurTurn = ${isOurTurn}`);
     this.emit('turnChanged', isOurTurn);
   }
 
+  /**
+   * Sends a request to the server to make a move in the game
+   *
+   * @param row Row of the move
+   * @param col Column of the move
+   */
   public async makeMove(row: integer, col: integer) {
     const instanceID = this._instanceID;
     if (!instanceID) {
       throw new Error('No game in progress');
     }
-    console.log(`Making move ${row}, ${col}`);
     await this._townController.sendInteractableCommand(this.id, {
       type: 'GameMove',
       gameID: instanceID,
       move: {
-        x: row,
-        y: col,
+        row,
+        col,
       },
     });
   }

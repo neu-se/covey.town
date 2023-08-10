@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { EventMap } from 'typed-emitter';
 import {
   GameArea,
   GameInstance,
@@ -17,11 +18,16 @@ export type GameEventTypes = {
   gameEnd: () => void;
   playersChange: (newPlayers: PlayerController[]) => void;
 };
-// FALL23 GameArea New
+
+/**
+ * This class is the base class for all game controllers. It is responsible for managing the
+ * state of the game, and for sending commands to the server to update the state of the game.
+ * It is also responsible for notifying the UI when the state of the game changes, by emitting events.
+ */
 export default abstract class GameAreaController<
   State extends GameState,
-  EventTypes,
-> extends InteractableAreaController<EventTypes & GameEventTypes, GameArea<State>> {
+  EventTypes extends EventMap,
+> extends InteractableAreaController<GameEventTypes & EventTypes, GameArea<State>> {
   protected _instanceID?: GameInstanceID;
 
   protected _townController: TownController;
@@ -52,6 +58,11 @@ export default abstract class GameAreaController<
     return this._model.game;
   }
 
+  /**
+   * Sends a request to the server to join the current game in the game area, or create a new one if there is no game in progress.
+   *
+   * @throws An error if the server rejects the request to join the game.
+   */
   public async joinGame() {
     const { gameID } = await this._townController.sendInteractableCommand(this.id, {
       type: 'JoinGame',
@@ -59,6 +70,9 @@ export default abstract class GameAreaController<
     this._instanceID = gameID;
   }
 
+  /**
+   * Sends a request to the server to leave the current game in the game area.
+   */
   public async leaveGame() {
     const instanceID = this._instanceID;
     if (instanceID) {
@@ -77,6 +91,7 @@ export default abstract class GameAreaController<
     );
     if (!newPlayers && this._players.length > 0) {
       this._players = [];
+      //TODO - Bounty for figuring out how to make the types work here
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.emit('playersChange', []);
@@ -86,17 +101,19 @@ export default abstract class GameAreaController<
       _.xor(newPlayers, this._players).length > 0
     ) {
       this._players = newPlayers ?? [];
+      //TODO - Bounty for figuring out how to make the types work here
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.emit('playersChange', newPlayers);
     }
     this._model = newModel;
+    //TODO - Bounty for figuring out how to make the types work here
     //eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.emit('gameUpdated');
     this._instanceID = newModel.game?.id ?? this._instanceID;
     if (gameEnding) {
-      //TODO figure out types?
+      //TODO - Bounty for figuring out how to make the types work here
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       this.emit('gameEnd');

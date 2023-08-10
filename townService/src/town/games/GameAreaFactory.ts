@@ -3,6 +3,13 @@ import { BoundingBox, TownEmitter } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
 import TicTacToeGameArea from './TicTacToeGameArea';
 
+/**
+ * Creates a new GameArea from a map object
+ * @param mapObject the map object to create the game area from
+ * @param broadcastEmitter a broadcast emitter that can be used to emit updates to players
+ * @returns the interactable area
+ * @throws an error if the map object is malformed
+ */
 export default function GameAreaFactory(
   mapObject: ITiledMapObject,
   broadcastEmitter: TownEmitter,

@@ -73,27 +73,43 @@ export interface ViewingArea extends Interactable {
   elapsedTimeSec: number;
 }
 
-// FALL23 GameArea New
 export type GameStatus = "IN_PROGRESS" | "WAITING_TO_START" | "OVER";
+/**
+ * Base type for the state of a game
+ */
 export interface GameState {
   status: GameStatus;
 } 
 
+/**
+ * Type for the state of a game that can be won
+ */
 export interface WinnableGameState extends GameState {
   winner?: PlayerID;
 }
-
+/**
+ * Base type for a move in a game. Implementers should also extend MoveType
+ * @see MoveType
+ */
 export interface GameMove<MoveType> {
   playerID: PlayerID;
   gameID: GameInstanceID;
   move: MoveType;
 }
+/**
+ * Type for a move in TicTacToe
+ */
 export interface TicTacToeMove {
   gamePiece: "X" | "O";
-  x: number; //TODO row, col not x,y
-  y: number;
+  row: number;
+  col: number; 
 }
 
+/**
+ * Type for the state of a TicTacToe game
+ * The state of the game is represented as a list of moves, and the playerIDs of the players (x and o)
+ * The first player to join the game is x, the second is o
+ */
 export interface TicTacToeGameState extends WinnableGameState {
   moves: ReadonlyArray<TicTacToeMove>;
   x?: PlayerID;
@@ -103,11 +119,20 @@ export interface TicTacToeGameState extends WinnableGameState {
 export type InteractableID = string;
 export type GameInstanceID = string;
 
+/**
+ * Type for the result of a game
+ */
 export interface GameResult {
   gameID: GameInstanceID;
   scores: { [playerName: string]: number };
 }
 
+/**
+ * Base type for an *instance* of a game. An instance of a game
+ * consists of the present state of the game (which can change over time),
+ * the players in the game, and the result of the game
+ * @see GameState
+ */
 export interface GameInstance<T extends GameState> {
   state: T;
   id: GameInstanceID;
@@ -115,6 +140,10 @@ export interface GameInstance<T extends GameState> {
   result?: GameResult;
 }
 
+/**
+ * Base type for an area that can host a game
+ * @see GameInstance
+ */
 export interface GameArea<T extends GameState> extends Interactable {
   game: GameInstance<T> | undefined;
   history: GameResult[];
@@ -122,28 +151,45 @@ export interface GameArea<T extends GameState> extends Interactable {
 
 export type CommandID = string;
 
+/**
+ * Base type for a command that can be sent to an interactable.
+ * This type is used only by the client/server interface, which decorates
+ * an @see InteractableCommand with a commandID and interactableID
+ */
 interface InteractableCommandBase {
+  /**
+   * A unique ID for this command. This ID is used to match a command against a response
+   */
   commandID: CommandID;
+  /**
+   * The ID of the interactable that this command is being sent to
+   */
   interactableID: InteractableID;
+  /**
+   * The type of this command
+   */
   type: string;
 }
 
 export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand;
-export type ViewingAreaUpdateCommand = {
+export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
 }
-export type JoinGameCommand = {
+export interface JoinGameCommand {
   type: 'JoinGame';
 }
-export type LeaveGameCommand = {
+export interface LeaveGameCommand {
   type: 'LeaveGame';
   gameID: GameInstanceID;
 }
 
-export type InteractableCommandResponseMap = {
-  JoinGame: { gameID: string }
-}
+export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
+  CommandType extends JoinGameCommand ? { gameID: string}:
+  CommandType extends ViewingAreaUpdateCommand ? undefined :
+  CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
+  CommandType extends LeaveGameCommand ? undefined :
+  never;
 
 export interface GameMoveCommand<MoveType> {
   type: 'GameMove';
@@ -155,7 +201,7 @@ export type InteractableCommandResponse<MessageType> = {
   commandID: CommandID;
   interactableID: InteractableID;
   error?: string;
-  payload?: any; // TODO InteractableCommandResponseMap[MessageType];
+  payload?: InteractableCommandResponseMap[MessageType];
 }
 
 export interface ServerToClientEvents {

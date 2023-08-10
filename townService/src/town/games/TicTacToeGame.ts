@@ -3,6 +3,10 @@ import Player from '../../lib/Player';
 import { GameMove, TicTacToeGameState, TicTacToeMove } from '../../types/CoveyTownSocket';
 import Game from './Game';
 
+/**
+ * A TicTacToeGame is a Game that implements the rules of Tic Tac Toe.
+ * @see https://en.wikipedia.org/wiki/Tic-tac-toe
+ */
 export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMove> {
   private _x?: Player;
 
@@ -27,7 +31,7 @@ export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMov
       ['', '', ''],
     ];
     for (const move of moves) {
-      board[move.x][move.y] = move.gamePiece;
+      board[move.row][move.col] = move.gamePiece;
     }
     // Check for 3 in a row or column
     for (let i = 0; i < 3; i++) {
@@ -71,11 +75,11 @@ export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMov
 
   private _validateMove(move: TicTacToeMove) {
     // A move is valid if it is in the board and the space is empty
-    if (move.x < 0 || move.x > 2 || move.y < 0 || move.y > 2) {
+    if (move.col < 0 || move.col > 2 || move.row < 0 || move.row > 2) {
       throw new InvalidParametersError('Move is out of bounds');
     }
     for (const m of this.state.moves) {
-      if (m.x === move.x && m.y === move.y) {
+      if (m.col === move.col && m.row === move.row) {
         throw new InvalidParametersError('Move is not empty');
       }
     }
@@ -99,25 +103,40 @@ export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMov
     this._checkForGameEnding();
   }
 
+  /**
+   * Applies a player's move to the game.
+   * Updates the game's state to reflect the move.
+   * If the move ends the game, updates the game's state to reflect the end of the game.
+   *
+   * @param move The move to apply to the game
+   * @throws InvalidParametersError if the move is invalid
+   */
   public applyMove(move: GameMove<TicTacToeMove>): void {
     this._validateMove(move.move);
     if (move.playerID === this.state.x) {
       this._applyMove({
         gamePiece: 'X',
-        x: move.move.x,
-        y: move.move.y,
+        col: move.move.col,
+        row: move.move.row,
       });
     } else if (move.playerID === this.state.o) {
       this._applyMove({
         gamePiece: 'O',
-        x: move.move.x,
-        y: move.move.y,
+        col: move.move.col,
+        row: move.move.row,
       });
     } else {
       throw new InvalidParametersError('Player is not in this game');
     }
   }
 
+  /**
+   * Adds a player to the game.
+   * Updates the game's state to reflect the new player.
+   *
+   * @param player The player to join the game
+   * @throws InvalidParametersError if the player is already in the game or the game is full
+   */
   public _join(player: Player): void {
     if (this.state.x === player.id || this.state.o === player.id) {
       throw new InvalidParametersError('Player is already in the game');
@@ -147,6 +166,14 @@ export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMov
     }
   }
 
+  /**
+   * Removes a player from the game.
+   * Updates the game's state to reflect the player leaving.
+   * If the game has already started, updates the game's state to reflect the end of the game.
+   * If the game has not started yet, updates the game's state to reflect the game still waiting to start.
+   *
+   * @param player The player to remove from the game
+   */
   protected _leave(player: Player): void {
     // Handles case where the game has not started yet
     if (this.state.x === undefined || this.state.o === undefined) {

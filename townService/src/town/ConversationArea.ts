@@ -4,6 +4,8 @@ import Player from '../lib/Player';
 import {
   BoundingBox,
   ConversationArea as ConversationAreaModel,
+  InteractableCommand,
+  InteractableCommandReturnType,
   TownEmitter,
 } from '../types/CoveyTownSocket';
 import InteractableArea from './InteractableArea';
@@ -80,7 +82,9 @@ export default class ConversationArea extends InteractableArea {
     return new ConversationArea({ id: name, occupants: [] }, rect, broadcastEmitter);
   }
 
-  public handleCommand(): undefined {
+  public handleCommand<
+    CommandType extends InteractableCommand,
+  >(): InteractableCommandReturnType<CommandType> {
     throw new InvalidParametersError('Unknown command type');
   }
 }
