@@ -284,7 +284,11 @@ export default function TownSelection(): JSX.Element {
                 </FormControl>
               </Box>
               <Box>
-                <Button data-testid='newTownButton' onClick={handleCreate} isLoading={isJoining} disabled={isJoining}>
+                <Button
+                  data-testid='newTownButton'
+                  onClick={handleCreate}
+                  isLoading={isJoining}
+                  disabled={isJoining}>
                   Create
                 </Button>
               </Box>
@@ -309,7 +313,11 @@ export default function TownSelection(): JSX.Element {
                     onChange={event => setTownIDToJoin(event.target.value)}
                   />
                 </FormControl>
-                <Button data-testid='joinTownByIDButton' onClick={() => handleJoin(townIDToJoin)} isLoading={isJoining} disabled={isJoining}>
+                <Button
+                  data-testid='joinTownByIDButton'
+                  onClick={() => handleJoin(townIDToJoin)}
+                  isLoading={isJoining}
+                  disabled={isJoining}>
                   Connect
                 </Button>
               </Flex>
