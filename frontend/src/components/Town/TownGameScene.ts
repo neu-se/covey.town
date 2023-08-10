@@ -283,8 +283,8 @@ export default class TownGameScene extends Phaser.Scene {
       }
 
       //Update the location for the labels of all of the other players
-      for(const player of this._players){
-        if(player.gameObjects?.label && player.gameObjects?.sprite.body){
+      for (const player of this._players) {
+        if (player.gameObjects?.label && player.gameObjects?.sprite.body) {
           player.gameObjects.label.setX(player.gameObjects.sprite.body.x);
           player.gameObjects.label.setY(player.gameObjects.sprite.body.y - 20);
         }

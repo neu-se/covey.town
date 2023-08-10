@@ -13,6 +13,10 @@
   "bugs": {
     "url": "https://github.com/neu-se/covey.town/issues"
   },
+  "engines": {
+    "node": "18.x.x",
+    "npm": "9.x.x"
+  },
   "homepage": "https://github.com/neu-se/covey.town#readme",
   "scripts": {
     "test": "jest ",
