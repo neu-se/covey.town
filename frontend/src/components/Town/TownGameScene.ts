@@ -19,7 +19,7 @@ function interactableTypeForObjectType(type: string): any {
     return Transporter;
   } else if (type === 'ViewingArea') {
     return ViewingArea;
-  } else if(type === 'GameArea') {
+  } else if (type === 'GameArea') {
     return GameArea;
   } else {
     throw new Error(`Unknown object type: ${type}`);

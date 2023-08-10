@@ -57,7 +57,7 @@ describe('[T2] ConversationAreaController', () => {
         id: testArea.id,
         topic: testArea.topic,
         occupants: testArea.occupants.map(eachOccupant => eachOccupant.id),
-        type: 'ConversationArea'
+        type: 'ConversationArea',
       });
     });
   });
@@ -76,7 +76,7 @@ describe('[T2] ConversationAreaController', () => {
         id: testArea.id,
         topic: newTopic,
         occupants: testArea.occupants.map(eachOccupant => eachOccupant.id),
-        type: 'ConversationArea'
+        type: 'ConversationArea',
       });
     });
   });

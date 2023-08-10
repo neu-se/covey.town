@@ -18,7 +18,11 @@ describe('ViewingArea', () => {
 
   beforeEach(() => {
     mockClear(townEmitter);
-    testArea = new ViewingArea({ id, isPlaying, elapsedTimeSec, video, occupants }, testAreaBox, townEmitter);
+    testArea = new ViewingArea(
+      { id, isPlaying, elapsedTimeSec, video, occupants },
+      testAreaBox,
+      townEmitter,
+    );
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
     testArea.add(newPlayer);
   });
@@ -32,7 +36,14 @@ describe('ViewingArea', () => {
 
       expect(testArea.occupantsByID).toEqual([extraPlayer.id]);
       const lastEmittedUpdate = getLastEmittedEvent(townEmitter, 'interactableUpdate');
-      expect(lastEmittedUpdate).toEqual({ id, isPlaying, elapsedTimeSec, video, occupants: [extraPlayer.id], type: 'ViewingArea' });
+      expect(lastEmittedUpdate).toEqual({
+        id,
+        isPlaying,
+        elapsedTimeSec,
+        video,
+        occupants: [extraPlayer.id],
+        type: 'ViewingArea',
+      });
     });
     it("Clears the player's conversationLabel and emits an update for their location", () => {
       testArea.remove(newPlayer);
@@ -43,7 +54,14 @@ describe('ViewingArea', () => {
     it('Clears the video property when the last occupant leaves', () => {
       testArea.remove(newPlayer);
       const lastEmittedUpdate = getLastEmittedEvent(townEmitter, 'interactableUpdate');
-      expect(lastEmittedUpdate).toEqual({ id, isPlaying, elapsedTimeSec, video: undefined, occupants: [], type: 'ViewingArea' });
+      expect(lastEmittedUpdate).toEqual({
+        id,
+        isPlaying,
+        elapsedTimeSec,
+        video: undefined,
+        occupants: [],
+        type: 'ViewingArea',
+      });
       expect(testArea.video).toBeUndefined();
     });
   });
@@ -66,11 +84,18 @@ describe('ViewingArea', () => {
       elapsedTimeSec,
       isPlaying,
       occupants: [newPlayer.id],
-      type: 'ViewingArea'
+      type: 'ViewingArea',
     });
   });
   test('updateModel sets video, isPlaying and elapsedTimeSec', () => {
-    testArea.updateModel({ id: 'ignore', isPlaying: false, elapsedTimeSec: 150, video: 'test2', occupants: [], type: 'ViewingArea' });
+    testArea.updateModel({
+      id: 'ignore',
+      isPlaying: false,
+      elapsedTimeSec: 150,
+      video: 'test2',
+      occupants: [],
+      type: 'ViewingArea',
+    });
     expect(testArea.isPlaying).toBe(false);
     expect(testArea.id).toBe(id);
     expect(testArea.elapsedTimeSec).toBe(150);

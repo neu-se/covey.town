@@ -6,7 +6,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as ReactPlayer from 'react-player';
 import TownController from '../../../classes/TownController';
-import ViewingAreaController, { ViewingAreaEvents } from '../../../classes/interactable/ViewingAreaController';
+import ViewingAreaController, {
+  ViewingAreaEvents,
+} from '../../../classes/interactable/ViewingAreaController';
 import TownControllerContext from '../../../contexts/TownControllerContext';
 import { ViewingAreaVideo } from './ViewingAreaVideo';
 
@@ -104,7 +106,7 @@ describe('[T4] Viewing Area Video', () => {
       isPlaying: true,
       video: 'test',
       occupants: [],
-      type: 'ViewingArea'
+      type: 'ViewingArea',
     });
 
     addListenerSpy = jest.spyOn(viewingArea, 'addListener');
@@ -231,7 +233,7 @@ describe('[T4] Viewing Area Video', () => {
             isPlaying: true,
             video: 'test',
             occupants: [],
-            type: 'ViewingArea'
+            type: 'ViewingArea',
           });
           const newAddListenerSpy = jest.spyOn(newViewingArea, 'addListener');
           renderData.rerender(renderViewingArea(newViewingArea, townController));

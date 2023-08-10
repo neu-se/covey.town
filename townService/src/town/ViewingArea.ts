@@ -1,4 +1,5 @@
 import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
+import InvalidParametersError from '../lib/InvalidParametersError';
 import Player from '../lib/Player';
 import {
   BoundingBox,
@@ -8,7 +9,7 @@ import {
   ViewingArea as ViewingAreaModel,
   ViewingAreaUpdateCommand,
 } from '../types/CoveyTownSocket';
-import InteractableArea, { InteractableCommandError } from './InteractableArea';
+import InteractableArea from './InteractableArea';
 
 export default class ViewingArea extends InteractableArea {
   private _video?: string;
@@ -101,7 +102,11 @@ export default class ViewingArea extends InteractableArea {
       throw new Error(`Malformed viewing area ${name}`);
     }
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
-    return new ViewingArea({ isPlaying: false, id: name as InteractableID, elapsedTimeSec: 0, occupants: [] }, rect, townEmitter);
+    return new ViewingArea(
+      { isPlaying: false, id: name as InteractableID, elapsedTimeSec: 0, occupants: [] },
+      rect,
+      townEmitter,
+    );
   }
 
   public handleCommand(command: InteractableCommand): undefined {
@@ -110,6 +115,6 @@ export default class ViewingArea extends InteractableArea {
       this.updateModel(viewingArea.update);
       return;
     }
-    throw new InteractableCommandError('Unknown command type');
+    throw new InvalidParametersError('Unknown command type');
   }
 }

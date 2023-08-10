@@ -6,7 +6,13 @@ import PlayerController from './classes/PlayerController';
 import TownController, { TownEvents } from './classes/TownController';
 import ViewingAreaController from './classes/interactable/ViewingAreaController';
 import { TownsService } from './generated/client';
-import { ConversationArea, CoveyTownSocket, ServerToClientEvents, TownJoinResponse, ViewingArea } from './types/CoveyTownSocket';
+import {
+  ConversationArea,
+  CoveyTownSocket,
+  ServerToClientEvents,
+  TownJoinResponse,
+  ViewingArea,
+} from './types/CoveyTownSocket';
 
 //These types copied from socket.io server library so that we don't have to depend on the whole thing to have type-safe tests.
 type SocketReservedEventsMap = {
@@ -166,7 +172,7 @@ export async function mockTownControllerConnection(
       id: nanoid(),
       topic: undefined,
       occupants: [],
-      type: 'ConversationArea'
+      type: 'ConversationArea',
     } as ConversationArea);
     for (let i = 0; i < 10; i++) {
       const playerID = nanoid();
@@ -179,7 +185,7 @@ export async function mockTownControllerConnection(
         id: nanoid(),
         topic: nanoid(),
         occupants: [playerID],
-        type: 'ConversationArea'
+        type: 'ConversationArea',
       } as ConversationArea);
       responseToSendController.interactables.push({
         id: nanoid(),
@@ -187,7 +193,7 @@ export async function mockTownControllerConnection(
         elapsedTimeSec: 0,
         isPlaying: false,
         occupants: [],
-        type: 'ViewingArea'
+        type: 'ViewingArea',
       } as ViewingArea);
     }
   }

@@ -170,11 +170,11 @@ describe('TownController', () => {
       ) as ConversationAreaModel;
       if (newConvArea) {
         newConvArea.topic = nanoid();
-        newConvArea.occupants= [townJoinResponse.userID];
-        const event = emitEventAndExpectListenerFiring(
+        newConvArea.occupants = [townJoinResponse.userID];
+        emitEventAndExpectListenerFiring(
           'interactableUpdate',
           newConvArea,
-          'interactableAreasChanged'
+          'interactableAreasChanged',
         );
       } else {
         fail('Did not find an existing, empty conversation area in the town join response');
@@ -200,14 +200,14 @@ describe('TownController', () => {
         }
         it('Emits a interactableAreasChanged event with the updated list of conversation areas if the area is newly occupied', () => {
           const convArea = emptyConversationArea();
-          convArea.occupants= [townJoinResponse.userID];
+          convArea.occupants = [townJoinResponse.userID];
           convArea.topic = nanoid();
           const updatedConversationAreas = testController.conversationAreas;
 
           emitEventAndExpectListenerFiring(
             'interactableUpdate',
             convArea,
-            'interactableAreasChanged'
+            'interactableAreasChanged',
           );
 
           const updatedController = updatedConversationAreas.find(
@@ -221,12 +221,12 @@ describe('TownController', () => {
             id: convArea.id,
             topic: convArea.topic,
             occupants: [townJoinResponse.userID],
-            type: 'ConversationArea'
+            type: 'ConversationArea',
           });
         });
         it('Emits a interactableAreasChanged event with the updated list of converation areas if the area is newly vacant', () => {
           const convArea = occupiedConversationArea();
-          convArea.occupants= [];
+          convArea.occupants = [];
           convArea.topic = undefined;
           const updatedConversationAreas = testController.conversationAreas;
 

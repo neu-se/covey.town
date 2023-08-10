@@ -4,8 +4,9 @@ import _ from 'lodash';
 import { nanoid } from 'nanoid';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import TypedEmitter from 'typed-emitter';
+import TypedEmitter, { EventMap } from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
+import ConversationArea from '../components/Town/interactables/ConversationArea';
 import GameArea from '../components/Town/interactables/GameArea';
 import ViewingArea from '../components/Town/interactables/ViewingArea';
 import { LoginController } from '../contexts/LoginControllerContext';
@@ -14,27 +15,24 @@ import useTownController from '../hooks/useTownController';
 import {
   ChatMessage,
   CoveyTownSocket,
-  GameArea as GameAreaModel,
   GameState,
+  Interactable as InteractableAreaModel,
   InteractableCommand,
   InteractableCommandBase,
   InteractableCommandResponse,
   InteractableID,
-  InteractableType,
   PlayerID,
   PlayerLocation,
-  TicTacToeGameState,
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isTicTacToeArea, isViewingArea } from '../types/TypeUtils';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
-import PlayerController from './PlayerController';
+import InteractableAreaController from './interactable/InteractableAreaController';
 import TicTacToeAreaController from './interactable/TicTacToeAreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
-import InteractableAreaController from './interactable/InteractableAreaController';
-import ConversationArea from '../components/Town/interactables/ConversationArea';
+import PlayerController from './PlayerController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 
@@ -135,7 +133,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   private _playersInternal: PlayerController[] = [];
 
   //TODO document, consider type restrictions?
-  private _interactableControllers: InteractableAreaController<any, any>[] = [];
+  private _interactableControllers: InteractableAreaController<EventMap, InteractableAreaModel>[] =
+    [];
 
   /**
    * The friendly name of the current town, set only once this TownController is connected to the townsService
@@ -298,7 +297,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   public get conversationAreas(): ConversationAreaController[] {
-    const ret = this._interactableControllers.filter(eachInteractable => eachInteractable instanceof ConversationAreaController);
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof ConversationAreaController,
+    );
     return ret as ConversationAreaController[];
   }
 
@@ -307,13 +308,17 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   public get viewingAreas() {
-    const ret = this._interactableControllers.filter(eachInteractable => eachInteractable instanceof ViewingAreaController);
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof ViewingAreaController,
+    );
     return ret as ViewingAreaController[];
   }
 
   public get gameAreas() {
-    const ret = this._interactableControllers.filter(eachInteractable => eachInteractable instanceof GameAreaController);
-    return ret as GameAreaController<any, any>[];
+    const ret = this._interactableControllers.filter(
+      eachInteractable => eachInteractable instanceof GameAreaController,
+    );
+    return ret as GameAreaController<GameState, unknown>[];
   }
 
   /**
@@ -423,7 +428,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         const controller = this._interactableControllers.find(c => c.id === interactable.id);
         if (controller) {
           const activeBefore = controller.isActive();
-          console.log(JSON.stringify(interactable, null, 2))
+          console.log(JSON.stringify(interactable, null, 2));
           controller.updateFrom(interactable, this._playersByIDs(interactable.occupants));
           const activeNow = controller.isActive();
           if (activeBefore !== activeNow) {
@@ -432,7 +437,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
         } else {
           console.error(`No controller found for interactable ${interactable.id}`);
           console.error(this._interactableControllers.map(c => c.id));
-          console.error(`^^^^`)
+          console.error(`^^^^`);
         }
       } catch (err) {
         console.error('Error updating interactable', interactable);
@@ -468,19 +473,21 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   //TODO
-  public async sendInteractableCommand<CommandType extends InteractableCommand>(interactableID: InteractableID, command: CommandType): Promise<InteractableCommandResponse<CommandType>['payload']> {
-
+  public async sendInteractableCommand<CommandType extends InteractableCommand>(
+    interactableID: InteractableID,
+    command: CommandType,
+  ): Promise<InteractableCommandResponse<CommandType>['payload']> {
     const commandMessage: InteractableCommand & InteractableCommandBase = {
       ...command,
       commandID: nanoid(),
       interactableID: interactableID,
-    }
+    };
     return new Promise((resolve, reject) => {
       const watchdog = setTimeout(() => {
         reject('Command timed out');
       }, 5000);
 
-      console.log(`Sending command ${commandMessage.commandID}, ${commandMessage.type}`)
+      console.log(`Sending command ${commandMessage.commandID}, ${commandMessage.type}`);
       const ackListener = (response: InteractableCommandResponse<CommandType>) => {
         if (response.commandID === commandMessage.commandID) {
           clearTimeout(watchdog);
@@ -530,11 +537,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    *
    * @param newArea
    */
-  async createConversationArea(newArea: {
-    topic?: string;
-    id: string;
-    occupants: Array<string>;
-  }) {
+  async createConversationArea(newArea: { topic?: string; id: string; occupants: Array<string> }) {
     await this._townsService.createConversationArea(this.townID, this.sessionToken, newArea);
   }
 
@@ -591,7 +594,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           } else if (isViewingArea(eachInteractable)) {
             this._interactableControllers.push(new ViewingAreaController(eachInteractable));
           } else if (isTicTacToeArea(eachInteractable)) {
-            this._interactableControllers.push(new TicTacToeAreaController(eachInteractable.id, eachInteractable, this)); 
+            this._interactableControllers.push(
+              new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
+            );
           }
         });
         this._userID = initialData.userID;
@@ -622,7 +627,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     }
   }
 
-  public getConversationAreaController(converationArea: ConversationArea): ConversationAreaController {
+  public getConversationAreaController(
+    converationArea: ConversationArea,
+  ): ConversationAreaController {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === converationArea.name,
     );
@@ -633,12 +640,14 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     }
   }
 
-  public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(gameArea: GameArea): GameAreaController<GameType, EventsType> {
+  public getGameAreaController<GameType extends GameState, EventsType extends GameEventTypes>(
+    gameArea: GameArea,
+  ): GameAreaController<GameType, EventsType> {
     const existingController = this._interactableControllers.find(
       eachExistingArea => eachExistingArea.id === gameArea.name,
     );
     if (existingController instanceof GameAreaController) {
-      return existingController; 
+      return existingController as GameAreaController<GameType, EventsType>;
     } else {
       throw new Error('Game area controller not created');
     }
@@ -736,11 +745,13 @@ export function useViewingAreaController(viewingAreaID: string): ViewingAreaCont
 //TODO
 export function useInteractableAreaController<T>(interactableAreaID: string): T {
   const townController = useTownController();
-  const interactableAreaController = townController.gameAreas.find(eachArea => eachArea.id == interactableAreaID);
+  const interactableAreaController = townController.gameAreas.find(
+    eachArea => eachArea.id == interactableAreaID,
+  );
   if (!interactableAreaController) {
     throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
   }
-  return interactableAreaController as any as T; //TODO
+  return interactableAreaController as unknown as T; //TODO
 }
 
 /**

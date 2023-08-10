@@ -152,43 +152,43 @@ export default function useBackgroundSettings(videoTrack: LocalVideoTrack | unde
     [videoTrack, removeProcessor]
   );
 
-  useEffect(() => {
-    if (!isSupported) {
-      return;
-    }
-    // make sure localParticipant has joined room before applying video processors
-    // this ensures that the video processors are not applied on the LocalVideoPreview
-    const handleProcessorChange = async () => {
-      if (!blurProcessor) {
-        blurProcessor = new GaussianBlurBackgroundProcessor({
-          assetsPath: virtualBackgroundAssets,
-        });
-        await blurProcessor.loadModel();
-      }
-      if (!virtualBackgroundProcessor) {
-        virtualBackgroundProcessor = new VirtualBackgroundProcessor({
-          assetsPath: virtualBackgroundAssets,
-          backgroundImage: await getImage(0),
-          fitType: ImageFit.Cover,
-        });
-        await virtualBackgroundProcessor.loadModel();
-      }
-      if (!room?.localParticipant) {
-        return;
-      }
+  // useEffect(() => {
+  //   if (!isSupported) {
+  //     return;
+  //   }
+  //   // make sure localParticipant has joined room before applying video processors
+  //   // this ensures that the video processors are not applied on the LocalVideoPreview
+  //   const handleProcessorChange = async () => {
+  //     if (!blurProcessor) {
+  //       blurProcessor = new GaussianBlurBackgroundProcessor({
+  //         assetsPath: virtualBackgroundAssets,
+  //       });
+  //       await blurProcessor.loadModel();
+  //     }
+  //     if (!virtualBackgroundProcessor) {
+  //       virtualBackgroundProcessor = new VirtualBackgroundProcessor({
+  //         assetsPath: virtualBackgroundAssets,
+  //         backgroundImage: await getImage(0),
+  //         fitType: ImageFit.Cover,
+  //       });
+  //       await virtualBackgroundProcessor.loadModel();
+  //     }
+  //     if (!room?.localParticipant) {
+  //       return;
+  //     }
 
-      if (backgroundSettings.type === 'blur') {
-        addProcessor(blurProcessor);
-      } else if (backgroundSettings.type === 'image' && typeof backgroundSettings.index === 'number') {
-        virtualBackgroundProcessor.backgroundImage = await getImage(backgroundSettings.index);
-        addProcessor(virtualBackgroundProcessor);
-      } else {
-        removeProcessor();
-      }
-    };
-    handleProcessorChange();
-    window.localStorage.setItem(SELECTED_BACKGROUND_SETTINGS_KEY, JSON.stringify(backgroundSettings));
-  }, [backgroundSettings, videoTrack, room, addProcessor, removeProcessor]);
+  //     if (backgroundSettings.type === 'blur') {
+  //       addProcessor(blurProcessor);
+  //     } else if (backgroundSettings.type === 'image' && typeof backgroundSettings.index === 'number') {
+  //       virtualBackgroundProcessor.backgroundImage = await getImage(backgroundSettings.index);
+  //       addProcessor(virtualBackgroundProcessor);
+  //     } else {
+  //       removeProcessor();
+  //     }
+  //   };
+  //   handleProcessorChange();
+  //   window.localStorage.setItem(SELECTED_BACKGROUND_SETTINGS_KEY, JSON.stringify(backgroundSettings));
+  // }, [backgroundSettings, videoTrack, room, addProcessor, removeProcessor]);
 
   return [backgroundSettings, setBackgroundSettings] as const;
 }

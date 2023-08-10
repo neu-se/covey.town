@@ -1,8 +1,8 @@
-import ConversationAreaController, { ConversationAreaEvents } from '../../../classes/interactable/ConversationAreaController';
-import TownController from '../../../classes/TownController';
+import ConversationAreaController, {
+  ConversationAreaEvents,
+} from '../../../classes/interactable/ConversationAreaController';
 import { BoundingBox } from '../../../types/CoveyTownSocket';
 import Interactable, { KnownInteractableTypes } from '../Interactable';
-import TownGameScene from '../TownGameScene';
 
 export default class ConversationArea extends Interactable {
   private _topicTextOrUndefined?: Phaser.GameObjects.Text;
@@ -10,6 +10,7 @@ export default class ConversationArea extends Interactable {
   private _infoTextBox?: Phaser.GameObjects.Text;
 
   private _conversationArea?: ConversationAreaController;
+
   private _changeListener?: ConversationAreaEvents['topicChange'];
 
   private get _topicText() {
@@ -24,8 +25,10 @@ export default class ConversationArea extends Interactable {
     return 'conversationArea';
   }
 
-  removedFromScene(): void { 
-    this._conversationArea?.removeListener('topicChange', this._changeListener!);
+  removedFromScene(): void {
+    if (this._changeListener) {
+      this._conversationArea?.removeListener('topicChange', this._changeListener);
+    }
   }
 
   addedToScene(): void {
@@ -45,14 +48,14 @@ export default class ConversationArea extends Interactable {
       { color: '#000000' },
     );
     this._conversationArea = this.townController.getConversationAreaController(this);
-    console.log(`Found conversation area ${this.name} with controller ${this._conversationArea}`)
+    console.log(`Found conversation area ${this.name} with controller ${this._conversationArea}`);
     this._updateLabelText(this._conversationArea.topic);
-    this._changeListener = (newTopic) => this._updateLabelText(newTopic);
+    this._changeListener = newTopic => this._updateLabelText(newTopic);
     this._conversationArea.addListener('topicChange', this._changeListener);
   }
 
   private _updateLabelText(newTopic: string | undefined) {
-    console.log(`updateLabelText: ${newTopic}`)
+    console.log(`updateLabelText: ${newTopic}`);
     if (newTopic === undefined) {
       this._topicText.text = '(No topic)';
     } else {

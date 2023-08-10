@@ -4,7 +4,7 @@ import InteractableAreaController, { BaseInteractableEventMap } from './Interact
 /**
  * The events that a ViewingAreaController can emit
  */
-export type ViewingAreaEvents = BaseInteractableEventMap &{
+export type ViewingAreaEvents = BaseInteractableEventMap & {
   /**
    * A playbackChange event indicates that the playing/paused state has changed.
    * Listeners are passed the new state in the parameter `isPlaying`
@@ -32,7 +32,10 @@ export type ViewingAreaEvents = BaseInteractableEventMap &{
  * The ViewingAreaController implements callbacks that handle events from the video player in this browser window, and
  * emits updates when the state is updated, @see ViewingAreaEvents
  */
-export default class ViewingAreaController extends InteractableAreaController<ViewingAreaEvents, ViewingAreaModel>{
+export default class ViewingAreaController extends InteractableAreaController<
+  ViewingAreaEvents,
+  ViewingAreaModel
+> {
   private _model: ViewingAreaModel;
 
   /**
@@ -47,7 +50,7 @@ export default class ViewingAreaController extends InteractableAreaController<Vi
   }
 
   public isActive(): boolean {
-      return this._model.video !== undefined;
+    return this._model.video !== undefined;
   }
 
   /**

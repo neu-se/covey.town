@@ -15,7 +15,6 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useViewingAreaController } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
-import { ViewingArea as ViewingAreaModel } from '../../../types/CoveyTownSocket';
 import ViewingArea from './ViewingArea';
 
 export default function SelectVideoModal({
@@ -54,7 +53,7 @@ export default function SelectVideoModal({
         video,
         isPlaying: true,
         elapsedTimeSec: 0,
-        occupants: []
+        occupants: [],
       };
       try {
         await coveyTownController.createViewingArea(request);

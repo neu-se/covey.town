@@ -1,12 +1,12 @@
 import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
+import InvalidParametersError from '../lib/InvalidParametersError';
 import Player from '../lib/Player';
 import {
   BoundingBox,
   ConversationArea as ConversationAreaModel,
-  InteractableCommand,
   TownEmitter,
 } from '../types/CoveyTownSocket';
-import InteractableArea, { InteractableCommandError } from './InteractableArea';
+import InteractableArea from './InteractableArea';
 
 export default class ConversationArea extends InteractableArea {
   /* The topic of the conversation area, or undefined if it is not set */
@@ -58,7 +58,7 @@ export default class ConversationArea extends InteractableArea {
       id: this.id,
       occupants: this.occupantsByID,
       topic: this.topic,
-      type: 'ConversationArea'
+      type: 'ConversationArea',
     };
   }
 
@@ -81,6 +81,6 @@ export default class ConversationArea extends InteractableArea {
   }
 
   public handleCommand(): undefined {
-    throw new InteractableCommandError('Unknown command type');
+    throw new InvalidParametersError('Unknown command type');
   }
 }

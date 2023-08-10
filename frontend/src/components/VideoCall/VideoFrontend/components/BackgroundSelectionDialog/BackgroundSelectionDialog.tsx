@@ -37,7 +37,7 @@ function BackgroundSelectionDialog() {
         paper: classes.drawer,
       }}
     >
-      <BackgroundSelectionHeader onClose={() => setIsBackgroundSelectionOpen(false)} />
+      {/* <BackgroundSelectionHeader onClose={() => setIsBackgroundSelectionOpen(false)} />
       <div className={classes.thumbnailContainer}>
         <BackgroundThumbnail thumbnail={'none'} name={'None'} />
         <BackgroundThumbnail thumbnail={'blur'} name={'Blur'} />
@@ -50,7 +50,7 @@ function BackgroundSelectionDialog() {
             key={image}
           />
         ))}
-      </div>
+      </div> */}
     </Drawer>
   );
 }

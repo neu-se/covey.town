@@ -17,7 +17,7 @@ describe('[T2] ViewingAreaController', () => {
       elapsedTimeSec: 12,
       video: nanoid(),
       occupants: [],
-      type: 'ViewingArea'
+      type: 'ViewingArea',
     };
     testArea = new ViewingAreaController(testAreaModel);
     mockClear(townController);
@@ -79,7 +79,7 @@ describe('[T2] ViewingAreaController', () => {
         elapsedTimeSec: testArea.elapsedTimeSec + 1,
         isPlaying: !testArea.isPlaying,
         occupants: [],
-        type: 'ViewingArea'
+        type: 'ViewingArea',
       };
       testArea.updateFrom(newModel, []);
       expect(testArea.video).toEqual(newModel.video);
@@ -97,7 +97,7 @@ describe('[T2] ViewingAreaController', () => {
         elapsedTimeSec: testArea.elapsedTimeSec + 1,
         isPlaying: !testArea.isPlaying,
         occupants: [],
-        type: 'ViewingArea'
+        type: 'ViewingArea',
       };
       testArea.updateFrom(newModel, []);
       expect(testArea.id).toEqual(existingID);

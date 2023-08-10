@@ -1,6 +1,7 @@
 import { ITiledMap, ITiledMapObjectLayer } from '@jonbell/tiled-map-type-guard';
 import { nanoid } from 'nanoid';
 import { BroadcastOperator } from 'socket.io';
+import InvalidParametersError from '../lib/InvalidParametersError';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
@@ -17,10 +18,10 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
+import { logError } from '../Utils';
 import ConversationArea from './ConversationArea';
-import GameArea from './games/GameArea';
 import GameAreaFactory from './games/GameAreaFactory';
-import InteractableArea, { InteractableCommandError } from './InteractableArea';
+import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 
 /**
@@ -167,33 +168,30 @@ export default class Town {
       const interactable = this._interactables.find(
         eachInteractable => eachInteractable.id === command.interactableID,
       );
-      console.log(`Received command ${JSON.stringify(command)}`);
       if (interactable) {
         try {
-          console.log(interactable);
           const payload = interactable.handleCommand(command, newPlayer);
-          console.log('Command handled');
           socket.emit('commandResponse', {
             commandID: command.commandID,
             interactableID: command.interactableID,
             isOK: true,
-            payload
+            payload,
           });
         } catch (err) {
-          if (err instanceof InteractableCommandError) {
+          if (err instanceof InvalidParametersError) {
             socket.emit('commandResponse', {
               commandID: command.commandID,
               interactableID: command.interactableID,
               isOK: false,
-              error: err.message
+              error: err.message,
             });
           } else {
-            console.trace(err);
+            logError(err);
             socket.emit('commandResponse', {
               commandID: command.commandID,
               interactableID: command.interactableID,
               isOK: false,
-              error: 'Unknown error'
+              error: 'Unknown error',
             });
           }
         }
@@ -202,7 +200,7 @@ export default class Town {
           commandID: command.commandID,
           interactableID: command.interactableID,
           isOK: false,
-          error: `No such interactable ${command.interactableID}`
+          error: `No such interactable ${command.interactableID}`,
         });
       }
     });
@@ -404,11 +402,12 @@ export default class Town {
 
     const gameAreas = objectLayer.objects
       .filter(eachObject => eachObject.type === 'GameArea')
-      .map(eachGameAreaObj =>
-        GameAreaFactory(eachGameAreaObj, this._broadcastEmitter),
-      );
+      .map(eachGameAreaObj => GameAreaFactory(eachGameAreaObj, this._broadcastEmitter));
 
-    this._interactables = this._interactables.concat(viewingAreas).concat(conversationAreas).concat(gameAreas);
+    this._interactables = this._interactables
+      .concat(viewingAreas)
+      .concat(conversationAreas)
+      .concat(gameAreas);
     this._validateInteractables();
   }
 

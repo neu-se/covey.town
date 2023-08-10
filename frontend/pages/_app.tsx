@@ -1,9 +1,5 @@
 import './App.css';
-
-// export default function App() : JSX.Element {
-//     return <>Hi</>
-// } 
-
+import React from 'react';
 import dynamic from 'next/dynamic';
 
 //eslint-disable-next-line @typescript-eslint/naming-convention

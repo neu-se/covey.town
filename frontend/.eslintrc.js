@@ -40,6 +40,11 @@ module.exports = {
         format: ['camelCase'],
       },
       {
+        selector: 'variable',
+        types: ['function'], 
+        format: ['camelCase', 'PascalCase']
+      },
+      {
         selector: 'typeLike',
         format: ['PascalCase'],
       },

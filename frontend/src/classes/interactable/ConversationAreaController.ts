@@ -1,10 +1,7 @@
-import EventEmitter from 'events';
-import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import TypedEmitter from 'typed-emitter';
 import { ConversationArea as ConversationAreaModel } from '../../types/CoveyTownSocket';
+import PlayerController from '../PlayerController';
 import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
-import PlayerController from '../PlayerController'
 
 /**
  * The events that the ConversationAreaController emits to subscribers. These events
@@ -21,7 +18,10 @@ export const NO_TOPIC_STRING = '(No topic)';
  * implementing the logic to bridge between the townService's interpretation of conversation areas and the
  * frontend's. The ConversationAreaController emits events when the conversation area changes.
  */
-export default class ConversationAreaController extends InteractableAreaController<ConversationAreaEvents, ConversationAreaModel> {
+export default class ConversationAreaController extends InteractableAreaController<
+  ConversationAreaEvents,
+  ConversationAreaModel
+> {
   private _topic?: string;
 
   /**
@@ -69,12 +69,12 @@ export default class ConversationAreaController extends InteractableAreaControll
    * Return a representation of this ConversationAreaController that matches the
    * townService's representation and is suitable for transmitting over the network.
    */
-  toInteractableAreaModel() : ConversationAreaModel{
+  toInteractableAreaModel(): ConversationAreaModel {
     return {
       id: this.id,
       occupants: this.occupants.map(player => player.id),
       topic: this.topic,
-      type: 'ConversationArea'
+      type: 'ConversationArea',
     };
   }
 
