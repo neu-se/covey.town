@@ -47,7 +47,7 @@ export default abstract class InteractableArea {
   }
 
   public get isActive(): boolean {
-    return true;
+    return this.occupants.length > 0;
   }
 
   public get boundingBox(): BoundingBox {

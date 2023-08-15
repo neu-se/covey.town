@@ -15,8 +15,6 @@ import {
 export default abstract class Game<StateType extends GameState, MoveType> {
   private _state: Readonly<StateType>;
 
-  private _emitAreaChanged: () => void;
-
   public readonly id: GameInstanceID;
 
   protected _result?: GameResult;
@@ -28,10 +26,9 @@ export default abstract class Game<StateType extends GameState, MoveType> {
    * @param initialState State to initialize the game with.
    * @param emitAreaChanged A callback to invoke when the state of the game changes. This is used to notify clients.
    */
-  public constructor(initialState: StateType, emitAreaChanged: () => void) {
+  public constructor(initialState: StateType) {
     this.id = nanoid() as GameInstanceID;
     this._state = initialState;
-    this._emitAreaChanged = emitAreaChanged;
   }
 
   public get state() {
@@ -40,7 +37,6 @@ export default abstract class Game<StateType extends GameState, MoveType> {
 
   protected set state(newState: StateType) {
     this._state = newState;
-    this._emitAreaChanged();
   }
 
   /**
@@ -82,9 +78,8 @@ export default abstract class Game<StateType extends GameState, MoveType> {
    * @throws InvalidParametersError if the player can not leave the game
    */
   public leave(player: Player): void {
-    this._players = this._players.filter(p => p.id !== player.id);
     this._leave(player);
-    this._emitAreaChanged();
+    this._players = this._players.filter(p => p.id !== player.id);
   }
 
   public toModel(): GameInstance<StateType> {

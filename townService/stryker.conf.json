@@ -18,7 +18,7 @@
     "configFile": "jest.config.cjs"
   },
   "mutate": [
-    "src/town/Town.ts:148-161",
-    "src/town/TownsController.ts:146-159"
+    "src/town/games/TicTacToeGame.ts:40-205",
+    "src/town/games/TicTacToeGameArea.ts:27-125"
   ]
 }

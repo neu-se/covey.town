@@ -1,4 +1,11 @@
 {
     "jest.jestCommandLine": "npx jest",
-    "typescript.tsdk": "./townService/node_modules/typescript/lib"
+    "typescript.tsdk": "./townService/node_modules/typescript/lib",
+    "prettier.configPath": "./townService/.prettierrc.cjs",
+    "editor.formatOnSave": false,
+    // Runs Prettier, then ESLint
+    "editor.codeActionsOnSave": [
+      "source.formatDocument",
+      "source.fixAll.eslint"
+    ],
 }

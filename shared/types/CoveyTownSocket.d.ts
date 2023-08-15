@@ -194,7 +194,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
 export interface GameMoveCommand<MoveType> {
   type: 'GameMove';
   gameID: GameInstanceID;
-  move: Omit<MoveType, "gamePiece">;
+  move: MoveType;
 }
 
 export type InteractableCommandResponse<MessageType> = {

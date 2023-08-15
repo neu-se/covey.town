@@ -19,6 +19,14 @@ export default abstract class GameArea<
 
   protected _history: GameResult[] = [];
 
+  public get game(): GameType | undefined {
+    return this._game;
+  }
+
+  public get history(): GameResult[] {
+    return this._history;
+  }
+
   public toModel(): GameAreaModel<GameType['state']> {
     return {
       id: this.id,
@@ -27,6 +35,10 @@ export default abstract class GameArea<
       occupants: this.occupantsByID,
       type: this.getType(),
     };
+  }
+
+  public get isActive(): boolean {
+    return true;
   }
 
   protected abstract getType(): InteractableType;
