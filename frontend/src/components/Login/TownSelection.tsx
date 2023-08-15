@@ -16,6 +16,7 @@ import {
   Td,
   Th,
   Thead,
+  ToastId,
   Tr,
   useToast,
 } from '@chakra-ui/react';
@@ -30,6 +31,7 @@ export default function TownSelection(): JSX.Element {
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
   const [currentPublicTowns, setCurrentPublicTowns] = useState<Town[]>();
+  const [isJoining, setIsJoining] = useState<boolean>(false);
   const loginController = useLoginController();
   const { setTownController, townsService } = loginController;
   const { connect: videoConnect } = useVideoContext();
@@ -40,7 +42,7 @@ export default function TownSelection(): JSX.Element {
     townsService.listTowns().then(towns => {
       setCurrentPublicTowns(towns.sort((a, b) => b.currentOccupancy - a.currentOccupancy));
     });
-  }, [setCurrentPublicTowns, townsService]);
+  }, [townsService]);
   useEffect(() => {
     updateTownListings();
     const timer = setInterval(updateTownListings, 2000);
@@ -51,6 +53,8 @@ export default function TownSelection(): JSX.Element {
 
   const handleJoin = useCallback(
     async (coveyRoomID: string) => {
+      let connectWatchdog: NodeJS.Timeout | undefined = undefined;
+      let loadingToast: ToastId | undefined = undefined;
       try {
         if (!userName || userName.length === 0) {
           toast({
@@ -68,6 +72,29 @@ export default function TownSelection(): JSX.Element {
           });
           return;
         }
+        const isHighLatencyTownService =
+          process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL?.includes('onrender.com');
+        connectWatchdog = setTimeout(() => {
+          if (isHighLatencyTownService) {
+            loadingToast = toast({
+              title: 'Please be patient...',
+              description:
+                "The TownService is starting up - this may take 15-30 seconds, because it is hosted on a free Render.com service. Render.com's free tier automatically puts the TownService to sleep when it is inactive for 15 minutes.",
+              status: 'info',
+              isClosable: false,
+              duration: null,
+            });
+          } else {
+            loadingToast = toast({
+              title: 'Connecting to town...',
+              description: 'This is taking a bit longer than normal - please be patient...',
+              status: 'info',
+              isClosable: false,
+              duration: null,
+            });
+          }
+        }, 1000);
+        setIsJoining(true);
         const newController = new TownController({
           userName,
           townID: coveyRoomID,
@@ -77,8 +104,20 @@ export default function TownSelection(): JSX.Element {
         const videoToken = newController.providerVideoToken;
         assert(videoToken);
         await videoConnect(videoToken);
+        setIsJoining(false);
+        if (loadingToast) {
+          toast.close(loadingToast);
+        }
+        clearTimeout(connectWatchdog);
         setTownController(newController);
       } catch (err) {
+        setIsJoining(false);
+        if (loadingToast) {
+          toast.close(loadingToast);
+        }
+        if (connectWatchdog) {
+          clearTimeout(connectWatchdog);
+        }
         if (err instanceof Error) {
           toast({
             title: 'Unable to connect to Towns Service',
@@ -114,11 +153,40 @@ export default function TownSelection(): JSX.Element {
       });
       return;
     }
+    const isHighLatencyTownService =
+      process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL?.includes('onrender.com');
+    let loadingToast: ToastId | undefined = undefined;
+    const connectWatchdog = setTimeout(() => {
+      if (isHighLatencyTownService) {
+        loadingToast = toast({
+          title: 'Please be patient...',
+          description:
+            "The TownService is starting up - this may take 15-30 seconds, because it is hosted on a free Render.com service. Render.com's free tier automatically puts the TownService to sleep when it is inactive for 15 minutes.",
+          status: 'info',
+          isClosable: false,
+          duration: null,
+        });
+      } else {
+        loadingToast = toast({
+          title: 'Connecting to town...',
+          description: 'This is taking a bit longer than normal - please be patient...',
+          status: 'info',
+          isClosable: false,
+          duration: null,
+        });
+      }
+    }, 2000);
+    setIsJoining(true);
     try {
       const newTownInfo = await townsService.createTown({
         friendlyName: newTownName,
         isPubliclyListed: newTownIsPublic,
       });
+      clearTimeout(connectWatchdog);
+      setIsJoining(false);
+      if (loadingToast) {
+        toast.close(loadingToast);
+      }
       let privateMessage = <></>;
       if (!newTownIsPublic) {
         privateMessage = (
@@ -145,6 +213,11 @@ export default function TownSelection(): JSX.Element {
       });
       await handleJoin(newTownInfo.townID);
     } catch (err) {
+      clearTimeout(connectWatchdog);
+      setIsJoining(false);
+      if (loadingToast) {
+        toast.close(loadingToast);
+      }
       if (err instanceof Error) {
         toast({
           title: 'Unable to connect to Towns Service',
@@ -211,7 +284,11 @@ export default function TownSelection(): JSX.Element {
                 </FormControl>
               </Box>
               <Box>
-                <Button data-testid='newTownButton' onClick={handleCreate}>
+                <Button
+                  data-testid='newTownButton'
+                  onClick={handleCreate}
+                  isLoading={isJoining}
+                  disabled={isJoining}>
                   Create
                 </Button>
               </Box>
@@ -236,7 +313,11 @@ export default function TownSelection(): JSX.Element {
                     onChange={event => setTownIDToJoin(event.target.value)}
                   />
                 </FormControl>
-                <Button data-testid='joinTownByIDButton' onClick={() => handleJoin(townIDToJoin)}>
+                <Button
+                  data-testid='joinTownByIDButton'
+                  onClick={() => handleJoin(townIDToJoin)}
+                  isLoading={isJoining}
+                  disabled={isJoining}>
                   Connect
                 </Button>
               </Flex>
@@ -264,7 +345,8 @@ export default function TownSelection(): JSX.Element {
                         {town.currentOccupancy}/{town.maximumOccupancy}
                         <Button
                           onClick={() => handleJoin(town.townID)}
-                          disabled={town.currentOccupancy >= town.maximumOccupancy}>
+                          disabled={town.currentOccupancy >= town.maximumOccupancy || isJoining}
+                          isLoading={isJoining}>
                           Connect
                         </Button>
                       </Td>
