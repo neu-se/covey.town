@@ -8,7 +8,7 @@ import {
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 
-export type BaseInteractableEventMap = {
+export type BaseInteractableEventMap = EventMap & {
   occupantsChange: (newOccupants: PlayerController[]) => void;
 };
 
@@ -18,20 +18,15 @@ export type BaseInteractableEventMap = {
  * frontend's. The InteractableAreaController emits events when the interactable area changes.
  */
 export default abstract class InteractableAreaController<
-  EmittedEventType extends EventMap,
+  EmittedEventType extends BaseInteractableEventMap,
   InteractableModelType extends InteractableAreaModel,
 > {
   private readonly _id: InteractableID;
 
   private _occupants: PlayerController[] = [];
 
-  private _listeners: Map<
-    keyof EmittedEventType | keyof BaseInteractableEventMap,
-    (
-      | EmittedEventType[keyof EmittedEventType]
-      | BaseInteractableEventMap[keyof BaseInteractableEventMap]
-    )[]
-  > = new Map();
+  private _listeners: Map<keyof EmittedEventType, EmittedEventType[keyof EmittedEventType][]> =
+    new Map();
 
   constructor(id: InteractableID) {
     this._id = id;
@@ -47,13 +42,9 @@ export default abstract class InteractableAreaController<
    * @param listener
    * @returns
    */
-  public addListener<E extends keyof EmittedEventType | keyof BaseInteractableEventMap>(
+  public addListener<E extends keyof EmittedEventType>(
     event: E,
-    listener: E extends keyof BaseInteractableEventMap
-      ? BaseInteractableEventMap[E]
-      : E extends keyof EmittedEventType
-      ? EmittedEventType[E]
-      : never,
+    listener: EmittedEventType[E],
   ): this {
     const listeners = this._listeners.get(event) ?? [];
     listeners.push(listener);
@@ -67,13 +58,9 @@ export default abstract class InteractableAreaController<
    * @param listener
    * @returns
    */
-  public removeListener<E extends keyof EmittedEventType | keyof BaseInteractableEventMap>(
+  public removeListener<E extends keyof EmittedEventType>(
     event: E,
-    listener: E extends keyof BaseInteractableEventMap
-      ? BaseInteractableEventMap[E]
-      : E extends keyof EmittedEventType
-      ? EmittedEventType[E]
-      : never,
+    listener: EmittedEventType[E],
   ): this {
     const listeners = this._listeners.get(event) ?? [];
     _.remove(listeners, l => l === listener);
@@ -87,18 +74,11 @@ export default abstract class InteractableAreaController<
    * @param args
    * @returns
    */
-  public emit<E extends keyof EmittedEventType | keyof BaseInteractableEventMap>(
+  public emit<E extends keyof EmittedEventType>(
     event: E,
-    ...args: E extends keyof BaseInteractableEventMap
-      ? Parameters<BaseInteractableEventMap[E]>
-      : E extends keyof EmittedEventType
-      ? Parameters<EmittedEventType[E]>
-      : Parameters<never>
+    ...args: Parameters<EmittedEventType[E]>
   ): boolean {
     const listeners = this._listeners.get(event) ?? [];
-    //TODO bounty for whoever figures out the right way to type 'listeners'
-    //eslint-disable-next-line
-    //@ts-ignore
     listeners.forEach(listener => listener(...args));
     return true;
   }
@@ -119,6 +99,9 @@ export default abstract class InteractableAreaController<
       newOccupants.length !== this._occupants.length ||
       _.xor(newOccupants, this._occupants).length > 0
     ) {
+      //TODO - Bounty for figuring out how to make the types work here
+      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       this.emit('occupantsChange', newOccupants);
       this._occupants = newOccupants;
     }

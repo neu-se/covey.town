@@ -1,9 +1,9 @@
 import { GameArea, GameStatus, TicTacToeGameState } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
-import GameAreaController from './GameAreaController';
+import GameAreaController, { GameEventTypes } from './GameAreaController';
 
 export type TicTacToeCell = 'X' | 'O' | undefined;
-export type TicTacToeEvents = {
+export type TicTacToeEvents = GameEventTypes & {
   boardChanged: (board: TicTacToeCell[][]) => void;
   turnChanged: (isOurTurn: boolean) => void;
 };

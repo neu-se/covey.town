@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { EventMap } from 'typed-emitter';
 import {
   GameArea,
   GameInstance,
@@ -10,9 +9,9 @@ import {
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
-import InteractableAreaController from './InteractableAreaController';
+import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
 
-export type GameEventTypes = {
+export type GameEventTypes = BaseInteractableEventMap & {
   gameStart: () => void;
   gameUpdated: () => void;
   gameEnd: () => void;
@@ -26,8 +25,8 @@ export type GameEventTypes = {
  */
 export default abstract class GameAreaController<
   State extends GameState,
-  EventTypes extends EventMap,
-> extends InteractableAreaController<GameEventTypes & EventTypes, GameArea<State>> {
+  EventTypes extends GameEventTypes,
+> extends InteractableAreaController<EventTypes, GameArea<State>> {
   protected _instanceID?: GameInstanceID;
 
   protected _townController: TownController;
@@ -86,9 +85,8 @@ export default abstract class GameAreaController<
   protected _updateFrom(newModel: GameArea<State>): void {
     const gameEnding =
       this._model.game?.state.status === 'IN_PROGRESS' && newModel.game?.state.status === 'OVER';
-    const newPlayers = newModel.game?.players.map(playerID =>
-      this._townController.getPlayer(playerID),
-    );
+    const newPlayers =
+      newModel.game?.players.map(playerID => this._townController.getPlayer(playerID)) ?? [];
     if (!newPlayers && this._players.length > 0) {
       this._players = [];
       //TODO - Bounty for figuring out how to make the types work here
@@ -100,7 +98,7 @@ export default abstract class GameAreaController<
       this._players.length != newModel.game?.players.length ||
       _.xor(newPlayers, this._players).length > 0
     ) {
-      this._players = newPlayers ?? [];
+      this._players = newPlayers;
       //TODO - Bounty for figuring out how to make the types work here
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -115,7 +113,7 @@ export default abstract class GameAreaController<
     if (gameEnding) {
       //TODO - Bounty for figuring out how to make the types work here
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
+      // @ts-ignore
       this.emit('gameEnd');
     }
   }
