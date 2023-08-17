@@ -1,15 +1,8 @@
-import InvalidParametersError, {
-  GAME_ID_MISSMATCH_MESSAGE,
-  GAME_NOT_IN_PROGRESS_MESSAGE,
-  INVALID_COMMAND_MESSAGE,
-} from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import {
-  GameInstance,
   InteractableCommand,
   InteractableCommandReturnType,
   InteractableType,
-  TicTacToeGameState,
 } from '../../types/CoveyTownSocket';
 import GameArea from './GameArea';
 import TicTacToeGame from './TicTacToeGame';
@@ -22,28 +15,6 @@ import TicTacToeGame from './TicTacToeGame';
 export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
   protected getType(): InteractableType {
     return 'TicTacToeArea';
-  }
-
-  private _stateUpdated(updatedState: GameInstance<TicTacToeGameState>) {
-    if (updatedState.state.status === 'OVER') {
-      // If we haven't yet recorded the outcome, do so now.
-      const gameID = this._game?.id;
-      if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
-        const { x, o } = updatedState.state;
-        if (x && o) {
-          const xName = this._occupants.find(eachPlayer => eachPlayer.id === x)?.userName || x;
-          const oName = this._occupants.find(eachPlayer => eachPlayer.id === o)?.userName || o;
-          this._history.push({
-            gameID,
-            scores: {
-              [xName]: updatedState.state.winner === x ? 1 : 0,
-              [oName]: updatedState.state.winner === o ? 1 : 0,
-            },
-          });
-        }
-      }
-    }
-    this._emitAreaChanged();
   }
 
   /**
@@ -72,45 +43,6 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
     command: CommandType,
     player: Player,
   ): InteractableCommandReturnType<CommandType> {
-    if (command.type === 'GameMove') {
-      const game = this._game;
-      if (!game) {
-        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-      }
-      if (this._game?.id !== command.gameID) {
-        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
-      }
-      game.applyMove({
-        gameID: command.gameID,
-        playerID: player.id,
-        move: command.move,
-      });
-      this._stateUpdated(game.toModel());
-      return undefined as InteractableCommandReturnType<CommandType>;
-    }
-    if (command.type === 'JoinGame') {
-      let game = this._game;
-      if (!game || game.state.status === 'OVER') {
-        // No game in progress, make a new one
-        game = new TicTacToeGame();
-        this._game = game;
-      }
-      game.join(player);
-      this._stateUpdated(game.toModel());
-      return { gameID: game.id } as InteractableCommandReturnType<CommandType>;
-    }
-    if (command.type === 'LeaveGame') {
-      const game = this._game;
-      if (!game) {
-        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-      }
-      if (this._game?.id !== command.gameID) {
-        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
-      }
-      game.leave(player);
-      this._stateUpdated(game.toModel());
-      return undefined as InteractableCommandReturnType<CommandType>;
-    }
-    throw new InvalidParametersError(INVALID_COMMAND_MESSAGE);
+    throw new Error('Unimplemented - remove this once you start to implement this method');
   }
 }
