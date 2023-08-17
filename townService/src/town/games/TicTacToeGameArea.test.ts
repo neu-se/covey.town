@@ -73,17 +73,7 @@ describe('TicTacToeGameArea', () => {
     interactableUpdateSpy = jest.spyOn(gameArea, '_emitAreaChanged');
   });
   describe('handleCommand', () => {
-    describe('when given an invalid command', () => {
-      it('should throw an error', () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore (Testing an invalid command, only possible at the boundary of the type system)
-        expect(() => gameArea.handleCommand({ type: 'InvalidCommand' }, player1)).toThrowError(
-          INVALID_COMMAND_MESSAGE,
-        );
-        expect(interactableUpdateSpy).not.toHaveBeenCalled();
-      });
-    });
-    describe('when given a JoinGame command', () => {
+    describe('[T3.1] when given a JoinGame command', () => {
       describe('when there is no game in progress', () => {
         it('should create a new game and call _emitAreaChanged', () => {
           const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
@@ -127,72 +117,7 @@ describe('TicTacToeGameArea', () => {
         });
       });
     });
-    describe('when given a LeaveGame command', () => {
-      describe('when there is no game in progress', () => {
-        it('should throw an error', () => {
-          expect(() =>
-            gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
-          ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
-          expect(interactableUpdateSpy).not.toHaveBeenCalled();
-        });
-      });
-      describe('when there is a game in progress', () => {
-        it('should throw an error when the game ID does not match', () => {
-          gameArea.handleCommand({ type: 'JoinGame' }, player1);
-          interactableUpdateSpy.mockClear();
-          expect(() =>
-            gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
-          ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
-          expect(interactableUpdateSpy).not.toHaveBeenCalled();
-        });
-        it('should dispatch the leave command to the game and call _emitAreaChanged', () => {
-          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
-          if (!game) {
-            throw new Error('Game was not created by the first call to join');
-          }
-          expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
-          const leaveSpy = jest.spyOn(game, 'leave');
-          gameArea.handleCommand({ type: 'LeaveGame', gameID }, player1);
-          expect(leaveSpy).toHaveBeenCalledWith(player1);
-          expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
-        });
-        it('should not call _emitAreaChanged if the game throws an error', () => {
-          gameArea.handleCommand({ type: 'JoinGame' }, player1);
-          if (!game) {
-            throw new Error('Game was not created by the first call to join');
-          }
-          interactableUpdateSpy.mockClear();
-          const leaveSpy = jest.spyOn(game, 'leave').mockImplementationOnce(() => {
-            throw new Error('Test Error');
-          });
-          expect(() =>
-            gameArea.handleCommand({ type: 'LeaveGame', gameID: game.id }, player1),
-          ).toThrowError('Test Error');
-          expect(leaveSpy).toHaveBeenCalledWith(player1);
-          expect(interactableUpdateSpy).not.toHaveBeenCalled();
-        });
-        it('should update the history if the game is over', () => {
-          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
-          gameArea.handleCommand({ type: 'JoinGame' }, player2);
-          interactableUpdateSpy.mockClear();
-          jest.spyOn(game, 'leave').mockImplementationOnce(() => {
-            game.endGame(player1.id);
-          });
-          gameArea.handleCommand({ type: 'LeaveGame', gameID }, player1);
-          expect(game.state.status).toEqual('OVER');
-          expect(gameArea.history.length).toEqual(1);
-          expect(gameArea.history[0]).toEqual({
-            gameID: game.id,
-            scores: {
-              [player1.userName]: 1,
-              [player2.userName]: 0,
-            },
-          });
-          expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
-        });
-      });
-    });
-    describe('when given a GameMove command', () => {
+    describe('[T3.2] when given a GameMove command', () => {
       it('should throw an error when there is no game in progress', () => {
         expect(() =>
           gameArea.handleCommand(
@@ -301,6 +226,81 @@ describe('TicTacToeGameArea', () => {
             expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
           });
         });
+      });
+    });
+    describe('[T3.3] when given a LeaveGame command', () => {
+      describe('when there is no game in progress', () => {
+        it('should throw an error', () => {
+          expect(() =>
+            gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
+          ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+          expect(interactableUpdateSpy).not.toHaveBeenCalled();
+        });
+      });
+      describe('when there is a game in progress', () => {
+        it('should throw an error when the game ID does not match', () => {
+          gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          interactableUpdateSpy.mockClear();
+          expect(() =>
+            gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
+          ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+          expect(interactableUpdateSpy).not.toHaveBeenCalled();
+        });
+        it('should dispatch the leave command to the game and call _emitAreaChanged', () => {
+          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          if (!game) {
+            throw new Error('Game was not created by the first call to join');
+          }
+          expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
+          const leaveSpy = jest.spyOn(game, 'leave');
+          gameArea.handleCommand({ type: 'LeaveGame', gameID }, player1);
+          expect(leaveSpy).toHaveBeenCalledWith(player1);
+          expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
+        });
+        it('should not call _emitAreaChanged if the game throws an error', () => {
+          gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          if (!game) {
+            throw new Error('Game was not created by the first call to join');
+          }
+          interactableUpdateSpy.mockClear();
+          const leaveSpy = jest.spyOn(game, 'leave').mockImplementationOnce(() => {
+            throw new Error('Test Error');
+          });
+          expect(() =>
+            gameArea.handleCommand({ type: 'LeaveGame', gameID: game.id }, player1),
+          ).toThrowError('Test Error');
+          expect(leaveSpy).toHaveBeenCalledWith(player1);
+          expect(interactableUpdateSpy).not.toHaveBeenCalled();
+        });
+        it('should update the history if the game is over', () => {
+          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          gameArea.handleCommand({ type: 'JoinGame' }, player2);
+          interactableUpdateSpy.mockClear();
+          jest.spyOn(game, 'leave').mockImplementationOnce(() => {
+            game.endGame(player1.id);
+          });
+          gameArea.handleCommand({ type: 'LeaveGame', gameID }, player1);
+          expect(game.state.status).toEqual('OVER');
+          expect(gameArea.history.length).toEqual(1);
+          expect(gameArea.history[0]).toEqual({
+            gameID: game.id,
+            scores: {
+              [player1.userName]: 1,
+              [player2.userName]: 0,
+            },
+          });
+          expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
+    describe('[T3.4] when given an invalid command', () => {
+      it('should throw an error', () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore (Testing an invalid command, only possible at the boundary of the type system)
+        expect(() => gameArea.handleCommand({ type: 'InvalidCommand' }, player1)).toThrowError(
+          INVALID_COMMAND_MESSAGE,
+        );
+        expect(interactableUpdateSpy).not.toHaveBeenCalled();
       });
     });
   });

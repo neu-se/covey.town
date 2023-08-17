@@ -18,7 +18,7 @@ describe('TicTacToeGame', () => {
     game = new TicTacToeGame();
   });
 
-  describe('_join', () => {
+  describe('[T1.1] _join', () => {
     it('should throw an error if the player is already in the game', () => {
       const player = createPlayerForTesting();
       game.join(player);
@@ -66,7 +66,7 @@ describe('TicTacToeGame', () => {
       });
     });
   });
-  describe('_leave', () => {
+  describe('[T1.2] _leave', () => {
     it('should throw an error if the player is not in the game', () => {
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);
       // TODO weaker test suite only does one of these - above or below
@@ -129,7 +129,7 @@ describe('TicTacToeGame', () => {
   describe('applyMove', () => {
     let moves: TicTacToeMove[] = [];
 
-    describe('when given an invalid move', () => {
+    describe('[T2.2] when given an invalid move', () => {
       it('should throw an error if the game is not in progress', () => {
         const player1 = createPlayerForTesting();
         game.join(player1);
@@ -379,10 +379,10 @@ describe('TicTacToeGame', () => {
           expect(game.state.winner).toBeUndefined();
         }
       }
-      it('should add the move to the game state', () => {
+      it('[T2.1] should add the move to the game state', () => {
         makeMoveAndCheckState(1, 2, 'X');
       });
-      it('should not end the game if the move does not end the game', () => {
+      it('[T2.1] should not end the game if the move does not end the game', () => {
         makeMoveAndCheckState(1, 2, 'X');
         makeMoveAndCheckState(1, 0, 'O');
         makeMoveAndCheckState(0, 2, 'X');
@@ -390,7 +390,7 @@ describe('TicTacToeGame', () => {
         makeMoveAndCheckState(1, 1, 'X');
         makeMoveAndCheckState(2, 0, 'O');
       });
-      describe('when the move ends the game', () => {
+      describe('[T2.3] when the move ends the game', () => {
         it('should set the game status to OVER', () => {});
         describe('it checks for winning conditions', () => {
           describe('a horizontal win', () => {

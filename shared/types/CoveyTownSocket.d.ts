@@ -183,19 +183,17 @@ export interface LeaveGameCommand {
   type: 'LeaveGame';
   gameID: GameInstanceID;
 }
-
+export interface GameMoveCommand<MoveType> {
+  type: 'GameMove';
+  gameID: GameInstanceID;
+  move: MoveType;
+}
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
   never;
-
-export interface GameMoveCommand<MoveType> {
-  type: 'GameMove';
-  gameID: GameInstanceID;
-  move: MoveType;
-}
 
 export type InteractableCommandResponse<MessageType> = {
   commandID: CommandID;
