@@ -108,10 +108,11 @@ export interface GameMove<MoveType> {
  * The row and column are 0-indexed, so the top left square is (0,0) and the bottom right square is (2,2)
  */
 export interface TicTacToeMove {
-  gamePiece: 'X' | 'O';
-  row: 0 | 1 | 2;
-  col: 0 | 1 | 2;
+  gamePiece: "X" | "O";
+  row: TicTacToeGridPosition;
+  col: TicTacToeGridPosition;
 }
+export type TicTacToeGridPosition = 0 | 1 | 2;
 
 /**
  * Type for the state of a TicTacToe game
