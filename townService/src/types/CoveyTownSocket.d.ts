@@ -109,8 +109,8 @@ export interface GameMove<MoveType> {
  */
 export interface TicTacToeMove {
   gamePiece: 'X' | 'O';
-  row: number;
-  col: number;
+  row: 0 | 1 | 2;
+  col: 0 | 1 | 2;
 }
 
 /**

@@ -13,7 +13,7 @@ import {
  * state of the game. @see GameArea
  */
 export default abstract class Game<StateType extends GameState, MoveType> {
-  private _state: Readonly<StateType>;
+  private _state: StateType;
 
   public readonly id: GameInstanceID;
 

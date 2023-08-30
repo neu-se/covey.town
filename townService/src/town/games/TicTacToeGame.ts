@@ -20,7 +20,6 @@ export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMov
    * Validates the move before applying it. If the move is invalid, throws an InvalidParametersError with
    * the error message specified below.
    * A move is invalid if:
-   *    - The move is out of bounds (not in the 3x3 grid - use MOVE_OUT_OF_BOUNDS_MESSAGE)
    *    - The move is on a space that is already occupied (use BOARD_POSITION_NOT_EMPTY_MESSAGE)
    *    - The move is not the player's turn (MOVE_NOT_YOUR_TURN_MESSAGE)
    *    - The game is not in progress (GAME_NOT_IN_PROGRESS_MESSAGE)
@@ -33,7 +32,7 @@ export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMov
    * A player wins if they have 3 in a row (horizontally, vertically, or diagonally).
    *
    * @param move The move to apply to the game
-   * @throws InvalidParametersError if the move is invalid
+   * @throws InvalidParametersError if the move is invalid (INVALID_MOVE_MESSAGE)
    */
   public applyMove(move: GameMove<TicTacToeMove>): void {}
 
