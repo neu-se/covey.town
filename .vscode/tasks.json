@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start frontend Development Server",
+            "type": "npm",
+            "script": "dev",
+            "path": "frontend",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Start townService",
+            "type": "npm",
+            "script": "start",
+            "path": "townService",
+            "options": {
+                "cwd": "${workspaceFolder}/townService"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

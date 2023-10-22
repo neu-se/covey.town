@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter';
 import { Player as PlayerModel, PlayerLocation } from '../types/CoveyTownSocket';
+export const MOVEMENT_SPEED = 175;
 
 export type PlayerEvents = {
   movement: (newLocation: PlayerLocation) => void;
@@ -55,14 +56,30 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
       if (!sprite.anims) return;
       sprite.setX(this.location.x);
       sprite.setY(this.location.y);
-      label.setX(this.location.x);
-      label.setY(this.location.y - 20);
       if (this.location.moving) {
         sprite.anims.play(`misa-${this.location.rotation}-walk`, true);
+        switch (this.location.rotation) {
+          case 'front':
+            sprite.body.setVelocity(0, MOVEMENT_SPEED);
+            break;
+          case 'right':
+            sprite.body.setVelocity(MOVEMENT_SPEED, 0);
+            break;
+          case 'back':
+            sprite.body.setVelocity(0, -MOVEMENT_SPEED);
+            break;
+          case 'left':
+            sprite.body.setVelocity(-MOVEMENT_SPEED, 0);
+            break;
+        }
+        sprite.body.velocity.normalize().scale(175);
       } else {
+        sprite.body.setVelocity(0, 0);
         sprite.anims.stop();
         sprite.setTexture('atlas', `misa-${this.location.rotation}`);
       }
+      label.setX(sprite.body.x);
+      label.setY(sprite.body.y - 20);
     }
   }
 

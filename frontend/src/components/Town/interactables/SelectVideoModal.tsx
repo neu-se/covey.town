@@ -13,9 +13,9 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useViewingAreaController } from '../../../classes/TownController';
+import ViewingAreaController from '../../../classes/interactable/ViewingAreaController';
+import { useInteractableAreaController } from '../../../classes/TownController';
 import useTownController from '../../../hooks/useTownController';
-import { ViewingArea as ViewingAreaModel } from '../../../types/CoveyTownSocket';
 import ViewingArea from './ViewingArea';
 
 export default function SelectVideoModal({
@@ -28,7 +28,9 @@ export default function SelectVideoModal({
   viewingArea: ViewingArea;
 }): JSX.Element {
   const coveyTownController = useTownController();
-  const viewingAreaController = useViewingAreaController(viewingArea?.name);
+  const viewingAreaController = useInteractableAreaController<ViewingAreaController>(
+    viewingArea?.name,
+  );
 
   const [video, setVideo] = useState<string>(viewingArea?.defaultVideoURL || '');
 
@@ -49,11 +51,12 @@ export default function SelectVideoModal({
 
   const createViewingArea = useCallback(async () => {
     if (video && viewingAreaController) {
-      const request: ViewingAreaModel = {
+      const request = {
         id: viewingAreaController.id,
         video,
         isPlaying: true,
         elapsedTimeSec: 0,
+        occupants: [],
       };
       try {
         await coveyTownController.createViewingArea(request);

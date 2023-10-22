@@ -6,9 +6,12 @@ import { act } from 'react-dom/test-utils';
 import ConversationAreaController, {
   ConversationAreaEvents,
   NO_TOPIC_STRING,
-  useConversationAreaOccupants,
   useConversationAreaTopic,
-} from '../classes/ConversationAreaController';
+} from '../classes/interactable/ConversationAreaController';
+import {
+  BaseInteractableEventMap,
+  useInteractableAreaOccupants,
+} from '../classes/interactable/InteractableAreaController';
 import PlayerController from '../classes/PlayerController';
 import TownController, {
   TownEvents,
@@ -165,9 +168,9 @@ describe('[T3] TownController-Dependent Hooks', () => {
     });
     it('Updates its value in response to conversationAreasChanged events', () => {
       act(() => {
-        const listener = getSingleListenerAdded('conversationAreasChanged');
+        const listener = getSingleListenerAdded('interactableAreasChanged');
         conversationAreas[2].occupants.push(players[2]);
-        listener(conversationAreas);
+        listener();
       });
       hookReturnValue.sort((a, b) => (a.topic && b.topic ? a.topic.localeCompare(b.topic) : 0));
       expect(hookReturnValue).toEqual([
@@ -178,33 +181,33 @@ describe('[T3] TownController-Dependent Hooks', () => {
     });
     it('Only adds a listener once', () => {
       // Check that there was one listener added
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
       // Trigger re-render
       act(() => {
-        const listener = getTownEventListener(townController, 'conversationAreasChanged');
+        const listener = getTownEventListener(townController, 'interactableAreasChanged');
         conversationAreas[2].occupants.push(players[2]);
-        listener(conversationAreas);
+        listener();
       });
       renderData.rerender(<TestComponent />);
       // Should still be one
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
     });
     it('Removes the listener when the component is unmounted', () => {
-      const addCall = getSingleListenerAdded('conversationAreasChanged');
+      const addCall = getSingleListenerAdded('interactableAreasChanged');
       cleanup();
-      const removeCall = getSingleListenerRemoved('conversationAreasChanged');
+      const removeCall = getSingleListenerRemoved('interactableAreasChanged');
       expect(addCall).toBe(removeCall);
     });
     it('Adds a listener on first render and does not re-register a listener on each render', () => {
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
       renderData.rerender(<TestComponent />);
       renderData.rerender(<TestComponent />);
       renderData.rerender(<TestComponent />);
-      getSingleListenerAdded('conversationAreasChanged');
+      getSingleListenerAdded('interactableAreasChanged');
     });
 
     it('Removes the listener if the townController changes and adds one to the new controller', () => {
-      const addCall = getSingleListenerAdded('conversationAreasChanged');
+      const addCall = getSingleListenerAdded('interactableAreasChanged');
       const newController = mockTownController({
         friendlyName: nanoid(),
         townID: nanoid(),
@@ -213,9 +216,9 @@ describe('[T3] TownController-Dependent Hooks', () => {
 
       useTownControllerSpy.mockReturnValue(newController);
       renderData.rerender(<TestComponent />);
-      expect(getSingleListenerRemoved('conversationAreasChanged')).toBe(addCall);
+      expect(getSingleListenerRemoved('interactableAreasChanged')).toBe(addCall);
 
-      getSingleListenerAdded('conversationAreasChanged', newController.addListener);
+      getSingleListenerAdded('interactableAreasChanged', newController.addListener);
     });
   });
 
@@ -318,16 +321,13 @@ describe('[T3] TownController-Dependent Hooks', () => {
 
 describe('ConversationAreaController hooks', () => {
   let conversationAreaController: ConversationAreaController;
-  type ConversationAreaEventName = keyof ConversationAreaEvents;
-
   let addListenerSpy: jest.SpyInstance<
     ConversationAreaController,
-    [event: ConversationAreaEventName, listener: ConversationAreaEvents[ConversationAreaEventName]]
+    Parameters<ConversationAreaController['addListener']>
   >;
-
   let removeListenerSpy: jest.SpyInstance<
     ConversationAreaController,
-    [event: ConversationAreaEventName, listener: ConversationAreaEvents[ConversationAreaEventName]]
+    Parameters<ConversationAreaController['removeListener']>
   >;
 
   beforeEach(() => {
@@ -335,21 +335,37 @@ describe('ConversationAreaController hooks', () => {
     addListenerSpy = jest.spyOn(conversationAreaController, 'addListener');
     removeListenerSpy = jest.spyOn(conversationAreaController, 'removeListener');
   });
-  function getSingleListenerAdded<Ev extends EventNames<ConversationAreaEvents>>(
+  function getSingleListenerAdded<
+    Ev extends EventNames<ConversationAreaEvents> | EventNames<BaseInteractableEventMap>,
+  >(
     eventName: Ev,
     spy = addListenerSpy,
-  ): ConversationAreaEvents[Ev] {
+  ): Ev extends EventNames<ConversationAreaEvents>
+    ? ConversationAreaEvents[Ev]
+    : Ev extends EventNames<BaseInteractableEventMap>
+    ? BaseInteractableEventMap[Ev]
+    : never {
     const addedListeners = spy.mock.calls.filter(eachCall => eachCall[0] === eventName);
     if (addedListeners.length !== 1) {
       throw new Error(
         `Expected to find exactly one addListener call for ${eventName} but found ${addedListeners.length}`,
       );
     }
-    return addedListeners[0][1] as unknown as ConversationAreaEvents[Ev];
+    return addedListeners[0][1] as unknown as Ev extends EventNames<ConversationAreaEvents>
+      ? ConversationAreaEvents[Ev]
+      : Ev extends EventNames<BaseInteractableEventMap>
+      ? BaseInteractableEventMap[Ev]
+      : never;
   }
-  function getSingleListenerRemoved<Ev extends EventNames<ConversationAreaEvents>>(
+  function getSingleListenerRemoved<
+    Ev extends EventNames<ConversationAreaEvents> | EventNames<BaseInteractableEventMap>,
+  >(
     eventName: Ev,
-  ): ConversationAreaEvents[Ev] {
+  ): Ev extends EventNames<ConversationAreaEvents>
+    ? ConversationAreaEvents[Ev]
+    : Ev extends EventNames<BaseInteractableEventMap>
+    ? BaseInteractableEventMap[Ev]
+    : never {
     const removedListeners = removeListenerSpy.mock.calls.filter(
       eachCall => eachCall[0] === eventName,
     );
@@ -358,14 +374,18 @@ describe('ConversationAreaController hooks', () => {
         `Expected to find exactly one removeListeners call for ${eventName} but found ${removedListeners.length}`,
       );
     }
-    return removedListeners[0][1] as unknown as ConversationAreaEvents[Ev];
+    return removedListeners[0][1] as unknown as Ev extends EventNames<ConversationAreaEvents>
+      ? ConversationAreaEvents[Ev]
+      : Ev extends EventNames<BaseInteractableEventMap>
+      ? BaseInteractableEventMap[Ev]
+      : never;
   }
   describe('[T3] useConversationAreaOccupants', () => {
     let hookReturnValue: PlayerController[];
     let testPlayers: PlayerController[];
     let renderData: RenderResult;
     function TestComponent(props: { controller?: ConversationAreaController }) {
-      hookReturnValue = useConversationAreaOccupants(
+      hookReturnValue = useInteractableAreaOccupants(
         props.controller || conversationAreaController,
       );
       return null;

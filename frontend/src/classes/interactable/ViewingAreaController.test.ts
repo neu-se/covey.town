@@ -1,7 +1,7 @@
 import { mock, mockClear, MockProxy } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
-import { ViewingArea } from '../generated/client';
-import TownController from './TownController';
+import { ViewingArea } from '../../types/CoveyTownSocket';
+import TownController from '../TownController';
 import ViewingAreaController, { ViewingAreaEvents } from './ViewingAreaController';
 
 describe('[T2] ViewingAreaController', () => {
@@ -16,6 +16,8 @@ describe('[T2] ViewingAreaController', () => {
       isPlaying: true,
       elapsedTimeSec: 12,
       video: nanoid(),
+      occupants: [],
+      type: 'ViewingArea',
     };
     testArea = new ViewingAreaController(testAreaModel);
     mockClear(townController);
@@ -65,7 +67,7 @@ describe('[T2] ViewingAreaController', () => {
   });
   describe('viewingAreaModel', () => {
     it('Carries through all of the properties', () => {
-      const model = testArea.viewingAreaModel();
+      const model = testArea.toInteractableAreaModel();
       expect(model).toEqual(testAreaModel);
     });
   });
@@ -76,8 +78,10 @@ describe('[T2] ViewingAreaController', () => {
         video: nanoid(),
         elapsedTimeSec: testArea.elapsedTimeSec + 1,
         isPlaying: !testArea.isPlaying,
+        occupants: [],
+        type: 'ViewingArea',
       };
-      testArea.updateFrom(newModel);
+      testArea.updateFrom(newModel, []);
       expect(testArea.video).toEqual(newModel.video);
       expect(testArea.elapsedTimeSec).toEqual(newModel.elapsedTimeSec);
       expect(testArea.isPlaying).toEqual(newModel.isPlaying);
@@ -92,8 +96,10 @@ describe('[T2] ViewingAreaController', () => {
         video: nanoid(),
         elapsedTimeSec: testArea.elapsedTimeSec + 1,
         isPlaying: !testArea.isPlaying,
+        occupants: [],
+        type: 'ViewingArea',
       };
-      testArea.updateFrom(newModel);
+      testArea.updateFrom(newModel, []);
       expect(testArea.id).toEqual(existingID);
     });
   });

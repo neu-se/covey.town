@@ -2,7 +2,11 @@ import TownController from '../../classes/TownController';
 import TownGameScene from './TownGameScene';
 
 //TODO is there not some way to figure this out from generic types/supertypes?
-export type KnownInteractableTypes = 'conversationArea' | 'viewingArea' | 'transporter';
+export type KnownInteractableTypes =
+  | 'conversationArea'
+  | 'viewingArea'
+  | 'transporter'
+  | 'gameArea';
 
 /**
  * A base abstract class for representing an "interactable" in the Phaser game world.
@@ -57,6 +61,7 @@ export default abstract class Interactable extends Phaser.GameObjects.Sprite {
    */
   addedToScene(): void {
     super.addedToScene();
+    this.townController = (this.scene as TownGameScene).coveyTownController;
     this._id = this.name;
     const sprite = this.townController.ourPlayer.gameObjects?.sprite;
     if (!sprite) {

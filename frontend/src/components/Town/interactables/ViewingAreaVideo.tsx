@@ -1,8 +1,8 @@
 import { Container } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
-import { useInteractable, useViewingAreaController } from '../../../classes/TownController';
-import ViewingAreaController from '../../../classes/ViewingAreaController';
+import { useInteractable, useInteractableAreaController } from '../../../classes/TownController';
+import ViewingAreaController from '../../../classes/interactable/ViewingAreaController';
 import useTownController from '../../../hooks/useTownController';
 import SelectVideoModal from './SelectVideoModal';
 import ViewingAreaInteractable from './ViewingArea';
@@ -119,7 +119,9 @@ export function ViewingArea({
   viewingArea: ViewingAreaInteractable;
 }): JSX.Element {
   const townController = useTownController();
-  const viewingAreaController = useViewingAreaController(viewingArea.name);
+  const viewingAreaController = useInteractableAreaController<ViewingAreaController>(
+    viewingArea.name,
+  );
   const [selectIsOpen, setSelectIsOpen] = useState(viewingAreaController.video === undefined);
   const [viewingAreaVideoURL, setViewingAreaVideoURL] = useState(viewingAreaController.video);
   useEffect(() => {

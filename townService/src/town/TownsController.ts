@@ -118,13 +118,13 @@ export class TownsController extends Controller {
   public async createConversationArea(
     @Path() townID: string,
     @Header('X-Session-Token') sessionToken: string,
-    @Body() requestBody: ConversationArea,
+    @Body() requestBody: Omit<ConversationArea, 'type'>,
   ): Promise<void> {
     const town = this._townsStore.getTownByID(townID);
     if (!town?.getPlayerBySessionToken(sessionToken)) {
       throw new InvalidParametersError('Invalid values specified');
     }
-    const success = town.addConversationArea(requestBody);
+    const success = town.addConversationArea({ ...requestBody, type: 'ConversationArea' });
     if (!success) {
       throw new InvalidParametersError('Invalid values specified');
     }
@@ -146,7 +146,7 @@ export class TownsController extends Controller {
   public async createViewingArea(
     @Path() townID: string,
     @Header('X-Session-Token') sessionToken: string,
-    @Body() requestBody: ViewingArea,
+    @Body() requestBody: Omit<ViewingArea, 'type'>,
   ): Promise<void> {
     const town = this._townsStore.getTownByID(townID);
     if (!town) {
@@ -155,7 +155,7 @@ export class TownsController extends Controller {
     if (!town?.getPlayerBySessionToken(sessionToken)) {
       throw new InvalidParametersError('Invalid values specified');
     }
-    const success = town.addViewingArea(requestBody);
+    const success = town.addViewingArea({ ...requestBody, type: 'ViewingArea' });
     if (!success) {
       throw new InvalidParametersError('Invalid values specified');
     }

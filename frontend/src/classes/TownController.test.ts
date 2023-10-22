@@ -1,7 +1,6 @@
 import { mock, mockClear, MockProxy } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import { LoginController } from '../contexts/LoginControllerContext';
-import { ViewingArea } from '../generated/client';
 import {
   EventNames,
   getEventListener,
@@ -16,11 +15,12 @@ import {
   PlayerLocation,
   ServerToClientEvents,
   TownJoinResponse,
+  ViewingArea,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isViewingArea } from '../types/TypeUtils';
 import PlayerController from './PlayerController';
 import TownController, { TownEvents } from './TownController';
-import ViewingAreaController from './ViewingAreaController';
+import ViewingAreaController from './interactable/ViewingAreaController';
 
 /**
  * Mocks the socket-io client constructor such that it will always return the same
@@ -164,20 +164,18 @@ describe('TownController', () => {
 
       expect(mockSocket.emit).toBeCalledWith('chatMessage', testMessage);
     });
-    it('Emits conversationAreasChanged when a conversation area is created', () => {
+    it('Emits interactableAreasChanged when a conversation area is created', () => {
       const newConvArea = townJoinResponse.interactables.find(
         eachInteractable => isConversationArea(eachInteractable) && !eachInteractable.topic,
       ) as ConversationAreaModel;
       if (newConvArea) {
         newConvArea.topic = nanoid();
-        newConvArea.occupantsByID = [townJoinResponse.userID];
-        const event = emitEventAndExpectListenerFiring(
+        newConvArea.occupants = [townJoinResponse.userID];
+        emitEventAndExpectListenerFiring(
           'interactableUpdate',
           newConvArea,
-          'conversationAreasChanged',
+          'interactableAreasChanged',
         );
-        const changedAreasArray = event.mock.calls[0][0];
-        expect(changedAreasArray.find(eachConvArea => eachConvArea.id === newConvArea.id)?.topic);
       } else {
         fail('Did not find an existing, empty conversation area in the town join response');
       }
@@ -188,7 +186,7 @@ describe('TownController', () => {
           return {
             ...(townJoinResponse.interactables.find(
               eachInteractable =>
-                isConversationArea(eachInteractable) && eachInteractable.occupantsByID.length == 0,
+                isConversationArea(eachInteractable) && eachInteractable.occupants.length == 0,
             ) as ConversationAreaModel),
           };
         }
@@ -196,21 +194,20 @@ describe('TownController', () => {
           return {
             ...(townJoinResponse.interactables.find(
               eachInteractable =>
-                isConversationArea(eachInteractable) && eachInteractable.occupantsByID.length > 0,
+                isConversationArea(eachInteractable) && eachInteractable.occupants.length > 0,
             ) as ConversationAreaModel),
           };
         }
-        it('Emits a conversationAreasChanged event with the updated list of conversation areas if the area is newly occupied', () => {
+        it('Emits a interactableAreasChanged event with the updated list of conversation areas if the area is newly occupied', () => {
           const convArea = emptyConversationArea();
-          convArea.occupantsByID = [townJoinResponse.userID];
+          convArea.occupants = [townJoinResponse.userID];
           convArea.topic = nanoid();
           const updatedConversationAreas = testController.conversationAreas;
 
           emitEventAndExpectListenerFiring(
             'interactableUpdate',
             convArea,
-            'conversationAreasChanged',
-            updatedConversationAreas,
+            'interactableAreasChanged',
           );
 
           const updatedController = updatedConversationAreas.find(
@@ -218,32 +215,32 @@ describe('TownController', () => {
           );
           expect(updatedController?.topic).toEqual(convArea.topic);
           expect(updatedController?.occupants.map(eachOccupant => eachOccupant.id)).toEqual(
-            convArea.occupantsByID,
+            convArea.occupants,
           );
-          expect(updatedController?.toConversationAreaModel()).toEqual({
+          expect(updatedController?.toInteractableAreaModel()).toEqual({
             id: convArea.id,
             topic: convArea.topic,
-            occupantsByID: [townJoinResponse.userID],
+            occupants: [townJoinResponse.userID],
+            type: 'ConversationArea',
           });
         });
-        it('Emits a conversationAreasChanged event with the updated list of converation areas if the area is newly vacant', () => {
+        it('Emits a interactableAreasChanged event with the updated list of converation areas if the area is newly vacant', () => {
           const convArea = occupiedConversationArea();
-          convArea.occupantsByID = [];
+          convArea.occupants = [];
           convArea.topic = undefined;
           const updatedConversationAreas = testController.conversationAreas;
 
           emitEventAndExpectListenerFiring(
             'interactableUpdate',
             convArea,
-            'conversationAreasChanged',
-            updatedConversationAreas,
+            'interactableAreasChanged',
           );
           const updatedController = updatedConversationAreas.find(
             eachArea => eachArea.id === convArea.id,
           );
           expect(updatedController?.topic).toEqual(convArea.topic);
           expect(updatedController?.occupants.map(eachOccupant => eachOccupant.id)).toEqual(
-            convArea.occupantsByID,
+            convArea.occupants,
           );
         });
         it('Does not emit a conversationAreasChanged event if the set of active areas has not changed', () => {
@@ -253,9 +250,9 @@ describe('TownController', () => {
 
           const eventListener = getEventListener(mockSocket, 'interactableUpdate');
           const mockListener = jest.fn() as jest.MockedFunction<
-            TownEvents['conversationAreasChanged']
+            TownEvents['interactableAreasChanged']
           >;
-          testController.addListener('conversationAreasChanged', mockListener);
+          testController.addListener('interactableAreasChanged', mockListener);
           eventListener(convArea);
           expect(mockListener).not.toBeCalled();
 
@@ -264,7 +261,7 @@ describe('TownController', () => {
           );
           expect(updatedController?.topic).toEqual(convArea.topic);
           expect(updatedController?.occupants.map(eachOccupant => eachOccupant.id)).toEqual(
-            convArea.occupantsByID,
+            convArea.occupants,
           );
         });
         it('Emits a topicChange event if the topic of a conversation area changes', () => {
@@ -307,7 +304,7 @@ describe('TownController', () => {
         });
         it('Emits an occupantsChange event if the occupants changed', () => {
           const convArea = occupiedConversationArea();
-          convArea.occupantsByID = [townJoinResponse.userID, townJoinResponse.currentPlayers[1].id];
+          convArea.occupants = [townJoinResponse.userID, townJoinResponse.currentPlayers[1].id];
 
           //Set up an occupantsChange listener
           const occupantsChangeListener = jest.fn();
@@ -375,7 +372,7 @@ describe('TownController', () => {
 
           eventListener(viewingArea);
 
-          expect(viewingAreaController.viewingAreaModel()).toEqual(viewingArea);
+          expect(viewingAreaController.toInteractableAreaModel()).toEqual(viewingArea);
         });
         it('Emits a playbackChange event if isPlaying changes', () => {
           const listener = jest.fn();

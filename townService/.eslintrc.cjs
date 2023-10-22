@@ -20,6 +20,8 @@ module.exports = {
     'no-param-reassign': 0,
     'no-restricted-syntax': 0,
     'no-plusplus': 0,
+    'class-methods-use-this': 0,
+    '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
     'import/no-extraneous-dependencies': [
       'error',
       { devDependencies: ['**/*.test.ts', '**/TestUtils.ts'] },

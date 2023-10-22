@@ -1,11 +1,12 @@
 import assert from 'assert';
 import Phaser from 'phaser';
-import PlayerController from '../../classes/PlayerController';
+import PlayerController, { MOVEMENT_SPEED } from '../../classes/PlayerController';
 import TownController from '../../classes/TownController';
 import { PlayerLocation } from '../../types/CoveyTownSocket';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import Interactable from './Interactable';
 import ConversationArea from './interactables/ConversationArea';
+import GameArea from './interactables/GameArea';
 import Transporter from './interactables/Transporter';
 import ViewingArea from './interactables/ViewingArea';
 
@@ -16,8 +17,10 @@ function interactableTypeForObjectType(type: string): any {
     return ConversationArea;
   } else if (type === 'Transporter') {
     return Transporter;
-  } else if (type == 'ViewingArea') {
+  } else if (type === 'ViewingArea') {
     return ViewingArea;
+  } else if (type === 'GameArea') {
+    return GameArea;
   } else {
     throw new Error(`Unknown object type: ${type}`);
   }
@@ -25,7 +28,6 @@ function interactableTypeForObjectType(type: string): any {
 
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
-
 export default class TownGameScene extends Phaser.Scene {
   private _pendingOverlapExits = new Map<Interactable, () => void>();
 
@@ -57,6 +59,11 @@ export default class TownGameScene extends Phaser.Scene {
   public coveyTownController: TownController;
 
   private _onGameReadyListeners: Callback[] = [];
+
+  /**
+   * Layers that the player can collide with.
+   */
+  private _collidingLayers: Phaser.Tilemaps.TilemapLayer[] = [];
 
   private _gameIsReady = new Promise<void>(resolve => {
     if (this._ready) {
@@ -197,8 +204,6 @@ export default class TownGameScene extends Phaser.Scene {
     }
     const gameObjects = this.coveyTownController.ourPlayer.gameObjects;
     if (gameObjects && this._cursors) {
-      const speed = 175;
-
       const prevVelocity = gameObjects.sprite.body.velocity.clone();
       const body = gameObjects.sprite.body as Phaser.Physics.Arcade.Body;
 
@@ -208,19 +213,19 @@ export default class TownGameScene extends Phaser.Scene {
       const primaryDirection = this.getNewMovementDirection();
       switch (primaryDirection) {
         case 'left':
-          body.setVelocityX(-speed);
+          body.setVelocityX(-MOVEMENT_SPEED);
           gameObjects.sprite.anims.play('misa-left-walk', true);
           break;
         case 'right':
-          body.setVelocityX(speed);
+          body.setVelocityX(MOVEMENT_SPEED);
           gameObjects.sprite.anims.play('misa-right-walk', true);
           break;
         case 'front':
-          body.setVelocityY(speed);
+          body.setVelocityY(MOVEMENT_SPEED);
           gameObjects.sprite.anims.play('misa-front-walk', true);
           break;
         case 'back':
-          body.setVelocityY(-speed);
+          body.setVelocityY(-MOVEMENT_SPEED);
           gameObjects.sprite.anims.play('misa-back-walk', true);
           break;
         default:
@@ -238,7 +243,7 @@ export default class TownGameScene extends Phaser.Scene {
       }
 
       // Normalize and scale the velocity so that player can't move faster along a diagonal
-      gameObjects.sprite.body.velocity.normalize().scale(speed);
+      gameObjects.sprite.body.velocity.normalize().scale(MOVEMENT_SPEED);
 
       const isMoving = primaryDirection !== undefined;
       gameObjects.label.setX(body.x);
@@ -248,8 +253,6 @@ export default class TownGameScene extends Phaser.Scene {
       //Move the sprite
       if (
         !this._lastLocation ||
-        this._lastLocation.x !== x ||
-        this._lastLocation.y !== y ||
         (isMoving && this._lastLocation.rotation !== primaryDirection) ||
         this._lastLocation.moving !== isMoving
       ) {
@@ -277,6 +280,14 @@ export default class TownGameScene extends Phaser.Scene {
           }
         });
         this.coveyTownController.emitMovement(this._lastLocation);
+      }
+
+      //Update the location for the labels of all of the other players
+      for (const player of this._players) {
+        if (player.gameObjects?.label && player.gameObjects?.sprite.body) {
+          player.gameObjects.label.setX(player.gameObjects.sprite.body.x);
+          player.gameObjects.label.setY(player.gameObjects.sprite.body.y - 20);
+        }
       }
     }
   }
@@ -326,6 +337,7 @@ export default class TownGameScene extends Phaser.Scene {
       return ret;
     });
 
+    this._collidingLayers = [];
     // Parameters: layer name (or index) from Tiled, tileset, x, y
     const belowLayer = this.map.createLayer('Below Player', tileset, 0, 0);
     assert(belowLayer);
@@ -423,10 +435,11 @@ export default class TownGameScene extends Phaser.Scene {
     this.moveOurPlayerTo({ rotation: 'front', moving: false, x: spawnPoint.x, y: spawnPoint.y });
 
     // Watch the player and worldLayer for collisions, for the duration of the scene:
-    this.physics.add.collider(sprite, worldLayer);
-    this.physics.add.collider(sprite, wallsLayer);
-    this.physics.add.collider(sprite, aboveLayer);
-    this.physics.add.collider(sprite, onTheWallsLayer);
+    this._collidingLayers.push(worldLayer);
+    this._collidingLayers.push(wallsLayer);
+    this._collidingLayers.push(aboveLayer);
+    this._collidingLayers.push(onTheWallsLayer);
+    this._collidingLayers.forEach(layer => this.physics.add.collider(sprite, layer));
 
     // Create the player's walking animations from the texture atlas. These are stored in the global
     // animation manager so any sprite can access them.
@@ -524,6 +537,7 @@ export default class TownGameScene extends Phaser.Scene {
         label,
         locationManagedByGameScene: false,
       };
+      this._collidingLayers.forEach(layer => this.physics.add.collider(sprite, layer));
     }
   }
 
