@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { mock, mockReset } from 'jest-mock-extended';
-import React from 'react';
 import { nanoid } from 'nanoid';
 import { act } from 'react-dom/test-utils';
 import TicTacToeAreaController, {
@@ -10,17 +9,12 @@ import TicTacToeAreaController, {
 import PlayerController from '../../../../classes/PlayerController';
 import TownController, * as TownControllerHooks from '../../../../classes/TownController';
 import TownControllerContext from '../../../../contexts/TownControllerContext';
-import {
-  GameArea,
-  GameResult,
-  GameStatus,
-  PlayerLocation,
-  TicTacToeGameState,
-} from '../../../../types/CoveyTownSocket';
+import { randomLocation } from '../../../../TestUtils';
+import { GameArea, GameStatus, TicTacToeGameState } from '../../../../types/CoveyTownSocket';
 import PhaserGameArea from '../GameArea';
-import * as Leaderboard from '../Leaderboard';
 import TicTacToeAreaWrapper from './TicTacToeArea';
 import * as TicTacToeBoard from './TicTacToeBoard';
+import React from 'react';
 
 const mockToast = jest.fn();
 jest.mock('@chakra-ui/react', () => {
@@ -39,18 +33,8 @@ const useInteractableAreaControllerSpy = jest.spyOn(
   'useInteractableAreaController',
 );
 
-const leaderboardComponentSpy = jest.spyOn(Leaderboard, 'default');
-leaderboardComponentSpy.mockReturnValue(<div data-testid='leaderboard' />);
-
 const boardComponentSpy = jest.spyOn(TicTacToeBoard, 'default');
 boardComponentSpy.mockReturnValue(<div data-testid='board' />);
-
-const randomLocation = (): PlayerLocation => ({
-  moving: Math.random() < 0.5,
-  rotation: 'front',
-  x: Math.random() * 1000,
-  y: Math.random() * 1000,
-});
 
 class MockTicTacToeAreaController extends TicTacToeAreaController {
   makeMove = jest.fn();
@@ -66,8 +50,6 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
   mockIsPlayer = false;
 
   mockIsOurTurn = false;
-
-  mockObservers: PlayerController[] = [];
 
   mockMoveCount = 0;
 
@@ -87,18 +69,12 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
 
   mockIsActive = false;
 
-  mockHistory: GameResult[] = [];
-
   public constructor() {
     super(nanoid(), mock<GameArea<TicTacToeGameState>>(), mock<TownController>());
   }
 
   get board(): TicTacToeCell[][] {
     throw new Error('Method should not be called within this component.');
-  }
-
-  get history(): GameResult[] {
-    return this.mockHistory;
   }
 
   get isOurTurn() {
@@ -111,10 +87,6 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
 
   get o(): PlayerController | undefined {
     return this.mockO;
-  }
-
-  get observers(): PlayerController[] {
-    return this.mockObservers;
   }
 
   get moveCount(): number {
@@ -186,7 +158,7 @@ describe('[T2] TicTacToeArea', () => {
     return render(
       <ChakraProvider>
         <TownControllerContext.Provider value={townController}>
-          <TicTacToeAreaWrapper />
+          <TicTacToeAreaWrapper interactableID={nanoid()} />
         </TownControllerContext.Provider>
       </ChakraProvider>,
     );
@@ -197,7 +169,6 @@ describe('[T2] TicTacToeArea', () => {
     mockReset(townController);
     gameAreaController.mockReset();
     useInteractableAreaControllerSpy.mockReturnValue(gameAreaController);
-    leaderboardComponentSpy.mockClear();
     mockToast.mockClear();
     gameAreaController.joinGame.mockReset();
     gameAreaController.makeMove.mockReset();
@@ -232,7 +203,7 @@ describe('[T2] TicTacToeArea', () => {
       renderData.rerender(
         <ChakraProvider>
           <TownControllerContext.Provider value={townController}>
-            <TicTacToeAreaWrapper />
+            <TicTacToeAreaWrapper interactableID={nanoid()} />
           </TownControllerContext.Provider>
         </ChakraProvider>,
       );
@@ -276,7 +247,7 @@ describe('[T2] TicTacToeArea', () => {
       renderData.rerender(
         <ChakraProvider>
           <TownControllerContext.Provider value={townController}>
-            <TicTacToeAreaWrapper />
+            <TicTacToeAreaWrapper interactableID={nanoid()} />
           </TownControllerContext.Provider>
         </ChakraProvider>,
       );
@@ -284,63 +255,6 @@ describe('[T2] TicTacToeArea', () => {
 
       expect(addListenerSpy2).toBeCalledTimes(2);
       expect(removeListenerSpy2).not.toBeCalled();
-    });
-  });
-  describe('[T2.2] Rendering the leaderboard', () => {
-    it('Renders the leaderboard with the history when the component is mounted', () => {
-      gameAreaController.mockHistory = [
-        {
-          gameID: nanoid(),
-          scores: {
-            [nanoid()]: 1,
-            [nanoid()]: 0,
-          },
-        },
-      ];
-      renderTicTacToeArea();
-      expect(leaderboardComponentSpy).toHaveBeenCalledWith(
-        {
-          results: gameAreaController.mockHistory,
-        },
-        {},
-      );
-    });
-    it('Renders the leaderboard with the history when the game is updated', () => {
-      gameAreaController.mockHistory = [
-        {
-          gameID: nanoid(),
-          scores: {
-            [nanoid()]: 1,
-            [nanoid()]: 0,
-          },
-        },
-      ];
-      renderTicTacToeArea();
-      expect(leaderboardComponentSpy).toHaveBeenCalledWith(
-        {
-          results: gameAreaController.mockHistory,
-        },
-        {},
-      );
-
-      gameAreaController.mockHistory = [
-        {
-          gameID: nanoid(),
-          scores: {
-            [nanoid()]: 1,
-            [nanoid()]: 1,
-          },
-        },
-      ];
-      act(() => {
-        gameAreaController.emit('gameUpdated');
-      });
-      expect(leaderboardComponentSpy).toHaveBeenCalledWith(
-        {
-          results: gameAreaController.mockHistory,
-        },
-        {},
-      );
     });
   });
   describe('[T2.3] Join game button', () => {
@@ -441,46 +355,6 @@ describe('[T2] TicTacToeArea', () => {
         gameAreaController.emit('gameUpdated');
       });
       expect(screen.queryByText('Join New Game')).not.toBeInTheDocument();
-    });
-  });
-  describe('[T2.4] Rendering the current observers', () => {
-    beforeEach(() => {
-      gameAreaController.mockObservers = [
-        new PlayerController('player 1', 'player 1', randomLocation()),
-        new PlayerController('player 2', 'player 2', randomLocation()),
-        new PlayerController('player 3', 'player 3', randomLocation()),
-      ];
-      gameAreaController.mockStatus = 'IN_PROGRESS';
-      gameAreaController.mockIsPlayer = false;
-      gameAreaController.mockX = new PlayerController('player X', 'player X', randomLocation());
-      gameAreaController.mockO = new PlayerController('player O', 'player O', randomLocation());
-    });
-    it('Displays the correct observers when the component is mounted', () => {
-      renderTicTacToeArea();
-      const observerList = screen.getByLabelText('list of observers in the game');
-      const observerItems = observerList.querySelectorAll('li');
-      expect(observerItems).toHaveLength(gameAreaController.mockObservers.length);
-      for (let i = 0; i < observerItems.length; i++) {
-        expect(observerItems[i]).toHaveTextContent(gameAreaController.mockObservers[i].userName);
-      }
-    });
-    it('Displays the correct observers when the game is updated', () => {
-      renderTicTacToeArea();
-      act(() => {
-        gameAreaController.mockObservers = [
-          new PlayerController('player 1', 'player 1', randomLocation()),
-          new PlayerController('player 2', 'player 2', randomLocation()),
-          new PlayerController('player 3', 'player 3', randomLocation()),
-          new PlayerController('player 4', 'player 4', randomLocation()),
-        ];
-        gameAreaController.emit('gameUpdated');
-      });
-      const observerList = screen.getByLabelText('list of observers in the game');
-      const observerItems = observerList.querySelectorAll('li');
-      expect(observerItems).toHaveLength(gameAreaController.mockObservers.length);
-      for (let i = 0; i < observerItems.length; i++) {
-        expect(observerItems[i]).toHaveTextContent(gameAreaController.mockObservers[i].userName);
-      }
     });
   });
   describe('[T2.5] Players in the game text', () => {

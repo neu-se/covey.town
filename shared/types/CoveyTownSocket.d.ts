@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'ConnectFourArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -55,6 +55,7 @@ export type ChatMessage = {
   sid: string;
   body: string;
   dateCreated: Date;
+  interactableID?: string;
 };
 
 export interface ConversationArea extends Interactable {
@@ -73,7 +74,7 @@ export interface ViewingArea extends Interactable {
   elapsedTimeSec: number;
 }
 
-export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER';
+export type GameStatus = 'IN_PROGRESS' | 'WAITING_TO_START' | 'OVER' | 'WAITING_FOR_PLAYERS';
 /**
  * Base type for the state of a game
  */
@@ -118,6 +119,47 @@ export interface TicTacToeGameState extends WinnableGameState {
   x?: PlayerID;
   o?: PlayerID;
 }
+
+/**
+ * Type for the state of a ConnectFour game.
+ * The state of the game is represented as a list of moves, and the playerIDs of the players (red and yellow)
+ */
+export interface ConnectFourGameState extends WinnableGameState {
+  // The moves in this game
+  moves: ReadonlyArray<ConnectFourMove>;
+  // The playerID of the red player, if any
+  red?: PlayerID;
+  // The playerID of the yellow player, if any
+  yellow?: PlayerID;
+  // Whether the red player is ready to start the game
+  redReady?: boolean;
+  // Whether the yellow player is ready to start the game
+  yellowReady?: boolean;
+  // The color of the player who will make the first move
+  firstPlayer: ConnectFourColor;
+}
+
+/**
+ * Type for a move in ConnectFour
+ * Columns are numbered 0-6, with 0 being the leftmost column
+ * Rows are numbered 0-5, with 0 being the top row
+ */
+export interface ConnectFourMove {
+  gamePiece: ConnectFourColor;
+  col: ConnectFourColIndex;
+  row: ConnectFourRowIndex;
+}
+
+/**
+ * Row indices in ConnectFour start at the top of the board and go down
+ */
+export type ConnectFourRowIndex = 0 | 1 | 2 | 3 | 4 | 5;
+/**
+ * Column indices in ConnectFour start at the left of the board and go right
+ */
+export type ConnectFourColIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export type ConnectFourColor = 'Red' | 'Yellow';
 
 export type InteractableID = string;
 export type GameInstanceID = string;
@@ -174,7 +216,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ConnectFourMove> | StartGameCommand | LeaveGameCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -184,6 +226,10 @@ export interface JoinGameCommand {
 }
 export interface LeaveGameCommand {
   type: 'LeaveGame';
+  gameID: GameInstanceID;
+}
+export interface StartGameCommand {
+  type: 'StartGame';
   gameID: GameInstanceID;
 }
 export interface GameMoveCommand<MoveType> {

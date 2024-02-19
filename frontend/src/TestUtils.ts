@@ -9,6 +9,7 @@ import { TownsService } from './generated/client';
 import {
   ConversationArea,
   CoveyTownSocket,
+  PlayerLocation,
   ServerToClientEvents,
   TownJoinResponse,
   ViewingArea,
@@ -234,4 +235,13 @@ export function getTownEventListener<Ev extends EventNames<TownEvents>>(
     }
   }
   throw new Error(`No event listener found for event ${eventName}`);
+}
+
+export function randomLocation(): PlayerLocation {
+  return {
+    moving: Math.random() < 0.5,
+    rotation: 'front',
+    x: Math.random() * 1000,
+    y: Math.random() * 1000,
+  };
 }

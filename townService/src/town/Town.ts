@@ -93,6 +93,8 @@ export default class Town {
 
   private _connectedSockets: Set<CoveyTownSocket> = new Set();
 
+  private _chatMessages: ChatMessage[] = [];
+
   constructor(
     friendlyName: string,
     isPubliclyListed: boolean,
@@ -136,12 +138,20 @@ export default class Town {
     // Set up a listener to forward all chat messages to all clients in the town
     socket.on('chatMessage', (message: ChatMessage) => {
       this._broadcastEmitter.emit('chatMessage', message);
+      this._chatMessages.push(message);
+      if (this._chatMessages.length > 200) {
+        this._chatMessages.shift();
+      }
     });
 
     // Register an event listener for the client socket: if the client updates their
     // location, inform the CoveyTownController
     socket.on('playerMovement', (movementData: PlayerLocation) => {
-      this._updatePlayerLocation(newPlayer, movementData);
+      try {
+        this._updatePlayerLocation(newPlayer, movementData);
+      } catch (err) {
+        logError(err);
+      }
     });
 
     // Set up a listener to process updates to interactables.
@@ -354,6 +364,14 @@ export default class Town {
       throw new Error(`No such interactable ${id}`);
     }
     return ret;
+  }
+
+  /**
+   * Retrieves all chat messages, optionally filtered by interactableID
+   * @param interactableID optional interactableID to filter by
+   */
+  public getChatMessages(interactableID: string | undefined) {
+    return this._chatMessages.filter(eachMessage => eachMessage.interactableID === interactableID);
   }
 
   /**

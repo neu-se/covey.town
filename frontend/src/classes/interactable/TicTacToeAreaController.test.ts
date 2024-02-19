@@ -11,8 +11,8 @@ import {
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
-import GameAreaController from './GameAreaController';
-import TicTacToeAreaController, { NO_GAME_IN_PROGRESS_ERROR } from './TicTacToeAreaController';
+import GameAreaController, { NO_GAME_IN_PROGRESS_ERROR } from './GameAreaController';
+import TicTacToeAreaController from './TicTacToeAreaController';
 
 describe('[T1] TicTacToeAreaController', () => {
   const ourPlayer = new PlayerController(nanoid(), nanoid(), {
@@ -94,9 +94,10 @@ describe('[T1] TicTacToeAreaController', () => {
   }
   describe('[T1.1]', () => {
     describe('isActive', () => {
-      it('should return true if the game is in progress', () => {
+      it('should return true if the game is in progress and there is a player in the area', () => {
         const controller = ticTacToeAreaControllerWithProp({
           status: 'IN_PROGRESS',
+          x: ourPlayer.id,
         });
         expect(controller.isActive()).toBe(true);
       });

@@ -180,7 +180,7 @@ describe('TownController', () => {
         fail('Did not find an existing, empty conversation area in the town join response');
       }
     });
-    describe('[T2] interactableUpdate events', () => {
+    describe('interactableUpdate events', () => {
       describe('Conversation Area updates', () => {
         function emptyConversationArea() {
           return {

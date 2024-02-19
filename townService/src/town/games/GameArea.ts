@@ -1,3 +1,6 @@
+import InvalidParametersError, {
+  PLAYER_NOT_IN_GAME_MESSAGE,
+} from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import {
   GameArea as GameAreaModel,
@@ -45,7 +48,15 @@ export default abstract class GameArea<
 
   public remove(player: Player): void {
     if (this._game) {
-      this._game.leave(player);
+      try {
+        this._game.leave(player);
+      } catch (e) {
+        if ((e as InvalidParametersError).message === PLAYER_NOT_IN_GAME_MESSAGE) {
+          // do nothing
+        } else {
+          throw e;
+        }
+      }
     }
     super.remove(player);
   }

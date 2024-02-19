@@ -1,4 +1,3 @@
-import assert from 'assert';
 import InvalidParametersError, {
   GAME_ID_MISSMATCH_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
@@ -6,39 +5,43 @@ import InvalidParametersError, {
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import {
+  ConnectFourGameState,
   GameInstance,
   InteractableCommand,
   InteractableCommandReturnType,
   InteractableType,
-  TicTacToeGameState,
 } from '../../types/CoveyTownSocket';
+import ConnectFourGame from './ConnectFourGame';
 import GameArea from './GameArea';
-import TicTacToeGame from './TicTacToeGame';
 
 /**
- * A TicTacToeGameArea is a GameArea that hosts a TicTacToeGame.
- * @see TicTacToeGame
+ * The ConnectFourGameArea class is responsible for managing the state of a single game area for Connect Four.
+ * Responsibilty for managing the state of the game itself is delegated to the ConnectFourGame class.
+ *
+ * @see ConnectFourGame
  * @see GameArea
  */
-export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
+export default class ConnectFourGameArea extends GameArea<ConnectFourGame> {
   protected getType(): InteractableType {
-    return 'TicTacToeArea';
+    return 'ConnectFourArea';
   }
 
-  private _stateUpdated(updatedState: GameInstance<TicTacToeGameState>) {
+  private _stateUpdated(updatedState: GameInstance<ConnectFourGameState>) {
     if (updatedState.state.status === 'OVER') {
       // If we haven't yet recorded the outcome, do so now.
       const gameID = this._game?.id;
       if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
-        const { x, o } = updatedState.state;
-        if (x && o) {
-          const xName = this._occupants.find(eachPlayer => eachPlayer.id === x)?.userName || x;
-          const oName = this._occupants.find(eachPlayer => eachPlayer.id === o)?.userName || o;
+        const { red, yellow } = updatedState.state;
+        if (red && yellow) {
+          const redName =
+            this._occupants.find(eachPlayer => eachPlayer.id === red)?.userName || red;
+          const yellowName =
+            this._occupants.find(eachPlayer => eachPlayer.id === yellow)?.userName || yellow;
           this._history.push({
             gameID,
             scores: {
-              [xName]: updatedState.state.winner === x ? 1 : 0,
-              [oName]: updatedState.state.winner === o ? 1 : 0,
+              [redName]: updatedState.state.winner === red ? 1 : 0,
+              [yellowName]: updatedState.state.winner === yellow ? 1 : 0,
             },
           });
         }
@@ -51,12 +54,13 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
    * Handle a command from a player in this game area.
    * Supported commands:
    * - JoinGame (joins the game `this._game`, or creates a new one if none is in progress)
+   * - StartGame (indicates that the player is ready to start the game)
    * - GameMove (applies a move to the game)
    * - LeaveGame (leaves the game)
    *
    * If the command ended the game, records the outcome in this._history
    * If the command is successful (does not throw an error), calls this._emitAreaChanged (necessary
-   *  to notify any listeners of a state update, including any change to history)
+   * to notify any listeners of a state update, including any change to history)
    * If the command is unsuccessful (throws an error), the error is propagated to the caller
    *
    * @see InteractableCommand
@@ -64,10 +68,10 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
    * @param command command to handle
    * @param player player making the request
    * @returns response to the command, @see InteractableCommandResponse
-   * @throws InvalidParametersError if the command is not supported or is invalid. Invalid commands:
-   *  - LeaveGame and GameMove: No game in progress (GAME_NOT_IN_PROGRESS_MESSAGE),
-   *        or gameID does not match the game in progress (GAME_ID_MISSMATCH_MESSAGE)
-   *  - Any command besides LeaveGame, GameMove and JoinGame: INVALID_COMMAND_MESSAGE
+   * @throws InvalidParametersError if the command is not supported or is invalid.
+   * Invalid commands:
+   * - GameMove, StartGame and LeaveGame: if the game is not in progress (GAME_NOT_IN_PROGRESS_MESSAGE) or if the game ID does not match the game in progress (GAME_ID_MISSMATCH_MESSAGE)
+   * - Any command besides JoinGame, GameMove, StartGame and LeaveGame: INVALID_COMMAND_MESSAGE
    */
   public handleCommand<CommandType extends InteractableCommand>(
     command: CommandType,
@@ -81,10 +85,9 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
       if (this._game?.id !== command.gameID) {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
-      assert(
-        command.move.gamePiece === 'X' || command.move.gamePiece === 'O',
-        'Invalid game piece',
-      );
+      if (command.move.gamePiece !== 'Red' && command.move.gamePiece !== 'Yellow') {
+        throw new InvalidParametersError('Invalid game piece');
+      }
       game.applyMove({
         gameID: command.gameID,
         playerID: player.id,
@@ -97,7 +100,7 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new TicTacToeGame();
+        game = new ConnectFourGame(this._game);
         this._game = game;
       }
       game.join(player);
@@ -113,6 +116,18 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
       game.leave(player);
+      this._stateUpdated(game.toModel());
+      return undefined as InteractableCommandReturnType<CommandType>;
+    }
+    if (command.type === 'StartGame') {
+      const game = this._game;
+      if (!game) {
+        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      }
+      if (this._game?.id !== command.gameID) {
+        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
+      }
+      game.startGame(player);
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }

@@ -8,7 +8,7 @@
         "heroku-postbuild": "cd townService && npm install && npm run build",
         "run-townservice": "heroku local -p 3001 web",
         "lint": "cd townService && npm run-script lint && cd ../frontend && npm run-script lint && cd ../shared && npm run-script lint",
-		"zip": "npm-pack-zip"
+        "zip": "npm-pack-zip"
     },
     "repository": {
         "type": "git",
@@ -43,10 +43,11 @@
         "typescript-is": "^0.17.0"
     },
     "files": [
-        "frontend/src/classes/interactable/TicTacToeAreaController.ts",
-        "frontend/src/classes/interactable/TicTacToeAreaController.test.ts",
-        "frontend/src/components/Town/interactables/TicTacToe/TicTacToeArea.tsx",
-        "frontend/src/components/Town/interactables/TicTacToe/TicTacToeBoard.tsx",
-        "frontend/src/components/Town/interactables/Leaderboard.tsx"
-        ]
+	    "frontend/src/classes/interactable/ConnectFourAreaController.ts",
+        "frontend/src/classes/interactable/InteractableAreaController.ts",
+        "frontend/src/components/Town/interactables/ConnectFour/ConnectFourArea.tsx",
+        "frontend/src/components/Town/interactables/ConnectFour/ConnectFourBoard.tsx",
+        "frontend/src/components/Town/interactables/GamesArea.tsx",
+        "frontend/src/components/SocialSidebar/InteractableAreasList.tsx"
+    ]
 }

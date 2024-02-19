@@ -26,11 +26,18 @@ import {
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
 } from '../types/CoveyTownSocket';
-import { isConversationArea, isTicTacToeArea, isViewingArea } from '../types/TypeUtils';
+import {
+  isConnectFourArea,
+  isConversationArea,
+  isTicTacToeArea,
+  isViewingArea,
+} from '../types/TypeUtils';
+import ConnectFourAreaController from './interactable/ConnectFourAreaController';
 import ConversationAreaController from './interactable/ConversationAreaController';
 import GameAreaController, { GameEventTypes } from './interactable/GameAreaController';
 import InteractableAreaController, {
   BaseInteractableEventMap,
+  GenericInteractableAreaController,
 } from './interactable/InteractableAreaController';
 import TicTacToeAreaController from './interactable/TicTacToeAreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
@@ -69,6 +76,7 @@ export type TownEvents = {
    * before updating the proeprties of this TownController; clients will find the new players in the parameter
    */
   playersChanged: (newPlayers: PlayerController[]) => void;
+
   /**
    * An event that indicates that a player has moved. This event is dispatched after updating the player's location -
    * the new location can be found on the PlayerController.
@@ -346,6 +354,18 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this._interactableEmitter.emit('endInteraction', objectNoLongerInteracting);
   }
 
+  public async getChatMessages(_interactableID: string | undefined): Promise<ChatMessage[]> {
+    const rawResponse = await this._townsService.getChatMessages(
+      this._townID,
+      this.sessionToken,
+      _interactableID,
+    );
+    return rawResponse.map(eachMessage => ({
+      ...eachMessage,
+      dateCreated: new Date(eachMessage.dateCreated),
+    }));
+  }
+
   /**
    * Registers listeners for the events that can come from the server to our socket
    */
@@ -356,6 +376,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this._socket.on('chatMessage', message => {
       this.emit('chatMessage', message);
     });
+
     /**
      * On changes to town settings, update the local state and emit a townSettingsUpdated event to
      * the controller's event listeners
@@ -605,6 +626,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._interactableControllers.push(
               new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
             );
+          } else if (isConnectFourArea(eachInteractable)) {
+            this._interactableControllers.push(
+              new ConnectFourAreaController(eachInteractable.id, eachInteractable, this),
+            );
           }
         });
         this._userID = initialData.userID;
@@ -781,6 +806,39 @@ export function useActiveConversationAreas(): ConversationAreaController[] {
     };
   }, [townController, setConversationAreas]);
   return conversationAreas;
+}
+
+/**
+ * A react hook to retrieve the active interactable areas. This hook will re-render any components
+ * that use it when the set of interactable areas changes. It does *not* re-render its dependent components
+ * when the state of one of those areas changes - if that is desired, see the events that are emitted
+ * by each interactable area controller.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @returns the list of interactable area controllers that are currently "active"
+ */
+export function useActiveInteractableAreas(): GenericInteractableAreaController[] {
+  const townController = useTownController();
+  const [interactableAreas, setInteractableAreas] = useState<GenericInteractableAreaController[]>(
+    (townController.gameAreas as GenericInteractableAreaController[])
+      .concat(townController.conversationAreas, townController.viewingAreas)
+      .filter(eachArea => eachArea.isActive()),
+  );
+  useEffect(() => {
+    const updater = () => {
+      const allAreas = (townController.gameAreas as GenericInteractableAreaController[]).concat(
+        townController.conversationAreas,
+        townController.viewingAreas,
+      );
+      setInteractableAreas(allAreas.filter(eachArea => eachArea.isActive()));
+    };
+    townController.addListener('interactableAreasChanged', updater);
+    return () => {
+      townController.removeListener('interactableAreasChanged', updater);
+    };
+  }, [townController]);
+  return interactableAreas;
 }
 
 /**

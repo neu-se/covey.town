@@ -30,14 +30,15 @@ const useStyles = makeStyles(() =>
 
 export default function ChatWindowHeader() {
   const classes = useStyles();
-  const { setIsChatWindowOpen } = useChatContext();
+  const { setIsChatWindowOpen, isChatWindowClosable } = useChatContext();
 
   return (
     <div className={classes.container}>
       <div className={classes.text}>Chat</div>
-      <button className={classes.closeChatWindow} onClick={() => setIsChatWindowOpen(false)}>
+      {isChatWindowClosable ? <button className={classes.closeChatWindow} onClick={() => setIsChatWindowOpen(false)}>
         <CloseIcon />
-      </button>
+      </button> : <></>}
+
     </div>
   );
 }

@@ -8,7 +8,12 @@ import {
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
-import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
+import InteractableAreaController, {
+  BaseInteractableEventMap,
+  GAME_AREA_TYPE,
+} from './InteractableAreaController';
+
+export type GenericGameAreaController = GameAreaController<GameState, GameEventTypes>;
 
 export type GameEventTypes = BaseInteractableEventMap & {
   gameStart: () => void;
@@ -16,6 +21,12 @@ export type GameEventTypes = BaseInteractableEventMap & {
   gameEnd: () => void;
   playersChange: (newPlayers: PlayerController[]) => void;
 };
+
+export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
+
+export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
+
+export const NO_GAME_STARTABLE = 'No game startable';
 
 /**
  * This class is the base class for all game controllers. It is responsible for managing the
@@ -54,6 +65,14 @@ export default abstract class GameAreaController<
 
   public get observers(): PlayerController[] {
     return this.occupants.filter(eachOccupant => !this._players.includes(eachOccupant));
+  }
+
+  public get friendlyName(): string {
+    return this.id;
+  }
+
+  public get type(): string {
+    return GAME_AREA_TYPE;
   }
 
   /**

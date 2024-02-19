@@ -5,10 +5,45 @@ import useTownController from '../../hooks/useTownController';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import NewConversationModal from './interactables/NewCoversationModal';
 import TownGameScene from './TownGameScene';
-import TicTacToeAreaWrapper from './interactables/TicTacToe/TicTacToeArea';
+import GameAreaWrapper from './interactables/GamesArea';
+import useChatContext from '../VideoCall/VideoFrontend/hooks/useChatContext/useChatContext';
+import ChatWindow from '../VideoCall/VideoFrontend/components/ChatWindow/ChatWindow';
+import clsx from 'clsx';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    chatWindowContainer: {
+      'pointerEvents': 'auto',
+      'background': '#FFFFFF',
+      'zIndex': 1000,
+      'display': 'flex',
+      'flexDirection': 'column',
+      'borderLeft': '1px solid #E4E7E9',
+      [theme.breakpoints.down('sm')]: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        zIndex: 100,
+      },
+      'position': 'fixed',
+      'bottom': 0,
+      'left': 0,
+      'top': 0,
+      'max-width': '250px',
+    },
+    hide: {
+      display: 'none',
+    },
+  }),
+);
 
 export default function TownMap(): JSX.Element {
   const coveyTownController = useTownController();
+  const { isChatWindowOpen } = useChatContext();
+  const classes = useStyles();
 
   useEffect(() => {
     const config = {
@@ -49,7 +84,10 @@ export default function TownMap(): JSX.Element {
   return (
     <div id='app-container'>
       <NewConversationModal />
-      <TicTacToeAreaWrapper />
+      <GameAreaWrapper />
+      <aside className={clsx(classes.chatWindowContainer, { [classes.hide]: !isChatWindowOpen })}>
+        <ChatWindow />
+      </aside>
 
       <div id='map-container' />
       <div id='social-container'>

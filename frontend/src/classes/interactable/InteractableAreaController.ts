@@ -10,8 +10,17 @@ import PlayerController from '../PlayerController';
 
 export type BaseInteractableEventMap = EventMap & {
   occupantsChange: (newOccupants: PlayerController[]) => void;
+  friendlyNameChange: (newFriendlyName: string) => void;
 };
 
+export type GenericInteractableAreaController = InteractableAreaController<
+  BaseInteractableEventMap,
+  InteractableAreaModel
+>;
+
+export const CONVERSATION_AREA_TYPE = 'Conversation Area';
+export const VIEWING_AREA_TYPE = 'Viewing Area';
+export const GAME_AREA_TYPE = 'Game Area';
 /**
  * A InteractableAreaController manages the local behavior of a interactable area in the frontend,
  * implementing the logic to bridge between the townService's interpretation of interactable areas and the
@@ -130,16 +139,25 @@ export default abstract class InteractableAreaController<
   isEmpty(): boolean {
     return this._occupants.length === 0;
   }
+
+  /**
+   * Return a friendly name for this interactable area type, suitable for display to users.
+   */
+  public abstract get friendlyName(): string;
+
+  /**
+   * Return a string that identifies the type of this interactable area.
+   */
+  public abstract get type(): string;
 }
 /**
  * A react hook to retrieve the occupants of a ConversationAreaController, returning an array of PlayerController.
  *
  * This hook will re-render any components that use it when the set of occupants changes.
  */
-export function useInteractableAreaOccupants<
-  E extends BaseInteractableEventMap & EventMap,
-  T extends InteractableAreaModel,
->(area: InteractableAreaController<E, T>): PlayerController[] {
+export function useInteractableAreaOccupants(
+  area: GenericInteractableAreaController,
+): PlayerController[] {
   const [occupants, setOccupants] = useState(area.occupants);
   useEffect(() => {
     area.addListener('occupantsChange', setOccupants);
@@ -148,4 +166,21 @@ export function useInteractableAreaOccupants<
     };
   }, [area]);
   return occupants;
+}
+
+/**
+ * A react hook to retrieve the friendly name of an InteractableAreaController, returning a string.
+ *
+ * This hook will re-render any components that use it when the friendly name changes.
+ *
+ */
+export function useInteractableAreaFriendlyName(area: GenericInteractableAreaController): string {
+  const [friendlyName, setFriendlyName] = useState(area.friendlyName);
+  useEffect(() => {
+    area.addListener('friendlyNameChange', setFriendlyName);
+    return () => {
+      area.removeListener('friendlyNameChange', setFriendlyName);
+    };
+  }, [area]);
+  return friendlyName;
 }

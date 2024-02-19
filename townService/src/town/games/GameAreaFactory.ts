@@ -1,6 +1,7 @@
 import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
 import { BoundingBox, TownEmitter } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
+import ConnectFourGameArea from './ConnectFourGameArea';
 import TicTacToeGameArea from './TicTacToeGameArea';
 
 /**
@@ -22,6 +23,9 @@ export default function GameAreaFactory(
   const gameType = mapObject.properties?.find(prop => prop.name === 'type')?.value;
   if (gameType === 'TicTacToe') {
     return new TicTacToeGameArea(name, rect, broadcastEmitter);
+  }
+  if (gameType === 'ConnectFour') {
+    return new ConnectFourGameArea(name, rect, broadcastEmitter);
   }
   throw new Error(`Unknown game area type ${mapObject.class}`);
 }

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ConversationArea as ConversationAreaModel } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
-import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
+import InteractableAreaController, {
+  BaseInteractableEventMap,
+  CONVERSATION_AREA_TYPE,
+} from './InteractableAreaController';
 
 /**
  * The events that the ConversationAreaController emits to subscribers. These events
@@ -46,12 +49,22 @@ export default class ConversationAreaController extends InteractableAreaControll
   set topic(newTopic: string | undefined) {
     if (this._topic !== newTopic) {
       this.emit('topicChange', newTopic);
+      if (newTopic !== undefined) this.emit('friendlyNameChange', newTopic);
+      else this.emit('friendlyNameChange', NO_TOPIC_STRING);
     }
     this._topic = newTopic;
   }
 
   get topic(): string | undefined {
     return this._topic;
+  }
+
+  get friendlyName(): string {
+    return this.id + ': ' + this.topic || NO_TOPIC_STRING;
+  }
+
+  get type(): string {
+    return CONVERSATION_AREA_TYPE;
   }
 
   protected _updateFrom(newModel: ConversationAreaModel): void {

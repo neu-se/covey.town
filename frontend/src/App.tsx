@@ -18,6 +18,7 @@ import TownControllerContext from './contexts/TownControllerContext';
 import LoginControllerContext from './contexts/LoginControllerContext';
 import { TownsServiceClient } from './generated/client';
 import { nanoid } from 'nanoid';
+import ToggleChatButton from './components/VideoCall/VideoFrontend/components/Buttons/ToggleChatButton/ToggleChatButton';
 
 function App() {
   const [townController, setTownController] = useState<TownController | null>(null);
@@ -110,6 +111,7 @@ function DebugApp(): JSX.Element {
       <TownControllerContext.Provider value={townController}>
         <ChatProvider>
           <TownMap />
+          <ToggleChatButton />
         </ChatProvider>
       </TownControllerContext.Provider>
     );

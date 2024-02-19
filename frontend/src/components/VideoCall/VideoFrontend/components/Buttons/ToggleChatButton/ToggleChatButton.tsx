@@ -60,11 +60,11 @@ export default function ToggleChatButton() {
   const classes = useStyles();
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const { isChatWindowOpen, setIsChatWindowOpen, conversation, hasUnreadMessages } = useChatContext();
-  const { setIsBackgroundSelectionOpen } = useVideoContext();
+  // const { setIsBackgroundSelectionOpen } = useVideoContext();
 
   const toggleChatWindow = () => {
     setIsChatWindowOpen(!isChatWindowOpen);
-    setIsBackgroundSelectionOpen(false);
+    // setIsBackgroundSelectionOpen(false);
   };
 
   useEffect(() => {

@@ -9,6 +9,7 @@ import {
   Patch,
   Path,
   Post,
+  Query,
   Response,
   Route,
   Tags,
@@ -18,6 +19,7 @@ import { Town, TownCreateParams, TownCreateResponse } from '../api/Model';
 import InvalidParametersError from '../lib/InvalidParametersError';
 import CoveyTownsStore from '../lib/TownsStore';
 import {
+  ChatMessage,
   ConversationArea,
   CoveyTownSocket,
   TownSettingsUpdate,
@@ -159,6 +161,32 @@ export class TownsController extends Controller {
     if (!success) {
       throw new InvalidParametersError('Invalid values specified');
     }
+  }
+
+  /**
+   * Retrieves up to the first 200 chat messages for a given town, optionally filtered by interactableID
+   * @param townID town to retrieve messages for
+   * @param sessionToken a valid session token for a player in the town
+   * @param interactableID optional interactableID to filter messages by
+   * @returns list of chat messages
+   */
+  @Get('{townID}/chatMessages')
+  @Response<InvalidParametersError>(400, 'Invalid values specified')
+  public async getChatMessages(
+    @Path() townID: string,
+    @Header('X-Session-Token') sessionToken: string,
+    @Query() interactableID?: string,
+  ): Promise<ChatMessage[]> {
+    const town = this._townsStore.getTownByID(townID);
+    if (!town) {
+      throw new InvalidParametersError('Invalid values specified');
+    }
+    const player = town.getPlayerBySessionToken(sessionToken);
+    if (!player) {
+      throw new InvalidParametersError('Invalid values specified');
+    }
+    const messages = town.getChatMessages(interactableID);
+    return messages;
   }
 
   /**

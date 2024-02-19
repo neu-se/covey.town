@@ -1,5 +1,8 @@
 import { ViewingArea as ViewingAreaModel } from '../../types/CoveyTownSocket';
-import InteractableAreaController, { BaseInteractableEventMap } from './InteractableAreaController';
+import InteractableAreaController, {
+  BaseInteractableEventMap,
+  VIEWING_AREA_TYPE,
+} from './InteractableAreaController';
 
 /**
  * The events that a ViewingAreaController can emit
@@ -110,6 +113,14 @@ export default class ViewingAreaController extends InteractableAreaController<
       this._model.isPlaying = isPlaying;
       this.emit('playbackChange', isPlaying);
     }
+  }
+
+  public get friendlyName(): string {
+    return this.id;
+  }
+
+  public get type(): string {
+    return VIEWING_AREA_TYPE;
   }
 
   /**

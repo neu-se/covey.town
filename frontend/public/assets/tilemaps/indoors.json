@@ -489,9 +489,15 @@
                 {
                  "height":223.999666666667,
                  "id":30,
-                 "name":"Basement Dining Table 2",
+                 "name":"Tic Tac Toe 1",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"TicTacToe"
+                        }],
                  "rotation":0,
-                 "type":"ConversationArea",
+                 "type":"GameArea",
                  "visible":true,
                  "width":164.667,
                  "x":3260.99983333333,
@@ -500,7 +506,13 @@
                 {
                  "height":224,
                  "id":31,
-                 "name":"Basement Dining Table 3",
+                 "name":"Tic Tac Toe 2",
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"TicTacToe"
+                        }],
                  "rotation":0,
                  "type":"ConversationArea",
                  "visible":true,
@@ -545,12 +557,12 @@
                 {
                  "height":92.2796984663374,
                  "id":39,
-                 "name":"Tic Tac Toe 2",
+                 "name":"Connect Four 1",
                  "properties":[
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"TicTacToe"
+                         "value":"ConnectFour"
                         }],
                  "rotation":0,
                  "type":"GameArea",
@@ -562,12 +574,12 @@
                 {
                  "height":83.8442547785938,
                  "id":43,
-                 "name":"Tic Tac Toe 1",
+                 "name":"Connect Four 2",
                  "properties":[
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"TicTacToe"
+                         "value":"ConnectFour"
                         }],
                  "rotation":0,
                  "type":"GameArea",
@@ -586,7 +598,7 @@
                  "visible":true,
                  "width":0,
                  "x":3110.91365347094,
-                 "y":878.861767209433
+                 "y":854.826515506936
                 }, 
                 {
                  "height":216.317265322473,

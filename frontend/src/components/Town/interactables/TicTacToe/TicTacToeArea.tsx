@@ -1,30 +1,10 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Container,
-  Heading,
-  List,
-  ListItem,
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  useToast,
-} from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Container, List, ListItem, useToast } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
 import TicTacToeAreaController from '../../../../classes/interactable/TicTacToeAreaController';
 import PlayerController from '../../../../classes/PlayerController';
-import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
+import { useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
-import GameAreaInteractable from '../GameArea';
-import TicTacToeLeaderboard from '../Leaderboard';
+import { GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import TicTacToeBoard from './TicTacToeBoard';
 
 /**
@@ -38,8 +18,6 @@ import TicTacToeBoard from './TicTacToeBoard';
  * It subscribes to these events when the component mounts, and unsubscribes when the component unmounts. It also unsubscribes when the gameAreaController changes.
  *
  * It renders the following:
- * - A leaderboard (@see Leaderboard.tsx), which is passed the game history as a prop
- * - A list of observers' usernames (in a list with the aria-label 'list of observers in the game', one username per-listitem)
  * - A list of players' usernames (in a list with the aria-label 'list of players in the game', one item for X and one for O)
  *    - If there is no player in the game, the username is '(No player yet!)'
  *    - List the players as (exactly) `X: ${username}` and `O: ${username}`
@@ -59,14 +37,16 @@ import TicTacToeBoard from './TicTacToeBoard';
  *    - Our player lost: description 'You lost :('
  *
  */
-function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
+export default function TicTacToeArea({
+  interactableID,
+}: {
+  interactableID: InteractableID;
+}): JSX.Element {
   const gameAreaController = useInteractableAreaController<TicTacToeAreaController>(interactableID);
   const townController = useTownController();
 
-  const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
   const [gameStatus, setGameStatus] = useState<GameStatus>(gameAreaController.status);
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
-  const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
   const [joiningGame, setJoiningGame] = useState(false);
   const [x, setX] = useState<PlayerController | undefined>(gameAreaController.x);
   const [o, setO] = useState<PlayerController | undefined>(gameAreaController.o);
@@ -74,10 +54,8 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
 
   useEffect(() => {
     const updateGameState = () => {
-      setHistory(gameAreaController.history);
       setGameStatus(gameAreaController.status || 'WAITING_TO_START');
       setMoveCount(gameAreaController.moveCount || 0);
-      setObservers(gameAreaController.observers);
       setX(gameAreaController.x);
       setO(gameAreaController.o);
     };
@@ -158,38 +136,6 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
 
   return (
     <Container>
-      <Accordion allowToggle>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                Leaderboard
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            <TicTacToeLeaderboard results={history} />
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                Current Observers
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            <List aria-label='list of observers in the game'>
-              {observers.map(player => {
-                return <ListItem key={player.id}>{player.userName}</ListItem>;
-              })}
-            </List>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
       {gameStatusText}
       <List aria-label='list of players in the game'>
         <ListItem>X: {x?.userName || '(No player yet!)'}</ListItem>
@@ -198,36 +144,4 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
       <TicTacToeBoard gameAreaController={gameAreaController} />
     </Container>
   );
-}
-
-/**
- * A wrapper component for the TicTacToeArea component.
- * Determines if the player is currently in a tic tac toe area on the map, and if so,
- * renders the TicTacToeArea component in a modal.
- *
- */
-export default function TicTacToeAreaWrapper(): JSX.Element {
-  const gameArea = useInteractable<GameAreaInteractable>('gameArea');
-  const townController = useTownController();
-  const closeModal = useCallback(() => {
-    if (gameArea) {
-      townController.interactEnd(gameArea);
-      const controller = townController.getGameAreaController(gameArea);
-      controller.leaveGame();
-    }
-  }, [townController, gameArea]);
-
-  if (gameArea && gameArea.getData('type') === 'TicTacToe') {
-    return (
-      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{gameArea.name}</ModalHeader>
-          <ModalCloseButton />
-          <TicTacToeArea interactableID={gameArea.name} />;
-        </ModalContent>
-      </Modal>
-    );
-  }
-  return <></>;
 }
