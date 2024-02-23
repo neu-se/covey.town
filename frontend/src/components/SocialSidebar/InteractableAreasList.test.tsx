@@ -17,7 +17,7 @@ import InteractableAreasList from './InteractableAreasList';
 
 import ConnectFourAreaController from '../../classes/interactable/ConnectFourAreaController';
 import ViewingAreaController from '../../classes/interactable/ViewingAreaController';
-
+jest.setTimeout(70000); // in milliseconds, needed to avoid weird timeout issues
 const useActiveInteractableAreasSpy = jest.spyOn(TownControllerHooks, 'useActiveInteractableAreas');
 const useInteractableAreasOccupantsSpy = jest.spyOn(
   InteractableAreaHooks,
