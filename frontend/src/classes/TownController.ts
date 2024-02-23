@@ -1,8 +1,9 @@
 import assert from 'assert';
+import { generateKey } from 'crypto';
 import EventEmitter from 'events';
 import _ from 'lodash';
 import { nanoid } from 'nanoid';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import TypedEmitter from 'typed-emitter';
 import Interactable from '../components/Town/Interactable';
@@ -839,6 +840,99 @@ export function useActiveInteractableAreas(): GenericInteractableAreaController[
     };
   }, [townController]);
   return interactableAreas;
+}
+
+/**
+ * A react hook to retrieve the active interactable areas. This hook will re-render any components
+ * that use it when the set of interactable areas changes. It does *not* re-render its dependent components
+ * when the state of one of those areas changes - if that is desired, see the events that are emitted
+ * by each interactable area controller.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @returns the list of interactable area controllers that are currently "active"
+ */
+export function useActiveInteractableAreasSortedByOccupancyAndName(): GenericInteractableAreaController[] {
+  const townController = useTownController();
+  type InteractableAreaReadAheadOccupancy = {
+    area: GenericInteractableAreaController;
+    occupancy: number;
+    updater?: (newOccupants: PlayerController[]) => void;
+  };
+
+  const [interactableAreas, setInteractableAreas] = useState<InteractableAreaReadAheadOccupancy[]>(
+    (townController.gameAreas as GenericInteractableAreaController[])
+      .concat(townController.conversationAreas, townController.viewingAreas)
+      .filter(eachArea => eachArea.isActive())
+      .map(area => ({ area, occupancy: area.occupants.length })),
+  );
+
+  useEffect(() => {
+    const interactableAreaSorter = (
+      a: InteractableAreaReadAheadOccupancy,
+      b: InteractableAreaReadAheadOccupancy,
+    ) => {
+      if (a.occupancy === b.occupancy)
+        return a.area.friendlyName.localeCompare(b.area.friendlyName, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        });
+      return b.area.occupants.length - a.area.occupants.length;
+    };
+
+    const onAreaSetChanged = () => {
+      const allAreas = (townController.gameAreas as GenericInteractableAreaController[]).concat(
+        townController.conversationAreas,
+        townController.viewingAreas,
+      );
+      const activeAreas = allAreas.filter(eachArea => eachArea.isActive());
+      // Update the areas, *and* the occupancy listeners by comparing the new set of areas to the old set
+      setInteractableAreas(prevAreaPairs => {
+        const newAreaPairs = [...prevAreaPairs]; //Copy the old set of areas
+        const prevAreas = prevAreaPairs.map(eachAreaOccupancyPair => eachAreaOccupancyPair.area);
+        //Find newly added areas, need to add listeners for them
+        const newAreas = activeAreas.filter(eachActiveArea => !prevAreas.includes(eachActiveArea));
+        //Create listeners for the new areas and add then to the new set of area-pairs
+        newAreas.forEach(area => {
+          // Listener for the area needs to use the "newOccupants" parameter to update the state
+          const listener = (newOccupants: PlayerController[]) => {
+            setInteractableAreas(areaUpdaterPrevAreas => {
+              //Update our local state with the new occupancy
+              const updatedPairs = areaUpdaterPrevAreas.map(eachPair => {
+                //Find the area that was updated, and update its occupancy
+                if (eachPair.area === area) {
+                  return { ...eachPair, occupancy: newOccupants.length };
+                }
+                //Otherwise, return the old area, no change
+                return eachPair;
+              });
+              // Sort the areas by occupancy and name
+              updatedPairs.sort(interactableAreaSorter);
+              return updatedPairs;
+            });
+          };
+          area.addListener('occupantsChange', listener);
+          const newAreaPair = { area, occupancy: area.occupants.length, updater: listener };
+          newAreaPairs.push(newAreaPair);
+        });
+        //Find removed areas, need to remove listeners for them
+        const removedAreas = prevAreas.filter(eachPrevArea => !activeAreas.includes(eachPrevArea));
+        //Remove listeners for the removed areas
+        removedAreas.forEach(removedArea => {
+          const removedPair = prevAreaPairs.find(eachPair => eachPair.area === removedArea);
+          if (removedPair && removedPair.updater) {
+            removedPair.area.removeListener('occupantsChange', removedPair.updater);
+          }
+        });
+        return newAreaPairs;
+      });
+    };
+    townController.addListener('interactableAreasChanged', onAreaSetChanged);
+    return () => {
+      townController.removeListener('interactableAreasChanged', onAreaSetChanged);
+    };
+  }, [townController]);
+  return interactableAreas.map(eachPair => eachPair.area);
 }
 
 /**

@@ -56,6 +56,10 @@ export default function InteractableAreasList(): JSX.Element {
     areas.push(area);
     areasByType.set(area.type, areas);
   });
+  //TODO: Known bug - when the occupancy of a room changes, the list order does not update
+  //useActiveInteractableAreasSortedByOccupancy() would be a better hook to use here, but
+  //the test suite does not currently support it - it would need to do different mocking.
+
   const interactableAreaSorter = (
     a: GenericInteractableAreaController,
     b: GenericInteractableAreaController,
