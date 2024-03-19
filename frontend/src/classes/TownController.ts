@@ -773,13 +773,20 @@ export function useTownSettings() {
  */
 export function useInteractableAreaController<T>(interactableAreaID: string): T {
   const townController = useTownController();
-  const interactableAreaController = townController.gameAreas.find(
+  const gameAreaController = townController.gameAreas.find(
     eachArea => eachArea.id == interactableAreaID,
   );
-  if (!interactableAreaController) {
+  if (!gameAreaController) {
+    //Look for a viewing area
+    const viewingAreaController = townController.viewingAreas.find(
+      eachArea => eachArea.id == interactableAreaID,
+    );
+    if (viewingAreaController) {
+      return viewingAreaController as unknown as T;
+    }
     throw new Error(`Requested interactable area ${interactableAreaID} does not exist`);
   }
-  return interactableAreaController as unknown as T;
+  return gameAreaController as unknown as T;
 }
 
 /**
